@@ -1,0 +1,265 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\ASUS\\source\\repos\\SIS\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FEB487-405F-892A-3742-207A95F79B88}|SIS.DAL\\SIS.DAL.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.dal\\configurations\\studentconfiguration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FEB487-405F-892A-3742-207A95F79B88}|SIS.DAL\\SIS.DAL.csproj|solutionrelative:sis.dal\\configurations\\studentconfiguration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C276F8A7-E1AF-FCC0-2213-9A6356ED4CC2}|SIS.Entities\\SIS.Entities.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.entities\\identity\\appuser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C276F8A7-E1AF-FCC0-2213-9A6356ED4CC2}|SIS.Entities\\SIS.Entities.csproj|solutionrelative:sis.entities\\identity\\appuser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FEB487-405F-892A-3742-207A95F79B88}|SIS.DAL\\SIS.DAL.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.dal\\configurations\\attendancerecordconfiguration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FEB487-405F-892A-3742-207A95F79B88}|SIS.DAL\\SIS.DAL.csproj|solutionrelative:sis.dal\\configurations\\attendancerecordconfiguration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FEB487-405F-892A-3742-207A95F79B88}|SIS.DAL\\SIS.DAL.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.dal\\configurations\\announcementconfiguration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FEB487-405F-892A-3742-207A95F79B88}|SIS.DAL\\SIS.DAL.csproj|solutionrelative:sis.dal\\configurations\\announcementconfiguration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FEB487-405F-892A-3742-207A95F79B88}|SIS.DAL\\SIS.DAL.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.dal\\configurations\\courseconfiguration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FEB487-405F-892A-3742-207A95F79B88}|SIS.DAL\\SIS.DAL.csproj|solutionrelative:sis.dal\\configurations\\courseconfiguration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FEB487-405F-892A-3742-207A95F79B88}|SIS.DAL\\SIS.DAL.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.dal\\configurations\\academicprogramconfiguration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FEB487-405F-892A-3742-207A95F79B88}|SIS.DAL\\SIS.DAL.csproj|solutionrelative:sis.dal\\configurations\\academicprogramconfiguration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C276F8A7-E1AF-FCC0-2213-9A6356ED4CC2}|SIS.Entities\\SIS.Entities.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.entities\\models\\notification.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C276F8A7-E1AF-FCC0-2213-9A6356ED4CC2}|SIS.Entities\\SIS.Entities.csproj|solutionrelative:sis.entities\\models\\notification.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FEB487-405F-892A-3742-207A95F79B88}|SIS.DAL\\SIS.DAL.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.dal\\configurations\\teacherconfiguration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FEB487-405F-892A-3742-207A95F79B88}|SIS.DAL\\SIS.DAL.csproj|solutionrelative:sis.dal\\configurations\\teacherconfiguration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C276F8A7-E1AF-FCC0-2213-9A6356ED4CC2}|SIS.Entities\\SIS.Entities.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.entities\\models\\student.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C276F8A7-E1AF-FCC0-2213-9A6356ED4CC2}|SIS.Entities\\SIS.Entities.csproj|solutionrelative:sis.entities\\models\\student.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C276F8A7-E1AF-FCC0-2213-9A6356ED4CC2}|SIS.Entities\\SIS.Entities.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.entities\\models\\academicprogram.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C276F8A7-E1AF-FCC0-2213-9A6356ED4CC2}|SIS.Entities\\SIS.Entities.csproj|solutionrelative:sis.entities\\models\\academicprogram.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FEB487-405F-892A-3742-207A95F79B88}|SIS.DAL\\SIS.DAL.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.dal\\configurations\\departmentconfiguration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FEB487-405F-892A-3742-207A95F79B88}|SIS.DAL\\SIS.DAL.csproj|solutionrelative:sis.dal\\configurations\\departmentconfiguration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FEB487-405F-892A-3742-207A95F79B88}|SIS.DAL\\SIS.DAL.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.dal\\context\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FEB487-405F-892A-3742-207A95F79B88}|SIS.DAL\\SIS.DAL.csproj|solutionrelative:sis.dal\\context\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C276F8A7-E1AF-FCC0-2213-9A6356ED4CC2}|SIS.Entities\\SIS.Entities.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.entities\\models\\announcement.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C276F8A7-E1AF-FCC0-2213-9A6356ED4CC2}|SIS.Entities\\SIS.Entities.csproj|solutionrelative:sis.entities\\models\\announcement.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 1,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedHeight": 319,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "AppUser.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.Entities\\Identity\\AppUser.cs",
+              "RelativeDocumentMoniker": "SIS.Entities\\Identity\\AppUser.cs",
+              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.Entities\\Identity\\AppUser.cs",
+              "RelativeToolTip": "SIS.Entities\\Identity\\AppUser.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAtAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-29T12:19:36.081Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "StudentConfiguration.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Configurations\\StudentConfiguration.cs",
+              "RelativeDocumentMoniker": "SIS.DAL\\Configurations\\StudentConfiguration.cs",
+              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Configurations\\StudentConfiguration.cs",
+              "RelativeToolTip": "SIS.DAL\\Configurations\\StudentConfiguration.cs",
+              "ViewState": "AgIAAAIAAAAAAAAAAAAcwBMAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-29T12:11:06.637Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "AttendanceRecordConfiguration.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Configurations\\AttendanceRecordConfiguration.cs",
+              "RelativeDocumentMoniker": "SIS.DAL\\Configurations\\AttendanceRecordConfiguration.cs",
+              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Configurations\\AttendanceRecordConfiguration.cs",
+              "RelativeToolTip": "SIS.DAL\\Configurations\\AttendanceRecordConfiguration.cs",
+              "ViewState": "AgIAABMAAAAAAAAAAAAQwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-29T12:18:37.719Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "AnnouncementConfiguration.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Configurations\\AnnouncementConfiguration.cs",
+              "RelativeDocumentMoniker": "SIS.DAL\\Configurations\\AnnouncementConfiguration.cs",
+              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Configurations\\AnnouncementConfiguration.cs",
+              "RelativeToolTip": "SIS.DAL\\Configurations\\AnnouncementConfiguration.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-29T12:18:36.392Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "CourseConfiguration.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Configurations\\CourseConfiguration.cs",
+              "RelativeDocumentMoniker": "SIS.DAL\\Configurations\\CourseConfiguration.cs",
+              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Configurations\\CourseConfiguration.cs",
+              "RelativeToolTip": "SIS.DAL\\Configurations\\CourseConfiguration.cs",
+              "ViewState": "AgIAABkAAAAAAAAAAAAQwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-29T12:18:25.772Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "Notification.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.Entities\\Models\\Notification.cs",
+              "RelativeDocumentMoniker": "SIS.Entities\\Models\\Notification.cs",
+              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.Entities\\Models\\Notification.cs",
+              "RelativeToolTip": "SIS.Entities\\Models\\Notification.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-29T12:18:03.378Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "TeacherConfiguration.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Configurations\\TeacherConfiguration.cs",
+              "RelativeDocumentMoniker": "SIS.DAL\\Configurations\\TeacherConfiguration.cs",
+              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Configurations\\TeacherConfiguration.cs",
+              "RelativeToolTip": "SIS.DAL\\Configurations\\TeacherConfiguration.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-29T12:13:44.944Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "AcademicProgramConfiguration.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Configurations\\AcademicProgramConfiguration.cs",
+              "RelativeDocumentMoniker": "SIS.DAL\\Configurations\\AcademicProgramConfiguration.cs",
+              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Configurations\\AcademicProgramConfiguration.cs",
+              "RelativeToolTip": "SIS.DAL\\Configurations\\AcademicProgramConfiguration.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-29T12:10:45.428Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "Student.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.Entities\\Models\\Student.cs",
+              "RelativeDocumentMoniker": "SIS.Entities\\Models\\Student.cs",
+              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.Entities\\Models\\Student.cs",
+              "RelativeToolTip": "SIS.Entities\\Models\\Student.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAnAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-29T12:12:52.594Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "AcademicProgram.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.Entities\\Models\\AcademicProgram.cs",
+              "RelativeDocumentMoniker": "SIS.Entities\\Models\\AcademicProgram.cs",
+              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.Entities\\Models\\AcademicProgram.cs",
+              "RelativeToolTip": "SIS.Entities\\Models\\AcademicProgram.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAyAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-29T12:11:41.974Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{0ad07096-bba9-4900-a651-0598d26f6d24}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "DepartmentConfiguration.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Configurations\\DepartmentConfiguration.cs",
+              "RelativeDocumentMoniker": "SIS.DAL\\Configurations\\DepartmentConfiguration.cs",
+              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Configurations\\DepartmentConfiguration.cs",
+              "RelativeToolTip": "SIS.DAL\\Configurations\\DepartmentConfiguration.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAABoAAAAMAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-29T12:08:49.654Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "Announcement.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.Entities\\Models\\Announcement.cs",
+              "RelativeDocumentMoniker": "SIS.Entities\\Models\\Announcement.cs",
+              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.Entities\\Models\\Announcement.cs",
+              "RelativeToolTip": "SIS.Entities\\Models\\Announcement.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-29T11:54:35.488Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "AppDbContext.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Context\\AppDbContext.cs",
+              "RelativeDocumentMoniker": "SIS.DAL\\Context\\AppDbContext.cs",
+              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Context\\AppDbContext.cs",
+              "RelativeToolTip": "SIS.DAL\\Context\\AppDbContext.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAA0AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-29T11:51:03.294Z",
+              "EditorCaption": ""
+            }
+          ]
+        },
+        {
+          "DockedHeight": 104,
+          "SelectedChildIndex": -1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{d78612c7-9962-4b83-95d9-268046dad23a}"
+            }
+          ]
+        },
+        {
+          "DockedHeight": 214,
+          "SelectedChildIndex": -1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{34e76e81-ee4a-11d0-ae2e-00a0c90fffc3}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
