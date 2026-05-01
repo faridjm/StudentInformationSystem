@@ -1,0 +1,60 @@
+﻿using AutoMapper;
+using SIS.BLL.Services.DTOs.Department;
+using SIS.BLL.Services.Interfaces;
+using SIS.DAL.UnitOfWork;
+using SIS.Entities.Models;
+
+namespace SIS.BLL.Services.Implementations
+{
+    public class DepartmentService : IDepartmentService
+    {
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
+
+        public DepartmentService(IUnitOfWork unitOfWork, IMapper mapper)
+        {
+            _unitOfWork = unitOfWork;
+            _mapper = mapper;
+        }
+
+        public async Task<IEnumerable<DepartmentDto>> GetAllDepartmentsAsync()
+        {
+            var departments = await _unitOfWork.Departments.GetAllAsync();
+            return _mapper.Map<IEnumerable<DepartmentDto>>(departments);
+        }
+
+        public async Task<DepartmentDto?> GetDepartmentByIdAsync(int id)
+        {
+            var department = await _unitOfWork.Departments.GetDepartmentWithDetailsAsync(id);
+            return _mapper.Map<DepartmentDto>(department);
+        }
+
+        public async Task CreateDepartmentAsync(CreateDepartmentDto dto)
+        {
+            var department = _mapper.Map<Department>(dto);
+            await _unitOfWork.Departments.AddAsync(department);
+            await _unitOfWork.SaveAsync();
+        }
+
+        public async Task UpdateDepartmentAsync(UpdateDepartmentDto dto)
+        {
+            var department = await _unitOfWork.Departments.GetByIdAsync(dto.Id);
+            if (department == null) throw new Exception("Departament tapılmadı");
+
+            _mapper.Map(dto, department);
+            department.UpdatedAt = DateTime.UtcNow;
+            _unitOfWork.Departments.Update(department);
+            await _unitOfWork.SaveAsync();
+        }
+
+        public async Task DeleteDepartmentAsync(int id)
+        {
+            var department = await _unitOfWork.Departments.GetByIdAsync(id);
+            if (department == null) throw new Exception("Departament tapılmadı");
+
+            _unitOfWork.Departments.SoftDelete(department);
+            await _unitOfWork.SaveAsync();
+        }
+    }
+
+}

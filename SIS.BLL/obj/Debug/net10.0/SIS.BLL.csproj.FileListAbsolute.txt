@@ -10,3 +10,11 @@ C:\Users\ASUS\source\repos\SIS\SIS.BLL\obj\Debug\net10.0\refint\SIS.BLL.dll
 C:\Users\ASUS\source\repos\SIS\SIS.BLL\obj\Debug\net10.0\SIS.BLL.pdb
 C:\Users\ASUS\source\repos\SIS\SIS.BLL\obj\Debug\net10.0\ref\SIS.BLL.dll
 C:\Users\ASUS\source\repos\SIS\SIS.BLL\obj\Debug\net10.0\SIS.BLL.sourcelink.json
+C:\Users\ASUS\source\repos\SIS\SIS.BLL\bin\Debug\net10.0\SIS.Common.dll
+C:\Users\ASUS\source\repos\SIS\SIS.BLL\bin\Debug\net10.0\SIS.DAL.dll
+C:\Users\ASUS\source\repos\SIS\SIS.BLL\bin\Debug\net10.0\SIS.Entities.dll
+C:\Users\ASUS\source\repos\SIS\SIS.BLL\bin\Debug\net10.0\SIS.Common.pdb
+C:\Users\ASUS\source\repos\SIS\SIS.BLL\bin\Debug\net10.0\SIS.DAL.pdb
+C:\Users\ASUS\source\repos\SIS\SIS.BLL\bin\Debug\net10.0\SIS.Entities.pdb
+C:\Users\ASUS\source\repos\SIS\SIS.BLL\obj\Debug\net10.0\SIS.BLL.csproj.AssemblyReference.cache
+C:\Users\ASUS\source\repos\SIS\SIS.BLL\obj\Debug\net10.0\SIS.BLL.csproj.Up2Date

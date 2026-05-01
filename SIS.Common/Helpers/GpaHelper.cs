@@ -24,7 +24,7 @@ namespace SIS.Common.Helpers
         }
 
 
-        private static decimal ScoreToGradePoint(decimal score)
+        public static decimal ScoreToGradePoint(decimal score)
         {
             return score switch
             {
@@ -36,7 +36,7 @@ namespace SIS.Common.Helpers
             };
         }
 
-        private static string ScoreToLetterGrade(decimal score)
+        public static string ScoreToLetterGrade(decimal score)
         {
             return score switch
             {
