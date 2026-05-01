@@ -17,3 +17,4 @@ C:\Users\ASUS\source\repos\SIS\SIS.DAL\bin\Debug\net10.0\SIS.Entities.dll
 C:\Users\ASUS\source\repos\SIS\SIS.DAL\bin\Debug\net10.0\SIS.Common.pdb
 C:\Users\ASUS\source\repos\SIS\SIS.DAL\bin\Debug\net10.0\SIS.Entities.pdb
 C:\Users\ASUS\source\repos\SIS\SIS.DAL\obj\Debug\net10.0\SIS.DAL.csproj.Up2Date
+C:\Users\ASUS\source\repos\SIS\SIS.DAL\obj\Debug\net10.0\SIS.DAL.sourcelink.json

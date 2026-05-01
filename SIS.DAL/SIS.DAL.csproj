@@ -17,11 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Repositories\Interfaces\" />
-    <Folder Include="Repositories\Implementations\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\SIS.Common\SIS.Common.csproj" />
     <ProjectReference Include="..\SIS.Entities\SIS.Entities.csproj" />
   </ItemGroup>
