@@ -13,7 +13,7 @@ namespace SIS.DAL.Configurations
             builder.Property(co => co.Room)
                 .HasMaxLength(50);
 
-            
+
             builder.HasIndex(co => new { co.AcademicTermId, co.CourseId, co.TeacherId })
                 .IsUnique();
 

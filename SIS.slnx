@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/Çözüm Öğeleri/">
+    <File Path="README.md" />
+  </Folder>
   <Project Path="SIS.API/SIS.API.csproj" />
   <Project Path="SIS.BLL/SIS.BLL.csproj" />
   <Project Path="SIS.Common/SIS.Common.csproj" />

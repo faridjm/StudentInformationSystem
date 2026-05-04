@@ -32,7 +32,7 @@ namespace SIS.DAL.Repositories.Implementations
             => await _dbSet
                 .Include(co => co.Course)
                 .Include(co => co.AcademicTerm)
-                .Where(co => co.TeacherId == teacherId.ToString())
+                .Where(co => co.TeacherId == teacherId)
                 .ToListAsync();
 
         public async Task<IEnumerable<CourseOffering>> GetOfferingsByTermAsync(int termId)

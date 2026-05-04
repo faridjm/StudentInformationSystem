@@ -10,7 +10,7 @@ namespace SIS.Entities.Models
 
         public int AcademicTermId { get; set; }
         public int CourseId { get; set; }
-        public string TeacherId { get; set; } = null!;
+        public int TeacherId { get; set; } 
         public AcademicTerm AcademicTerm { get; set; } = null!;
         public Course Course { get; set; } = null!;
         public Teacher Teacher { get; set; } = null!;

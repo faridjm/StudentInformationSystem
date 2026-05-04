@@ -410,6 +410,12 @@
               "target": "Package",
               "version": "[10.0.7, )"
             },
+            "Microsoft.EntityFrameworkCore.Design": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[10.0.7, )"
+            },
             "Microsoft.EntityFrameworkCore.SqlServer": {
               "target": "Package",
               "version": "[10.0.7, )"
@@ -419,6 +425,10 @@
               "suppressParent": "All",
               "target": "Package",
               "version": "[10.0.7, )"
+            },
+            "Microsoft.Extensions.Configuration.UserSecrets": {
+              "target": "Package",
+              "version": "[6.0.1, )"
             }
           },
           "imports": [
