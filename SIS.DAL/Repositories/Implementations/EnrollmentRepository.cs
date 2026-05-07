@@ -23,13 +23,17 @@ namespace SIS.DAL.Repositories.Implementations
 
         public async Task<IEnumerable<Enrollment>> GetStudentEnrollmentsAsync(int studentId)
             => await _dbSet
-                .Include(e => e.CourseOffering)
-                    .ThenInclude(co => co.Course)
-                .Include(e => e.CourseOffering)
-                    .ThenInclude(co => co.Teacher)
-                        .ThenInclude(t => t.AppUser)
-                .Where(e => e.StudentId == studentId)
-                .ToListAsync();
+         .Include(e => e.Student)
+             .ThenInclude(s => s.AppUser)
+         .Include(e => e.CourseOffering)
+             .ThenInclude(co => co.Course)
+         .Include(e => e.CourseOffering)
+             .ThenInclude(co => co.Teacher)
+                 .ThenInclude(t => t.AppUser)
+         .Include(e => e.CourseOffering)
+             .ThenInclude(co => co.AcademicTerm)
+         .Where(e => e.StudentId == studentId)
+         .ToListAsync();
 
         public async Task<IEnumerable<Enrollment>> GetCourseEnrollmentsAsync(int courseOfferingId)
             => await _dbSet

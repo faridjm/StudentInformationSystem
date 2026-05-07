@@ -25,7 +25,7 @@ namespace SIS.BLL.Services.Implementations
 
         public async Task<IEnumerable<TeacherListDto>> GetAllTeachersAsync()
         {
-            var teachers = await _unitOfWork.Teachers.GetAllAsync();
+            var teachers = await _unitOfWork.Teachers.GetAllTeachersWithDetailsAsync();
             return _mapper.Map<IEnumerable<TeacherListDto>>(teachers);
         }
 

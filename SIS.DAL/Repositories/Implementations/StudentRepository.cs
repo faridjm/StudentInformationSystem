@@ -38,6 +38,7 @@ namespace SIS.DAL.Repositories.Implementations
         public async Task<IEnumerable<Student>> GetStudentsWithGPAAsync()
             => await _dbSet
                 .Include(s => s.AppUser)
+                .Include(s => s.AcademicProgram)
                 .OrderByDescending(s => s.CurrentGPA)
                 .ToListAsync();
     }

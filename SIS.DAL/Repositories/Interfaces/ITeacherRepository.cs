@@ -10,5 +10,6 @@ namespace SIS.DAL.Repositories.Interfaces
         Task<Teacher?> GetTeacherWithDetailsAsync(int teacherId);
         Task<Teacher?> GetTeacherByUserIdAsync(string userId);
         Task<IEnumerable<Teacher>> GetTeachersByDepartmentAsync(int departmentId);
+        Task<IEnumerable<Teacher>> GetAllTeachersWithDetailsAsync();
     }
 }

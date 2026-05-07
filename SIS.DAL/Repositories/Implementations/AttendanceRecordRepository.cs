@@ -13,10 +13,13 @@ namespace SIS.DAL.Repositories.Implementations
         }
 
         public async Task<IEnumerable<AttendanceRecord>> GetAttendanceByEnrollmentAsync(int enrollmentId)
-            => await _dbSet
-                .Where(a => a.EnrollmentId == enrollmentId)
-                .OrderBy(a => a.SessionDate)
-                .ToListAsync();
+             => await _dbSet
+         .Include(a => a.Enrollment)
+             .ThenInclude(e => e.Student)
+                 .ThenInclude(s => s.AppUser)
+         .Where(a => a.EnrollmentId == enrollmentId)
+         .OrderBy(a => a.SessionDate)
+         .ToListAsync();
 
         public async Task<IEnumerable<AttendanceRecord>> GetAttendanceByDateAsync(int courseOfferingId, DateTime date)
             => await _dbSet
@@ -38,6 +41,8 @@ namespace SIS.DAL.Repositories.Implementations
             var presentCount = records.Count(a => a.Status != AttendanceStatus.Absent);
             return Math.Round((double)presentCount / records.Count * 100, 1);
         }
+
+
     }
 }
 

@@ -30,6 +30,14 @@ namespace SIS.DAL.Repositories.Implementations
                 .Include(t => t.AppUser)
                 .Where(t => t.DepartmentId == departmentId)
                 .ToListAsync();
+
+
+
+        public async Task<IEnumerable<Teacher>> GetAllTeachersWithDetailsAsync()
+             => await _dbSet
+        .Include(t => t.AppUser)
+        .Include(t => t.Department)
+        .ToListAsync();
     }
 }
 
