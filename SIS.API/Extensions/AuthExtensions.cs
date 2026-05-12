@@ -13,11 +13,11 @@ namespace SIS.API.Extensions
         {
             services.AddIdentity<AppUser, IdentityRole>(options =>
             {
-                options.Password.RequireDigit = true;        
-                options.Password.RequireLowercase = true;    
-                options.Password.RequireUppercase = true;    
-                options.Password.RequireNonAlphanumeric = false; 
-                options.Password.RequiredLength = 8;         
+                options.Password.RequireDigit = true;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireUppercase = true;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequiredLength = 8;
                 options.User.RequireUniqueEmail = true;
             })
             .AddEntityFrameworkStores<AppDbContext>()
@@ -41,6 +41,19 @@ namespace SIS.API.Extensions
                     IssuerSigningKey = new SymmetricSecurityKey(
                        Encoding.UTF8.GetBytes(configuration["Jwt:SecretKey"]!))
                 };
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Query["access_token"];
+                        var path = context.HttpContext.Request.Path;
+                        if (!string.IsNullOrEmpty(accessToken) &&
+                            path.StartsWithSegments("/hubs"))
+                            context.Token = accessToken;
+                        return Task.CompletedTask;
+                    }
+                };
+
             });
 
             return services;

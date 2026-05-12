@@ -3,6 +3,7 @@ using SIS.BLL.Services.DTOs.Department;
 using SIS.BLL.Services.Interfaces;
 using SIS.DAL.UnitOfWork;
 using SIS.Entities.Models;
+using static SIS.BLL.Exceptions.AppException;
 
 namespace SIS.BLL.Services.Implementations
 {
@@ -39,7 +40,8 @@ namespace SIS.BLL.Services.Implementations
         public async Task UpdateDepartmentAsync(UpdateDepartmentDto dto)
         {
             var department = await _unitOfWork.Departments.GetByIdAsync(dto.Id);
-            if (department == null) throw new Exception("Departament tapılmadı");
+            if (department == null)
+                throw new NotFoundException("Departament tapılmadı");
 
             _mapper.Map(dto, department);
             department.UpdatedAt = DateTime.UtcNow;
@@ -50,7 +52,8 @@ namespace SIS.BLL.Services.Implementations
         public async Task DeleteDepartmentAsync(int id)
         {
             var department = await _unitOfWork.Departments.GetByIdAsync(id);
-            if (department == null) throw new Exception("Departament tapılmadı");
+            if (department == null)
+                throw new NotFoundException("Departament tapılmadı");
 
             _unitOfWork.Departments.SoftDelete(department);
             await _unitOfWork.SaveAsync();

@@ -1,7 +1,10 @@
-﻿using SIS.BLL.Services.Implementations;
+﻿using FluentValidation;
+using FluentValidation.AspNetCore;
+using SIS.API.Services;
+using SIS.BLL.Mappings;
+using SIS.BLL.Services.Implementations;
 using SIS.BLL.Services.Interfaces;
 using SIS.DAL.UnitOfWork;
-using SIS.BLL.Mappings;
 
 namespace SIS.API.Extensions
 {
@@ -10,6 +13,7 @@ namespace SIS.API.Extensions
         public static IServiceCollection AddServices(this IServiceCollection services)
         {
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IStudentService, StudentService>();
             services.AddScoped<ITeacherService, TeacherService>();
@@ -23,9 +27,15 @@ namespace SIS.API.Extensions
             services.AddScoped<IDepartmentService, DepartmentService>();
             services.AddScoped<IAcademicProgramService, AcademicProgramService>();
             services.AddScoped<IAcademicTermService, AcademicTermService>();
+            services.AddScoped<IRealtimeNotifier, SignalRNotifier>();
+            services.AddHttpContextAccessor();
+            services.AddScoped<IActivityLogger, ActivityLogger>();
 
 
             services.AddAutoMapper(cfg => cfg.AddProfile<MappingProfile>());
+
+            services.AddFluentValidationAutoValidation();
+            services.AddValidatorsFromAssembly(typeof(MappingProfile).Assembly);
 
             return services;
         }

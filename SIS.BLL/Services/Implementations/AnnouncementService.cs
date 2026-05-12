@@ -3,6 +3,7 @@ using SIS.BLL.Services.DTOs.Announcement;
 using SIS.BLL.Services.Interfaces;
 using SIS.DAL.UnitOfWork;
 using SIS.Entities.Models;
+using static SIS.BLL.Exceptions.AppException;
 
 namespace SIS.BLL.Services.Implementations
 {
@@ -47,7 +48,7 @@ namespace SIS.BLL.Services.Implementations
         {
             var announcement = await _unitOfWork.Announcements.GetByIdAsync(id);
             if (announcement == null)
-                throw new Exception("Elan tapılmadı");
+                throw new NotFoundException("Elan tapılmadı");
 
             _unitOfWork.Announcements.SoftDelete(announcement);
             await _unitOfWork.SaveAsync();

@@ -3,304 +3,188 @@
   "WorkspaceRootPath": "C:\\Users\\ASUS\\source\\repos\\SIS\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{A2FEB487-405F-892A-3742-207A95F79B88}|SIS.DAL\\SIS.DAL.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.dal\\repositories\\implementations\\attendancerecordrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A2FEB487-405F-892A-3742-207A95F79B88}|SIS.DAL\\SIS.DAL.csproj|solutionrelative:sis.dal\\repositories\\implementations\\attendancerecordrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FEB487-405F-892A-3742-207A95F79B88}|SIS.DAL\\SIS.DAL.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.dal\\repositories\\implementations\\announcementrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A2FEB487-405F-892A-3742-207A95F79B88}|SIS.DAL\\SIS.DAL.csproj|solutionrelative:sis.dal\\repositories\\implementations\\announcementrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FEB487-405F-892A-3742-207A95F79B88}|SIS.DAL\\SIS.DAL.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.dal\\repositories\\implementations\\activitylogrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A2FEB487-405F-892A-3742-207A95F79B88}|SIS.DAL\\SIS.DAL.csproj|solutionrelative:sis.dal\\repositories\\implementations\\activitylogrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FEB487-405F-892A-3742-207A95F79B88}|SIS.DAL\\SIS.DAL.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.dal\\repositories\\implementations\\academictermrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A2FEB487-405F-892A-3742-207A95F79B88}|SIS.DAL\\SIS.DAL.csproj|solutionrelative:sis.dal\\repositories\\implementations\\academictermrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FEB487-405F-892A-3742-207A95F79B88}|SIS.DAL\\SIS.DAL.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.dal\\repositories\\implementations\\academicprogramrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A2FEB487-405F-892A-3742-207A95F79B88}|SIS.DAL\\SIS.DAL.csproj|solutionrelative:sis.dal\\repositories\\implementations\\academicprogramrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FEB487-405F-892A-3742-207A95F79B88}|SIS.DAL\\SIS.DAL.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.dal\\repositories\\implementations\\enrollmentrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A2FEB487-405F-892A-3742-207A95F79B88}|SIS.DAL\\SIS.DAL.csproj|solutionrelative:sis.dal\\repositories\\implementations\\enrollmentrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{CCEFE404-8F91-AAA4-3076-751590919141}|SIS.API\\SIS.API.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{CCEFE404-8F91-AAA4-3076-751590919141}|SIS.API\\SIS.API.csproj|solutionrelative:sis.api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Migrations\\20260512132106_AddSoftDeleteFiltersForLogsNotifications.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:SIS.DAL\\Migrations\\20260512132106_AddSoftDeleteFiltersForLogsNotifications.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{C644E217-18C3-61E2-A87C-BECD5FA3E199}|SIS.BLL\\SIS.BLL.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.bll\\services\\implementations\\teacherservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{C644E217-18C3-61E2-A87C-BECD5FA3E199}|SIS.BLL\\SIS.BLL.csproj|solutionrelative:sis.bll\\services\\implementations\\teacherservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FEB487-405F-892A-3742-207A95F79B88}|SIS.DAL\\SIS.DAL.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.dal\\repositories\\interfaces\\iteacherrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A2FEB487-405F-892A-3742-207A95F79B88}|SIS.DAL\\SIS.DAL.csproj|solutionrelative:sis.dal\\repositories\\interfaces\\iteacherrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{C644E217-18C3-61E2-A87C-BECD5FA3E199}|SIS.BLL\\SIS.BLL.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.bll\\services\\implementations\\gradeservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C644E217-18C3-61E2-A87C-BECD5FA3E199}|SIS.BLL\\SIS.BLL.csproj|solutionrelative:sis.bll\\services\\implementations\\gradeservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FEB487-405F-892A-3742-207A95F79B88}|SIS.DAL\\SIS.DAL.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.dal\\repositories\\implementations\\teacherrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A2FEB487-405F-892A-3742-207A95F79B88}|SIS.DAL\\SIS.DAL.csproj|solutionrelative:sis.dal\\repositories\\implementations\\teacherrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{C644E217-18C3-61E2-A87C-BECD5FA3E199}|SIS.BLL\\SIS.BLL.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.bll\\services\\implementations\\enrollmentservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C644E217-18C3-61E2-A87C-BECD5FA3E199}|SIS.BLL\\SIS.BLL.csproj|solutionrelative:sis.bll\\services\\implementations\\enrollmentservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FEB487-405F-892A-3742-207A95F79B88}|SIS.DAL\\SIS.DAL.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.dal\\repositories\\implementations\\studentrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A2FEB487-405F-892A-3742-207A95F79B88}|SIS.DAL\\SIS.DAL.csproj|solutionrelative:sis.dal\\repositories\\implementations\\studentrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{C644E217-18C3-61E2-A87C-BECD5FA3E199}|SIS.BLL\\SIS.BLL.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.bll\\services\\implementations\\courseservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C644E217-18C3-61E2-A87C-BECD5FA3E199}|SIS.BLL\\SIS.BLL.csproj|solutionrelative:sis.bll\\services\\implementations\\courseservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{C644E217-18C3-61E2-A87C-BECD5FA3E199}|SIS.BLL\\SIS.BLL.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.bll\\services\\dtos\\courseoffering\\updatecourseofferingdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C644E217-18C3-61E2-A87C-BECD5FA3E199}|SIS.BLL\\SIS.BLL.csproj|solutionrelative:sis.bll\\services\\dtos\\courseoffering\\updatecourseofferingdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{C644E217-18C3-61E2-A87C-BECD5FA3E199}|SIS.BLL\\SIS.BLL.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.bll\\services\\implementations\\studentservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C644E217-18C3-61E2-A87C-BECD5FA3E199}|SIS.BLL\\SIS.BLL.csproj|solutionrelative:sis.bll\\services\\implementations\\studentservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{C644E217-18C3-61E2-A87C-BECD5FA3E199}|SIS.BLL\\SIS.BLL.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.bll\\services\\dtos\\courseoffering\\createcourseofferingdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C644E217-18C3-61E2-A87C-BECD5FA3E199}|SIS.BLL\\SIS.BLL.csproj|solutionrelative:sis.bll\\services\\dtos\\courseoffering\\createcourseofferingdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{CCEFE404-8F91-AAA4-3076-751590919141}|SIS.API\\SIS.API.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.api\\extensions\\serviceextensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CCEFE404-8F91-AAA4-3076-751590919141}|SIS.API\\SIS.API.csproj|solutionrelative:sis.api\\extensions\\serviceextensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{CCEFE404-8F91-AAA4-3076-751590919141}|SIS.API\\SIS.API.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.api\\extensions\\seeddataextensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{CCEFE404-8F91-AAA4-3076-751590919141}|SIS.API\\SIS.API.csproj|solutionrelative:sis.api\\extensions\\seeddataextensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{C644E217-18C3-61E2-A87C-BECD5FA3E199}|SIS.BLL\\SIS.BLL.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.bll\\services\\implementations\\activitylogger.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C644E217-18C3-61E2-A87C-BECD5FA3E199}|SIS.BLL\\SIS.BLL.csproj|solutionrelative:sis.bll\\services\\implementations\\activitylogger.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{CCEFE404-8F91-AAA4-3076-751590919141}|SIS.API\\SIS.API.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.api\\extensions\\databaseextensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{CCEFE404-8F91-AAA4-3076-751590919141}|SIS.API\\SIS.API.csproj|solutionrelative:sis.api\\extensions\\databaseextensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{C644E217-18C3-61E2-A87C-BECD5FA3E199}|SIS.BLL\\SIS.BLL.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.bll\\services\\implementations\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C644E217-18C3-61E2-A87C-BECD5FA3E199}|SIS.BLL\\SIS.BLL.csproj|solutionrelative:sis.bll\\services\\implementations\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{CCEFE404-8F91-AAA4-3076-751590919141}|SIS.API\\SIS.API.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.api\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{CCEFE404-8F91-AAA4-3076-751590919141}|SIS.API\\SIS.API.csproj|solutionrelative:sis.api\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{CCEFE404-8F91-AAA4-3076-751590919141}|SIS.API\\SIS.API.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{CCEFE404-8F91-AAA4-3076-751590919141}|SIS.API\\SIS.API.csproj|solutionrelative:sis.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{C644E217-18C3-61E2-A87C-BECD5FA3E199}|SIS.BLL\\SIS.BLL.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.bll\\services\\interfaces\\iacademicprogramservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C644E217-18C3-61E2-A87C-BECD5FA3E199}|SIS.BLL\\SIS.BLL.csproj|solutionrelative:sis.bll\\services\\interfaces\\iacademicprogramservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
     {
       "Orientation": 1,
-      "VerticalTabListWidth": 256,
+      "VerticalTabListWidth": 100,
       "DocumentGroups": [
         {
           "DockedHeight": 319,
-          "SelectedChildIndex": 4,
+          "SelectedChildIndex": 1,
           "Children": [
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "AnnouncementRepository.cs",
-              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Repositories\\Implementations\\AnnouncementRepository.cs",
-              "RelativeDocumentMoniker": "SIS.DAL\\Repositories\\Implementations\\AnnouncementRepository.cs",
-              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Repositories\\Implementations\\AnnouncementRepository.cs",
-              "RelativeToolTip": "SIS.DAL\\Repositories\\Implementations\\AnnouncementRepository.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAABSAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-07T12:21:53.594Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "ActivityLogRepository.cs",
-              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Repositories\\Implementations\\ActivityLogRepository.cs",
-              "RelativeDocumentMoniker": "SIS.DAL\\Repositories\\Implementations\\ActivityLogRepository.cs",
-              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Repositories\\Implementations\\ActivityLogRepository.cs",
-              "RelativeToolTip": "SIS.DAL\\Repositories\\Implementations\\ActivityLogRepository.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAABVAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-07T12:21:50.313Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "AcademicTermRepository.cs",
-              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Repositories\\Implementations\\AcademicTermRepository.cs",
-              "RelativeDocumentMoniker": "SIS.DAL\\Repositories\\Implementations\\AcademicTermRepository.cs",
-              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Repositories\\Implementations\\AcademicTermRepository.cs",
-              "RelativeToolTip": "SIS.DAL\\Repositories\\Implementations\\AcademicTermRepository.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAABHAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-07T12:21:45.298Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "AcademicProgramRepository.cs",
-              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Repositories\\Implementations\\AcademicProgramRepository.cs",
-              "RelativeDocumentMoniker": "SIS.DAL\\Repositories\\Implementations\\AcademicProgramRepository.cs",
-              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Repositories\\Implementations\\AcademicProgramRepository.cs",
-              "RelativeToolTip": "SIS.DAL\\Repositories\\Implementations\\AcademicProgramRepository.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-07T12:21:39.964Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "AttendanceRecordRepository.cs",
-              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Repositories\\Implementations\\AttendanceRecordRepository.cs",
-              "RelativeDocumentMoniker": "SIS.DAL\\Repositories\\Implementations\\AttendanceRecordRepository.cs",
-              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Repositories\\Implementations\\AttendanceRecordRepository.cs",
-              "RelativeToolTip": "SIS.DAL\\Repositories\\Implementations\\AttendanceRecordRepository.cs",
-              "ViewState": "AgIAAAoAAAAAAAAAAAAzwBUAAAAYAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-07T12:16:18.91Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "EnrollmentRepository.cs",
-              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Repositories\\Implementations\\EnrollmentRepository.cs",
-              "RelativeDocumentMoniker": "SIS.DAL\\Repositories\\Implementations\\EnrollmentRepository.cs",
-              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Repositories\\Implementations\\EnrollmentRepository.cs",
-              "RelativeToolTip": "SIS.DAL\\Repositories\\Implementations\\EnrollmentRepository.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABcAAABcAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-07T12:18:46.778Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "TeacherService.cs",
-              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.BLL\\Services\\Implementations\\TeacherService.cs",
-              "RelativeDocumentMoniker": "SIS.BLL\\Services\\Implementations\\TeacherService.cs",
-              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.BLL\\Services\\Implementations\\TeacherService.cs",
-              "RelativeToolTip": "SIS.BLL\\Services\\Implementations\\TeacherService.cs",
-              "ViewState": "AgIAABMAAAAAAAAAAAAQwCUAAAAwAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-07T12:06:44.07Z",
-              "EditorCaption": ""
-            },
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{0ad07096-bba9-4900-a651-0598d26f6d24}"
             },
             {
               "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "20260512132106_AddSoftDeleteFiltersForLogsNotifications.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Migrations\\20260512132106_AddSoftDeleteFiltersForLogsNotifications.cs",
+              "RelativeDocumentMoniker": "SIS.DAL\\Migrations\\20260512132106_AddSoftDeleteFiltersForLogsNotifications.cs",
+              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Migrations\\20260512132106_AddSoftDeleteFiltersForLogsNotifications.cs",
+              "RelativeToolTip": "SIS.DAL\\Migrations\\20260512132106_AddSoftDeleteFiltersForLogsNotifications.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABYAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-12T13:21:07.109Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "TeacherService.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.BLL\\Services\\Implementations\\TeacherService.cs",
+              "RelativeDocumentMoniker": "SIS.BLL\\Services\\Implementations\\TeacherService.cs",
+              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.BLL\\Services\\Implementations\\TeacherService.cs",
+              "RelativeToolTip": "SIS.BLL\\Services\\Implementations\\TeacherService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAH4AAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-12T13:19:55.319Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "GradeService.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.BLL\\Services\\Implementations\\GradeService.cs",
+              "RelativeDocumentMoniker": "SIS.BLL\\Services\\Implementations\\GradeService.cs",
+              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.BLL\\Services\\Implementations\\GradeService.cs",
+              "RelativeToolTip": "SIS.BLL\\Services\\Implementations\\GradeService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAFcAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-12T13:19:34.703Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "EnrollmentService.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.BLL\\Services\\Implementations\\EnrollmentService.cs",
+              "RelativeDocumentMoniker": "SIS.BLL\\Services\\Implementations\\EnrollmentService.cs",
+              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.BLL\\Services\\Implementations\\EnrollmentService.cs",
+              "RelativeToolTip": "SIS.BLL\\Services\\Implementations\\EnrollmentService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAFgAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-12T13:18:57.025Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "CourseService.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.BLL\\Services\\Implementations\\CourseService.cs",
+              "RelativeDocumentMoniker": "SIS.BLL\\Services\\Implementations\\CourseService.cs",
+              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.BLL\\Services\\Implementations\\CourseService.cs",
+              "RelativeToolTip": "SIS.BLL\\Services\\Implementations\\CourseService.cs",
+              "ViewState": "AgIAADsAAAAAAAAAAAAAAFYAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-12T13:18:19.381Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "StudentService.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.BLL\\Services\\Implementations\\StudentService.cs",
+              "RelativeDocumentMoniker": "SIS.BLL\\Services\\Implementations\\StudentService.cs",
+              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.BLL\\Services\\Implementations\\StudentService.cs",
+              "RelativeToolTip": "SIS.BLL\\Services\\Implementations\\StudentService.cs",
+              "ViewState": "AgIAAIAAAAAAAAAAAAAAwJYAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-12T13:11:27.202Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 6,
-              "Title": "appsettings.json",
-              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.API\\appsettings.json",
-              "RelativeDocumentMoniker": "SIS.API\\appsettings.json",
-              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.API\\appsettings.json",
-              "RelativeToolTip": "SIS.API\\appsettings.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2026-05-04T16:52:42.784Z",
+              "Title": "ServiceExtensions.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.API\\Extensions\\ServiceExtensions.cs",
+              "RelativeDocumentMoniker": "SIS.API\\Extensions\\ServiceExtensions.cs",
+              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.API\\Extensions\\ServiceExtensions.cs",
+              "RelativeToolTip": "SIS.API\\Extensions\\ServiceExtensions.cs",
+              "ViewState": "AgIAAA0AAAAAAAAAAAAQwB8AAABCAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-12T13:09:33.088Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "ActivityLogger.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.BLL\\Services\\Implementations\\ActivityLogger.cs",
+              "RelativeDocumentMoniker": "SIS.BLL\\Services\\Implementations\\ActivityLogger.cs",
+              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.BLL\\Services\\Implementations\\ActivityLogger.cs",
+              "RelativeToolTip": "SIS.BLL\\Services\\Implementations\\ActivityLogger.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAtAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-12T13:05:49.87Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 8,
-              "Title": "ITeacherRepository.cs",
-              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Repositories\\Interfaces\\ITeacherRepository.cs",
-              "RelativeDocumentMoniker": "SIS.DAL\\Repositories\\Interfaces\\ITeacherRepository.cs",
-              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Repositories\\Interfaces\\ITeacherRepository.cs",
-              "RelativeToolTip": "SIS.DAL\\Repositories\\Interfaces\\ITeacherRepository.cs",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAmwA8AAAAAAAAAAAAAAA==",
+              "Title": "AuthService.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.BLL\\Services\\Implementations\\AuthService.cs",
+              "RelativeDocumentMoniker": "SIS.BLL\\Services\\Implementations\\AuthService.cs",
+              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.BLL\\Services\\Implementations\\AuthService.cs",
+              "RelativeToolTip": "SIS.BLL\\Services\\Implementations\\AuthService.cs",
+              "ViewState": "AgIAAJoAAAAAAAAAAAAAAJoAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-07T12:05:11.423Z",
+              "WhenOpened": "2026-05-12T13:05:25.415Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 9,
-              "Title": "TeacherRepository.cs",
-              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Repositories\\Implementations\\TeacherRepository.cs",
-              "RelativeDocumentMoniker": "SIS.DAL\\Repositories\\Implementations\\TeacherRepository.cs",
-              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Repositories\\Implementations\\TeacherRepository.cs",
-              "RelativeToolTip": "SIS.DAL\\Repositories\\Implementations\\TeacherRepository.cs",
-              "ViewState": "AgIAABUAAAAAAAAAAAAYwCcAAAAXAAAAAAAAAA==",
+              "Title": "IAcademicProgramService.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.BLL\\Services\\Interfaces\\IAcademicProgramService.cs",
+              "RelativeDocumentMoniker": "SIS.BLL\\Services\\Interfaces\\IAcademicProgramService.cs",
+              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.BLL\\Services\\Interfaces\\IAcademicProgramService.cs",
+              "RelativeToolTip": "SIS.BLL\\Services\\Interfaces\\IAcademicProgramService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-07T12:05:55.088Z",
+              "WhenOpened": "2026-05-12T13:03:15.554Z",
               "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 10,
-              "Title": "StudentRepository.cs",
-              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Repositories\\Implementations\\StudentRepository.cs",
-              "RelativeDocumentMoniker": "SIS.DAL\\Repositories\\Implementations\\StudentRepository.cs",
-              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Repositories\\Implementations\\StudentRepository.cs",
-              "RelativeToolTip": "SIS.DAL\\Repositories\\Implementations\\StudentRepository.cs",
-              "ViewState": "AgIAABUAAAAAAAAAAAAYwCcAAAAoAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-07T12:01:48.913Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 11,
-              "Title": "UpdateCourseOfferingDto.cs",
-              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.BLL\\Services\\DTOs\\CourseOffering\\UpdateCourseOfferingDto.cs",
-              "RelativeDocumentMoniker": "SIS.BLL\\Services\\DTOs\\CourseOffering\\UpdateCourseOfferingDto.cs",
-              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.BLL\\Services\\DTOs\\CourseOffering\\UpdateCourseOfferingDto.cs",
-              "RelativeToolTip": "SIS.BLL\\Services\\DTOs\\CourseOffering\\UpdateCourseOfferingDto.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-07T11:53:40.632Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 12,
-              "Title": "CreateCourseOfferingDto.cs",
-              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.BLL\\Services\\DTOs\\CourseOffering\\CreateCourseOfferingDto.cs",
-              "RelativeDocumentMoniker": "SIS.BLL\\Services\\DTOs\\CourseOffering\\CreateCourseOfferingDto.cs",
-              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.BLL\\Services\\DTOs\\CourseOffering\\CreateCourseOfferingDto.cs",
-              "RelativeToolTip": "SIS.BLL\\Services\\DTOs\\CourseOffering\\CreateCourseOfferingDto.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-07T11:53:19.226Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 13,
-              "Title": "SeedDataExtensions.cs",
-              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.API\\Extensions\\SeedDataExtensions.cs",
-              "RelativeDocumentMoniker": "SIS.API\\Extensions\\SeedDataExtensions.cs",
-              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.API\\Extensions\\SeedDataExtensions.cs",
-              "RelativeToolTip": "SIS.API\\Extensions\\SeedDataExtensions.cs",
-              "ViewState": "AgIAACoAAAAAAAAAAAAYwDkAAAAsAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-04T17:06:45.497Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 14,
-              "Title": "DatabaseExtensions.cs",
-              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.API\\Extensions\\DatabaseExtensions.cs",
-              "RelativeDocumentMoniker": "SIS.API\\Extensions\\DatabaseExtensions.cs",
-              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.API\\Extensions\\DatabaseExtensions.cs",
-              "RelativeToolTip": "SIS.API\\Extensions\\DatabaseExtensions.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-04T17:06:44.729Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 15,
-              "Title": "launchSettings.json",
-              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.API\\Properties\\launchSettings.json",
-              "RelativeDocumentMoniker": "SIS.API\\Properties\\launchSettings.json",
-              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.API\\Properties\\launchSettings.json",
-              "RelativeToolTip": "SIS.API\\Properties\\launchSettings.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAvAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2026-05-04T15:18:03.292Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 16,
-              "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.API\\Program.cs",
-              "RelativeDocumentMoniker": "SIS.API\\Program.cs",
-              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.API\\Program.cs",
-              "RelativeToolTip": "SIS.API\\Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-04T15:15:17.237Z"
             }
           ]
         },

@@ -3,6 +3,7 @@ using SIS.BLL.Services.DTOs.Enrollment;
 using SIS.BLL.Services.Interfaces;
 using SIS.DAL.UnitOfWork;
 using SIS.Entities.Models;
+using static SIS.BLL.Exceptions.AppException;
 
 namespace SIS.BLL.Services.Implementations
 {
@@ -10,11 +11,16 @@ namespace SIS.BLL.Services.Implementations
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IActivityLogger _activityLogger;
 
-        public EnrollmentService(IUnitOfWork unitOfWork, IMapper mapper)
+        public EnrollmentService(
+            IUnitOfWork unitOfWork,
+            IMapper mapper,
+            IActivityLogger activityLogger)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _activityLogger = activityLogger;
         }
 
         public async Task<IEnumerable<EnrollmentListDto>> GetAllEnrollmentsAsync()
@@ -51,28 +57,34 @@ namespace SIS.BLL.Services.Implementations
             var isEnrolled = await _unitOfWork.Enrollments
                 .IsStudentEnrolledAsync(dto.StudentId, dto.CourseOfferingId);
             if (isEnrolled)
-                throw new Exception("Tələbə artıq bu kursa qeydiyyatlıdır");
+                throw new ConflictException("Tələbə artıq bu kursa qeydiyyatlıdır");
 
             var hasCapacity = await _unitOfWork.CourseOfferings
                 .HasCapacityAsync(dto.CourseOfferingId);
             if (!hasCapacity)
-                throw new Exception("Kursda boş yer yoxdur");
+                throw new BadRequestException("Kursda boş yer yoxdur");
 
             var enrollment = _mapper.Map<Enrollment>(dto);
             await _unitOfWork.Enrollments.AddAsync(enrollment);
             await _unitOfWork.SaveAsync();
+
+            await _activityLogger.LogAsync("Create", "Enrollment", enrollment.Id.ToString(),
+                null, new { dto.StudentId, dto.CourseOfferingId });
         }
 
         public async Task DropEnrollmentAsync(int enrollmentId)
         {
             var enrollment = await _unitOfWork.Enrollments.GetByIdAsync(enrollmentId);
             if (enrollment == null)
-                throw new Exception("Qeydiyyat tapılmadı");
+                throw new NotFoundException("Qeydiyyat tapılmadı");
 
             enrollment.Status = SIS.Entities.Enums.EnrollmentStatus.Dropped;
             enrollment.UpdatedAt = DateTime.UtcNow;
             _unitOfWork.Enrollments.Update(enrollment);
             await _unitOfWork.SaveAsync();
+
+            await _activityLogger.LogAsync("Update", "Enrollment", enrollmentId.ToString(),
+                new { Status = "Active" }, new { Status = "Dropped" });
         }
     }
 }

@@ -8,18 +8,16 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using static SIS.BLL.Exceptions.AppException;
 
 namespace SIS.BLL.Services.Implementations
 {
     public class AuthService : IAuthService
     {
         private readonly UserManager<AppUser> _userManager;
-        
         private readonly IConfiguration _configuration;
 
-        public AuthService(
-            UserManager<AppUser> userManager,
-            IConfiguration configuration)
+        public AuthService(UserManager<AppUser> userManager, IConfiguration configuration)
         {
             _userManager = userManager;
             _configuration = configuration;
@@ -29,14 +27,14 @@ namespace SIS.BLL.Services.Implementations
         {
             var user = await _userManager.FindByEmailAsync(dto.Email);
             if (user == null)
-                throw new Exception("Email və ya şifrə yanlışdır");
+                throw new BadRequestException("Email və ya şifrə yanlışdır");
 
             if (!user.IsActive)
-                throw new Exception("Hesabınız deaktiv edilmişdir");
+                throw new UnauthorizedException("Hesabınız deaktiv edilmişdir");
 
             var isCorrect = await _userManager.CheckPasswordAsync(user, dto.Password);
             if (!isCorrect)
-                throw new Exception("Email və ya şifrə yanlışdır");
+                throw new BadRequestException("Email və ya şifrə yanlışdır");
 
             return await GenerateTokenAsync(user);
         }
@@ -65,7 +63,7 @@ namespace SIS.BLL.Services.Implementations
             }
 
             if (currentUser == null)
-                throw new Exception("Yanlış refresh token");
+                throw new UnauthorizedException("Yanlış refresh token");
 
             return await GenerateTokenAsync(currentUser);
         }
@@ -73,39 +71,38 @@ namespace SIS.BLL.Services.Implementations
         public async Task ChangePasswordAsync(string userId, ChangePasswordDto dto)
         {
             if (dto.NewPassword != dto.ConfirmNewPassword)
-                throw new Exception("Yeni şifrələr uyğun gəlmir");
+                throw new BadRequestException("Şifrələr uyğun gəlmir");
 
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
-                throw new Exception("İstifadəçi tapılmadı");
+                throw new NotFoundException("İstifadəçi tapılmadı");
 
             var result = await _userManager.ChangePasswordAsync(user, dto.CurrentPassword, dto.NewPassword);
             if (!result.Succeeded)
-                throw new Exception(string.Join(", ", result.Errors.Select(e => e.Description)));
+                throw new BadRequestException(string.Join(", ", result.Errors.Select(e => e.Description)));
         }
 
         public async Task ForgotPasswordAsync(string email)
         {
             var user = await _userManager.FindByEmailAsync(email);
-            if (user == null) return; 
+            if (user == null) return;
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-
             await _userManager.SetAuthenticationTokenAsync(user, "SIS", "ResetToken", token);
         }
 
         public async Task ResetPasswordAsync(ResetPasswordDto dto)
         {
             if (dto.NewPassword != dto.ConfirmNewPassword)
-                throw new Exception("Şifrələr uyğun gəlmir");
+                throw new BadRequestException("Şifrələr uyğun gəlmir");
 
             var user = await _userManager.FindByEmailAsync(dto.Email);
             if (user == null)
-                throw new Exception("İstifadəçi tapılmadı");
+                throw new NotFoundException("İstifadəçi tapılmadı");
 
             var result = await _userManager.ResetPasswordAsync(user, dto.Token, dto.NewPassword);
             if (!result.Succeeded)
-                throw new Exception(string.Join(", ", result.Errors.Select(e => e.Description)));
+                throw new BadRequestException(string.Join(", ", result.Errors.Select(e => e.Description)));
         }
 
         private async Task<TokenDto> GenerateTokenAsync(AppUser user)
@@ -135,7 +132,6 @@ namespace SIS.BLL.Services.Implementations
             );
 
             var accessToken = new JwtSecurityTokenHandler().WriteToken(token);
-
             var refreshToken = GenerateRefreshToken();
             await _userManager.SetAuthenticationTokenAsync(user, "SIS", "RefreshToken", refreshToken);
 

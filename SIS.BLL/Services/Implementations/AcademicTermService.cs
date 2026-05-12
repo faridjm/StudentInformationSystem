@@ -7,6 +7,7 @@ using SIS.Entities.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using static SIS.BLL.Exceptions.AppException;
 
 namespace SIS.BLL.Services.Implementations
 {
@@ -49,8 +50,8 @@ namespace SIS.BLL.Services.Implementations
         public async Task UpdateTermAsync(UpdateAcademicTermDto dto)
         {
             var term = await _unitOfWork.AcademicTerms.GetByIdAsync(dto.Id);
-            if (term == null) throw new Exception("Termin tapılmadı");
-
+            if (term == null)
+                throw new NotFoundException("Termin tapılmadı");
             _mapper.Map(dto, term);
             term.UpdatedAt = DateTime.UtcNow;
             _unitOfWork.AcademicTerms.Update(term);
@@ -69,7 +70,8 @@ namespace SIS.BLL.Services.Implementations
 
             
             var term = await _unitOfWork.AcademicTerms.GetByIdAsync(id);
-            if (term == null) throw new Exception("Termin tapılmadı");
+            if (term == null)
+                throw new NotFoundException("Termin tapılmadı");
 
             term.IsActive = true;
             term.UpdatedAt = DateTime.UtcNow;
@@ -80,7 +82,8 @@ namespace SIS.BLL.Services.Implementations
         public async Task DeleteTermAsync(int id)
         {
             var term = await _unitOfWork.AcademicTerms.GetByIdAsync(id);
-            if (term == null) throw new Exception("Termin tapılmadı");
+            if (term == null)
+                throw new NotFoundException("Termin tapılmadı");
 
             _unitOfWork.AcademicTerms.SoftDelete(term);
             await _unitOfWork.SaveAsync();

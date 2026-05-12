@@ -152,7 +152,6 @@ C:\Users\ASUS\source\repos\SIS\SIS.API\obj\Debug\net10.0\SIS.API.csproj.Up2Date
 C:\Users\ASUS\source\repos\SIS\SIS.API\obj\Debug\net10.0\SIS.API.MvcApplicationPartsAssemblyInfo.cs
 C:\Users\ASUS\source\repos\SIS\SIS.API\bin\Debug\net10.0\Microsoft.AspNetCore.OpenApi.dll
 C:\Users\ASUS\source\repos\SIS\SIS.API\bin\Debug\net10.0\Microsoft.OpenApi.dll
-C:\Users\ASUS\source\repos\SIS\SIS.API\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt
 C:\Users\ASUS\source\repos\SIS\SIS.API\bin\Debug\net10.0\Microsoft.Build.Framework.dll
 C:\Users\ASUS\source\repos\SIS\SIS.API\bin\Debug\net10.0\Microsoft.CodeAnalysis.ExternalAccess.RazorCompiler.dll
 C:\Users\ASUS\source\repos\SIS\SIS.API\bin\Debug\net10.0\Microsoft.CodeAnalysis.Workspaces.MSBuild.dll
@@ -171,3 +170,14 @@ C:\Users\ASUS\source\repos\SIS\SIS.API\bin\Debug\net10.0\ru\Microsoft.CodeAnalys
 C:\Users\ASUS\source\repos\SIS\SIS.API\bin\Debug\net10.0\tr\Microsoft.CodeAnalysis.Workspaces.MSBuild.resources.dll
 C:\Users\ASUS\source\repos\SIS\SIS.API\bin\Debug\net10.0\zh-Hans\Microsoft.CodeAnalysis.Workspaces.MSBuild.resources.dll
 C:\Users\ASUS\source\repos\SIS\SIS.API\bin\Debug\net10.0\zh-Hant\Microsoft.CodeAnalysis.Workspaces.MSBuild.resources.dll
+C:\Users\ASUS\source\repos\SIS\.codex-build\api-check\appsettings.Development.json
+C:\Users\ASUS\source\repos\SIS\.codex-build\api-check\SIS.API.staticwebassets.endpoints.json
+C:\Users\ASUS\source\repos\SIS\.codex-build\api-check\SIS.API.exe
+C:\Users\ASUS\source\repos\SIS\.codex-build\api-check\appsettings.json
+C:\Users\ASUS\source\repos\SIS\.codex-build\api-check\SIS.API.deps.json
+C:\Users\ASUS\source\repos\SIS\.codex-build\api-check\SIS.API.runtimeconfig.json
+C:\Users\ASUS\source\repos\SIS\.codex-build\api-check\SIS.API.dll
+C:\Users\ASUS\source\repos\SIS\.codex-build\api-check\SIS.API.pdb
+C:\Users\ASUS\source\repos\SIS\SIS.API\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt
+C:\Users\ASUS\source\repos\SIS\SIS.API\bin\Debug\net10.0\FluentValidation.AspNetCore.dll
+C:\Users\ASUS\source\repos\SIS\SIS.API\bin\Debug\net10.0\FluentValidation.DependencyInjectionExtensions.dll

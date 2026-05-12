@@ -3,6 +3,7 @@ using SIS.BLL.Services.DTOs.AcademicProgram;
 using SIS.BLL.Services.Interfaces;
 using SIS.DAL.UnitOfWork;
 using SIS.Entities.Models;
+using static SIS.BLL.Exceptions.AppException;
 
 namespace SIS.BLL.Services.Implementations
 {
@@ -45,7 +46,8 @@ namespace SIS.BLL.Services.Implementations
         public async Task UpdateProgramAsync(UpdateAcademicProgramDto dto)
         {
             var program = await _unitOfWork.AcademicPrograms.GetByIdAsync(dto.Id);
-            if (program == null) throw new Exception("Proqram tapılmadı");
+            if (program == null)
+                throw new NotFoundException("Proqram tapılmadı");
 
             _mapper.Map(dto, program);
             program.UpdatedAt = DateTime.UtcNow;
@@ -56,8 +58,8 @@ namespace SIS.BLL.Services.Implementations
         public async Task DeleteProgramAsync(int id)
         {
             var program = await _unitOfWork.AcademicPrograms.GetByIdAsync(id);
-            if (program == null) throw new Exception("Proqram tapılmadı");
-
+            if (program == null)
+                throw new NotFoundException("Proqram tapılmadı");
             _unitOfWork.AcademicPrograms.SoftDelete(program);
             await _unitOfWork.SaveAsync();
         }

@@ -11,3 +11,6 @@ C:\Users\ASUS\source\repos\SIS\SIS.Entities\obj\Debug\net10.0\refint\SIS.Entitie
 C:\Users\ASUS\source\repos\SIS\SIS.Entities\obj\Debug\net10.0\SIS.Entities.pdb
 C:\Users\ASUS\source\repos\SIS\SIS.Entities\obj\Debug\net10.0\ref\SIS.Entities.dll
 C:\Users\ASUS\source\repos\SIS\SIS.Entities\obj\Debug\net10.0\SIS.Entities.sourcelink.json
+C:\Users\ASUS\source\repos\SIS\.codex-build\api-check\SIS.Entities.deps.json
+C:\Users\ASUS\source\repos\SIS\.codex-build\api-check\SIS.Entities.dll
+C:\Users\ASUS\source\repos\SIS\.codex-build\api-check\SIS.Entities.pdb

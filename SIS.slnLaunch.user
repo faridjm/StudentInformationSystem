@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "Yeni Profil",
+    "Projects": [
+      {
+        "Path": "SIS.API\\SIS.API.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "SIS.MVC\\SIS.MVC.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

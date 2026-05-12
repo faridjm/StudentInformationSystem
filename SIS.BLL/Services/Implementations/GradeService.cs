@@ -3,6 +3,7 @@ using SIS.BLL.Services.DTOs.Grade;
 using SIS.BLL.Services.Interfaces;
 using SIS.DAL.UnitOfWork;
 using SIS.Entities.Models;
+using static SIS.BLL.Exceptions.AppException;
 
 namespace SIS.BLL.Services.Implementations
 {
@@ -11,12 +12,18 @@ namespace SIS.BLL.Services.Implementations
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IStudentService _studentService;
+        private readonly IActivityLogger _activityLogger;
 
-        public GradeService(IUnitOfWork unitOfWork, IMapper mapper, IStudentService studentService)
+        public GradeService(
+            IUnitOfWork unitOfWork,
+            IMapper mapper,
+            IStudentService studentService,
+            IActivityLogger activityLogger)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _studentService = studentService;
+            _activityLogger = activityLogger;
         }
 
         public async Task<IEnumerable<GradeDto>> GetGradesByEnrollmentAsync(int enrollmentId)
@@ -40,13 +47,18 @@ namespace SIS.BLL.Services.Implementations
             var enrollment = await _unitOfWork.Enrollments.GetByIdAsync(dto.EnrollmentId);
             if (enrollment != null)
                 await _studentService.UpdateGPAAsync(enrollment.StudentId);
+
+            await _activityLogger.LogAsync("Create", "Grade", grade.Id.ToString(),
+                null, new { dto.EnrollmentId, dto.Type, dto.Score });
         }
 
         public async Task UpdateGradeAsync(UpdateGradeDto dto)
         {
             var grade = await _unitOfWork.Grades.GetByIdAsync(dto.Id);
             if (grade == null)
-                throw new Exception("Qiymət tapılmadı");
+                throw new NotFoundException("Qiymət tapılmadı");
+
+            var oldValue = new { grade.Score };
 
             _mapper.Map(dto, grade);
             grade.UpdatedAt = DateTime.UtcNow;
@@ -56,16 +68,22 @@ namespace SIS.BLL.Services.Implementations
             var enrollment = await _unitOfWork.Enrollments.GetByIdAsync(grade.EnrollmentId);
             if (enrollment != null)
                 await _studentService.UpdateGPAAsync(enrollment.StudentId);
+
+            await _activityLogger.LogAsync("Update", "Grade", dto.Id.ToString(),
+                oldValue, new { dto.Score });
         }
 
         public async Task DeleteGradeAsync(int id)
         {
             var grade = await _unitOfWork.Grades.GetByIdAsync(id);
             if (grade == null)
-                throw new Exception("Qiymət tapılmadı");
+                throw new NotFoundException("Qiymət tapılmadı");
 
             _unitOfWork.Grades.SoftDelete(grade);
             await _unitOfWork.SaveAsync();
+
+            await _activityLogger.LogAsync("Delete", "Grade", id.ToString(),
+                new { grade.Score, grade.Type }, null);
         }
     }
 }

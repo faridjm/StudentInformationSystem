@@ -3,6 +3,7 @@ using SIS.BLL.Services.DTOs.Course;
 using SIS.BLL.Services.Interfaces;
 using SIS.DAL.UnitOfWork;
 using SIS.Entities.Models;
+using static SIS.BLL.Exceptions.AppException;
 
 namespace SIS.BLL.Services.Implementations
 {
@@ -10,11 +11,16 @@ namespace SIS.BLL.Services.Implementations
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IActivityLogger _activityLogger;
 
-        public CourseService(IUnitOfWork unitOfWork, IMapper mapper)
+        public CourseService(
+            IUnitOfWork unitOfWork,
+            IMapper mapper,
+            IActivityLogger activityLogger)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _activityLogger = activityLogger;
         }
 
         public async Task<IEnumerable<CourseListDto>> GetAllCoursesAsync()
@@ -39,33 +45,44 @@ namespace SIS.BLL.Services.Implementations
         {
             var isUnique = await _unitOfWork.Courses.IsCourseCodeUniqueAsync(dto.Code);
             if (!isUnique)
-                throw new Exception($"{dto.Code} kodu ilə kurs artıq mövcuddur");
+                throw new ConflictException($"{dto.Code} kodu ilə kurs artıq mövcuddur");
 
             var course = _mapper.Map<Course>(dto);
             await _unitOfWork.Courses.AddAsync(course);
             await _unitOfWork.SaveAsync();
+
+            await _activityLogger.LogAsync("Create", "Course", course.Id.ToString(),
+                null, new { dto.Name, dto.Code });
         }
 
         public async Task UpdateCourseAsync(UpdateCourseDto dto)
         {
             var course = await _unitOfWork.Courses.GetByIdAsync(dto.Id);
             if (course == null)
-                throw new Exception("Kurs tapılmadı");
+                throw new NotFoundException("Kurs tapılmadı");
+
+            var oldValue = new { course.Name, course.Code, course.Credits };
 
             _mapper.Map(dto, course);
             course.UpdatedAt = DateTime.UtcNow;
             _unitOfWork.Courses.Update(course);
             await _unitOfWork.SaveAsync();
+
+            await _activityLogger.LogAsync("Update", "Course", dto.Id.ToString(),
+                oldValue, new { dto.Name, dto.Credits });
         }
 
         public async Task DeleteCourseAsync(int id)
         {
             var course = await _unitOfWork.Courses.GetByIdAsync(id);
             if (course == null)
-                throw new Exception("Kurs tapılmadı");
+                throw new NotFoundException("Kurs tapılmadı");
 
             _unitOfWork.Courses.SoftDelete(course);
             await _unitOfWork.SaveAsync();
+
+            await _activityLogger.LogAsync("Delete", "Course", id.ToString(),
+                new { course.Name, course.Code }, null);
         }
     }
 }

@@ -2,11 +2,13 @@
 using Microsoft.AspNetCore.Identity;
 using SIS.BLL.Services.DTOs.Student;
 using SIS.BLL.Services.Interfaces;
+using SIS.Common.Constants;
 using SIS.Common.Extensions;
 using SIS.Common.Helpers;
 using SIS.DAL.UnitOfWork;
 using SIS.Entities.Identity;
 using SIS.Entities.Models;
+using static SIS.BLL.Exceptions.AppException;
 
 namespace SIS.BLL.Services.Implementations
 {
@@ -15,12 +17,18 @@ namespace SIS.BLL.Services.Implementations
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly UserManager<AppUser> _userManager;
+        private readonly IActivityLogger _activityLogger;
 
-        public StudentService(IUnitOfWork unitOfWork, IMapper mapper, UserManager<AppUser> userManager)
+        public StudentService(
+            IUnitOfWork unitOfWork,
+            IMapper mapper,
+            UserManager<AppUser> userManager,
+            IActivityLogger activityLogger)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _userManager = userManager;
+            _activityLogger = activityLogger;
         }
 
         public async Task<IEnumerable<StudentListDto>> GetAllStudentsAsync()
@@ -60,9 +68,9 @@ namespace SIS.BLL.Services.Implementations
 
             var result = await _userManager.CreateAsync(user, dto.Password);
             if (!result.Succeeded)
-                throw new Exception(string.Join(", ", result.Errors.Select(e => e.Description)));
+                throw new BadRequestException(string.Join(", ", result.Errors.Select(e => e.Description)));
 
-            await _userManager.AddToRoleAsync(user, SIS.Common.Constants.RoleConstants.Student);
+            await _userManager.AddToRoleAsync(user, RoleConstants.Student);
 
             var student = new Student
             {
@@ -74,13 +82,18 @@ namespace SIS.BLL.Services.Implementations
 
             await _unitOfWork.Students.AddAsync(student);
             await _unitOfWork.SaveAsync();
+
+            await _activityLogger.LogAsync("Create", "Student", student.Id.ToString(),
+                null, new { dto.FullName, dto.Email });
         }
 
         public async Task UpdateStudentAsync(UpdateStudentDto dto)
         {
             var student = await _unitOfWork.Students.GetStudentWithDetailsAsync(dto.Id);
             if (student == null)
-                throw new Exception("Tələbə tapılmadı");
+                throw new NotFoundException("Tələbə tapılmadı");
+
+            var oldValue = new { student.AppUser.FullName, student.AcademicProgramId };
 
             student.AppUser.FullName = dto.FullName.ToTitleCase();
             student.AppUser.PhoneNumber = dto.PhoneNumber;
@@ -90,19 +103,25 @@ namespace SIS.BLL.Services.Implementations
             student.UpdatedAt = DateTime.UtcNow;
             _unitOfWork.Students.Update(student);
             await _unitOfWork.SaveAsync();
+
+            await _activityLogger.LogAsync("Update", "Student", dto.Id.ToString(),
+                oldValue, new { dto.FullName, dto.AcademicProgramId });
         }
 
         public async Task DeleteStudentAsync(int id)
         {
             var student = await _unitOfWork.Students.GetStudentWithDetailsAsync(id);
             if (student == null)
-                throw new Exception("Tələbə tapılmadı");
+                throw new NotFoundException("Tələbə tapılmadı");
 
             student.AppUser.IsActive = false;
             await _userManager.UpdateAsync(student.AppUser);
 
             _unitOfWork.Students.SoftDelete(student);
             await _unitOfWork.SaveAsync();
+
+            await _activityLogger.LogAsync("Delete", "Student", id.ToString(),
+                new { student.AppUser.FullName }, null);
         }
 
         public async Task UpdateGPAAsync(int studentId)

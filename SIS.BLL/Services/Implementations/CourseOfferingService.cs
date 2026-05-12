@@ -3,6 +3,7 @@ using SIS.BLL.Services.DTOs.CourseOffering;
 using SIS.BLL.Services.Interfaces;
 using SIS.DAL.UnitOfWork;
 using SIS.Entities.Models;
+using static SIS.BLL.Exceptions.AppException;
 
 namespace SIS.BLL.Services.Implementations
 {
@@ -58,7 +59,7 @@ namespace SIS.BLL.Services.Implementations
         {
             var offering = await _unitOfWork.CourseOfferings.GetByIdAsync(dto.Id);
             if (offering == null)
-                throw new Exception("Kurs təklifi tapılmadı");
+                throw new NotFoundException("Kurs təklifi tapılmadı");
 
             _mapper.Map(dto, offering);
             offering.UpdatedAt = DateTime.UtcNow;
@@ -70,7 +71,7 @@ namespace SIS.BLL.Services.Implementations
         {
             var offering = await _unitOfWork.CourseOfferings.GetByIdAsync(id);
             if (offering == null)
-                throw new Exception("Kurs təklifi tapılmadı");
+                throw new NotFoundException("Kurs təklifi tapılmadı");
 
             _unitOfWork.CourseOfferings.SoftDelete(offering);
             await _unitOfWork.SaveAsync();

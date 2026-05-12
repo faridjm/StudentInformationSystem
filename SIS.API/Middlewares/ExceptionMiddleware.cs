@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using SIS.BLL.Exceptions;
+using System.Net;
 using System.Text.Json;
 
 namespace SIS.API.Middlewares
@@ -31,22 +32,46 @@ namespace SIS.API.Middlewares
         {
             context.Response.ContentType = "application/json";
 
-            var (statusCode, message) = exception switch
-            {
-                KeyNotFoundException => (HttpStatusCode.NotFound, exception.Message),
-                UnauthorizedAccessException => (HttpStatusCode.Unauthorized, exception.Message),
-                ArgumentException => (HttpStatusCode.BadRequest, exception.Message),
-                _ => (HttpStatusCode.InternalServerError, "Xəta baş verdi")
-            };
+            int statusCode;
+            object response;
 
-            context.Response.StatusCode = (int)statusCode;
-
-            var response = new
+            switch (exception)
             {
-                StatusCode = (int)statusCode,
-                Message = message,
-                Timestamp = DateTime.UtcNow
-            };
+                case FluentValidation.ValidationException validationEx:
+                    statusCode = (int)HttpStatusCode.BadRequest;
+                    response = new
+                    {
+                        StatusCode = statusCode,
+                        Message = "Validation xətası",
+                        Errors = validationEx.Errors
+                            .Select(e => new { Field = e.PropertyName, Error = e.ErrorMessage })
+                            .ToList(),
+                        Timestamp = DateTime.UtcNow
+                    };
+                    break;
+
+                case AppException appEx:
+                    statusCode = (int)appEx.StatusCode;
+                    response = new
+                    {
+                        StatusCode = statusCode,
+                        Message = appEx.Message,
+                        Timestamp = DateTime.UtcNow
+                    };
+                    break;
+
+                default:
+                    statusCode = (int)HttpStatusCode.InternalServerError;
+                    response = new
+                    {
+                        StatusCode = statusCode,
+                        Message = "Xəta baş verdi",
+                        Timestamp = DateTime.UtcNow
+                    };
+                    break;
+            }
+
+            context.Response.StatusCode = statusCode;
 
             var json = JsonSerializer.Serialize(response, new JsonSerializerOptions
             {
