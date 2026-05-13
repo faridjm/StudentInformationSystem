@@ -1,4 +1,5 @@
-﻿using SIS.Entities.Models;
+﻿using SIS.Common.Pagination;
+using SIS.Entities.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -11,5 +12,6 @@ namespace SIS.DAL.Repositories.Interfaces
         Task<Teacher?> GetTeacherByUserIdAsync(string userId);
         Task<IEnumerable<Teacher>> GetTeachersByDepartmentAsync(int departmentId);
         Task<IEnumerable<Teacher>> GetAllTeachersWithDetailsAsync();
+        Task<PagedResult<Teacher>> GetPagedAsync(PagedRequest request);
     }
 }

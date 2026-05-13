@@ -20,6 +20,7 @@ namespace SIS.DAL.UnitOfWork
         IDepartmentRepository Departments { get; }
         IAcademicProgramRepository AcademicPrograms { get; }
         IAcademicTermRepository AcademicTerms { get; }
+        IRefreshTokenRepository RefreshTokens { get; }
 
 
         Task<int> SaveAsync();

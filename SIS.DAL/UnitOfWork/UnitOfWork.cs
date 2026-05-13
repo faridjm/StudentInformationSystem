@@ -21,6 +21,7 @@ namespace SIS.DAL.UnitOfWork
         private IDepartmentRepository? _departments;
         private IAcademicProgramRepository? _academicPrograms;
         private IAcademicTermRepository? _academicTerms;
+        private IRefreshTokenRepository? _refreshTokens;
 
         public UnitOfWork(AppDbContext context)
         {
@@ -62,8 +63,12 @@ namespace SIS.DAL.UnitOfWork
 
         public IAcademicProgramRepository AcademicPrograms
             => _academicPrograms ??= new AcademicProgramRepository(_context);
+
         public IAcademicTermRepository AcademicTerms
     => _academicTerms ??= new AcademicTermRepository(_context);
+
+        public IRefreshTokenRepository RefreshTokens
+    => _refreshTokens ??= new RefreshTokenRepository(_context);
 
         public async Task<int> SaveAsync()
             => await _context.SaveChangesAsync();

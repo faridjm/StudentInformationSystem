@@ -2,11 +2,9 @@
 {
     public static class StudentNumberHelper
     {
-        public static string Generate(int enrollmentYear)
+        public static string Generate(int enrollmentYear, int sequence)
         {
-            var random = new Random();
-            var suffix = random.Next(10000, 99999);
-            return $"{enrollmentYear}{suffix}";
+            return $"{enrollmentYear}{sequence:D5}";
         }
     }
 }

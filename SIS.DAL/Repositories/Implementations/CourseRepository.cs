@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SIS.Common.Pagination;
 using SIS.DAL.Context;
+using SIS.DAL.Extensions;
 using SIS.DAL.Repositories.Interfaces;
 using SIS.Entities.Models;
 
@@ -26,6 +28,34 @@ namespace SIS.DAL.Repositories.Implementations
 
         public async Task<bool> IsCourseCodeUniqueAsync(string code)
             => !await _dbSet.AnyAsync(c => c.Code == code);
+
+        public async Task<PagedResult<Course>> GetPagedAsync(PagedRequest request)
+        {
+            var query = _dbSet
+                .Include(c => c.Department)
+                .AsQueryable();
+
+            if (!string.IsNullOrEmpty(request.SearchTerm))
+                query = query.Where(c =>
+                    c.Name.Contains(request.SearchTerm) ||
+                    c.Code.Contains(request.SearchTerm));
+
+            query = request.SortBy?.ToLower() switch
+            {
+                "name" => request.SortDescending
+                    ? query.OrderByDescending(c => c.Name)
+                    : query.OrderBy(c => c.Name),
+                "code" => request.SortDescending
+                    ? query.OrderByDescending(c => c.Code)
+                    : query.OrderBy(c => c.Code),
+                "credits" => request.SortDescending
+                    ? query.OrderByDescending(c => c.Credits)
+                    : query.OrderBy(c => c.Credits),
+                _ => query.OrderBy(c => c.Name)
+            };
+
+            return await query.ToPagedResultAsync(request.Page, request.PageSize);
+        }
     }
 
 

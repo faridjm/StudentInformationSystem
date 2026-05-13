@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SIS.BLL.Services.DTOs.Student;
 using SIS.BLL.Services.Interfaces;
 using SIS.Common.Constants;
+using SIS.Common.Pagination;
 
 namespace SIS.API.Controllers
 {
@@ -12,24 +13,34 @@ namespace SIS.API.Controllers
     public class StudentController : ControllerBase
     {
         private readonly IStudentService _studentService;
+        private readonly IAuthorizationService _authorizationService;
 
-        public StudentController(IStudentService studentService)
+        public StudentController(
+            IStudentService studentService,
+            IAuthorizationService authorizationService)
         {
             _studentService = studentService;
+            _authorizationService = authorizationService;
         }
 
         [HttpGet]
         [Authorize(Roles = $"{RoleConstants.Admin},{RoleConstants.Moderator},{RoleConstants.SuperAdmin}")]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] PagedRequest request)
         {
-            var students = await _studentService.GetAllStudentsAsync();
+            var students = await _studentService.GetAllStudentsAsync(request);
             return Ok(students);
         }
 
         [HttpGet("{id}")]
-        [Authorize(Roles = $"{RoleConstants.Admin},{RoleConstants.Moderator},{RoleConstants.SuperAdmin},{RoleConstants.Teacher}")]
+        [Authorize(Roles = $"{RoleConstants.Admin},{RoleConstants.Moderator},{RoleConstants.SuperAdmin},{RoleConstants.Teacher},{RoleConstants.Student}")]
         public async Task<IActionResult> GetById(int id)
         {
+            if (User.IsInRole(RoleConstants.Student))
+            {
+                var auth = await _authorizationService.AuthorizeAsync(User, id, "StudentOwner");
+                if (!auth.Succeeded) return Forbid();
+            }
+
             var student = await _studentService.GetStudentByIdAsync(id);
             if (student == null) return NotFound();
             return Ok(student);
@@ -77,6 +88,4 @@ namespace SIS.API.Controllers
             return Ok(new { Message = "Tələbə uğurla silindi" });
         }
     }
-
-
 }

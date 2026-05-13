@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SIS.Common.Pagination;
 using SIS.DAL.Context;
+using SIS.DAL.Extensions;
 using SIS.DAL.Repositories.Interfaces;
 using SIS.Entities.Models;
 
@@ -38,6 +40,33 @@ namespace SIS.DAL.Repositories.Implementations
         .Include(t => t.AppUser)
         .Include(t => t.Department)
         .ToListAsync();
+
+        public async Task<PagedResult<Teacher>> GetPagedAsync(PagedRequest request)
+        {
+            var query = _dbSet
+                .Include(t => t.AppUser)
+                .Include(t => t.Department)
+                .AsQueryable();
+
+            if (!string.IsNullOrEmpty(request.SearchTerm))
+                query = query.Where(t =>
+                    t.AppUser.FullName.Contains(request.SearchTerm) ||
+                    t.EmployeeNumber.Contains(request.SearchTerm) ||
+                    t.AppUser.Email!.Contains(request.SearchTerm));
+
+            query = request.SortBy?.ToLower() switch
+            {
+                "fullname" => request.SortDescending
+                    ? query.OrderByDescending(t => t.AppUser.FullName)
+                    : query.OrderBy(t => t.AppUser.FullName),
+                "department" => request.SortDescending
+                    ? query.OrderByDescending(t => t.Department.Name)
+                    : query.OrderBy(t => t.Department.Name),
+                _ => query.OrderByDescending(t => t.CreatedAt)
+            };
+
+            return await query.ToPagedResultAsync(request.Page, request.PageSize);
+        }
     }
 }
 

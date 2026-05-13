@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using SIS.BLL.Services.DTOs.Course;
 using SIS.BLL.Services.Interfaces;
+using SIS.Common.Pagination;
 using SIS.DAL.UnitOfWork;
 using SIS.Entities.Models;
 using static SIS.BLL.Exceptions.AppException;
@@ -23,10 +24,17 @@ namespace SIS.BLL.Services.Implementations
             _activityLogger = activityLogger;
         }
 
-        public async Task<IEnumerable<CourseListDto>> GetAllCoursesAsync()
+        public async Task<PagedResult<CourseListDto>> GetAllCoursesAsync(PagedRequest request)
         {
-            var courses = await _unitOfWork.Courses.GetAllAsync();
-            return _mapper.Map<IEnumerable<CourseListDto>>(courses);
+            var pagedCourses = await _unitOfWork.Courses.GetPagedAsync(request);
+
+            return new PagedResult<CourseListDto>
+            {
+                Items = _mapper.Map<IEnumerable<CourseListDto>>(pagedCourses.Items),
+                TotalCount = pagedCourses.TotalCount,
+                Page = pagedCourses.Page,
+                PageSize = pagedCourses.PageSize
+            };
         }
 
         public async Task<CourseDetailDto?> GetCourseByIdAsync(int id)

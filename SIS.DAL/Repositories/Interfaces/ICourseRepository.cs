@@ -1,4 +1,5 @@
-﻿using SIS.Entities.Models;
+﻿using SIS.Common.Pagination;
+using SIS.Entities.Models;
 
 namespace SIS.DAL.Repositories.Interfaces
 {
@@ -7,5 +8,6 @@ namespace SIS.DAL.Repositories.Interfaces
         Task<Course?> GetCourseWithDetailsAsync(int courseId);
         Task<IEnumerable<Course>> GetCoursesByDepartmentAsync(int departmentId);
         Task<bool> IsCourseCodeUniqueAsync(string code);
+        Task<PagedResult<Course>> GetPagedAsync(PagedRequest request);
     }
 }

@@ -149,7 +149,6 @@ C:\Users\ASUS\source\repos\SIS\SIS.API\bin\Debug\net10.0\SIS.Entities.pdb
 C:\Users\ASUS\source\repos\SIS\SIS.API\bin\Debug\net10.0\SIS.DAL.pdb
 C:\Users\ASUS\source\repos\SIS\SIS.API\obj\Debug\net10.0\SIS.API.csproj.AssemblyReference.cache
 C:\Users\ASUS\source\repos\SIS\SIS.API\obj\Debug\net10.0\SIS.API.csproj.Up2Date
-C:\Users\ASUS\source\repos\SIS\SIS.API\obj\Debug\net10.0\SIS.API.MvcApplicationPartsAssemblyInfo.cs
 C:\Users\ASUS\source\repos\SIS\SIS.API\bin\Debug\net10.0\Microsoft.AspNetCore.OpenApi.dll
 C:\Users\ASUS\source\repos\SIS\SIS.API\bin\Debug\net10.0\Microsoft.OpenApi.dll
 C:\Users\ASUS\source\repos\SIS\SIS.API\bin\Debug\net10.0\Microsoft.Build.Framework.dll
@@ -181,3 +180,4 @@ C:\Users\ASUS\source\repos\SIS\.codex-build\api-check\SIS.API.pdb
 C:\Users\ASUS\source\repos\SIS\SIS.API\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt
 C:\Users\ASUS\source\repos\SIS\SIS.API\bin\Debug\net10.0\FluentValidation.AspNetCore.dll
 C:\Users\ASUS\source\repos\SIS\SIS.API\bin\Debug\net10.0\FluentValidation.DependencyInjectionExtensions.dll
+C:\Users\ASUS\source\repos\SIS\SIS.API\obj\Debug\net10.0\SIS.API.MvcApplicationPartsAssemblyInfo.cs

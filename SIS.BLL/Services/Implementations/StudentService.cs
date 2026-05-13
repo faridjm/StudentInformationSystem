@@ -5,6 +5,7 @@ using SIS.BLL.Services.Interfaces;
 using SIS.Common.Constants;
 using SIS.Common.Extensions;
 using SIS.Common.Helpers;
+using SIS.Common.Pagination;
 using SIS.DAL.UnitOfWork;
 using SIS.Entities.Identity;
 using SIS.Entities.Models;
@@ -31,10 +32,17 @@ namespace SIS.BLL.Services.Implementations
             _activityLogger = activityLogger;
         }
 
-        public async Task<IEnumerable<StudentListDto>> GetAllStudentsAsync()
+        public async Task<PagedResult<StudentListDto>> GetAllStudentsAsync(PagedRequest request)
         {
-            var students = await _unitOfWork.Students.GetStudentsWithGPAAsync();
-            return _mapper.Map<IEnumerable<StudentListDto>>(students);
+            var pagedStudents = await _unitOfWork.Students.GetPagedAsync(request);
+
+            return new PagedResult<StudentListDto>
+            {
+                Items = _mapper.Map<IEnumerable<StudentListDto>>(pagedStudents.Items),
+                TotalCount = pagedStudents.TotalCount,
+                Page = pagedStudents.Page,
+                PageSize = pagedStudents.PageSize
+            };
         }
 
         public async Task<StudentDetailDto?> GetStudentByIdAsync(int id)
@@ -72,10 +80,13 @@ namespace SIS.BLL.Services.Implementations
 
             await _userManager.AddToRoleAsync(user, RoleConstants.Student);
 
+            // Sequential student number
+            var studentCount = await _unitOfWork.Students.CountAsync(s => !s.IsDeleted);
+
             var student = new Student
             {
                 AppUserId = user.Id,
-                StudentNumber = StudentNumberHelper.Generate(dto.EnrollmentYear),
+                StudentNumber = StudentNumberHelper.Generate(dto.EnrollmentYear, studentCount + 1),
                 EnrollmentYear = dto.EnrollmentYear,
                 AcademicProgramId = dto.AcademicProgramId
             };
@@ -129,7 +140,7 @@ namespace SIS.BLL.Services.Implementations
             var student = await _unitOfWork.Students.GetStudentWithDetailsAsync(studentId);
             if (student == null) return;
 
-            var creditScoreMap = new Dictionary<int, decimal>();
+            var items = new List<(int credits, decimal score)>();
 
             foreach (var enrollment in student.Enrollments
                 .Where(e => e.Status == SIS.Entities.Enums.EnrollmentStatus.Active
@@ -139,11 +150,11 @@ namespace SIS.BLL.Services.Implementations
                 if (avgScore > 0)
                 {
                     var credits = enrollment.CourseOffering.Course.Credits;
-                    creditScoreMap[credits] = avgScore;
+                    items.Add((credits, avgScore));
                 }
             }
 
-            student.CurrentGPA = GpaHelper.CalculateGPA(creditScoreMap);
+            student.CurrentGPA = GpaHelper.CalculateGPA(items);
             student.UpdatedAt = DateTime.UtcNow;
             _unitOfWork.Students.Update(student);
             await _unitOfWork.SaveAsync();

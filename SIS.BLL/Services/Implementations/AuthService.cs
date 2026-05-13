@@ -3,8 +3,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using SIS.BLL.Services.DTOs.Auth;
 using SIS.BLL.Services.Interfaces;
+using SIS.DAL.UnitOfWork;
 using SIS.Entities.Identity;
+using SIS.Entities.Models;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
@@ -16,11 +19,19 @@ namespace SIS.BLL.Services.Implementations
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly IConfiguration _configuration;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IEmailService _emailService;
 
-        public AuthService(UserManager<AppUser> userManager, IConfiguration configuration)
+        public AuthService(
+            UserManager<AppUser> userManager,
+            IConfiguration configuration,
+            IUnitOfWork unitOfWork,
+            IEmailService emailService)
         {
             _userManager = userManager;
             _configuration = configuration;
+            _unitOfWork = unitOfWork;
+            _emailService = emailService;
         }
 
         public async Task<TokenDto> LoginAsync(LoginDto dto)
@@ -41,31 +52,36 @@ namespace SIS.BLL.Services.Implementations
 
         public async Task LogoutAsync(string userId)
         {
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null) return;
-
-            await _userManager.RemoveAuthenticationTokenAsync(user, "SIS", "RefreshToken");
+            await _unitOfWork.RefreshTokens.RevokeAllForUserAsync(userId);
+            await _unitOfWork.SaveAsync();
         }
 
         public async Task<TokenDto> RefreshTokenAsync(string refreshToken)
         {
-            var users = _userManager.Users.ToList();
-            AppUser? currentUser = null;
+            var token = await _unitOfWork.RefreshTokens.GetByTokenAsync(refreshToken);
 
-            foreach (var user in users)
-            {
-                var savedToken = await _userManager.GetAuthenticationTokenAsync(user, "SIS", "RefreshToken");
-                if (savedToken == refreshToken)
-                {
-                    currentUser = user;
-                    break;
-                }
-            }
-
-            if (currentUser == null)
+            if (token == null)
                 throw new UnauthorizedException("Yanlış refresh token");
 
-            return await GenerateTokenAsync(currentUser);
+            if (token.IsRevoked)
+                throw new UnauthorizedException("Refresh token ləğv edilmişdir");
+
+            if (token.ExpiresAt < DateTime.UtcNow)
+                throw new UnauthorizedException("Refresh token müddəti bitmişdir");
+
+            // Köhnə token-i revoke et
+            token.IsRevoked = true;
+            token.RevokedAt = DateTime.UtcNow;
+            _unitOfWork.RefreshTokens.Update(token);
+
+            // Yeni token yarat
+            var newTokenDto = await GenerateTokenAsync(token.User);
+
+            // ReplacedByToken-i yenilə
+            token.ReplacedByToken = newTokenDto.RefreshToken;
+            await _unitOfWork.SaveAsync();
+
+            return newTokenDto;
         }
 
         public async Task ChangePasswordAsync(string userId, ChangePasswordDto dto)
@@ -88,7 +104,10 @@ namespace SIS.BLL.Services.Implementations
             if (user == null) return;
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            await _userManager.SetAuthenticationTokenAsync(user, "SIS", "ResetToken", token);
+            var frontendUrl = _configuration["App:FrontendUrl"];
+            var resetLink = $"{frontendUrl}/Auth/ResetPassword?email={WebUtility.UrlEncode(email)}&token={WebUtility.UrlEncode(token)}";
+
+            await _emailService.SendPasswordResetAsync(user.Email!, resetLink);
         }
 
         public async Task ResetPasswordAsync(ResetPasswordDto dto)
@@ -132,13 +151,25 @@ namespace SIS.BLL.Services.Implementations
             );
 
             var accessToken = new JwtSecurityTokenHandler().WriteToken(token);
-            var refreshToken = GenerateRefreshToken();
-            await _userManager.SetAuthenticationTokenAsync(user, "SIS", "RefreshToken", refreshToken);
+
+            // Refresh token database-ə yaz
+            var refreshTokenValue = GenerateRefreshToken();
+            var refreshToken = new RefreshToken
+            {
+                Token = refreshTokenValue,
+                UserId = user.Id,
+                ExpiresAt = DateTime.UtcNow.AddDays(
+                    int.Parse(_configuration["Jwt:RefreshTokenExpireDays"]!)),
+                IsRevoked = false
+            };
+
+            await _unitOfWork.RefreshTokens.AddAsync(refreshToken);
+            await _unitOfWork.SaveAsync();
 
             return new TokenDto
             {
                 AccessToken = accessToken,
-                RefreshToken = refreshToken,
+                RefreshToken = refreshTokenValue,
                 ExpireAt = DateTime.UtcNow.AddMinutes(
                     int.Parse(_configuration["Jwt:AccessTokenExpireMinutes"]!))
             };

@@ -27,7 +27,7 @@ namespace SIS.DAL.Repositories.Implementations
             => await _dbSet.Where(predicate).ToListAsync();
 
         public async Task<T?> GetByIdAsync(int id)
-            => await _dbSet.FindAsync(id);
+            => await _dbSet.FirstOrDefaultAsync(e => e.Id == id);
 
         public async Task<T?> GetAsync(Expression<Func<T, bool>> predicate)
             => await _dbSet.FirstOrDefaultAsync(predicate);
@@ -46,8 +46,11 @@ namespace SIS.DAL.Repositories.Implementations
 
         public void Update(T entity)
         {
-            _dbSet.Attach(entity);
-            _context.Entry(entity).State = EntityState.Modified;
+            var entry = _context.Entry(entity);
+            if (entry.State == EntityState.Detached)
+                _dbSet.Attach(entity);
+            entry.State = EntityState.Modified;
+            entity.UpdatedAt = DateTime.UtcNow;
         }
 
         public void Delete(T entity)
@@ -55,12 +58,9 @@ namespace SIS.DAL.Repositories.Implementations
 
         public void SoftDelete(T entity)
         {
-            if (entity is BaseEntity baseEntity)
-            {
-                baseEntity.IsDeleted = true;
-                baseEntity.UpdatedAt = DateTime.UtcNow;
-                Update(entity);
-            }
+            entity.IsDeleted = true;
+            entity.UpdatedAt = DateTime.UtcNow;
+            Update(entity);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using SIS.BLL.Services.DTOs.Department;
 using SIS.BLL.Services.Interfaces;
+using SIS.Common.Pagination;
 using SIS.DAL.UnitOfWork;
 using SIS.Entities.Models;
 using static SIS.BLL.Exceptions.AppException;
@@ -18,10 +19,17 @@ namespace SIS.BLL.Services.Implementations
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<DepartmentDto>> GetAllDepartmentsAsync()
+        public async Task<PagedResult<DepartmentDto>> GetAllDepartmentsAsync(PagedRequest request)
         {
-            var departments = await _unitOfWork.Departments.GetAllAsync();
-            return _mapper.Map<IEnumerable<DepartmentDto>>(departments);
+            var pagedDepartments = await _unitOfWork.Departments.GetPagedAsync(request);
+
+            return new PagedResult<DepartmentDto>
+            {
+                Items = _mapper.Map<IEnumerable<DepartmentDto>>(pagedDepartments.Items),
+                TotalCount = pagedDepartments.TotalCount,
+                Page = pagedDepartments.Page,
+                PageSize = pagedDepartments.PageSize
+            };
         }
 
         public async Task<DepartmentDto?> GetDepartmentByIdAsync(int id)

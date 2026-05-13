@@ -13,19 +13,25 @@ namespace SIS.API.Controllers
     {
         private readonly IGradeService _gradeService;
         private readonly IStudentService _studentService;
+        private readonly IAuthorizationService _authorizationService;
 
         public GradeController(
             IGradeService gradeService,
-            IStudentService studentService)
+            IStudentService studentService,
+            IAuthorizationService authorizationService)
         {
             _gradeService = gradeService;
             _studentService = studentService;
+            _authorizationService = authorizationService;
         }
 
         [HttpGet("enrollment/{enrollmentId}")]
         [Authorize(Roles = $"{RoleConstants.Admin},{RoleConstants.Moderator},{RoleConstants.SuperAdmin},{RoleConstants.Teacher},{RoleConstants.Student}")]
         public async Task<IActionResult> GetByEnrollment(int enrollmentId)
         {
+            var auth = await _authorizationService.AuthorizeAsync(User, enrollmentId, "EnrollmentOwner");
+            if (!auth.Succeeded) return Forbid();
+
             var grades = await _gradeService.GetGradesByEnrollmentAsync(enrollmentId);
             return Ok(grades);
         }
@@ -53,6 +59,9 @@ namespace SIS.API.Controllers
         [Authorize(Roles = $"{RoleConstants.Admin},{RoleConstants.SuperAdmin},{RoleConstants.Teacher}")]
         public async Task<IActionResult> Add([FromBody] CreateGradeDto dto)
         {
+            var auth = await _authorizationService.AuthorizeAsync(User, dto.EnrollmentId, "GradeAuth");
+            if (!auth.Succeeded) return Forbid();
+
             await _gradeService.AddGradeAsync(dto);
             return Ok(new { Message = "Qiymət uğurla əlavə edildi" });
         }
@@ -61,6 +70,9 @@ namespace SIS.API.Controllers
         [Authorize(Roles = $"{RoleConstants.Admin},{RoleConstants.SuperAdmin},{RoleConstants.Teacher}")]
         public async Task<IActionResult> Update([FromBody] UpdateGradeDto dto)
         {
+            var auth = await _authorizationService.AuthorizeAsync(User, dto.Id, "GradeAuth");
+            if (!auth.Succeeded) return Forbid();
+
             await _gradeService.UpdateGradeAsync(dto);
             return Ok(new { Message = "Qiymət uğurla yeniləndi" });
         }

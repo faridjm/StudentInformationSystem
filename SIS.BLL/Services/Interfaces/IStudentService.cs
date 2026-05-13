@@ -1,10 +1,11 @@
 ﻿using SIS.BLL.Services.DTOs.Student;
+using SIS.Common.Pagination;
 
 namespace SIS.BLL.Services.Interfaces
 {
     public interface IStudentService
     {
-        Task<IEnumerable<StudentListDto>> GetAllStudentsAsync();
+        Task<PagedResult<StudentListDto>> GetAllStudentsAsync(PagedRequest request);
         Task<StudentDetailDto?> GetStudentByIdAsync(int id);
         Task<StudentDetailDto?> GetStudentByUserIdAsync(string userId);
         Task<IEnumerable<StudentListDto>> GetStudentsByProgramAsync(int programId);
@@ -12,5 +13,6 @@ namespace SIS.BLL.Services.Interfaces
         Task UpdateStudentAsync(UpdateStudentDto dto);
         Task DeleteStudentAsync(int id);
         Task UpdateGPAAsync(int studentId);
+        
     }
 }

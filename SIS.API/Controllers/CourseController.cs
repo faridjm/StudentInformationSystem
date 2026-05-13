@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SIS.BLL.Services.DTOs.Course;
 using SIS.BLL.Services.Interfaces;
 using SIS.Common.Constants;
+using SIS.Common.Pagination;
 
 namespace SIS.API.Controllers
 {
@@ -20,10 +21,10 @@ namespace SIS.API.Controllers
 
         [HttpGet]
         [Authorize(Roles = $"{RoleConstants.Admin},{RoleConstants.Moderator},{RoleConstants.SuperAdmin},{RoleConstants.Teacher},{RoleConstants.Student}")]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] PagedRequest request)
         {
-            var courses = await _courseService.GetAllCoursesAsync();
-            return Ok(courses);
+            var result = await _courseService.GetAllCoursesAsync(request);
+            return Ok(result);
         }
 
         [HttpGet("{id}")]

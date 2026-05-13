@@ -30,6 +30,7 @@ namespace SIS.API.Extensions
             services.AddScoped<IRealtimeNotifier, SignalRNotifier>();
             services.AddHttpContextAccessor();
             services.AddScoped<IActivityLogger, ActivityLogger>();
+            services.AddScoped<IEmailService, EmailService>();
 
 
             services.AddAutoMapper(cfg => cfg.AddProfile<MappingProfile>());

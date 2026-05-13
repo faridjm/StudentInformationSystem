@@ -13,13 +13,16 @@ namespace SIS.API.Controllers
     {
         private readonly IEnrollmentService _enrollmentService;
         private readonly IStudentService _studentService;
+        private readonly IAuthorizationService _authorizationService;
 
         public EnrollmentController(
             IEnrollmentService enrollmentService,
-            IStudentService studentService)
+            IStudentService studentService,
+            IAuthorizationService authorizationService)
         {
             _enrollmentService = enrollmentService;
             _studentService = studentService;
+            _authorizationService = authorizationService;
         }
 
         [HttpGet]
@@ -31,18 +34,24 @@ namespace SIS.API.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize(Roles = $"{RoleConstants.Admin},{RoleConstants.Moderator},{RoleConstants.SuperAdmin},{RoleConstants.Teacher}")]
+        [Authorize(Roles = $"{RoleConstants.Admin},{RoleConstants.Moderator},{RoleConstants.SuperAdmin},{RoleConstants.Teacher},{RoleConstants.Student}")]
         public async Task<IActionResult> GetById(int id)
         {
+            var auth = await _authorizationService.AuthorizeAsync(User, id, "EnrollmentOwner");
+            if (!auth.Succeeded) return Forbid();
+
             var enrollment = await _enrollmentService.GetEnrollmentByIdAsync(id);
             if (enrollment == null) return NotFound();
             return Ok(enrollment);
         }
 
         [HttpGet("student/{studentId}")]
-        [Authorize(Roles = $"{RoleConstants.Admin},{RoleConstants.Moderator},{RoleConstants.SuperAdmin},{RoleConstants.Teacher}")]
+        [Authorize(Roles = $"{RoleConstants.Admin},{RoleConstants.Moderator},{RoleConstants.SuperAdmin},{RoleConstants.Teacher},{RoleConstants.Student}")]
         public async Task<IActionResult> GetByStudent(int studentId)
         {
+            var auth = await _authorizationService.AuthorizeAsync(User, studentId, "StudentOwner");
+            if (!auth.Succeeded) return Forbid();
+
             var enrollments = await _enrollmentService.GetStudentEnrollmentsAsync(studentId);
             return Ok(enrollments);
         }

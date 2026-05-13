@@ -4,6 +4,8 @@ using SIS.BLL.Services.DTOs.Teacher;
 using SIS.BLL.Services.Interfaces;
 using SIS.Common.Constants;
 using SIS.Common.Extensions;
+using SIS.Common.Helpers;
+using SIS.Common.Pagination;
 using SIS.DAL.UnitOfWork;
 using SIS.Entities.Identity;
 using SIS.Entities.Models;
@@ -30,10 +32,17 @@ namespace SIS.BLL.Services.Implementations
             _activityLogger = activityLogger;
         }
 
-        public async Task<IEnumerable<TeacherListDto>> GetAllTeachersAsync()
+        public async Task<PagedResult<TeacherListDto>> GetAllTeachersAsync(PagedRequest request)
         {
-            var teachers = await _unitOfWork.Teachers.GetAllTeachersWithDetailsAsync();
-            return _mapper.Map<IEnumerable<TeacherListDto>>(teachers);
+            var pagedTeachers = await _unitOfWork.Teachers.GetPagedAsync(request);
+
+            return new PagedResult<TeacherListDto>
+            {
+                Items = _mapper.Map<IEnumerable<TeacherListDto>>(pagedTeachers.Items),
+                TotalCount = pagedTeachers.TotalCount,
+                Page = pagedTeachers.Page,
+                PageSize = pagedTeachers.PageSize
+            };
         }
 
         public async Task<TeacherDetailDto?> GetTeacherByIdAsync(int id)
@@ -71,10 +80,13 @@ namespace SIS.BLL.Services.Implementations
 
             await _userManager.AddToRoleAsync(user, RoleConstants.Teacher);
 
+            // Sequential employee number
+            var teacherCount = await _unitOfWork.Teachers.CountAsync(t => !t.IsDeleted);
+
             var teacher = new Teacher
             {
                 AppUserId = user.Id,
-                EmployeeNumber = $"EMP{DateTime.Now.Year}{new Random().Next(10000, 99999)}",
+                EmployeeNumber = EmployeeNumberHelper.Generate(DateTime.Now.Year, teacherCount + 1),
                 Title = dto.Title,
                 DepartmentId = dto.DepartmentId,
                 HireDate = dto.HireDate
