@@ -7,7 +7,6 @@ namespace SIS.Entities.Models
         public int Capacity { get; set; }
         public string? Room { get; set; }
         public bool IsActive { get; set; } = true;
-
         public int AcademicTermId { get; set; }
         public int CourseId { get; set; }
         public int TeacherId { get; set; } 

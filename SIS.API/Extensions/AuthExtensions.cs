@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using SIS.BLL.Configuration;
 using SIS.DAL.Context;
 using SIS.Entities.Identity;
 using System.Text;
@@ -9,7 +10,9 @@ namespace SIS.API.Extensions
 {
     public static class AuthExtensions
     {
-        public static IServiceCollection AddAuth(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddAuth(
+            this IServiceCollection services,
+            IConfiguration configuration)
         {
             services.AddIdentity<AppUser, IdentityRole>(options =>
             {
@@ -22,6 +25,8 @@ namespace SIS.API.Extensions
             })
             .AddEntityFrameworkStores<AppDbContext>()
             .AddDefaultTokenProviders();
+
+            var jwtSettings = configuration.GetSection("Jwt").Get<JwtSettings>()!;
 
             services.AddAuthentication(options =>
             {
@@ -36,11 +41,12 @@ namespace SIS.API.Extensions
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    ValidIssuer = configuration["Jwt:Issuer"],
-                    ValidAudience = configuration["Jwt:Audience"],
+                    ValidIssuer = jwtSettings.Issuer,
+                    ValidAudience = jwtSettings.Audience,
                     IssuerSigningKey = new SymmetricSecurityKey(
-                       Encoding.UTF8.GetBytes(configuration["Jwt:SecretKey"]!))
+                        Encoding.UTF8.GetBytes(jwtSettings.SecretKey))
                 };
+
                 options.Events = new JwtBearerEvents
                 {
                     OnMessageReceived = context =>
@@ -53,12 +59,9 @@ namespace SIS.API.Extensions
                         return Task.CompletedTask;
                     }
                 };
-
             });
 
             return services;
-
         }
-
     }
 }

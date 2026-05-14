@@ -12,7 +12,7 @@ namespace SIS.Entities.Models
         public string AuthorId { get; set; } = null!;
         public int? CourseOfferingId { get; set; }
         public AppUser Author { get; set; } = null!;
-        public CourseOffering CourseOffering { get; set; }
+        public CourseOffering? CourseOffering { get; set; }
 
     }
 

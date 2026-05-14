@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using SIS.BLL.Configuration;
 using SIS.BLL.Services.DTOs.Auth;
 using SIS.BLL.Services.Interfaces;
 using SIS.DAL.UnitOfWork;
@@ -18,20 +20,23 @@ namespace SIS.BLL.Services.Implementations
     public class AuthService : IAuthService
     {
         private readonly UserManager<AppUser> _userManager;
-        private readonly IConfiguration _configuration;
+        private readonly JwtSettings _jwtSettings;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IEmailService _emailService;
+        private readonly IConfiguration _configuration;
 
         public AuthService(
             UserManager<AppUser> userManager,
-            IConfiguration configuration,
+            IOptions<JwtSettings> jwtSettings,
             IUnitOfWork unitOfWork,
-            IEmailService emailService)
+            IEmailService emailService,
+            IConfiguration configuration)
         {
             _userManager = userManager;
-            _configuration = configuration;
+            _jwtSettings = jwtSettings.Value;
             _unitOfWork = unitOfWork;
             _emailService = emailService;
+            _configuration = configuration;
         }
 
         public async Task<TokenDto> LoginAsync(LoginDto dto)
@@ -69,15 +74,12 @@ namespace SIS.BLL.Services.Implementations
             if (token.ExpiresAt < DateTime.UtcNow)
                 throw new UnauthorizedException("Refresh token müddəti bitmişdir");
 
-            // Köhnə token-i revoke et
             token.IsRevoked = true;
             token.RevokedAt = DateTime.UtcNow;
             _unitOfWork.RefreshTokens.Update(token);
 
-            // Yeni token yarat
             var newTokenDto = await GenerateTokenAsync(token.User);
 
-            // ReplacedByToken-i yenilə
             token.ReplacedByToken = newTokenDto.RefreshToken;
             await _unitOfWork.SaveAsync();
 
@@ -139,27 +141,24 @@ namespace SIS.BLL.Services.Implementations
                 claims.Add(new Claim(ClaimTypes.Role, role));
 
             var key = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(_configuration["Jwt:SecretKey"]!));
+                Encoding.UTF8.GetBytes(_jwtSettings.SecretKey));
 
             var token = new JwtSecurityToken(
-                issuer: _configuration["Jwt:Issuer"],
-                audience: _configuration["Jwt:Audience"],
+                issuer: _jwtSettings.Issuer,
+                audience: _jwtSettings.Audience,
                 claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(
-                    int.Parse(_configuration["Jwt:AccessTokenExpireMinutes"]!)),
+                expires: DateTime.UtcNow.AddMinutes(_jwtSettings.AccessTokenExpireMinutes),
                 signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
             );
 
             var accessToken = new JwtSecurityTokenHandler().WriteToken(token);
 
-            // Refresh token database-ə yaz
             var refreshTokenValue = GenerateRefreshToken();
             var refreshToken = new RefreshToken
             {
                 Token = refreshTokenValue,
                 UserId = user.Id,
-                ExpiresAt = DateTime.UtcNow.AddDays(
-                    int.Parse(_configuration["Jwt:RefreshTokenExpireDays"]!)),
+                ExpiresAt = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpireDays),
                 IsRevoked = false
             };
 
@@ -170,8 +169,7 @@ namespace SIS.BLL.Services.Implementations
             {
                 AccessToken = accessToken,
                 RefreshToken = refreshTokenValue,
-                ExpireAt = DateTime.UtcNow.AddMinutes(
-                    int.Parse(_configuration["Jwt:AccessTokenExpireMinutes"]!))
+                ExpireAt = DateTime.UtcNow.AddMinutes(_jwtSettings.AccessTokenExpireMinutes)
             };
         }
 

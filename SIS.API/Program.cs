@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Scalar.AspNetCore;
 using SIS.API.Authorization.Handlers;
 using SIS.API.Authorization.Requirements;
+using SIS.BLL.Configuration;
 using SIS.API.Extensions;
 using SIS.API.Hubs;
 using SIS.API.Middlewares;
@@ -22,14 +23,22 @@ namespace SIS.API
             builder.Services.AddOpenApi();
             builder.Services.AddSignalR();
 
+            // JwtSettings strongly-typed
+            builder.Services.Configure<JwtSettings>(
+                builder.Configuration.GetSection("Jwt"));
+
             // CORS
+            var allowedOrigins = builder.Configuration
+                .GetSection("Cors:AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
+
             builder.Services.AddCors(options =>
             {
-                options.AddPolicy("AllowAll", policy =>
+                options.AddPolicy("AllowMvc", policy =>
                 {
-                    policy.AllowAnyOrigin()
+                    policy.WithOrigins(allowedOrigins)
                           .AllowAnyMethod()
-                          .AllowAnyHeader();
+                          .AllowAnyHeader()
+                          .AllowCredentials();
                 });
             });
 
@@ -63,7 +72,7 @@ namespace SIS.API
 
             app.UseMiddleware<ExceptionMiddleware>();
             app.UseHttpsRedirection();
-            app.UseCors("AllowAll");
+            app.UseCors("AllowMvc");
             app.UseAuthentication();
             app.UseAuthorization();
             app.MapControllers();
