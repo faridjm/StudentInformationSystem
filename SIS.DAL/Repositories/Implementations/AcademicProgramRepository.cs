@@ -22,6 +22,13 @@ namespace SIS.DAL.Repositories.Implementations
             => await _dbSet
                 .Where(p => p.DepartmentId == departmentId && p.IsActive)
                 .ToListAsync();
+
+        public async Task<IEnumerable<AcademicProgram>> GetAllWithDepartmentAsync()
+            => await _dbSet
+        .Include(p => p.Department)
+        .ToListAsync();
+
+
     }
 }
 

@@ -1,0 +1,43 @@
+﻿@model SIS.BLL.Services.DTOs.Announcement.CreateAnnouncementDto
+
+@{
+    ViewData["Title"] = "Yeni Elan";
+}
+
+<div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
+    <a href="/Admin/Announcement" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i></a>
+    <h2 style="font-size:20px; font-weight:700;">Yeni Elan</h2>
+</div>
+
+<div class="card" style="max-width:600px;">
+    <div class="card-body">
+        <form method="post">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" style="color:#f87171; margin-bottom:12px; font-size:13px;"></div>
+
+            <div class="form-group">
+                <label class="form-label">Başlıq</label>
+                <input asp-for="Title" class="form-control" placeholder="Elan başlığı" />
+                <span asp-validation-for="Title" style="color:#f87171; font-size:12px;"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Məzmun</label>
+                <textarea asp-for="Content" class="form-control" rows="5" placeholder="Elan məzmunu..."></textarea>
+                <span asp-validation-for="Content" style="color:#f87171; font-size:12px;"></span>
+            </div>
+
+            <div class="form-group">
+                <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                    <input asp-for="IsGlobal" type="checkbox" style="width:16px; height:16px; accent-color:#e94560;" />
+                    <span class="form-label" style="margin:0;">Global elan (bütün istifadəçilərə görünür)</span>
+                </label>
+            </div>
+
+            <div style="display:flex; gap:10px; margin-top:8px;">
+                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Yarat</button>
+                <a href="/Admin/Announcement" class="btn btn-secondary">Ləğv et</a>
+            </div>
+        </form>
+    </div>
+</div>

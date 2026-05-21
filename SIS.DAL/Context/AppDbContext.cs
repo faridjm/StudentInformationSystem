@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using SIS.DAL.Configurations;
 using SIS.Entities.Identity;
 using SIS.Entities.Models;
 using System;
@@ -33,9 +34,11 @@ namespace SIS.DAL.Context
         {
             base.OnModelCreating(modelBuilder);
 
-            
+
             modelBuilder.ApplyConfigurationsFromAssembly(
                 typeof(AppDbContext).Assembly);
+
+            modelBuilder.ApplyConfiguration(new AcademicTermConfiguration());
         }
     }
 

@@ -1,0 +1,70 @@
+﻿@model SIS.Common.Pagination.PagedResult<SIS.BLL.Services.DTOs.Department.DepartmentDto>
+
+@{
+    ViewData["Title"] = "Departamentlər";
+}
+
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+    <h2 style="font-size:20px; font-weight:700;">Departamentlər</h2>
+    <a href="/Admin/Department/Create" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Yeni Departament
+    </a>
+</div>
+
+<div class="card" style="margin-bottom:16px;">
+    <div class="card-body" style="padding:14px 20px;">
+        <form method="get" class="search-box">
+            <input type="text" name="search" value="@ViewBag.SearchTerm"
+                   class="search-input" placeholder="Ad və ya kod ilə axtar..." style="width:300px;" />
+            <button type="submit" class="btn btn-secondary"><i class="fas fa-search"></i> Axtar</button>
+            @if (!string.IsNullOrEmpty(ViewBag.SearchTerm as string))
+            {
+                <a href="/Admin/Department" class="btn btn-secondary"><i class="fas fa-times"></i> Təmizlə</a>
+            }
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header"><span>Cəmi: @Model.TotalCount departament</span></div>
+    <div style="overflow-x:auto;">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Ad</th>
+                    <th>Kod</th>
+                    <th>Proqram sayı</th>
+                    <th>Müəllim sayı</th>
+                    <th>Əməliyyat</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var dept in Model.Items)
+                {
+                    <tr>
+                        <td>@dept.Id</td>
+                        <td style="font-weight:500;">@dept.Name</td>
+                        <td><code style="background:var(--bg-hover); padding:2px 8px; border-radius:4px;">@dept.Code</code></td>
+                        <td><span class="badge badge-info">@dept.ProgramCount</span></td>
+                        <td><span class="badge badge-info">@dept.TeacherCount</span></td>
+                        <td>
+                            <div style="display:flex; gap:6px;">
+                                <a href="/Admin/Department/Edit/@dept.Id" class="btn btn-sm btn-secondary">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <form method="post" action="/Admin/Department/Delete/@dept.Id"
+                                      onsubmit="return confirm('Departamenti silmək istədiyinizdən əminsinizmi?')">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm btn-danger">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

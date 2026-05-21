@@ -1,0 +1,52 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="row" style="display:grid; grid-template-columns: repeat(4,1fr); gap:16px; margin-bottom:24px;">
+    <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(233,69,96,0.15); color:#e94560;">
+            <i class="fas fa-user-graduate"></i>
+        </div>
+        <div>
+            <div class="stat-value">@ViewBag.StudentCount</div>
+            <div class="stat-label">Tələbələr</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(59,130,246,0.15); color:#3b82f6;">
+            <i class="fas fa-chalkboard-teacher"></i>
+        </div>
+        <div>
+            <div class="stat-value">@ViewBag.TeacherCount</div>
+            <div class="stat-label">Müəllimlər</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(34,197,94,0.15); color:#22c55e;">
+            <i class="fas fa-book"></i>
+        </div>
+        <div>
+            <div class="stat-value">@ViewBag.CourseCount</div>
+            <div class="stat-label">Kurslar</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(168,85,247,0.15); color:#a855f7;">
+            <i class="fas fa-clipboard-list"></i>
+        </div>
+        <div>
+            <div class="stat-value">@ViewBag.EnrollmentCount</div>
+            <div class="stat-label">Qeydiyyatlar</div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <span><i class="fas fa-clock" style="margin-right:8px;"></i>Son Aktivlik</span>
+    </div>
+    <div class="card-body" style="text-align:center; padding:40px; color:var(--text-secondary);">
+        <i class="fas fa-inbox" style="font-size:32px; margin-bottom:12px; display:block;"></i>
+        <p>Hələ aktivlik yoxdur</p>
+    </div>
+</div>

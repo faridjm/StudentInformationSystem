@@ -1,0 +1,76 @@
+﻿@model SIS.BLL.Services.DTOs.Student.StudentDetailDto
+
+@{
+    ViewData["Title"] = "Tələbə Detalları";
+}
+
+<div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
+    <a href="/Admin/Student" class="btn btn-secondary btn-sm">
+        <i class="fas fa-arrow-left"></i>
+    </a>
+    <h2 style="font-size:20px; font-weight:700;">@Model.FullName</h2>
+    <span class="badge @(Model.IsActive ? "badge-success" : "badge-danger")">
+        @(Model.IsActive ? "Aktiv" : "Deaktiv")
+    </span>
+</div>
+
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+    <div class="card">
+        <div class="card-header">Şəxsi Məlumatlar</div>
+        <div class="card-body">
+            <table style="width:100%; font-size:14px;">
+                <tr style="border-bottom:1px solid var(--border);">
+                    <td style="padding:10px 0; color:var(--text-secondary); width:40%;">Ad Soyad</td>
+                    <td style="padding:10px 0; font-weight:500;">@Model.FullName</td>
+                </tr>
+                <tr style="border-bottom:1px solid var(--border);">
+                    <td style="padding:10px 0; color:var(--text-secondary);">Email</td>
+                    <td style="padding:10px 0;">@Model.Email</td>
+                </tr>
+                <tr style="border-bottom:1px solid var(--border);">
+                    <td style="padding:10px 0; color:var(--text-secondary);">Telefon</td>
+                    <td style="padding:10px 0;">@(Model.PhoneNumber ?? "—")</td>
+                </tr>
+                <tr style="border-bottom:1px solid var(--border);">
+                    <td style="padding:10px 0; color:var(--text-secondary);">Tələbə №</td>
+                    <td style="padding:10px 0;"><code style="background:var(--bg-hover); padding:2px 8px; border-radius:4px;">@Model.StudentNumber</code></td>
+                </tr>
+                <tr>
+                    <td style="padding:10px 0; color:var(--text-secondary);">Qeydiyyat İli</td>
+                    <td style="padding:10px 0;">@Model.EnrollmentYear</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">Akademik Məlumatlar</div>
+        <div class="card-body">
+            <table style="width:100%; font-size:14px;">
+                <tr style="border-bottom:1px solid var(--border);">
+                    <td style="padding:10px 0; color:var(--text-secondary); width:40%;">Proqram</td>
+                    <td style="padding:10px 0; font-weight:500;">@Model.ProgramName</td>
+                </tr>
+                <tr style="border-bottom:1px solid var(--border);">
+                    <td style="padding:10px 0; color:var(--text-secondary);">Departament</td>
+                    <td style="padding:10px 0;">@Model.DepartmentName</td>
+                </tr>
+                <tr>
+                    <td style="padding:10px 0; color:var(--text-secondary);">GPA</td>
+                    <td style="padding:10px 0;">
+                        <span style="font-size:24px; font-weight:700; color:@(Model.CurrentGPA >= 3 ? "#22c55e" : Model.CurrentGPA >= 2 ? "#eab308" : "#ef4444")">
+                            @Model.CurrentGPA.ToString("F2")
+                        </span>
+                        <span style="color:var(--text-secondary); font-size:12px;"> / 4.00</span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div style="margin-top:16px; display:flex; gap:10px;">
+    <a href="/Admin/Student/Edit/@Model.Id" class="btn btn-primary">
+        <i class="fas fa-edit"></i> Düzəlt
+    </a>
+</div>

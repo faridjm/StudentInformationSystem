@@ -1,0 +1,70 @@
+﻿@model IEnumerable<SIS.BLL.Services.DTOs.Enrollment.EnrollmentListDto>
+
+@{
+    ViewData["Title"] = "Qeydiyyatlar";
+}
+
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+    <h2 style="font-size:20px; font-weight:700;">Qeydiyyatlar</h2>
+    <a href="/Admin/Enrollment/Create" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Yeni Qeydiyyat
+    </a>
+</div>
+
+<div class="card">
+    <div style="overflow-x:auto;">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Tələbə</th>
+                    <th>Kurs</th>
+                    <th>Müəllim</th>
+                    <th>Termin</th>
+                    <th>Status</th>
+                    <th>Tarix</th>
+                    <th>Əməliyyat</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var e in Model)
+                {
+                    <tr>
+                        <td>@e.Id</td>
+                        <td style="font-weight:500;">@e.StudentName</td>
+                        <td>@e.CourseName <code style="background:var(--bg-hover); padding:2px 6px; border-radius:4px; font-size:11px;">@e.CourseCode</code></td>
+                        <td>@e.TeacherName</td>
+                        <td>@e.TermName</td>
+                        <td>
+                            @switch (e.Status)
+                            {
+                                case SIS.Entities.Enums.EnrollmentStatus.Active:
+                                    <span class="badge badge-success">Aktiv</span>
+                                    break;
+                                case SIS.Entities.Enums.EnrollmentStatus.Dropped:
+                                    <span class="badge badge-danger">Ləğv edilib</span>
+                                    break;
+                                case SIS.Entities.Enums.EnrollmentStatus.Completed:
+                                    <span class="badge badge-info">Tamamlandı</span>
+                                    break;
+                            }
+                        </td>
+                        <td style="color:var(--text-secondary); font-size:13px;">@e.EnrolledAt.ToString("dd.MM.yyyy")</td>
+                        <td>
+                            @if (e.Status == SIS.Entities.Enums.EnrollmentStatus.Active)
+                            {
+                                <form method="post" action="/Admin/Enrollment/Drop/@e.Id"
+                                      onsubmit="return confirm('Qeydiyyatı ləğv etmək istədiyinizdən əminsinizmi?')">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm btn-danger">
+                                        <i class="fas fa-times"></i> Ləğv et
+                                    </button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

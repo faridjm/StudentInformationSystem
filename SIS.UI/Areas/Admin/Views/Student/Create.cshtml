@@ -1,0 +1,71 @@
+﻿@model SIS.BLL.Services.DTOs.Student.CreateStudentDto
+
+@{
+    ViewData["Title"] = "Yeni Tələbə";
+}
+
+<div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
+    <a href="/Admin/Student" class="btn btn-secondary btn-sm">
+        <i class="fas fa-arrow-left"></i>
+    </a>
+    <h2 style="font-size:20px; font-weight:700;">Yeni Tələbə</h2>
+</div>
+
+<div class="card" style="max-width:600px;">
+    <div class="card-body">
+        <form method="post">
+            @Html.AntiForgeryToken()
+
+            <div asp-validation-summary="ModelOnly" style="color:#f87171; margin-bottom:12px; font-size:13px;"></div>
+
+            <div class="form-group">
+                <label class="form-label">Ad Soyad</label>
+                <input asp-for="FullName" class="form-control" placeholder="Ad Soyad" />
+                <span asp-validation-for="FullName" style="color:#f87171; font-size:12px;"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Email</label>
+                <input asp-for="Email" class="form-control" placeholder="email@sis.az" />
+                <span asp-validation-for="Email" style="color:#f87171; font-size:12px;"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Şifrə</label>
+                <input asp-for="Password" type="password" class="form-control" placeholder="Minimum 8 simvol" />
+                <span asp-validation-for="Password" style="color:#f87171; font-size:12px;"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Telefon</label>
+                <input asp-for="PhoneNumber" class="form-control" placeholder="+994501234567" />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Akademik Proqram</label>
+                <select asp-for="AcademicProgramId" class="form-control">
+                    <option value="">Proqram seçin</option>
+                    @foreach (var p in ViewBag.Programs as IEnumerable<SIS.BLL.Services.DTOs.AcademicProgram.AcademicProgramDto> ?? [])
+                    {
+                        <option value="@p.Id">@p.Name</option>
+                    }
+                </select>
+                <span asp-validation-for="AcademicProgramId" style="color:#f87171; font-size:12px;"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Qeydiyyat İli</label>
+                <input asp-for="EnrollmentYear" type="number" class="form-control"
+                       placeholder="2024" min="2000" max="2030" />
+                <span asp-validation-for="EnrollmentYear" style="color:#f87171; font-size:12px;"></span>
+            </div>
+
+            <div style="display:flex; gap:10px; margin-top:8px;">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Yarat
+                </button>
+                <a href="/Admin/Student" class="btn btn-secondary">Ləğv et</a>
+            </div>
+        </form>
+    </div>
+</div>

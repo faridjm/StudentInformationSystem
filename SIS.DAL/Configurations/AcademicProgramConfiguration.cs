@@ -18,7 +18,7 @@ namespace SIS.DAL.Configurations
                 .IsRequired()
                 .HasMaxLength(10);
 
-            
+
             builder.HasOne(p => p.Department)
                 .WithMany(d => d.Programs)
                 .HasForeignKey(p => p.DepartmentId)

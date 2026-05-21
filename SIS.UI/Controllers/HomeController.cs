@@ -1,24 +1,27 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using SIS.UI.Models;
+using System.Diagnostics;
 
-namespace SIS.UI.Controllers;
-
-public class HomeController : Controller
+namespace SIS.UI.Controllers
 {
-    public IActionResult Index()
-    {
-        return View();
-    }
 
-    public IActionResult Privacy()
+    public class HomeController : Controller
     {
-        return View();
-    }
+        public IActionResult Index()
+        {
+            if (User.Identity!.IsAuthenticated)
+            {
+                if (User.IsInRole("SuperAdmin") || User.IsInRole("Admin") || User.IsInRole("Moderator"))
+                    return RedirectToAction("Index", "Dashboard", new { area = "Admin" });
 
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
-    {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+                if (User.IsInRole("Teacher"))
+                    return RedirectToAction("Index", "Dashboard", new { area = "Teacher" });
+
+                if (User.IsInRole("Student"))
+                    return RedirectToAction("Index", "Dashboard", new { area = "Student" });
+            }
+
+            return RedirectToAction("Login", "Auth");
+        }
     }
 }

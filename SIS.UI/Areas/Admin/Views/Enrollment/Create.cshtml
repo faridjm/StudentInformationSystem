@@ -1,0 +1,48 @@
+﻿@model SIS.BLL.Services.DTOs.Enrollment.CreateEnrollmentDto
+
+@{
+    ViewData["Title"] = "Yeni Qeydiyyat";
+}
+
+<div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
+    <a href="/Admin/Enrollment" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i></a>
+    <h2 style="font-size:20px; font-weight:700;">Yeni Qeydiyyat</h2>
+</div>
+
+<div class="card" style="max-width:500px;">
+    <div class="card-body">
+        <form method="post">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" style="color:#f87171; margin-bottom:12px; font-size:13px;"></div>
+
+            <div class="form-group">
+                <label class="form-label">Tələbə</label>
+                <select asp-for="StudentId" class="form-control">
+                    <option value="">Tələbə seçin</option>
+                    @foreach (var s in ViewBag.Students as IEnumerable<SIS.BLL.Services.DTOs.Student.StudentListDto> ?? [])
+                    {
+                        <option value="@s.Id">@s.FullName (@s.StudentNumber)</option>
+                    }
+                </select>
+                <span asp-validation-for="StudentId" style="color:#f87171; font-size:12px;"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Kurs Təklifi</label>
+                <select asp-for="CourseOfferingId" class="form-control">
+                    <option value="">Kurs seçin</option>
+                    @foreach (var o in ViewBag.Offerings as IEnumerable<SIS.BLL.Services.DTOs.CourseOffering.CourseOfferingListDto> ?? [])
+                    {
+                        <option value="@o.Id">@o.CourseName — @o.TeacherName (@o.TermName)</option>
+                    }
+                </select>
+                <span asp-validation-for="CourseOfferingId" style="color:#f87171; font-size:12px;"></span>
+            </div>
+
+            <div style="display:flex; gap:10px; margin-top:8px;">
+                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Qeydiyyat et</button>
+                <a href="/Admin/Enrollment" class="btn btn-secondary">Ləğv et</a>
+            </div>
+        </form>
+    </div>
+</div>

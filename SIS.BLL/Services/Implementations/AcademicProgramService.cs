@@ -20,7 +20,7 @@ namespace SIS.BLL.Services.Implementations
 
         public async Task<IEnumerable<AcademicProgramDto>> GetAllProgramsAsync()
         {
-            var programs = await _unitOfWork.AcademicPrograms.GetAllAsync();
+            var programs = await _unitOfWork.AcademicPrograms.GetAllWithDepartmentAsync();
             return _mapper.Map<IEnumerable<AcademicProgramDto>>(programs);
         }
 

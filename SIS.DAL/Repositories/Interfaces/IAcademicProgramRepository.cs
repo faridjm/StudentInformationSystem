@@ -6,5 +6,6 @@ namespace SIS.DAL.Repositories.Interfaces
     {
         Task<AcademicProgram?> GetProgramWithDetailsAsync(int programId);
         Task<IEnumerable<AcademicProgram>> GetProgramsByDepartmentAsync(int departmentId);
+        Task<IEnumerable<AcademicProgram>> GetAllWithDepartmentAsync();
     }
 }

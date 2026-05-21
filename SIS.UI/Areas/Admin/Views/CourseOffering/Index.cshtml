@@ -1,0 +1,57 @@
+﻿@model IEnumerable<SIS.BLL.Services.DTOs.CourseOffering.CourseOfferingListDto>
+
+@{
+    ViewData["Title"] = "Kurs Təklifləri";
+}
+
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+    <h2 style="font-size:20px; font-weight:700;">Kurs Təklifləri</h2>
+    <a href="/Admin/CourseOffering/Create" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Yeni Kurs Təklifi
+    </a>
+</div>
+
+<div class="card">
+    <div style="overflow-x:auto;">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Kurs</th>
+                    <th>Müəllim</th>
+                    <th>Termin</th>
+                    <th>Otaq</th>
+                    <th>Tutum</th>
+                    <th>Əməliyyat</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var o in Model)
+                {
+                    <tr>
+                        <td>@o.Id</td>
+                        <td style="font-weight:500;">@o.CourseName <code style="background:var(--bg-hover); padding:2px 6px; border-radius:4px; font-size:11px;">@o.CourseCode</code></td>
+                        <td>@o.TeacherName</td>
+                        <td>@o.TermName</td>
+                        <td>@(o.Room ?? "—")</td>
+                        <td><span class="badge badge-info">@o.EnrolledCount / @o.Capacity</span></td>
+                        <td>
+                            <div style="display:flex; gap:6px;">
+                                <a href="/Admin/CourseOffering/Edit/@o.Id" class="btn btn-sm btn-secondary">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <form method="post" action="/Admin/CourseOffering/Delete/@o.Id"
+                                      onsubmit="return confirm('Kurs təklifini silmək istədiyinizdən əminsinizmi?')">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm btn-danger">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

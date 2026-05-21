@@ -1,0 +1,71 @@
+﻿@model SIS.BLL.Services.DTOs.CourseOffering.CreateCourseOfferingDto
+
+@{
+    ViewData["Title"] = "Yeni Kurs Təklifi";
+}
+
+<div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
+    <a href="/Admin/CourseOffering" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i></a>
+    <h2 style="font-size:20px; font-weight:700;">Yeni Kurs Təklifi</h2>
+</div>
+
+<div class="card" style="max-width:500px;">
+    <div class="card-body">
+        <form method="post">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" style="color:#f87171; margin-bottom:12px; font-size:13px;"></div>
+
+            <div class="form-group">
+                <label class="form-label">Kurs</label>
+                <select asp-for="CourseId" class="form-control">
+                    <option value="">Kurs seçin</option>
+                    @foreach (var c in ViewBag.Courses as IEnumerable<SIS.BLL.Services.DTOs.Course.CourseListDto> ?? [])
+                    {
+                        <option value="@c.Id">@c.Name (@c.Code)</option>
+                    }
+                </select>
+                <span asp-validation-for="CourseId" style="color:#f87171; font-size:12px;"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Müəllim</label>
+                <select asp-for="TeacherId" class="form-control">
+                    <option value="">Müəllim seçin</option>
+                    @foreach (var t in ViewBag.Teachers as IEnumerable<SIS.BLL.Services.DTOs.Teacher.TeacherListDto> ?? [])
+                    {
+                        <option value="@t.Id">@t.FullName</option>
+                    }
+                </select>
+                <span asp-validation-for="TeacherId" style="color:#f87171; font-size:12px;"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Akademik Termin</label>
+                <select asp-for="AcademicTermId" class="form-control">
+                    <option value="">Termin seçin</option>
+                    @foreach (var t in ViewBag.Terms as IEnumerable<SIS.BLL.Services.DTOs.AcademicTerm.AcademicTermDto> ?? [])
+                    {
+                        <option value="@t.Id">@t.Name</option>
+                    }
+                </select>
+                <span asp-validation-for="AcademicTermId" style="color:#f87171; font-size:12px;"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Tutum</label>
+                <input asp-for="Capacity" type="number" class="form-control" min="1" max="200" placeholder="30" />
+                <span asp-validation-for="Capacity" style="color:#f87171; font-size:12px;"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Otaq</label>
+                <input asp-for="Room" class="form-control" placeholder="Room 101" />
+            </div>
+
+            <div style="display:flex; gap:10px; margin-top:8px;">
+                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Yarat</button>
+                <a href="/Admin/CourseOffering" class="btn btn-secondary">Ləğv et</a>
+            </div>
+        </form>
+    </div>
+</div>

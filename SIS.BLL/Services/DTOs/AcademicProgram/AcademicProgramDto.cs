@@ -13,5 +13,7 @@ namespace SIS.BLL.Services.DTOs.AcademicProgram
         public int DurationYears { get; set; }
         public int StudentCount { get; set; }
         public bool IsActive { get; set; }
+        public int DepartmentId { get; set; }
+        public string? Description { get; set; }
     }
 }

@@ -1,0 +1,73 @@
+﻿@model IEnumerable<SIS.BLL.Services.DTOs.AcademicTerm.AcademicTermDto>
+
+@{
+    ViewData["Title"] = "Akademik Terimlər";
+}
+
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+    <h2 style="font-size:20px; font-weight:700;">Akademik Terimlər</h2>
+    <a href="/Admin/AcademicTerm/Create" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Yeni Termin
+    </a>
+</div>
+
+<div class="card">
+    <div style="overflow-x:auto;">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Ad</th>
+                    <th>Başlama</th>
+                    <th>Bitmə</th>
+                    <th>Status</th>
+                    <th>Əməliyyat</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var term in Model)
+                {
+                    <tr>
+                        <td>@term.Id</td>
+                        <td style="font-weight:500;">@term.Name</td>
+                        <td>@term.StartDate.ToString("dd.MM.yyyy")</td>
+                        <td>@term.EndDate.ToString("dd.MM.yyyy")</td>
+                        <td>
+                            @if (term.IsActive)
+                            {
+                                <span class="badge badge-success">Aktiv</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-warning">Passiv</span>
+                            }
+                        </td>
+                        <td>
+                            <div style="display:flex; gap:6px;">
+                                @if (!term.IsActive)
+                                {
+                                    <form method="post" action="/Admin/AcademicTerm/SetActive/@term.Id">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm btn-success">
+                                            <i class="fas fa-check"></i> Aktiv et
+                                        </button>
+                                    </form>
+                                }
+                                <a href="/Admin/AcademicTerm/Edit/@term.Id" class="btn btn-sm btn-secondary">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <form method="post" action="/Admin/AcademicTerm/Delete/@term.Id"
+                                      onsubmit="return confirm('Termini silmək istədiyinizdən əminsinizmi?')">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm btn-danger">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

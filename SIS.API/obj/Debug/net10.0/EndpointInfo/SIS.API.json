@@ -2178,6 +2178,12 @@
               "string"
             ],
             "format": "int32"
+          },
+          "description": {
+            "type": [
+              "null",
+              "string"
+            ]
           }
         }
       },
@@ -2217,6 +2223,9 @@
               "string"
             ],
             "format": "int32"
+          },
+          "isGlobal": {
+            "type": "boolean"
           }
         }
       },
@@ -2535,6 +2544,12 @@
               "string"
             ],
             "format": "int32"
+          },
+          "description": {
+            "type": [
+              "null",
+              "string"
+            ]
           }
         }
       },
