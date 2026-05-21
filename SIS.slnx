@@ -7,4 +7,5 @@
   <Project Path="SIS.Common/SIS.Common.csproj" />
   <Project Path="SIS.DAL/SIS.DAL.csproj" />
   <Project Path="SIS.Entities/SIS.Entities.csproj" />
+  <Project Path="SIS.UI/SIS.UI.csproj" />
 </Solution>

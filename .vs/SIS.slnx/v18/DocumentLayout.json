@@ -3,12 +3,16 @@
   "WorkspaceRootPath": "C:\\Users\\ASUS\\source\\repos\\SIS\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{CCEFE404-8F91-AAA4-3076-751590919141}|SIS.API\\SIS.API.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{CCEFE404-8F91-AAA4-3076-751590919141}|SIS.API\\SIS.API.csproj|solutionrelative:sis.api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+      "AbsoluteMoniker": "D:0:0:{39972673-1515-4AD6-9D01-4C3B62D7E497}|SIS.UI\\SIS.UI.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.ui\\controllers\\homecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{39972673-1515-4AD6-9D01-4C3B62D7E497}|SIS.UI\\SIS.UI.csproj|solutionrelative:sis.ui\\controllers\\homecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{C644E217-18C3-61E2-A87C-BECD5FA3E199}|SIS.BLL\\SIS.BLL.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.bll\\configuration\\jwtsettings.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C644E217-18C3-61E2-A87C-BECD5FA3E199}|SIS.BLL\\SIS.BLL.csproj|solutionrelative:sis.bll\\configuration\\jwtsettings.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A2FEB487-405F-892A-3742-207A95F79B88}|SIS.DAL\\SIS.DAL.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.dal\\migrations\\20260521105128_addupdatedattoappuser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FEB487-405F-892A-3742-207A95F79B88}|SIS.DAL\\SIS.DAL.csproj|solutionrelative:sis.dal\\migrations\\20260521105128_addupdatedattoappuser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C276F8A7-E1AF-FCC0-2213-9A6356ED4CC2}|SIS.Entities\\SIS.Entities.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.entities\\identity\\appuser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C276F8A7-E1AF-FCC0-2213-9A6356ED4CC2}|SIS.Entities\\SIS.Entities.csproj|solutionrelative:sis.entities\\identity\\appuser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -27,27 +31,40 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "appsettings.json",
-              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.API\\appsettings.json",
-              "RelativeDocumentMoniker": "SIS.API\\appsettings.json",
-              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.API\\appsettings.json",
-              "RelativeToolTip": "SIS.API\\appsettings.json",
+              "Title": "HomeController.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.UI\\Controllers\\HomeController.cs",
+              "RelativeDocumentMoniker": "SIS.UI\\Controllers\\HomeController.cs",
+              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.UI\\Controllers\\HomeController.cs",
+              "RelativeToolTip": "SIS.UI\\Controllers\\HomeController.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2026-05-14T20:52:47.756Z",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-21T11:26:34.405Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "AppUser.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.Entities\\Identity\\AppUser.cs",
+              "RelativeDocumentMoniker": "SIS.Entities\\Identity\\AppUser.cs",
+              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.Entities\\Identity\\AppUser.cs",
+              "RelativeToolTip": "SIS.Entities\\Identity\\AppUser.cs",
+              "ViewState": "AgIAAAUAAAAAAAAAAAAQwA0AAAAtAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-21T10:56:45.646Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "JwtSettings.cs",
-              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.BLL\\Configuration\\JwtSettings.cs",
-              "RelativeDocumentMoniker": "SIS.BLL\\Configuration\\JwtSettings.cs",
-              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.BLL\\Configuration\\JwtSettings.cs",
-              "RelativeToolTip": "SIS.BLL\\Configuration\\JwtSettings.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAAAAAAAAAAAA==",
+              "Title": "20260521105128_AddUpdatedAtToAppUser.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Migrations\\20260521105128_AddUpdatedAtToAppUser.cs",
+              "RelativeDocumentMoniker": "SIS.DAL\\Migrations\\20260521105128_AddUpdatedAtToAppUser.cs",
+              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Migrations\\20260521105128_AddUpdatedAtToAppUser.cs",
+              "RelativeToolTip": "SIS.DAL\\Migrations\\20260521105128_AddUpdatedAtToAppUser.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAmwBMAAABHAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-14T20:46:23.288Z",
+              "WhenOpened": "2026-05-21T10:51:28.484Z",
               "EditorCaption": ""
             }
           ]

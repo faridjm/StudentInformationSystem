@@ -4,10 +4,10 @@
     "Projects": [
       {
         "Path": "SIS.API\\SIS.API.csproj",
-        "Action": "Start"
+        "Action": "StartWithoutDebugging"
       },
       {
-        "Path": "SIS.MVC\\SIS.MVC.csproj",
+        "Path": "SIS.UI\\SIS.UI.csproj",
         "Action": "Start"
       }
     ]
