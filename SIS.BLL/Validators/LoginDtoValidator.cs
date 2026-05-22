@@ -16,7 +16,7 @@ namespace SIS.BLL.Validators
 
             RuleFor(x => x.Password)
                 .NotEmpty().WithMessage("Şifrə boş ola bilməz")
-                .MinimumLength(8).WithMessage("Şifrə minimum 8 simvol olmalıdır");
+                .MinimumLength(6).WithMessage("Şifrə minimum 6 simvol olmalıdır");
         }
     }
 

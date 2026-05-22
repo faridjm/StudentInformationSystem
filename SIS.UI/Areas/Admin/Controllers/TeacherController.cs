@@ -57,9 +57,19 @@ namespace SIS.UI.Areas.Admin.Controllers
                 TempData["Success"] = "Müəllim uğurla yaradıldı";
                 return RedirectToAction("Index");
             }
-            catch (Exception ex)
+            catch (Refit.ApiException ex)
             {
-                ModelState.AddModelError("", ex.Message);
+                var message = ex.Content ?? ex.ReasonPhrase ?? "Xəta baş verdi";
+                try
+                {
+                    var error = System.Text.Json.JsonDocument.Parse(message);
+                    if (error.RootElement.TryGetProperty("message", out var msg))
+                        message = msg.GetString() ?? message;
+                    else if (error.RootElement.TryGetProperty("errors", out var errors))
+                        message = errors.ToString();
+                }
+                catch { }
+                ModelState.AddModelError("", message);
                 var departments = await _departmentApi.GetAllAsync(new PagedRequest { PageSize = 100 });
                 ViewBag.Departments = departments.Items;
                 return View(dto);
@@ -102,9 +112,19 @@ namespace SIS.UI.Areas.Admin.Controllers
                 TempData["Success"] = "Müəllim uğurla yeniləndi";
                 return RedirectToAction("Index");
             }
-            catch (Exception ex)
+            catch (Refit.ApiException ex)
             {
-                ModelState.AddModelError("", ex.Message);
+                var message = ex.Content ?? ex.ReasonPhrase ?? "Xəta baş verdi";
+                try
+                {
+                    var error = System.Text.Json.JsonDocument.Parse(message);
+                    if (error.RootElement.TryGetProperty("message", out var msg))
+                        message = msg.GetString() ?? message;
+                    else if (error.RootElement.TryGetProperty("errors", out var errors))
+                        message = errors.ToString();
+                }
+                catch { }
+                ModelState.AddModelError("", message);
                 var departments = await _departmentApi.GetAllAsync(new PagedRequest { PageSize = 100 });
                 ViewBag.Departments = departments.Items;
                 return View(dto);

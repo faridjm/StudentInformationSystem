@@ -20,7 +20,7 @@ namespace SIS.DAL.Repositories.Implementations
             _dbSet = context.Set<T>();
         }
 
-        public async Task<IEnumerable<T>> GetAllAsync()
+        public virtual async Task<IEnumerable<T>> GetAllAsync()
             => await _dbSet.ToListAsync();
 
         public async Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>> predicate)

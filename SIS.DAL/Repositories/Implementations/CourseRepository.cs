@@ -13,6 +13,11 @@ namespace SIS.DAL.Repositories.Implementations
         {
         }
 
+        public override async Task<IEnumerable<Course>> GetAllAsync()
+            => await _dbSet
+                .Include(c => c.Department)
+                .ToListAsync();
+
         public async Task<Course?> GetCourseWithDetailsAsync(int courseId)
             => await _dbSet
                 .Include(c => c.Department)

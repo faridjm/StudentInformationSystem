@@ -12,7 +12,7 @@ namespace SIS.BLL.Validators
 
             RuleFor(x => x.NewPassword)
                 .NotEmpty().WithMessage("Yeni şifrə boş ola bilməz")
-                .MinimumLength(8).WithMessage("Şifrə minimum 8 simvol olmalıdır")
+                .MinimumLength(6).WithMessage("Şifrə minimum 6 simvol olmalıdır")
                 .Matches("[A-Z]").WithMessage("Şifrədə ən az 1 böyük hərf olmalıdır")
                 .Matches("[a-z]").WithMessage("Şifrədə ən az 1 kiçik hərf olmalıdır")
                 .Matches("[0-9]").WithMessage("Şifrədə ən az 1 rəqəm olmalıdır");
