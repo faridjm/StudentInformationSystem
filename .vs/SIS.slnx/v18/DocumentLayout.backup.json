@@ -3,12 +3,24 @@
   "WorkspaceRootPath": "C:\\Users\\ASUS\\source\\repos\\SIS\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{A2FEB487-405F-892A-3742-207A95F79B88}|SIS.DAL\\SIS.DAL.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.dal\\configurations\\courseconfiguration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FEB487-405F-892A-3742-207A95F79B88}|SIS.DAL\\SIS.DAL.csproj|solutionrelative:sis.dal\\configurations\\courseconfiguration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FEB487-405F-892A-3742-207A95F79B88}|SIS.DAL\\SIS.DAL.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.dal\\context\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FEB487-405F-892A-3742-207A95F79B88}|SIS.DAL\\SIS.DAL.csproj|solutionrelative:sis.dal\\context\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{39972673-1515-4AD6-9D01-4C3B62D7E497}|SIS.UI\\SIS.UI.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.ui\\areas\\teacher\\views\\courses\\attendance.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{39972673-1515-4AD6-9D01-4C3B62D7E497}|SIS.UI\\SIS.UI.csproj|solutionrelative:sis.ui\\areas\\teacher\\views\\courses\\attendance.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{C644E217-18C3-61E2-A87C-BECD5FA3E199}|SIS.BLL\\SIS.BLL.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.bll\\services\\implementations\\departmentservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{C644E217-18C3-61E2-A87C-BECD5FA3E199}|SIS.BLL\\SIS.BLL.csproj|solutionrelative:sis.bll\\services\\implementations\\departmentservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FEB487-405F-892A-3742-207A95F79B88}|SIS.DAL\\SIS.DAL.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.dal\\configurations\\departmentconfiguration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FEB487-405F-892A-3742-207A95F79B88}|SIS.DAL\\SIS.DAL.csproj|solutionrelative:sis.dal\\configurations\\departmentconfiguration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -18,7 +30,7 @@
       "DocumentGroups": [
         {
           "DockedHeight": 319,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": 2,
           "Children": [
             {
               "$type": "Bookmark",
@@ -26,7 +38,46 @@
             },
             {
               "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "DepartmentConfiguration.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Configurations\\DepartmentConfiguration.cs",
+              "RelativeDocumentMoniker": "SIS.DAL\\Configurations\\DepartmentConfiguration.cs",
+              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Configurations\\DepartmentConfiguration.cs",
+              "RelativeToolTip": "SIS.DAL\\Configurations\\DepartmentConfiguration.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-24T20:18:32.003Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "CourseConfiguration.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Configurations\\CourseConfiguration.cs",
+              "RelativeDocumentMoniker": "SIS.DAL\\Configurations\\CourseConfiguration.cs",
+              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Configurations\\CourseConfiguration.cs",
+              "RelativeToolTip": "SIS.DAL\\Configurations\\CourseConfiguration.cs",
+              "ViewState": "AgIAAAkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-24T20:18:23.976Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "AppDbContext.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Context\\AppDbContext.cs",
+              "RelativeDocumentMoniker": "SIS.DAL\\Context\\AppDbContext.cs",
+              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Context\\AppDbContext.cs",
+              "RelativeToolTip": "SIS.DAL\\Context\\AppDbContext.cs",
+              "ViewState": "AgIAAB4AAAAAAAAAAAApwC8AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-24T20:18:16.914Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
               "Title": "Attendance.cshtml",
               "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.UI\\Areas\\Teacher\\Views\\Courses\\Attendance.cshtml",
               "RelativeDocumentMoniker": "SIS.UI\\Areas\\Teacher\\Views\\Courses\\Attendance.cshtml",
@@ -39,7 +90,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 3,
               "Title": "DepartmentService.cs",
               "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.BLL\\Services\\Implementations\\DepartmentService.cs",
               "RelativeDocumentMoniker": "SIS.BLL\\Services\\Implementations\\DepartmentService.cs",
@@ -47,8 +98,7 @@
               "RelativeToolTip": "SIS.BLL\\Services\\Implementations\\DepartmentService.cs",
               "ViewState": "AgIAAAIAAAAAAAAAAAAYwAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-24T17:56:16.827Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-05-24T17:56:16.827Z"
             }
           ]
         },

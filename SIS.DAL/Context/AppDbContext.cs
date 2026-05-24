@@ -39,6 +39,8 @@ namespace SIS.DAL.Context
                 typeof(AppDbContext).Assembly);
 
             modelBuilder.ApplyConfiguration(new AcademicTermConfiguration());
+            modelBuilder.ApplyConfiguration(new CourseConfiguration());
+            modelBuilder.ApplyConfiguration(new DepartmentConfiguration());
         }
     }
 

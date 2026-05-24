@@ -8,28 +8,6 @@ namespace SIS.DAL.Configurations
     {
         public void Configure(EntityTypeBuilder<Course> builder)
         {
-            builder.HasKey(c => c.Id);
-
-            builder.Property(c => c.Name)
-                .IsRequired()
-                .HasMaxLength(150);
-
-            builder.Property(c => c.Code)
-                .IsRequired()
-                .HasMaxLength(10);
-
-            
-            builder.HasIndex(c => c.Code)
-                .IsUnique();
-
-            builder.Property(c => c.Description)
-                .HasMaxLength(500);
-
-            builder.HasOne(c => c.Department)
-                .WithMany(d => d.Courses)
-                .HasForeignKey(c => c.DepartmentId)
-                .OnDelete(DeleteBehavior.Restrict);
-
             builder.HasQueryFilter(c => !c.IsDeleted);
         }
     }
