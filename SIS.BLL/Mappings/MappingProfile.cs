@@ -26,12 +26,14 @@ namespace SIS.BLL.Mappings
             
             CreateMap<Student, StudentListDto>()
                 .ForMember(d => d.FullName, o => o.MapFrom(s => s.AppUser.FullName))
+                .ForMember(d => d.FinCode, o => o.MapFrom(s => s.AppUser.FinCode))
                 .ForMember(d => d.Email, o => o.MapFrom(s => s.AppUser.Email))
                 .ForMember(d => d.ProgramName, o => o.MapFrom(s => s.AcademicProgram.Name))
                 .ForMember(d => d.IsActive, o => o.MapFrom(s => s.AppUser.IsActive));
 
             CreateMap<Student, StudentDetailDto>()
                 .ForMember(d => d.FullName, o => o.MapFrom(s => s.AppUser.FullName))
+                .ForMember(d => d.FinCode, o => o.MapFrom(s => s.AppUser.FinCode))
                 .ForMember(d => d.Email, o => o.MapFrom(s => s.AppUser.Email))
                 .ForMember(d => d.PhoneNumber, o => o.MapFrom(s => s.AppUser.PhoneNumber))
                 .ForMember(d => d.ProfilePhoto, o => o.MapFrom(s => s.AppUser.ProfilePhoto))
@@ -45,12 +47,14 @@ namespace SIS.BLL.Mappings
             
             CreateMap<Teacher, TeacherListDto>()
                 .ForMember(d => d.FullName, o => o.MapFrom(s => s.AppUser.FullName))
+                .ForMember(d => d.FinCode, o => o.MapFrom(s => s.AppUser.FinCode))
                 .ForMember(d => d.Email, o => o.MapFrom(s => s.AppUser.Email))
                 .ForMember(d => d.DepartmentName, o => o.MapFrom(s => s.Department.Name))
                 .ForMember(d => d.IsActive, o => o.MapFrom(s => s.AppUser.IsActive));
 
             CreateMap<Teacher, TeacherDetailDto>()
                 .ForMember(d => d.FullName, o => o.MapFrom(s => s.AppUser.FullName))
+                .ForMember(d => d.FinCode, o => o.MapFrom(s => s.AppUser.FinCode))
                 .ForMember(d => d.Email, o => o.MapFrom(s => s.AppUser.Email))
                 .ForMember(d => d.PhoneNumber, o => o.MapFrom(s => s.AppUser.PhoneNumber))
                 .ForMember(d => d.ProfilePhoto, o => o.MapFrom(s => s.AppUser.ProfilePhoto))

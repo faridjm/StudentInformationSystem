@@ -9,6 +9,7 @@ namespace SIS.BLL.Services.DTOs.Teacher
     {
         public int Id { get; set; }
         public string FullName { get; set; } = null!;
+        public string? FinCode { get; set; }
         public string Email { get; set; } = null!;
         public string EmployeeNumber { get; set; } = null!;
         public string Title { get; set; } = null!;

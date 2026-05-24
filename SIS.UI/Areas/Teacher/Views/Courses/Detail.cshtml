@@ -1,0 +1,58 @@
+﻿@{
+    ViewData["Title"] = "Tələbə Siyahısı";
+    var offering = ViewBag.Offering as SIS.BLL.Services.DTOs.CourseOffering.CourseOfferingDetailDto;
+    var enrollments = ViewBag.Enrollments as IEnumerable<SIS.BLL.Services.DTOs.Enrollment.EnrollmentListDto>;
+}
+
+<div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
+    <a href="/Teacher/Courses" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i></a>
+    <div>
+        <h2 style="font-size:20px; font-weight:700;">@offering?.CourseName</h2>
+        <p style="color:var(--text-secondary); font-size:13px;">@offering?.CourseCode • @offering?.TermName</p>
+    </div>
+</div>
+
+<div style="display:flex; gap:8px; margin-bottom:20px;">
+    <a href="/Teacher/Courses/Grades/@offering?.Id" class="btn btn-primary btn-sm">
+        <i class="fas fa-star"></i> Qiymətlər
+    </a>
+    <a href="/Teacher/Courses/Attendance/@offering?.Id" class="btn btn-success btn-sm">
+        <i class="fas fa-clipboard-check"></i> Davamiyyət
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <span>Tələbə Siyahısı — @(enrollments?.Count() ?? 0) tələbə</span>
+    </div>
+    <div style="overflow-x:auto;">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Ad Soyad</th>
+                    <th>Tələbə №</th>
+                    <th>Status</th>
+                    <th>Qeydiyyat Tarixi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (enrollments != null)
+                {
+                    int i = 1;
+                    @foreach (var e in enrollments)
+                    {
+                        <tr>
+                            <td>@i</td>
+                            <td style="font-weight:500;">@e.StudentName</td>
+                            <td style="color:var(--text-secondary);">@e.StudentNumber</td>
+                            <td><span class="badge badge-success">Aktiv</span></td>
+                            <td style="color:var(--text-secondary); font-size:13px;">@e.EnrolledAt.ToString("dd.MM.yyyy")</td>
+                        </tr>
+                        i++;
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

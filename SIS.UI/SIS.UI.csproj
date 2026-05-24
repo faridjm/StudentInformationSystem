@@ -15,23 +15,14 @@
   <ItemGroup>
     <Folder Include="Areas\Admin\Data\" />
     <Folder Include="Areas\Admin\Models\" />
-    <Folder Include="Areas\Student\Controllers\" />
     <Folder Include="Areas\Student\Data\" />
     <Folder Include="Areas\Student\Models\" />
-    <Folder Include="Areas\Student\Views\Dashboard\" />
-    <Folder Include="Areas\Student\Views\Courses\" />
-    <Folder Include="Areas\Student\Views\Grades\" />
     <Folder Include="Areas\Student\Views\Attendance\" />
-    <Folder Include="Areas\Student\Views\Announcements\" />
     <Folder Include="Areas\Student\Views\Transcript\" />
-    <Folder Include="Areas\Teacher\Controllers\" />
     <Folder Include="Areas\Teacher\Data\" />
     <Folder Include="Areas\Teacher\Models\" />
-    <Folder Include="Areas\Teacher\Views\Dashboard\" />
-    <Folder Include="Areas\Teacher\Views\Courses\" />
     <Folder Include="Areas\Teacher\Views\Grades\" />
     <Folder Include="Areas\Teacher\Views\Attendance\" />
-    <Folder Include="Areas\Teacher\Views\Announcements\" />
     <Folder Include="Helpers\" />
     <Folder Include="Filters\" />
     <Folder Include="Mappings\" />

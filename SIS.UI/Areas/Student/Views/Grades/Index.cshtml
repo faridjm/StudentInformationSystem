@@ -1,0 +1,47 @@
+﻿@model IEnumerable<SIS.BLL.Services.DTOs.Grade.GradeDto>
+
+@{
+    ViewData["Title"] = "Qiymətlərim";
+}
+
+<div style="margin-bottom:20px;">
+    <h2 style="font-size:20px; font-weight:700;">Qiymətlərim</h2>
+</div>
+
+<div class="card">
+    <div style="overflow-x:auto;">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Növ</th>
+                    <th>Bal</th>
+                    <th>Maks Bal</th>
+                    <th>Hərf</th>
+                    <th>Tarix</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    int i = 1;
+                }
+                @foreach (var g in Model)
+                {
+                    <tr>
+                        <td>@i</td>
+                        <td>@g.Type</td>
+                        <td style="font-weight:600;">@g.Score</td>
+                        <td style="color:var(--text-secondary);">@g.MaxScore</td>
+                        <td>
+                            <span class="badge @(g.LetterGrade == "A" || g.LetterGrade == "B" ? "badge-success" : g.LetterGrade == "C" ? "badge-warning" : "badge-danger")">
+                                @g.LetterGrade
+                            </span>
+                        </td>
+                        <td style="color:var(--text-secondary); font-size:13px;">@g.GradedAt.ToString("dd.MM.yyyy")</td>
+                    </tr>
+                    i++;
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

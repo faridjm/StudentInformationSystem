@@ -2419,6 +2419,12 @@
           "password": {
             "type": "string"
           },
+          "finCode": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
           "phoneNumber": {
             "type": [
               "null",
@@ -2454,6 +2460,12 @@
           },
           "password": {
             "type": "string"
+          },
+          "finCode": {
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "phoneNumber": {
             "type": [
@@ -2716,6 +2728,12 @@
           "fullName": {
             "type": "string"
           },
+          "finCode": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
           "phoneNumber": {
             "type": [
               "null",
@@ -2745,6 +2763,12 @@
           },
           "fullName": {
             "type": "string"
+          },
+          "finCode": {
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "phoneNumber": {
             "type": [

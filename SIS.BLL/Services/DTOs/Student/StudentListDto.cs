@@ -4,6 +4,7 @@
     {
         public int Id { get; set; }
         public string FullName { get; set; } = null!;
+        public string? FinCode { get; set; }
         public string Email { get; set; } = null!;
         public string StudentNumber { get; set; } = null!;
         public string ProgramName { get; set; } = null!;

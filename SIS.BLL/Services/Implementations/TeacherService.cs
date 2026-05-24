@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using Microsoft.EntityFrameworkCore;
+using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using SIS.BLL.Services.DTOs.Teacher;
 using SIS.BLL.Services.Interfaces;
@@ -65,9 +66,29 @@ namespace SIS.BLL.Services.Implementations
 
         public async Task CreateTeacherAsync(CreateTeacherDto dto)
         {
+            // Email unikallığı Identity tərəfindən yoxlanılır
+            // Telefon unikallığını əl ilə yoxla
+            if (!string.IsNullOrEmpty(dto.PhoneNumber))
+            {
+                var phoneExists = await _userManager.Users
+                    .AnyAsync(u => u.PhoneNumber == dto.PhoneNumber);
+                if (phoneExists)
+                    throw new ConflictException("Bu telefon nömrəsi artıq istifadədədir");
+            }
+
+            // FinCode unikallığını yoxla
+            if (!string.IsNullOrEmpty(dto.FinCode))
+            {
+                var finExists = await _userManager.Users
+                    .AnyAsync(u => u.FinCode == dto.FinCode);
+                if (finExists)
+                    throw new ConflictException("Bu FIN kod artıq istifadədədir");
+            }
+
             var user = new AppUser
             {
                 FullName = dto.FullName.ToTitleCase(),
+                FinCode = dto.FinCode,
                 Email = dto.Email,
                 UserName = dto.Email,
                 PhoneNumber = dto.PhoneNumber,
@@ -108,6 +129,7 @@ namespace SIS.BLL.Services.Implementations
             var oldValue = new { teacher.AppUser.FullName, teacher.Title, teacher.DepartmentId };
 
             teacher.AppUser.FullName = dto.FullName.ToTitleCase();
+            teacher.AppUser.FinCode = dto.FinCode;
             teacher.AppUser.PhoneNumber = dto.PhoneNumber;
             await _userManager.UpdateAsync(teacher.AppUser);
 
@@ -127,6 +149,10 @@ namespace SIS.BLL.Services.Implementations
             if (teacher == null)
                 throw new NotFoundException("Müəllim tapılmadı");
 
+            teacher.AppUser.Email = $"deleted_{id}_{teacher.AppUser.Email}";
+            teacher.AppUser.NormalizedEmail = teacher.AppUser.Email.ToUpper();
+            teacher.AppUser.UserName = teacher.AppUser.Email;
+            teacher.AppUser.NormalizedUserName = teacher.AppUser.Email.ToUpper();
             teacher.AppUser.IsActive = false;
             await _userManager.UpdateAsync(teacher.AppUser);
 

@@ -1,0 +1,55 @@
+﻿@model IEnumerable<SIS.BLL.Services.DTOs.Announcement.AnnouncementDto>
+
+@{
+    ViewData["Title"] = "Elanlar";
+}
+
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+    <h2 style="font-size:20px; font-weight:700;">Elanlar</h2>
+    <a href="/Teacher/Announcements/Create" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Yeni Elan
+    </a>
+</div>
+
+<div class="card">
+    <div style="overflow-x:auto;">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Başlıq</th>
+                    <th>Növ</th>
+                    <th>Tarix</th>
+                    <th>Əməliyyat</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var a in Model)
+                {
+                    <tr>
+                        <td style="font-weight:500;">@a.Title</td>
+                        <td>
+                            @if (a.IsGlobal)
+                            {
+                                <span class="badge badge-info">Global</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-warning">Kurs</span>
+                            }
+                        </td>
+                        <td style="color:var(--text-secondary); font-size:13px;">@a.CreatedAt.ToString("dd.MM.yyyy HH:mm")</td>
+                        <td>
+                            <form method="post" action="/Teacher/Announcements/Delete/@a.Id"
+                                  onsubmit="return confirm('Elanı silmək istədiyinizdən əminsinizmi?')">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-sm btn-danger">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

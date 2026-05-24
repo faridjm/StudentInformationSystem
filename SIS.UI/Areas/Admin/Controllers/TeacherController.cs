@@ -70,7 +70,16 @@ namespace SIS.UI.Areas.Admin.Controllers
                 }
                 catch { }
                 ModelState.AddModelError("", message);
-                var departments = await _departmentApi.GetAllAsync(new PagedRequest { PageSize = 100 });
+                var departments = await _departmentApi.GetAllAsync(
+                    new SIS.Common.Pagination.PagedRequest { PageSize = 100 });
+                ViewBag.Departments = departments.Items;
+                return View(dto);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                var departments = await _departmentApi.GetAllAsync(
+                    new SIS.Common.Pagination.PagedRequest { PageSize = 100 });
                 ViewBag.Departments = departments.Items;
                 return View(dto);
             }

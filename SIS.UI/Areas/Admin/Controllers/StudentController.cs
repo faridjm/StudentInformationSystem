@@ -75,6 +75,13 @@ namespace SIS.UI.Areas.Admin.Controllers
                 ViewBag.Programs = programs;
                 return View(dto);
             }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                var programs = await _programApi.GetAllAsync();
+                ViewBag.Programs = programs;
+                return View(dto);
+            }
         }
 
         public async Task<IActionResult> Edit(int id)

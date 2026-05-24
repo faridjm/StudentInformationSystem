@@ -51,6 +51,10 @@ namespace SIS.BLL.Services.Implementations
 
         public async Task CreateCourseAsync(CreateCourseDto dto)
         {
+            var department = await _unitOfWork.Departments.GetByIdAsync(dto.DepartmentId);
+            if (department == null)
+                throw new NotFoundException("Departament tapılmadı");
+
             var isUnique = await _unitOfWork.Courses.IsCourseCodeUniqueAsync(dto.Code);
             if (!isUnique)
                 throw new ConflictException($"{dto.Code} kodu ilə kurs artıq mövcuddur");

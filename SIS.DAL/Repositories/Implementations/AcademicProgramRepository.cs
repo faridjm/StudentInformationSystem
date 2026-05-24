@@ -28,6 +28,12 @@ namespace SIS.DAL.Repositories.Implementations
         .Include(p => p.Department)
         .ToListAsync();
 
+        public override async Task<IEnumerable<AcademicProgram>> GetAllAsync()
+            => await _dbSet
+                .Include(p => p.Department)
+                .Include(p => p.Students)
+                .Where(p => !p.IsDeleted)
+                .ToListAsync();
 
     }
 }

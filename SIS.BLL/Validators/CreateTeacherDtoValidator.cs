@@ -8,8 +8,8 @@ namespace SIS.BLL.Validators
         public CreateTeacherDtoValidator()
         {
             RuleFor(x => x.FullName)
-                .NotEmpty().WithMessage("Ad boş ola bilməz")
-                .MinimumLength(3).WithMessage("Ad minimum 3 simvol olmalıdır");
+                .NotEmpty().WithMessage("Ad Soyad boş ola bilməz")
+                .MinimumLength(3).WithMessage("Ad Soyad minimum 3 simvol olmalıdır");
 
             RuleFor(x => x.Email)
                 .NotEmpty().WithMessage("Email boş ola bilməz")
@@ -19,7 +19,6 @@ namespace SIS.BLL.Validators
                 .NotEmpty().WithMessage("Şifrə boş ola bilməz")
                 .MinimumLength(6).WithMessage("Şifrə minimum 6 simvol olmalıdır")
                 .Matches("[A-Z]").WithMessage("Şifrədə ən az 1 böyük hərf olmalıdır")
-                .Matches("[a-z]").WithMessage("Şifrədə ən az 1 kiçik hərf olmalıdır")
                 .Matches("[0-9]").WithMessage("Şifrədə ən az 1 rəqəm olmalıdır");
 
             RuleFor(x => x.Title)
@@ -27,8 +26,6 @@ namespace SIS.BLL.Validators
 
             RuleFor(x => x.DepartmentId)
                 .GreaterThan(0).WithMessage("Departament seçilməlidir");
-
-            
         }
     }
 

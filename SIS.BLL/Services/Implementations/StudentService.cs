@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using Microsoft.EntityFrameworkCore;
+using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using SIS.BLL.Services.DTOs.Student;
 using SIS.BLL.Services.Interfaces;
@@ -65,9 +66,26 @@ namespace SIS.BLL.Services.Implementations
 
         public async Task CreateStudentAsync(CreateStudentDto dto)
         {
+            if (!string.IsNullOrEmpty(dto.PhoneNumber))
+            {
+                var phoneExists = await _userManager.Users
+                    .AnyAsync(u => u.PhoneNumber == dto.PhoneNumber);
+                if (phoneExists)
+                    throw new ConflictException("Bu telefon nömrəsi artıq istifadədədir");
+            }
+
+            if (!string.IsNullOrEmpty(dto.FinCode))
+            {
+                var finExists = await _userManager.Users
+                    .AnyAsync(u => u.FinCode == dto.FinCode);
+                if (finExists)
+                    throw new ConflictException("Bu FIN kod artıq istifadədədir");
+            }
+
             var user = new AppUser
             {
                 FullName = dto.FullName.ToTitleCase(),
+                FinCode = dto.FinCode,
                 Email = dto.Email,
                 UserName = dto.Email,
                 PhoneNumber = dto.PhoneNumber,
@@ -107,6 +125,7 @@ namespace SIS.BLL.Services.Implementations
             var oldValue = new { student.AppUser.FullName, student.AcademicProgramId };
 
             student.AppUser.FullName = dto.FullName.ToTitleCase();
+            student.AppUser.FinCode = dto.FinCode;
             student.AppUser.PhoneNumber = dto.PhoneNumber;
             await _userManager.UpdateAsync(student.AppUser);
 
@@ -125,6 +144,10 @@ namespace SIS.BLL.Services.Implementations
             if (student == null)
                 throw new NotFoundException("Tələbə tapılmadı");
 
+            student.AppUser.Email = $"deleted_{id}_{student.AppUser.Email}";
+            student.AppUser.NormalizedEmail = student.AppUser.Email.ToUpper();
+            student.AppUser.UserName = student.AppUser.Email;
+            student.AppUser.NormalizedUserName = student.AppUser.Email.ToUpper();
             student.AppUser.IsActive = false;
             await _userManager.UpdateAsync(student.AppUser);
 

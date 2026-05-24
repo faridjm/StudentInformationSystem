@@ -20,10 +20,9 @@ namespace SIS.BLL.Services.Implementations
 
         public async Task<IEnumerable<AcademicProgramDto>> GetAllProgramsAsync()
         {
-            var programs = await _unitOfWork.AcademicPrograms.GetAllWithDepartmentAsync();
+            var programs = await _unitOfWork.AcademicPrograms.GetAllAsync();
             return _mapper.Map<IEnumerable<AcademicProgramDto>>(programs);
         }
-
         public async Task<AcademicProgramDto?> GetProgramByIdAsync(int id)
         {
             var program = await _unitOfWork.AcademicPrograms.GetProgramWithDetailsAsync(id);
@@ -38,6 +37,11 @@ namespace SIS.BLL.Services.Implementations
 
         public async Task CreateProgramAsync(CreateAcademicProgramDto dto)
         {
+            // Department mövcuddur və silinməyib yoxla
+            var department = await _unitOfWork.Departments.GetByIdAsync(dto.DepartmentId);
+            if (department == null)
+                throw new NotFoundException("Departament tapılmadı");
+
             var program = _mapper.Map<AcademicProgram>(dto);
             await _unitOfWork.AcademicPrograms.AddAsync(program);
             await _unitOfWork.SaveAsync();

@@ -1,0 +1,37 @@
+﻿@model IEnumerable<SIS.BLL.Services.DTOs.Announcement.AnnouncementDto>
+
+@{
+    ViewData["Title"] = "Elanlar";
+}
+
+<div style="margin-bottom:20px;">
+    <h2 style="font-size:20px; font-weight:700;">Elanlar</h2>
+</div>
+
+<div style="display:flex; flex-direction:column; gap:12px;">
+    @foreach (var a in Model)
+    {
+        <div class="card">
+            <div class="card-body">
+                <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:8px;">
+                    <h3 style="font-size:16px; font-weight:600;">@a.Title</h3>
+                    <div style="display:flex; gap:8px; align-items:center;">
+                        @if (a.IsGlobal)
+                        {
+                            <span class="badge badge-info">Global</span>
+                        }
+                        else
+                        {
+                            <span class="badge badge-warning">Kurs</span>
+                        }
+                        <span style="color:var(--text-secondary); font-size:12px;">@a.CreatedAt.ToString("dd.MM.yyyy HH:mm")</span>
+                    </div>
+                </div>
+                <p style="color:var(--text-secondary); font-size:14px; line-height:1.6;">@a.Content</p>
+                <div style="margin-top:8px; font-size:12px; color:var(--text-secondary);">
+                    <i class="fas fa-user"></i> @a.AuthorName
+                </div>
+            </div>
+        </div>
+    }
+</div>
