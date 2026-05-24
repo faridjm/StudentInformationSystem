@@ -12,11 +12,13 @@ namespace SIS.BLL.Services.Implementations
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IActivityLogger _activityLogger;
 
-        public DepartmentService(IUnitOfWork unitOfWork, IMapper mapper)
+        public DepartmentService(IUnitOfWork unitOfWork, IMapper mapper, IActivityLogger activityLogger)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _activityLogger = activityLogger;
         }
 
         public async Task<PagedResult<DepartmentDto>> GetAllDepartmentsAsync(PagedRequest request)
@@ -63,8 +65,35 @@ namespace SIS.BLL.Services.Implementations
             if (department == null)
                 throw new NotFoundException("Departament tapılmadı");
 
+            // Departamentə aid kursları soft delete et
+            var courses = await _unitOfWork.Courses
+                .GetAllAsync(c => c.DepartmentId == id);
+            foreach (var course in courses)
+            {
+                _unitOfWork.Courses.SoftDelete(course);
+            }
+
+            // Departamentə aid müəllimləri soft delete et
+            var teachers = await _unitOfWork.Teachers
+                .GetAllAsync(t => t.DepartmentId == id);
+            foreach (var teacher in teachers)
+            {
+                _unitOfWork.Teachers.SoftDelete(teacher);
+            }
+
+            // Departamentə aid proqramları soft delete et
+            var programs = await _unitOfWork.AcademicPrograms
+                .GetAllAsync(p => p.DepartmentId == id);
+            foreach (var program in programs)
+            {
+                _unitOfWork.AcademicPrograms.SoftDelete(program);
+            }
+
             _unitOfWork.Departments.SoftDelete(department);
             await _unitOfWork.SaveAsync();
+
+            await _activityLogger.LogAsync("Delete", "Department", id.ToString(),
+                new { department.Name }, null);
         }
     }
 
