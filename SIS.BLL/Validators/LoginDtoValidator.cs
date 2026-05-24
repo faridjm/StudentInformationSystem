@@ -11,8 +11,8 @@ namespace SIS.BLL.Validators
         public LoginDtoValidator()
         {
             RuleFor(x => x.Email)
-                .NotEmpty().WithMessage("Email boş ola bilməz")
-                .EmailAddress().WithMessage("Email düzgün deyil");
+                .NotEmpty().WithMessage("Email/Kod boş ola bilməz");
+            
 
             RuleFor(x => x.Password)
                 .NotEmpty().WithMessage("Şifrə boş ola bilməz")

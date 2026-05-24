@@ -41,16 +41,38 @@ namespace SIS.BLL.Services.Implementations
 
         public async Task<TokenDto> LoginAsync(LoginDto dto)
         {
-            var user = await _userManager.FindByEmailAsync(dto.Email);
+            AppUser? user = null;
+
+            // Əvvəlcə email ilə axtar
+            user = await _userManager.FindByEmailAsync(dto.Email);
+
+            // Tapılmadısa StudentNumber ilə axtar
             if (user == null)
-                throw new BadRequestException("Email və ya şifrə yanlışdır");
+            {
+                var student = await _unitOfWork.Students
+                    .GetAsync(s => s.StudentNumber == dto.Email);
+                if (student != null)
+                    user = await _userManager.FindByIdAsync(student.AppUserId);
+            }
+
+            // Tapılmadısa EmployeeNumber ilə axtar
+            if (user == null)
+            {
+                var teacher = await _unitOfWork.Teachers
+                    .GetAsync(t => t.EmployeeNumber == dto.Email);
+                if (teacher != null)
+                    user = await _userManager.FindByIdAsync(teacher.AppUserId);
+            }
+
+            if (user == null)
+                throw new BadRequestException("Email/kod və ya şifrə yanlışdır");
 
             if (!user.IsActive)
                 throw new UnauthorizedException("Hesabınız deaktiv edilmişdir");
 
             var isCorrect = await _userManager.CheckPasswordAsync(user, dto.Password);
             if (!isCorrect)
-                throw new BadRequestException("Email və ya şifrə yanlışdır");
+                throw new BadRequestException("Email/kod və ya şifrə yanlışdır");
 
             return await GenerateTokenAsync(user);
         }
