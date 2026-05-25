@@ -95,6 +95,7 @@ namespace SIS.BLL.Mappings
 
             
             CreateMap<Enrollment, EnrollmentListDto>()
+                .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))
                 .ForMember(d => d.StudentName, o => o.MapFrom(s => s.Student.AppUser.FullName))
                 .ForMember(d => d.StudentNumber, o => o.MapFrom(s => s.Student.StudentNumber))
                 .ForMember(d => d.CourseName, o => o.MapFrom(s => s.CourseOffering.Course.Name))
@@ -104,7 +105,17 @@ namespace SIS.BLL.Mappings
 
             CreateMap<CreateEnrollmentDto, Enrollment>();
 
-            
+            CreateMap<Enrollment, EnrollmentDetailDto>()
+                .ForMember(d => d.StudentId, o => o.MapFrom(s => s.StudentId))
+                .ForMember(d => d.StudentName, o => o.MapFrom(s => s.Student.AppUser.FullName))
+                .ForMember(d => d.TeacherId, o => o.MapFrom(s => s.CourseOffering.TeacherId))
+                .ForMember(d => d.CourseName, o => o.MapFrom(s => s.CourseOffering.Course.Name))
+                .ForMember(d => d.TeacherName, o => o.MapFrom(s => s.CourseOffering.Teacher.AppUser.FullName))
+                .ForMember(d => d.TermName, o => o.MapFrom(s => s.CourseOffering.AcademicTerm.Name))
+                .ForMember(d => d.AverageScore, o => o.Ignore())
+                .ForMember(d => d.AttendancePercentage, o => o.Ignore());
+
+
             CreateMap<Grade, GradeDto>()
                 .ForMember(d => d.LetterGrade,
                     o => o.MapFrom(s => GpaHelper.ScoreToLetterGrade(s.Score / s.MaxScore * 100)));

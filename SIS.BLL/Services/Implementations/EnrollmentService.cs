@@ -49,7 +49,18 @@ namespace SIS.BLL.Services.Implementations
         public async Task<IEnumerable<EnrollmentListDto>> GetCourseEnrollmentsAsync(int courseOfferingId)
         {
             var enrollments = await _unitOfWork.Enrollments.GetCourseEnrollmentsAsync(courseOfferingId);
-            return _mapper.Map<IEnumerable<EnrollmentListDto>>(enrollments);
+            return enrollments.Select(e => new EnrollmentListDto
+            {
+                Id = e.Id,
+                StudentName = e.Student.AppUser.FullName,
+                StudentNumber = e.Student.StudentNumber,
+                CourseName = e.CourseOffering.Course.Name,
+                CourseCode = e.CourseOffering.Course.Code,
+                TeacherName = e.CourseOffering.Teacher.AppUser.FullName,
+                TermName = e.CourseOffering.AcademicTerm.Name,
+                Status = e.Status,
+                EnrolledAt = e.EnrolledAt
+            }).ToList();
         }
 
         public async Task EnrollStudentAsync(CreateEnrollmentDto dto)

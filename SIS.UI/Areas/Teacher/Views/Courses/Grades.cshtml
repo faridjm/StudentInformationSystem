@@ -1,4 +1,17 @@
-﻿@{
+﻿@if (TempData["Error"] != null)
+{
+    <div style="background:red; color:white; padding:10px; margin-bottom:10px;">
+        @TempData["Error"]
+    </div>
+}
+@if (TempData["Success"] != null)
+{
+    <div style="background:green; color:white; padding:10px; margin-bottom:10px;">
+        @TempData["Success"]
+    </div>
+}
+
+@{
     ViewData["Title"] = "Qiymətlər";
     var offering = ViewBag.Offering as SIS.BLL.Services.DTOs.CourseOffering.CourseOfferingDetailDto;
     var enrollments = ViewBag.Enrollments as IEnumerable<SIS.BLL.Services.DTOs.Enrollment.EnrollmentListDto>;

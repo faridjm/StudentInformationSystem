@@ -82,8 +82,13 @@ namespace SIS.UI.Areas.Teacher.Controllers
             if (offering == null) return NotFound();
 
             var enrollments = await _enrollmentApi.GetByCourseAsync(id);
+
+            // Enrollments-i siyahı kimi saxla
+            var enrollmentList = enrollments.ToList();
+
             ViewBag.Offering = offering;
-            ViewBag.Enrollments = enrollments;
+            ViewBag.Enrollments = enrollmentList;
+            ViewBag.EnrollmentIds = enrollmentList.Select(e => e.Id).ToList();
             ViewBag.Today = DateTime.Now.ToString("yyyy-MM-dd");
             return View();
         }

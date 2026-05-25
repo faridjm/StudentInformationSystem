@@ -50,7 +50,7 @@ namespace SIS.API.Authorization.Handlers
                 }
 
                 var enrollment = await _enrollmentService.GetEnrollmentByIdAsync(enrollmentId);
-                if (enrollment != null && enrollment.TeacherName == teacher.FullName)
+                if (enrollment != null && enrollment.TeacherId == teacher.Id)
                 {
                     context.Succeed(requirement);
                     return;

@@ -53,9 +53,24 @@ namespace SIS.BLL.Services.Implementations
 
         public async Task RecordBulkAttendanceAsync(IEnumerable<CreateAttendanceDto> dtos)
         {
-            
-            var records = dtos.Select(dto => _mapper.Map<AttendanceRecord>(dto)).ToList();
-            await _unitOfWork.AttendanceRecords.AddRangeAsync(records);
+            foreach (var dto in dtos)
+            {
+                var existing = await _unitOfWork.AttendanceRecords.GetAsync(
+                    a => a.EnrollmentId == dto.EnrollmentId
+                      && a.SessionDate.Date == dto.SessionDate.Date);
+
+                if (existing != null)
+                {
+                    existing.Status = dto.Status;
+                    existing.Note = dto.Note;
+                    _unitOfWork.AttendanceRecords.Update(existing);
+                }
+                else
+                {
+                    var record = _mapper.Map<AttendanceRecord>(dto);
+                    await _unitOfWork.AttendanceRecords.AddAsync(record);
+                }
+            }
             await _unitOfWork.SaveAsync();
         }
     }

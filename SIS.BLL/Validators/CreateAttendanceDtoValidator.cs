@@ -13,7 +13,8 @@ namespace SIS.BLL.Validators
 
             RuleFor(x => x.SessionDate)
                 .NotEmpty().WithMessage("Sessiya tarixi boş ola bilməz")
-                .LessThanOrEqualTo(DateTime.Now).WithMessage("Sessiya tarixi gələcəkdə ola bilməz");
+                .Must(date => date.Date <= DateTime.Now.Date)
+                .WithMessage("Sessiya tarixi gələcəkdə ola bilməz");
         }
     }
 }

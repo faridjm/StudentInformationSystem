@@ -30,6 +30,11 @@ namespace SIS.DAL.Repositories.Implementations
                     .ThenInclude(s => s.AppUser)
                 .Include(e => e.CourseOffering)
                     .ThenInclude(co => co.Course)
+                .Include(e => e.CourseOffering)
+                    .ThenInclude(co => co.Teacher)
+                        .ThenInclude(t => t.AppUser)
+                .Include(e => e.CourseOffering)
+                    .ThenInclude(co => co.AcademicTerm)
                 .Include(e => e.Grades)
                 .Include(e => e.AttendanceRecords)
                 .FirstOrDefaultAsync(e => e.Id == enrollmentId);
@@ -52,6 +57,13 @@ namespace SIS.DAL.Repositories.Implementations
             => await _dbSet
                 .Include(e => e.Student)
                     .ThenInclude(s => s.AppUser)
+                .Include(e => e.CourseOffering)
+                    .ThenInclude(co => co.Course)
+                .Include(e => e.CourseOffering)
+                    .ThenInclude(co => co.Teacher)
+                        .ThenInclude(t => t.AppUser)
+                .Include(e => e.CourseOffering)
+                    .ThenInclude(co => co.AcademicTerm)
                 .Where(e => e.CourseOfferingId == courseOfferingId)
                 .ToListAsync();
 
