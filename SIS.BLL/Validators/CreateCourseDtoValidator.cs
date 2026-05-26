@@ -19,6 +19,9 @@ namespace SIS.BLL.Validators
 
             RuleFor(x => x.DepartmentId)
                 .GreaterThan(0).WithMessage("Departament seçilməlidir");
+
+            RuleFor(x => x.AcademicProgramId)
+                .GreaterThan(0).WithMessage("Akademik proqram seçilməlidir");
         }
     }
 

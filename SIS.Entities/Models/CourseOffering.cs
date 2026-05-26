@@ -14,5 +14,7 @@ namespace SIS.Entities.Models
         public Course Course { get; set; } = null!;
         public Teacher Teacher { get; set; } = null!;
         public ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
+        public ICollection<WeeklySchedulePattern> WeeklySchedules { get; set; } = new List<WeeklySchedulePattern>();
+        public ICollection<ClassSession> ClassSessions { get; set; } = new List<ClassSession>();
     }
 }

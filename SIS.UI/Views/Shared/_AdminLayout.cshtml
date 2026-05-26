@@ -556,8 +556,11 @@
         <a href="/Admin/AcademicProgram" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "AcademicProgram" ? "active" : "")">
             <i class="fas fa-graduation-cap"></i> Proqramlar
         </a>
+        <a href="/Admin/AcademicYear" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "AcademicYear" ? "active" : "")">
+            <i class="fas fa-calendar-alt"></i> Dərs Sezonları
+        </a>
         <a href="/Admin/AcademicTerm" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "AcademicTerm" ? "active" : "")">
-            <i class="fas fa-calendar"></i> Terimlər
+            <i class="fas fa-calendar"></i> Semestrlər
         </a>
         <a href="/Admin/Announcement" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Announcement" ? "active" : "")">
             <i class="fas fa-bullhorn"></i> Elanlar

@@ -4,6 +4,7 @@ using SIS.API.Services;
 using SIS.BLL.Mappings;
 using SIS.BLL.Services.Implementations;
 using SIS.BLL.Services.Interfaces;
+using SIS.Common.Time;
 using SIS.DAL.UnitOfWork;
 
 namespace SIS.API.Extensions
@@ -12,6 +13,8 @@ namespace SIS.API.Extensions
     {
         public static IServiceCollection AddServices(this IServiceCollection services)
         {
+            services.AddSingleton<IClock, SystemClock>();
+
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             services.AddScoped<IAuthService, AuthService>();
@@ -26,7 +29,10 @@ namespace SIS.API.Extensions
             services.AddScoped<INotificationService, NotificationService>();
             services.AddScoped<IDepartmentService, DepartmentService>();
             services.AddScoped<IAcademicProgramService, AcademicProgramService>();
+            services.AddScoped<IAcademicYearService, AcademicYearService>();
             services.AddScoped<IAcademicTermService, AcademicTermService>();
+            services.AddScoped<IWeeklySchedulePatternService, WeeklySchedulePatternService>();
+            services.AddScoped<IClassSessionService, ClassSessionService>();
             services.AddScoped<IRealtimeNotifier, SignalRNotifier>();
             services.AddHttpContextAccessor();
             services.AddScoped<IActivityLogger, ActivityLogger>();

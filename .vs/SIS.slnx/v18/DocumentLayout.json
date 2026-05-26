@@ -3,8 +3,28 @@
   "WorkspaceRootPath": "C:\\Users\\ASUS\\source\\repos\\SIS\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{CDEA2B27-0091-9B53-B0F3-EB793148630A}|SIS.Common\\SIS.Common.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.common\\time\\systemclock.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CDEA2B27-0091-9B53-B0F3-EB793148630A}|SIS.Common\\SIS.Common.csproj|solutionrelative:sis.common\\time\\systemclock.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CDEA2B27-0091-9B53-B0F3-EB793148630A}|SIS.Common\\SIS.Common.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.common\\time\\iclock.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CDEA2B27-0091-9B53-B0F3-EB793148630A}|SIS.Common\\SIS.Common.csproj|solutionrelative:sis.common\\time\\iclock.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Migrations\\20260526090434_AddClassSessionAndWeeklySchedule.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:SIS.DAL\\Migrations\\20260526090434_AddClassSessionAndWeeklySchedule.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Migrations\\20260526084811_AddProgramIdToCourse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:SIS.DAL\\Migrations\\20260526084811_AddProgramIdToCourse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{C644E217-18C3-61E2-A87C-BECD5FA3E199}|SIS.BLL\\SIS.BLL.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.bll\\services\\implementations\\enrollmentservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{C644E217-18C3-61E2-A87C-BECD5FA3E199}|SIS.BLL\\SIS.BLL.csproj|solutionrelative:sis.bll\\services\\implementations\\enrollmentservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{39972673-1515-4AD6-9D01-4C3B62D7E497}|SIS.UI\\SIS.UI.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.ui\\views\\_viewimports.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{39972673-1515-4AD6-9D01-4C3B62D7E497}|SIS.UI\\SIS.UI.csproj|solutionrelative:sis.ui\\views\\_viewimports.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{C644E217-18C3-61E2-A87C-BECD5FA3E199}|SIS.BLL\\SIS.BLL.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.bll\\validators\\createattendancedtovalidator.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -13,6 +33,10 @@
     {
       "AbsoluteMoniker": "D:0:0:{C644E217-18C3-61E2-A87C-BECD5FA3E199}|SIS.BLL\\SIS.BLL.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.bll\\mappings\\mappingprofile.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{C644E217-18C3-61E2-A87C-BECD5FA3E199}|SIS.BLL\\SIS.BLL.csproj|solutionrelative:sis.bll\\mappings\\mappingprofile.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FEB487-405F-892A-3742-207A95F79B88}|SIS.DAL\\SIS.DAL.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.dal\\migrations\\20260525214404_addacademicyearandtermphases.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FEB487-405F-892A-3742-207A95F79B88}|SIS.DAL\\SIS.DAL.csproj|solutionrelative:sis.dal\\migrations\\20260525214404_addacademicyearandtermphases.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -22,7 +46,7 @@
       "DocumentGroups": [
         {
           "DockedHeight": 319,
-          "SelectedChildIndex": 3,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Bookmark",
@@ -30,7 +54,83 @@
             },
             {
               "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "SystemClock.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.Common\\Time\\SystemClock.cs",
+              "RelativeDocumentMoniker": "SIS.Common\\Time\\SystemClock.cs",
+              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.Common\\Time\\SystemClock.cs",
+              "RelativeToolTip": "SIS.Common\\Time\\SystemClock.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-26T09:10:29.942Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "IClock.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.Common\\Time\\IClock.cs",
+              "RelativeDocumentMoniker": "SIS.Common\\Time\\IClock.cs",
+              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.Common\\Time\\IClock.cs",
+              "RelativeToolTip": "SIS.Common\\Time\\IClock.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-26T09:10:01.374Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 2,
+              "Title": "20260526090434_AddClassSessionAndWeeklySchedule.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Migrations\\20260526090434_AddClassSessionAndWeeklySchedule.cs",
+              "RelativeDocumentMoniker": "SIS.DAL\\Migrations\\20260526090434_AddClassSessionAndWeeklySchedule.cs",
+              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Migrations\\20260526090434_AddClassSessionAndWeeklySchedule.cs",
+              "RelativeToolTip": "SIS.DAL\\Migrations\\20260526090434_AddClassSessionAndWeeklySchedule.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACMAAABEAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-26T09:04:34.252Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "20260526084811_AddProgramIdToCourse.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Migrations\\20260526084811_AddProgramIdToCourse.cs",
+              "RelativeDocumentMoniker": "SIS.DAL\\Migrations\\20260526084811_AddProgramIdToCourse.cs",
+              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Migrations\\20260526084811_AddProgramIdToCourse.cs",
+              "RelativeToolTip": "SIS.DAL\\Migrations\\20260526084811_AddProgramIdToCourse.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-26T08:48:11.506Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "20260525214404_AddAcademicYearAndTermPhases.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Migrations\\20260525214404_AddAcademicYearAndTermPhases.cs",
+              "RelativeDocumentMoniker": "SIS.DAL\\Migrations\\20260525214404_AddAcademicYearAndTermPhases.cs",
+              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Migrations\\20260525214404_AddAcademicYearAndTermPhases.cs",
+              "RelativeToolTip": "SIS.DAL\\Migrations\\20260525214404_AddAcademicYearAndTermPhases.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAABFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-25T21:44:05.168Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "_ViewImports.cshtml",
+              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.UI\\Views\\_ViewImports.cshtml",
+              "RelativeDocumentMoniker": "SIS.UI\\Views\\_ViewImports.cshtml",
+              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.UI\\Views\\_ViewImports.cshtml",
+              "RelativeToolTip": "SIS.UI\\Views\\_ViewImports.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAhAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-05-25T16:10:11.645Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
               "Title": "MappingProfile.cs",
               "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.BLL\\Mappings\\MappingProfile.cs",
               "RelativeDocumentMoniker": "SIS.BLL\\Mappings\\MappingProfile.cs",
@@ -42,7 +142,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 6,
               "Title": "CreateAttendanceDtoValidator.cs",
               "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.BLL\\Validators\\CreateAttendanceDtoValidator.cs",
               "RelativeDocumentMoniker": "SIS.BLL\\Validators\\CreateAttendanceDtoValidator.cs",
@@ -54,13 +154,13 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 4,
               "Title": "EnrollmentService.cs",
               "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.BLL\\Services\\Implementations\\EnrollmentService.cs",
               "RelativeDocumentMoniker": "SIS.BLL\\Services\\Implementations\\EnrollmentService.cs",
               "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.BLL\\Services\\Implementations\\EnrollmentService.cs",
               "RelativeToolTip": "SIS.BLL\\Services\\Implementations\\EnrollmentService.cs",
-              "ViewState": "AgIAADUAAAAAAAAAAAAgwAAAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAACkAAAAAAAAAAAAgwAkAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-05-25T13:06:25.421Z",
               "EditorCaption": ""

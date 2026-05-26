@@ -7,5 +7,8 @@
         public int Credits { get; set; }
         public string? Description { get; set; }
         public int DepartmentId { get; set; }
+
+        /// <summary>Yeni yaradılan kurslar üçün məcburidir.</summary>
+        public int AcademicProgramId { get; set; }
     }
 }

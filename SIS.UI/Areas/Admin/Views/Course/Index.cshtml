@@ -36,6 +36,7 @@
                     <th>Kod</th>
                     <th>Kredit</th>
                     <th>Departament</th>
+                    <th>Proqram</th>
                     <th>Əməliyyat</th>
                 </tr>
             </thead>
@@ -48,6 +49,16 @@
                         <td><code style="background:var(--bg-hover); padding:2px 8px; border-radius:4px;">@course.Code</code></td>
                         <td><span class="badge badge-info">@course.Credits kredit</span></td>
                         <td>@course.DepartmentName</td>
+                        <td>
+                            @if (course.AcademicProgramName != null)
+                            {
+                                <span>@course.AcademicProgramName</span>
+                            }
+                            else
+                            {
+                                <span style="color:var(--text-secondary); font-style:italic;">təyin olunmayıb</span>
+                            }
+                        </td>
                         <td>
                             <div style="display:flex; gap:6px;">
                                 <a href="/Admin/Course/Edit/@course.Id" class="btn btn-sm btn-secondary">

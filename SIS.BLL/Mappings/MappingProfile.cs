@@ -1,6 +1,9 @@
 ﻿using AutoMapper;
 using SIS.BLL.Services.DTOs.AcademicProgram;
 using SIS.BLL.Services.DTOs.AcademicTerm;
+using SIS.BLL.Services.DTOs.AcademicYear;
+using SIS.BLL.Services.DTOs.ClassSession;
+using SIS.BLL.Services.DTOs.WeeklySchedule;
 using SIS.BLL.Services.DTOs.Announcement;
 using SIS.BLL.Services.DTOs.Attendance;
 using SIS.BLL.Services.DTOs.Course;
@@ -66,10 +69,14 @@ namespace SIS.BLL.Mappings
 
             
             CreateMap<Course, CourseListDto>()
-                .ForMember(d => d.DepartmentName, o => o.MapFrom(s => s.Department.Name));
+                .ForMember(d => d.DepartmentName, o => o.MapFrom(s => s.Department.Name))
+                .ForMember(d => d.AcademicProgramName,
+                    o => o.MapFrom(s => s.AcademicProgram != null ? s.AcademicProgram.Name : null));
 
             CreateMap<Course, CourseDetailDto>()
-                .ForMember(d => d.DepartmentName, o => o.MapFrom(s => s.Department.Name));
+                .ForMember(d => d.DepartmentName, o => o.MapFrom(s => s.Department.Name))
+                .ForMember(d => d.AcademicProgramName,
+                    o => o.MapFrom(s => s.AcademicProgram != null ? s.AcademicProgram.Name : null));
 
             CreateMap<CreateCourseDto, Course>();
             CreateMap<UpdateCourseDto, Course>();
@@ -157,9 +164,38 @@ namespace SIS.BLL.Mappings
             CreateMap<CreateAcademicProgramDto, AcademicProgram>();
             CreateMap<UpdateAcademicProgramDto, AcademicProgram>();
 
-            CreateMap<AcademicTerm, AcademicTermDto>();
+            CreateMap<AcademicTerm, AcademicTermDto>()
+                .ForMember(d => d.AcademicYearName, o => o.MapFrom(s => s.AcademicYear != null ? s.AcademicYear.Name : null))
+                .ForMember(d => d.CurrentPhase, o => o.MapFrom(s => s.GetCurrentPhase(DateTime.UtcNow)));
             CreateMap<CreateAcademicTermDto, AcademicTerm>();
             CreateMap<UpdateAcademicTermDto, AcademicTerm>();
+
+            CreateMap<AcademicYear, AcademicYearDto>()
+                .ForMember(d => d.TermCount, o => o.MapFrom(s => s.Terms.Count))
+                .ForMember(d => d.IsCurrent, o => o.MapFrom(s =>
+                    DateTime.UtcNow >= s.StartDate && DateTime.UtcNow <= s.EndDate));
+            CreateMap<CreateAcademicYearDto, AcademicYear>();
+            CreateMap<UpdateAcademicYearDto, AcademicYear>();
+
+            CreateMap<WeeklySchedulePattern, WeeklySchedulePatternDto>()
+                .ForMember(d => d.DayOfWeekName, o => o.MapFrom(s => s.DayOfWeek.ToString()));
+
+            CreateMap<ClassSession, ClassSessionDto>()
+                .ForMember(d => d.CourseName,
+                    o => o.MapFrom(s => s.CourseOffering != null && s.CourseOffering.Course != null
+                        ? s.CourseOffering.Course.Name : string.Empty))
+                .ForMember(d => d.CourseCode,
+                    o => o.MapFrom(s => s.CourseOffering != null && s.CourseOffering.Course != null
+                        ? s.CourseOffering.Course.Code : string.Empty))
+                .ForMember(d => d.TeacherName,
+                    o => o.MapFrom(s => s.CourseOffering != null
+                                     && s.CourseOffering.Teacher != null
+                                     && s.CourseOffering.Teacher.AppUser != null
+                        ? s.CourseOffering.Teacher.AppUser.FullName : null))
+                .ForMember(d => d.StatusName, o => o.MapFrom(s => s.Status.ToString()));
+
+            CreateMap<CreateClassSessionDto, ClassSession>();
+            CreateMap<UpdateClassSessionDto, ClassSession>();
         }
     }
 }

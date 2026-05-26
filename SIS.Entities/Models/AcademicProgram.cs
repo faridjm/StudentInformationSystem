@@ -11,5 +11,6 @@ namespace SIS.Entities.Models
         public int DepartmentId { get; set; }
         public Department Department { get; set; } = null!;
         public ICollection<Student> Students { get; set; } = new List<Student>();
+        public ICollection<Course> Courses { get; set; } = new List<Course>();
     }
 }

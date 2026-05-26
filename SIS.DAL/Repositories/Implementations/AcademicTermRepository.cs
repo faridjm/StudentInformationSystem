@@ -17,6 +17,7 @@ namespace SIS.DAL.Repositories.Implementations
 
         public async Task<IEnumerable<AcademicTerm>> GetAllTermsAsync()
             => await _dbSet
+                .Include(t => t.AcademicYear)
                 .OrderByDescending(t => t.StartDate)
                 .ToListAsync();
     }

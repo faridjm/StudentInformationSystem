@@ -16,11 +16,13 @@ namespace SIS.DAL.Repositories.Implementations
         public override async Task<IEnumerable<Course>> GetAllAsync()
             => await _dbSet
                 .Include(c => c.Department)
+                .Include(c => c.AcademicProgram)
                 .ToListAsync();
 
         public async Task<Course?> GetCourseWithDetailsAsync(int courseId)
             => await _dbSet
                 .Include(c => c.Department)
+                .Include(c => c.AcademicProgram)
                 .Include(c => c.CourseOfferings)
                     .ThenInclude(co => co.Teacher)
                         .ThenInclude(t => t.AppUser)
@@ -38,6 +40,7 @@ namespace SIS.DAL.Repositories.Implementations
         {
             var query = _dbSet
                 .Include(c => c.Department)
+                .Include(c => c.AcademicProgram)
                 .AsQueryable();
 
             if (!string.IsNullOrEmpty(request.SearchTerm))

@@ -55,6 +55,8 @@ namespace SIS.BLL.Services.Implementations
             if (department == null)
                 throw new NotFoundException("Departament tapılmadı");
 
+            await ValidateProgramAsync(dto.AcademicProgramId, dto.DepartmentId);
+
             var isUnique = await _unitOfWork.Courses.IsCourseCodeUniqueAsync(dto.Code);
             if (!isUnique)
                 throw new ConflictException($"{dto.Code} kodu ilə kurs artıq mövcuddur");
@@ -64,7 +66,7 @@ namespace SIS.BLL.Services.Implementations
             await _unitOfWork.SaveAsync();
 
             await _activityLogger.LogAsync("Create", "Course", course.Id.ToString(),
-                null, new { dto.Name, dto.Code });
+                null, new { dto.Name, dto.Code, dto.AcademicProgramId });
         }
 
         public async Task UpdateCourseAsync(UpdateCourseDto dto)
@@ -73,7 +75,9 @@ namespace SIS.BLL.Services.Implementations
             if (course == null)
                 throw new NotFoundException("Kurs tapılmadı");
 
-            var oldValue = new { course.Name, course.Code, course.Credits };
+            await ValidateProgramAsync(dto.AcademicProgramId, dto.DepartmentId);
+
+            var oldValue = new { course.Name, course.Code, course.Credits, course.AcademicProgramId };
 
             _mapper.Map(dto, course);
             course.UpdatedAt = DateTime.UtcNow;
@@ -81,7 +85,22 @@ namespace SIS.BLL.Services.Implementations
             await _unitOfWork.SaveAsync();
 
             await _activityLogger.LogAsync("Update", "Course", dto.Id.ToString(),
-                oldValue, new { dto.Name, dto.Credits });
+                oldValue, new { dto.Name, dto.Credits, dto.AcademicProgramId });
+        }
+
+        /// <summary>
+        /// Seçilmiş Program-ın seçilmiş Department-a aid olduğunu yoxlayır.
+        /// </summary>
+        private async Task ValidateProgramAsync(int programId, int departmentId)
+        {
+            var program = await _unitOfWork.AcademicPrograms.GetByIdAsync(programId);
+            if (program == null)
+                throw new NotFoundException("Akademik proqram tapılmadı");
+
+            if (program.DepartmentId != departmentId)
+                throw new BadRequestException(
+                    "Seçilmiş proqram seçilmiş departamentə aid deyil. " +
+                    "Eyni departamentdən proqram seçin.");
         }
 
         public async Task DeleteCourseAsync(int id)

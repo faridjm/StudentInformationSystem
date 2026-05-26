@@ -1,13 +1,26 @@
-﻿@model IEnumerable<SIS.BLL.Services.DTOs.AcademicTerm.AcademicTermDto>
+@model IEnumerable<SIS.BLL.Services.DTOs.AcademicTerm.AcademicTermDto>
+@using SIS.Entities.Enums
 
 @{
-    ViewData["Title"] = "Akademik Terimlər";
+    ViewData["Title"] = "Semestrlər";
+
+    string PhaseBadge(TermPhase phase) => phase switch
+    {
+        TermPhase.Planning => "<span class='badge badge-info'>Planlama</span>",
+        TermPhase.Registration => "<span class='badge badge-info'>Qeydiyyat</span>",
+        TermPhase.Preparation => "<span class='badge badge-warning'>Hazırlıq</span>",
+        TermPhase.Active => "<span class='badge badge-success'>Dərs gedir</span>",
+        TermPhase.ExamPeriod => "<span class='badge badge-warning'>İmtahan</span>",
+        TermPhase.GradeReview => "<span class='badge badge-warning'>Qiymət təsdiqi</span>",
+        TermPhase.Closed => "<span class='badge badge-danger'>Bağlı</span>",
+        _ => "<span class='badge'>—</span>"
+    };
 }
 
 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-    <h2 style="font-size:20px; font-weight:700;">Akademik Terimlər</h2>
+    <h2 style="font-size:20px; font-weight:700;">Semestrlər</h2>
     <a href="/Admin/AcademicTerm/Create" class="btn btn-primary">
-        <i class="fas fa-plus"></i> Yeni Termin
+        <i class="fas fa-plus"></i> Yeni Semestr
     </a>
 </div>
 
@@ -18,9 +31,10 @@
                 <tr>
                     <th>#</th>
                     <th>Ad</th>
-                    <th>Başlama</th>
-                    <th>Bitmə</th>
-                    <th>Status</th>
+                    <th>Sezon</th>
+                    <th>Dərslər</th>
+                    <th>Faza</th>
+                    <th>Aktiv</th>
                     <th>Əməliyyat</th>
                 </tr>
             </thead>
@@ -30,16 +44,22 @@
                     <tr>
                         <td>@term.Id</td>
                         <td style="font-weight:500;">@term.Name</td>
-                        <td>@term.StartDate.ToString("dd.MM.yyyy")</td>
-                        <td>@term.EndDate.ToString("dd.MM.yyyy")</td>
+                        <td style="color:var(--text-secondary);">
+                            @(term.AcademicYearName ?? "—")
+                        </td>
+                        <td style="font-size:13px;">
+                            @term.StartDate.ToString("dd.MM.yyyy") <span style="color:var(--text-secondary);">→</span>
+                            @term.EndDate.ToString("dd.MM.yyyy")
+                        </td>
+                        <td>@Html.Raw(PhaseBadge(term.CurrentPhase))</td>
                         <td>
                             @if (term.IsActive)
                             {
-                                <span class="badge badge-success">Aktiv</span>
+                                <span class="badge badge-success">Bəli</span>
                             }
                             else
                             {
-                                <span class="badge badge-warning">Passiv</span>
+                                <span class="badge badge-warning">Xeyr</span>
                             }
                         </td>
                         <td>
@@ -57,13 +77,21 @@
                                     <i class="fas fa-edit"></i>
                                 </a>
                                 <form method="post" action="/Admin/AcademicTerm/Delete/@term.Id"
-                                      onsubmit="return confirm('Termini silmək istədiyinizdən əminsinizmi?')">
+                                      onsubmit="return confirm('Semestri silmək istədiyinizdən əminsinizmi?')">
                                     @Html.AntiForgeryToken()
                                     <button type="submit" class="btn btn-sm btn-danger">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </form>
                             </div>
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Any())
+                {
+                    <tr>
+                        <td colspan="7" style="text-align:center; color:var(--text-secondary); padding:30px;">
+                            Hələ heç bir semestr yaradılmayıb
                         </td>
                     </tr>
                 }

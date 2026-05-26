@@ -19,9 +19,12 @@ namespace SIS.DAL.Context
         public DbSet<Teacher> Teachers { get; set; }
         public DbSet<Department> Departments { get; set; }
         public DbSet<AcademicProgram> AcademicPrograms { get; set; }
+        public DbSet<AcademicYear> AcademicYears { get; set; }
         public DbSet<AcademicTerm> AcademicTerms { get; set; }
         public DbSet<Course> Courses { get; set; }
         public DbSet<CourseOffering> CourseOfferings { get; set; }
+        public DbSet<WeeklySchedulePattern> WeeklySchedulePatterns { get; set; }
+        public DbSet<ClassSession> ClassSessions { get; set; }
         public DbSet<Enrollment> Enrollments { get; set; }
         public DbSet<Grade> Grades { get; set; }
         public DbSet<AttendanceRecord> AttendanceRecords { get; set; }

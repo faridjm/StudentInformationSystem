@@ -11,6 +11,8 @@ namespace SIS.DAL.UnitOfWork
         ITeacherRepository Teachers { get; }
         ICourseRepository Courses { get; }
         ICourseOfferingRepository CourseOfferings { get; }
+        IWeeklySchedulePatternRepository WeeklySchedulePatterns { get; }
+        IClassSessionRepository ClassSessions { get; }
         IEnrollmentRepository Enrollments { get; }
         IGradeRepository Grades { get; }
         IAttendanceRecordRepository AttendanceRecords { get; }
@@ -19,6 +21,7 @@ namespace SIS.DAL.UnitOfWork
         IActivityLogRepository ActivityLogs { get; }
         IDepartmentRepository Departments { get; }
         IAcademicProgramRepository AcademicPrograms { get; }
+        IAcademicYearRepository AcademicYears { get; }
         IAcademicTermRepository AcademicTerms { get; }
         IRefreshTokenRepository RefreshTokens { get; }
 

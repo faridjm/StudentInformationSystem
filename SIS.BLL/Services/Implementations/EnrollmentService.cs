@@ -1,7 +1,10 @@
-﻿using AutoMapper;
+using AutoMapper;
+using SIS.BLL.Helpers;
 using SIS.BLL.Services.DTOs.Enrollment;
 using SIS.BLL.Services.Interfaces;
+using SIS.Common.Time;
 using SIS.DAL.UnitOfWork;
+using SIS.Entities.Enums;
 using SIS.Entities.Models;
 using static SIS.BLL.Exceptions.AppException;
 
@@ -12,15 +15,18 @@ namespace SIS.BLL.Services.Implementations
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IActivityLogger _activityLogger;
+        private readonly IClock _clock;
 
         public EnrollmentService(
             IUnitOfWork unitOfWork,
             IMapper mapper,
-            IActivityLogger activityLogger)
+            IActivityLogger activityLogger,
+            IClock clock)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _activityLogger = activityLogger;
+            _clock = clock;
         }
 
         public async Task<IEnumerable<EnrollmentListDto>> GetAllEnrollmentsAsync()
@@ -65,6 +71,15 @@ namespace SIS.BLL.Services.Implementations
 
         public async Task EnrollStudentAsync(CreateEnrollmentDto dto)
         {
+            var offering = await _unitOfWork.CourseOfferings
+                .GetOfferingWithDetailsAsync(dto.CourseOfferingId);
+            if (offering == null)
+                throw new NotFoundException("Kurs təklifi tapılmadı");
+
+            // Faza yoxlaması — yalnız sezona bağlı yeni Term-lər üçün
+            TermPhaseGuard.EnsurePhase(_clock, offering.AcademicTerm, "Tələbə qeydiyyatı",
+                TermPhase.Registration);
+
             var isEnrolled = await _unitOfWork.Enrollments
                 .IsStudentEnrolledAsync(dto.StudentId, dto.CourseOfferingId);
             if (isEnrolled)
@@ -85,12 +100,22 @@ namespace SIS.BLL.Services.Implementations
 
         public async Task DropEnrollmentAsync(int enrollmentId)
         {
-            var enrollment = await _unitOfWork.Enrollments.GetByIdAsync(enrollmentId);
+            var enrollment = await _unitOfWork.Enrollments.GetEnrollmentWithDetailsAsync(enrollmentId);
             if (enrollment == null)
                 throw new NotFoundException("Qeydiyyat tapılmadı");
 
-            enrollment.Status = SIS.Entities.Enums.EnrollmentStatus.Dropped;
-            enrollment.UpdatedAt = DateTime.UtcNow;
+            // Drop son tarixi yalnız sezona bağlı yeni Term-lər üçün yoxlanır
+            var term = enrollment.CourseOffering.AcademicTerm;
+            if (term.AcademicYearId.HasValue && term.DropDeadline.HasValue)
+            {
+                if (_clock.UtcNow > term.DropDeadline.Value)
+                    throw new BadRequestException(
+                        $"Drop son tarixi keçib ({term.DropDeadline.Value:dd.MM.yyyy}). " +
+                        "Kursdan çıxma artıq F qiyməti ilə nəticələnir — admin ilə əlaqə saxlayın.");
+            }
+
+            enrollment.Status = EnrollmentStatus.Dropped;
+            enrollment.UpdatedAt = _clock.UtcNow;
             _unitOfWork.Enrollments.Update(enrollment);
             await _unitOfWork.SaveAsync();
 

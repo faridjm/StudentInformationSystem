@@ -9,6 +9,11 @@ namespace SIS.DAL.Configurations
         public void Configure(EntityTypeBuilder<Course> builder)
         {
             builder.HasQueryFilter(c => !c.IsDeleted);
+
+            builder.HasOne(c => c.AcademicProgram)
+                .WithMany(p => p.Courses)
+                .HasForeignKey(c => c.AcademicProgramId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

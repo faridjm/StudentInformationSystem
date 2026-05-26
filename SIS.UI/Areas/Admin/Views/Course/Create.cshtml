@@ -35,14 +35,26 @@
 
             <div class="form-group">
                 <label class="form-label">Departament</label>
-                <select asp-for="DepartmentId" class="form-control">
+                <select asp-for="DepartmentId" id="DepartmentId" class="form-control" required>
                     <option value="">Departament seçin</option>
                     @foreach (var d in ViewBag.Departments as IEnumerable<SIS.BLL.Services.DTOs.Department.DepartmentDto> ?? [])
                     {
-                        <option value="@d.Id">@d.Name</option>
+                        <option value="@d.Id" data-deptid="@d.Id">@d.Name</option>
                     }
                 </select>
                 <span asp-validation-for="DepartmentId" style="color:#f87171; font-size:12px;"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Akademik Proqram</label>
+                <select asp-for="AcademicProgramId" id="AcademicProgramId" class="form-control" required>
+                    <option value="">Əvvəl departament seçin</option>
+                    @foreach (var p in ViewBag.Programs as IEnumerable<SIS.BLL.Services.DTOs.AcademicProgram.AcademicProgramDto> ?? [])
+                    {
+                        <option value="@p.Id" data-deptid="@p.DepartmentId">@p.Name (@p.Code)</option>
+                    }
+                </select>
+                <span asp-validation-for="AcademicProgramId" style="color:#f87171; font-size:12px;"></span>
             </div>
 
             <div class="form-group">
@@ -57,3 +69,45 @@
         </form>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        (function () {
+            const deptSelect = document.getElementById('DepartmentId');
+            const progSelect = document.getElementById('AcademicProgramId');
+            if (!deptSelect || !progSelect) return;
+
+            // Bütün program seçimlərini ilkin yadda saxla
+            const allOptions = Array.from(progSelect.querySelectorAll('option[data-deptid]'))
+                .map(o => ({ value: o.value, deptId: o.dataset.deptid, text: o.textContent }));
+
+            function refreshPrograms(selectedProgramId) {
+                const deptId = deptSelect.value;
+                // Mövcud option-ları təmizlə (ilk option-u saxla)
+                while (progSelect.options.length > 1) progSelect.remove(1);
+
+                if (!deptId) {
+                    progSelect.options[0].text = 'Əvvəl departament seçin';
+                    return;
+                }
+                progSelect.options[0].text = 'Proqram seçin';
+
+                const filtered = allOptions.filter(o => o.deptId === deptId);
+                filtered.forEach(o => {
+                    const opt = document.createElement('option');
+                    opt.value = o.value;
+                    opt.textContent = o.text;
+                    opt.dataset.deptid = o.deptId;
+                    if (selectedProgramId && o.value === String(selectedProgramId)) opt.selected = true;
+                    progSelect.appendChild(opt);
+                });
+            }
+
+            deptSelect.addEventListener('change', () => refreshPrograms(null));
+            // İlkin yüklənmədə əgər departament seçilibsə (Edit səhifəsi), uyğunlaşdır
+            const initialDept = deptSelect.value;
+            const initialProg = progSelect.value;
+            if (initialDept) refreshPrograms(initialProg);
+        })();
+    </script>
+}

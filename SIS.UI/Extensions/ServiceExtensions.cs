@@ -53,6 +53,10 @@ namespace SIS.UI.Extensions
                 .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBase))
                 .AddHttpMessageHandler<AuthDelegatingHandler>();
 
+            services.AddRefitClient<IAcademicYearApi>()
+                .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBase))
+                .AddHttpMessageHandler<AuthDelegatingHandler>();
+
             services.AddRefitClient<IAcademicTermApi>()
                 .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBase))
                 .AddHttpMessageHandler<AuthDelegatingHandler>();

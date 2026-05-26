@@ -1,36 +1,93 @@
-﻿@model SIS.BLL.Services.DTOs.AcademicTerm.CreateAcademicTermDto
-
+@model SIS.BLL.Services.DTOs.AcademicTerm.CreateAcademicTermDto
 @{
-    ViewData["Title"] = "Yeni Termin";
+    ViewData["Title"] = "Yeni Semestr";
+    var years = ViewBag.Years as IEnumerable<SIS.BLL.Services.DTOs.AcademicYear.AcademicYearDto>;
 }
 
 <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
     <a href="/Admin/AcademicTerm" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i></a>
-    <h2 style="font-size:20px; font-weight:700;">Yeni Akademik Termin</h2>
+    <h2 style="font-size:20px; font-weight:700;">Yeni Semestr</h2>
 </div>
 
-<div class="card" style="max-width:500px;">
+<div class="card" style="max-width:720px;">
     <div class="card-body">
         <form method="post">
             @Html.AntiForgeryToken()
             <div asp-validation-summary="ModelOnly" style="color:#f87171; margin-bottom:12px; font-size:13px;"></div>
 
-            <div class="form-group">
-                <label class="form-label">Ad</label>
-                <input asp-for="Name" class="form-control" placeholder="2025 Fall" />
-                <span asp-validation-for="Name" style="color:#f87171; font-size:12px;"></span>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                <div class="form-group">
+                    <label class="form-label">Dərs Sezonu</label>
+                    <select asp-for="AcademicYearId" class="form-control" required>
+                        <option value="">Sezon seçin</option>
+                        @if (years != null)
+                        {
+                            @foreach (var y in years)
+                            {
+                                <option value="@y.Id">@y.Name (@y.StartDate.ToString("dd.MM.yyyy") – @y.EndDate.ToString("dd.MM.yyyy"))</option>
+                            }
+                        }
+                    </select>
+                    <span asp-validation-for="AcademicYearId" style="color:#f87171; font-size:12px;"></span>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Ad</label>
+                    <input asp-for="Name" class="form-control" placeholder="Payız 2026" maxlength="50" required />
+                    <span asp-validation-for="Name" style="color:#f87171; font-size:12px;"></span>
+                </div>
             </div>
 
-            <div class="form-group">
-                <label class="form-label">Başlama Tarixi</label>
-                <input asp-for="StartDate" type="date" class="form-control" />
-                <span asp-validation-for="StartDate" style="color:#f87171; font-size:12px;"></span>
+            <h3 style="font-size:14px; color:var(--text-secondary); margin:16px 0 8px;">Qeydiyyat</h3>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                <div class="form-group">
+                    <label class="form-label">Qeydiyyat başlanır</label>
+                    <input asp-for="RegistrationStart" type="date" class="form-control" required />
+                    <span asp-validation-for="RegistrationStart" style="color:#f87171; font-size:12px;"></span>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Qeydiyyat bitir</label>
+                    <input asp-for="RegistrationEnd" type="date" class="form-control" required />
+                    <span asp-validation-for="RegistrationEnd" style="color:#f87171; font-size:12px;"></span>
+                </div>
             </div>
 
-            <div class="form-group">
-                <label class="form-label">Bitmə Tarixi</label>
-                <input asp-for="EndDate" type="date" class="form-control" />
-                <span asp-validation-for="EndDate" style="color:#f87171; font-size:12px;"></span>
+            <h3 style="font-size:14px; color:var(--text-secondary); margin:16px 0 8px;">Dərslər</h3>
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px;">
+                <div class="form-group">
+                    <label class="form-label">Dərslər başlanır</label>
+                    <input asp-for="StartDate" type="date" class="form-control" required />
+                    <span asp-validation-for="StartDate" style="color:#f87171; font-size:12px;"></span>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Drop son tarixi</label>
+                    <input asp-for="DropDeadline" type="date" class="form-control" required />
+                    <span asp-validation-for="DropDeadline" style="color:#f87171; font-size:12px;"></span>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Dərslər bitir</label>
+                    <input asp-for="EndDate" type="date" class="form-control" required />
+                    <span asp-validation-for="EndDate" style="color:#f87171; font-size:12px;"></span>
+                </div>
+            </div>
+
+            <h3 style="font-size:14px; color:var(--text-secondary); margin:16px 0 8px;">İmtahanlar və qiymət</h3>
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px;">
+                <div class="form-group">
+                    <label class="form-label">İmtahan başlanır</label>
+                    <input asp-for="ExamPeriodStart" type="date" class="form-control" required />
+                    <span asp-validation-for="ExamPeriodStart" style="color:#f87171; font-size:12px;"></span>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">İmtahan bitir</label>
+                    <input asp-for="ExamPeriodEnd" type="date" class="form-control" required />
+                    <span asp-validation-for="ExamPeriodEnd" style="color:#f87171; font-size:12px;"></span>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Qiymət təsdiqi son</label>
+                    <input asp-for="GradeSubmissionDeadline" type="date" class="form-control" required />
+                    <span asp-validation-for="GradeSubmissionDeadline" style="color:#f87171; font-size:12px;"></span>
+                </div>
             </div>
 
             <div style="display:flex; gap:10px; margin-top:8px;">

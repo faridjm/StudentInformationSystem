@@ -290,6 +290,64 @@ namespace SIS.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("AcademicYearId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DropDeadline")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ExamPeriodEnd")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ExamPeriodStart")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("GradeSubmissionDeadline")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("RegistrationEnd")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("RegistrationStart")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AcademicYearId");
+
+                    b.ToTable("AcademicTerms");
+                });
+
+            modelBuilder.Entity("SIS.Entities.Models.AcademicYear", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -304,7 +362,8 @@ namespace SIS.DAL.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
@@ -314,7 +373,10 @@ namespace SIS.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AcademicTerms");
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("AcademicYears");
                 });
 
             modelBuilder.Entity("SIS.Entities.Models.ActivityLog", b =>
@@ -452,6 +514,70 @@ namespace SIS.DAL.Migrations
                     b.ToTable("AttendanceRecords");
                 });
 
+            modelBuilder.Entity("SIS.Entities.Models.ClassSession", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CancellationReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("CourseOfferingId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateOnly>("Date")
+                        .HasColumnType("date");
+
+                    b.Property<TimeOnly>("EndTime")
+                        .HasColumnType("time");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<int?>("OriginalSessionId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Room")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<TimeOnly>("StartTime")
+                        .HasColumnType("time");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Topic")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Date");
+
+                    b.HasIndex("OriginalSessionId");
+
+                    b.HasIndex("CourseOfferingId", "Date", "StartTime")
+                        .IsUnique()
+                        .HasFilter("[IsDeleted] = 0");
+
+                    b.ToTable("ClassSessions");
+                });
+
             modelBuilder.Entity("SIS.Entities.Models.Course", b =>
                 {
                     b.Property<int>("Id")
@@ -459,6 +585,9 @@ namespace SIS.DAL.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("AcademicProgramId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Code")
                         .IsRequired()
@@ -490,6 +619,8 @@ namespace SIS.DAL.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AcademicProgramId");
 
                     b.HasIndex("DepartmentId");
 
@@ -862,6 +993,48 @@ namespace SIS.DAL.Migrations
                     b.ToTable("Teachers");
                 });
 
+            modelBuilder.Entity("SIS.Entities.Models.WeeklySchedulePattern", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CourseOfferingId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DayOfWeek")
+                        .HasColumnType("int");
+
+                    b.Property<TimeOnly>("EndTime")
+                        .HasColumnType("time");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Room")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<TimeOnly>("StartTime")
+                        .HasColumnType("time");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CourseOfferingId", "DayOfWeek", "StartTime")
+                        .IsUnique()
+                        .HasFilter("[IsDeleted] = 0");
+
+                    b.ToTable("WeeklySchedulePatterns");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -924,6 +1097,16 @@ namespace SIS.DAL.Migrations
                     b.Navigation("Department");
                 });
 
+            modelBuilder.Entity("SIS.Entities.Models.AcademicTerm", b =>
+                {
+                    b.HasOne("SIS.Entities.Models.AcademicYear", "AcademicYear")
+                        .WithMany("Terms")
+                        .HasForeignKey("AcademicYearId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("AcademicYear");
+                });
+
             modelBuilder.Entity("SIS.Entities.Models.ActivityLog", b =>
                 {
                     b.HasOne("SIS.Entities.Identity.AppUser", "User")
@@ -964,13 +1147,38 @@ namespace SIS.DAL.Migrations
                     b.Navigation("Enrollment");
                 });
 
+            modelBuilder.Entity("SIS.Entities.Models.ClassSession", b =>
+                {
+                    b.HasOne("SIS.Entities.Models.CourseOffering", "CourseOffering")
+                        .WithMany("ClassSessions")
+                        .HasForeignKey("CourseOfferingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SIS.Entities.Models.ClassSession", "OriginalSession")
+                        .WithMany()
+                        .HasForeignKey("OriginalSessionId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("CourseOffering");
+
+                    b.Navigation("OriginalSession");
+                });
+
             modelBuilder.Entity("SIS.Entities.Models.Course", b =>
                 {
+                    b.HasOne("SIS.Entities.Models.AcademicProgram", "AcademicProgram")
+                        .WithMany("Courses")
+                        .HasForeignKey("AcademicProgramId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("SIS.Entities.Models.Department", "Department")
                         .WithMany("Courses")
                         .HasForeignKey("DepartmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("AcademicProgram");
 
                     b.Navigation("Department");
                 });
@@ -1092,6 +1300,17 @@ namespace SIS.DAL.Migrations
                     b.Navigation("Department");
                 });
 
+            modelBuilder.Entity("SIS.Entities.Models.WeeklySchedulePattern", b =>
+                {
+                    b.HasOne("SIS.Entities.Models.CourseOffering", "CourseOffering")
+                        .WithMany("WeeklySchedules")
+                        .HasForeignKey("CourseOfferingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CourseOffering");
+                });
+
             modelBuilder.Entity("SIS.Entities.Identity.AppUser", b =>
                 {
                     b.Navigation("ActivityLogs");
@@ -1105,12 +1324,19 @@ namespace SIS.DAL.Migrations
 
             modelBuilder.Entity("SIS.Entities.Models.AcademicProgram", b =>
                 {
+                    b.Navigation("Courses");
+
                     b.Navigation("Students");
                 });
 
             modelBuilder.Entity("SIS.Entities.Models.AcademicTerm", b =>
                 {
                     b.Navigation("CourseOfferings");
+                });
+
+            modelBuilder.Entity("SIS.Entities.Models.AcademicYear", b =>
+                {
+                    b.Navigation("Terms");
                 });
 
             modelBuilder.Entity("SIS.Entities.Models.Course", b =>
@@ -1120,7 +1346,11 @@ namespace SIS.DAL.Migrations
 
             modelBuilder.Entity("SIS.Entities.Models.CourseOffering", b =>
                 {
+                    b.Navigation("ClassSessions");
+
                     b.Navigation("Enrollments");
+
+                    b.Navigation("WeeklySchedules");
                 });
 
             modelBuilder.Entity("SIS.Entities.Models.Department", b =>

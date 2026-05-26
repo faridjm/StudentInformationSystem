@@ -1,0 +1,91 @@
+@model IEnumerable<SIS.BLL.Services.DTOs.AcademicYear.AcademicYearDto>
+
+@{
+    ViewData["Title"] = "Dərs Sezonları";
+}
+
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+    <h2 style="font-size:20px; font-weight:700;">Dərs Sezonları</h2>
+    <a href="/Admin/AcademicYear/Create" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Yeni Sezon
+    </a>
+</div>
+
+<div class="card">
+    <div style="overflow-x:auto;">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Ad</th>
+                    <th>Başlama</th>
+                    <th>Bitmə</th>
+                    <th>Semestr Sayı</th>
+                    <th>Status</th>
+                    <th>Əməliyyat</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var year in Model)
+                {
+                    <tr>
+                        <td>@year.Id</td>
+                        <td style="font-weight:500;">
+                            @year.Name
+                            @if (year.IsCurrent)
+                            {
+                                <span class="badge badge-info" style="margin-left:6px;">Cari</span>
+                            }
+                        </td>
+                        <td>@year.StartDate.ToString("dd.MM.yyyy")</td>
+                        <td>@year.EndDate.ToString("dd.MM.yyyy")</td>
+                        <td>
+                            <span class="badge badge-info">@year.TermCount</span>
+                        </td>
+                        <td>
+                            @if (year.IsActive)
+                            {
+                                <span class="badge badge-success">Aktiv</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-warning">Passiv</span>
+                            }
+                        </td>
+                        <td>
+                            <div style="display:flex; gap:6px;">
+                                @if (!year.IsActive)
+                                {
+                                    <form method="post" action="/Admin/AcademicYear/SetActive/@year.Id">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm btn-success">
+                                            <i class="fas fa-check"></i> Aktiv et
+                                        </button>
+                                    </form>
+                                }
+                                <a href="/Admin/AcademicYear/Edit/@year.Id" class="btn btn-sm btn-secondary">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <form method="post" action="/Admin/AcademicYear/Delete/@year.Id"
+                                      onsubmit="return confirm('Dərs sezonunu silmək istədiyinizdən əminsinizmi?')">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm btn-danger">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Any())
+                {
+                    <tr>
+                        <td colspan="7" style="text-align:center; color:var(--text-secondary); padding:30px;">
+                            Hələ heç bir dərs sezonu yaradılmayıb
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -12,6 +12,8 @@ namespace SIS.DAL.UnitOfWork
         private ITeacherRepository? _teachers;
         private ICourseRepository? _courses;
         private ICourseOfferingRepository? _courseOfferings;
+        private IWeeklySchedulePatternRepository? _weeklySchedulePatterns;
+        private IClassSessionRepository? _classSessions;
         private IEnrollmentRepository? _enrollments;
         private IGradeRepository? _grades;
         private IAttendanceRecordRepository? _attendanceRecords;
@@ -20,6 +22,7 @@ namespace SIS.DAL.UnitOfWork
         private IActivityLogRepository? _activityLogs;
         private IDepartmentRepository? _departments;
         private IAcademicProgramRepository? _academicPrograms;
+        private IAcademicYearRepository? _academicYears;
         private IAcademicTermRepository? _academicTerms;
         private IRefreshTokenRepository? _refreshTokens;
 
@@ -39,6 +42,12 @@ namespace SIS.DAL.UnitOfWork
 
         public ICourseOfferingRepository CourseOfferings
             => _courseOfferings ??= new CourseOfferingRepository(_context);
+
+        public IWeeklySchedulePatternRepository WeeklySchedulePatterns
+            => _weeklySchedulePatterns ??= new WeeklySchedulePatternRepository(_context);
+
+        public IClassSessionRepository ClassSessions
+            => _classSessions ??= new ClassSessionRepository(_context);
 
         public IEnrollmentRepository Enrollments
             => _enrollments ??= new EnrollmentRepository(_context);
@@ -64,8 +73,11 @@ namespace SIS.DAL.UnitOfWork
         public IAcademicProgramRepository AcademicPrograms
             => _academicPrograms ??= new AcademicProgramRepository(_context);
 
+        public IAcademicYearRepository AcademicYears
+            => _academicYears ??= new AcademicYearRepository(_context);
+
         public IAcademicTermRepository AcademicTerms
-    => _academicTerms ??= new AcademicTermRepository(_context);
+            => _academicTerms ??= new AcademicTermRepository(_context);
 
         public IRefreshTokenRepository RefreshTokens
     => _refreshTokens ??= new RefreshTokenRepository(_context);
