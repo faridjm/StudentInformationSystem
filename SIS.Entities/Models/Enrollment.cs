@@ -13,5 +13,6 @@ namespace SIS.Entities.Models
         public CourseOffering CourseOffering { get; set; } = null!;
         public ICollection<Grade> Grades { get; set; } = new List<Grade>();
         public ICollection<AttendanceRecord> AttendanceRecords { get; set; } = new List<AttendanceRecord>();
+        public ICollection<AssignmentSubmission> AssignmentSubmissions { get; set; } = new List<AssignmentSubmission>();
     }
 }

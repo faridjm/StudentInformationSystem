@@ -10,11 +10,7 @@ namespace SIS.DAL.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<DateTime>(
-                name: "UpdatedAt",
-                table: "AspNetUsers",
-                type: "datetime2",
-                nullable: true);
+            // UpdatedAt sütunu InitialCreate-də artıq mövcuddur — skip edilir
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

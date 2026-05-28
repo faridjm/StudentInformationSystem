@@ -13,5 +13,6 @@ namespace SIS.BLL.Services.DTOs.Attendance
         public DateTime SessionDate { get; set; }
         public AttendanceStatus Status { get; set; }
         public string? Note { get; set; }
+        public int? ClassSessionId { get; set; }
     }
 }

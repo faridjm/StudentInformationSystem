@@ -6,6 +6,7 @@ using SIS.BLL.Configuration;
 using SIS.API.Extensions;
 using SIS.API.Hubs;
 using SIS.API.Middlewares;
+using System.Text.Json.Serialization;
 
 namespace SIS.API
 {
@@ -19,7 +20,11 @@ namespace SIS.API
             builder.Services.AddDatabase(builder.Configuration);
             builder.Services.AddAuth(builder.Configuration);
             builder.Services.AddServices();
-            builder.Services.AddControllers();
+            builder.Services.AddControllers()
+                .AddJsonOptions(o =>
+                {
+                    o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                });
             builder.Services.AddOpenApi();
             builder.Services.AddSignalR();
 

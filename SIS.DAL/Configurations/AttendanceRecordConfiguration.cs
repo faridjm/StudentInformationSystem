@@ -22,6 +22,13 @@ namespace SIS.DAL.Configurations
                 .HasForeignKey(a => a.EnrollmentId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            builder.HasOne(a => a.ClassSession)
+                .WithMany(s => s.AttendanceRecords)
+                .HasForeignKey(a => a.ClassSessionId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasIndex(a => a.ClassSessionId);
+
             builder.HasQueryFilter(a => !a.IsDeleted);
         }
     }

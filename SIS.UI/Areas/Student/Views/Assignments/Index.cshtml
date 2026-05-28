@@ -1,0 +1,71 @@
+@model List<(SIS.BLL.Services.DTOs.Enrollment.EnrollmentListDto enrollment, SIS.BLL.Services.DTOs.Assignment.AssignmentDto assignment)>
+@{
+    ViewData["Title"] = "Tapşırıqlar";
+    var enrollments = ViewBag.Enrollments as IEnumerable<SIS.BLL.Services.DTOs.Enrollment.EnrollmentListDto>;
+}
+
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+    <h2 style="font-size:20px; font-weight:700;">Tapşırıqlarım</h2>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="card" style="padding:60px; text-align:center; color:var(--text-secondary);">
+        <i class="fas fa-tasks" style="font-size:48px; margin-bottom:12px; opacity:.3;"></i>
+        <p style="font-size:15px;">Aktiv tapşırıq yoxdur</p>
+    </div>
+}
+else
+{
+    @foreach (var group in Model.GroupBy(x => x.enrollment.CourseName))
+    {
+        var courseEnrollment = Model.First(x => x.enrollment.CourseName == group.Key).enrollment;
+        <div style="margin-bottom:24px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <h3 style="font-size:15px; font-weight:600; color:var(--text-secondary);">
+                    <i class="fas fa-book" style="margin-right:6px;"></i>@group.Key
+                </h3>
+                <a href="/Student/Assignments/Course?enrollmentId=@courseEnrollment.Id" class="btn btn-sm btn-secondary">
+                    Hamısına bax
+                </a>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+                @foreach (var (enrollment, assignment) in group)
+                {
+                    var isOverdue = assignment.DueDate < DateTime.Now;
+                    var daysLeft = (assignment.DueDate - DateTime.Now).Days;
+                    <div class="card" style="padding:14px 18px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                            <div style="flex:1;">
+                                <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+                                    <span style="font-weight:600;">@assignment.Title</span>
+                                    <span class="badge badge-secondary" style="font-size:11px;">@assignment.TypeLabel</span>
+                                </div>
+                                <div style="font-size:12px; color:var(--text-secondary);">
+                                    <i class="fas fa-clock"></i>
+                                    Son tarix: @assignment.DueDate.ToString("dd.MM.yyyy HH:mm")
+                                    @if (isOverdue)
+                                    {
+                                        <span style="color:#ef4444; margin-left:8px; font-weight:600;">Vaxt bitib</span>
+                                    }
+                                    else if (daysLeft == 0)
+                                    {
+                                        <span style="color:#f59e0b; margin-left:8px; font-weight:600;">Bu gün!</span>
+                                    }
+                                    else
+                                    {
+                                        <span style="color:#22c55e; margin-left:8px;">@daysLeft gün qalıb</span>
+                                    }
+                                    <span style="margin-left:12px;"><i class="fas fa-star"></i> @assignment.MaxScore xal</span>
+                                </div>
+                            </div>
+                            <a href="/Student/Assignments/Course?enrollmentId=@enrollment.Id" class="btn btn-sm btn-primary">
+                                <i class="fas fa-paper-plane"></i> Cavab ver
+                            </a>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+}

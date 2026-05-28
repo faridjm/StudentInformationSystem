@@ -32,7 +32,6 @@ namespace SIS.Entities.Models
         public int? OriginalSessionId { get; set; }
         public ClassSession? OriginalSession { get; set; }
 
-        // Phase 2E-də AttendanceRecord-a FK əlavə olunduqda istifadə olunacaq:
-        // public ICollection<AttendanceRecord> AttendanceRecords { get; set; } = new List<AttendanceRecord>();
+        public ICollection<AttendanceRecord> AttendanceRecords { get; set; } = new List<AttendanceRecord>();
     }
 }

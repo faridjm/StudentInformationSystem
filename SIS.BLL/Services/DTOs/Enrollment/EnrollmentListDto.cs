@@ -8,6 +8,7 @@ namespace SIS.BLL.Services.DTOs.Enrollment
     public class EnrollmentListDto
     {
         public int Id { get; set; }
+        public int CourseOfferingId { get; set; }
         public string StudentName { get; set; } = null!;
         public string StudentNumber { get; set; } = null!;
         public string CourseName { get; set; } = null!;

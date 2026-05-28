@@ -1,0 +1,78 @@
+@model IEnumerable<SIS.BLL.Services.DTOs.Assignment.AssignmentDto>
+@{
+    var offering = ViewBag.Offering as SIS.BLL.Services.DTOs.CourseOffering.CourseOfferingDetailDto;
+    ViewData["Title"] = "Tapşırıqlar";
+}
+
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+    <div>
+        <h2 style="font-size:20px; font-weight:700;">Tapşırıqlar</h2>
+        @if (offering != null)
+        {
+            <p style="color:var(--text-secondary); margin:4px 0 0;">@offering.CourseName</p>
+        }
+    </div>
+    <a href="/Teacher/Assignments/Create?courseOfferingId=@offering?.Id" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Yeni Tapşırıq
+    </a>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="card" style="padding:40px; text-align:center; color:var(--text-secondary);">
+        <i class="fas fa-tasks" style="font-size:48px; margin-bottom:12px; opacity:.3;"></i>
+        <p>Hələ tapşırıq yoxdur</p>
+    </div>
+}
+else
+{
+    <div style="display:flex; flex-direction:column; gap:12px;">
+        @foreach (var a in Model)
+        {
+            <div class="card" style="padding:16px 20px;">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:8px;">
+                    <div>
+                        <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+                            <span style="font-weight:600; font-size:15px;">@a.Title</span>
+                            <span class="badge @(a.Type == SIS.Entities.Enums.AssignmentType.Quiz ? "badge-warning" : a.Type == SIS.Entities.Enums.AssignmentType.Project ? "badge-info" : "badge-secondary")">
+                                @a.TypeLabel
+                            </span>
+                            @if (!a.IsVisible)
+                            {
+                                <span class="badge" style="background:var(--bg-hover); color:var(--text-secondary);">Gizli</span>
+                            }
+                        </div>
+                        @if (!string.IsNullOrEmpty(a.Description))
+                        {
+                            <p style="color:var(--text-secondary); font-size:13px; margin:0 0 6px;">@a.Description</p>
+                        }
+                        <div style="display:flex; gap:16px; font-size:13px; color:var(--text-secondary); flex-wrap:wrap;">
+                            <span><i class="fas fa-calendar-alt"></i> Son tarix: <strong>@a.DueDate.ToString("dd.MM.yyyy HH:mm")</strong></span>
+                            <span><i class="fas fa-star"></i> Maks: <strong>@a.MaxScore xal</strong></span>
+                            <span><i class="fas fa-paper-plane"></i> <strong>@a.SubmissionCount</strong> cavab</span>
+                            @if (!string.IsNullOrEmpty(a.AttachmentUrl))
+                            {
+                                <a href="@a.AttachmentUrl" target="_blank" style="color:var(--primary-color);">
+                                    <i class="fas fa-paperclip"></i> Material
+                                </a>
+                            }
+                        </div>
+                    </div>
+                    <div style="display:flex; gap:6px;">
+                        <a href="/Teacher/Assignments/Submissions/@a.Id" class="btn btn-sm btn-secondary">
+                            <i class="fas fa-list"></i> Cavablar
+                        </a>
+                        <a href="/Teacher/Assignments/Edit/@a.Id" class="btn btn-sm btn-secondary">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <form method="post" action="/Teacher/Assignments/Delete/@a.Id" onsubmit="return confirm('Silmək istədiyinizdən əminsinizmi?')">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="courseOfferingId" value="@offering?.Id" />
+                            <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

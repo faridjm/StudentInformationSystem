@@ -1,0 +1,162 @@
+@model SIS.BLL.Services.DTOs.Assignment.CreateAssignmentDto
+@{
+    var offering = ViewBag.Offering as SIS.BLL.Services.DTOs.CourseOffering.CourseOfferingDetailDto;
+    ViewData["Title"] = "Yeni Tapşırıq";
+}
+
+<div style="margin-bottom:20px;">
+    <a href="/Teacher/Assignments/Index?courseOfferingId=@Model.CourseOfferingId" style="color:var(--text-secondary); text-decoration:none;">
+        <i class="fas fa-arrow-left"></i> Geri
+    </a>
+</div>
+
+<div class="card" style="max-width:640px;">
+    <div class="card-header"><h3 style="font-size:16px; font-weight:600; margin:0;">Yeni Tapşırıq</h3></div>
+    <div class="card-body" style="padding:24px;">
+        <form method="post" action="/Teacher/Assignments/Create" id="assignmentForm">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="CourseOfferingId" value="@Model.CourseOfferingId" />
+            <input type="hidden" name="AttachmentUrl" id="attachmentUrl" value="@Model.AttachmentUrl" />
+
+            <div class="form-group">
+                <label>Başlıq *</label>
+                <input type="text" name="Title" class="form-control" value="@Model.Title" required maxlength="200" placeholder="Tapşırıq başlığı" />
+            </div>
+
+            <div class="form-group">
+                <label>Növ</label>
+                <select name="Type" class="form-control">
+                    <option value="Assignment">Tapşırıq</option>
+                    <option value="Quiz">Quiz</option>
+                    <option value="Project">Layihə</option>
+                    <option value="Exam">İmtahan</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Təsvir</label>
+                <textarea name="Description" class="form-control" rows="4" maxlength="2000" placeholder="Tapşırıq haqqında məlumat...">@Model.Description</textarea>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                <div class="form-group">
+                    <label>Son Tarix *</label>
+                    <input type="datetime-local" name="DueDate" class="form-control"
+                           value="@Model.DueDate.ToString("yyyy-MM-ddTHH:mm")" required />
+                </div>
+                <div class="form-group">
+                    <label>Maksimum Xal *</label>
+                    <input type="number" name="MaxScore" class="form-control" value="@Model.MaxScore" min="1" max="1000" step="0.5" required />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Material / Fayl (istəyə bağlı)</label>
+                <div id="uploadZone" style="border:2px dashed var(--border-color); border-radius:8px; padding:20px; text-align:center; cursor:pointer; transition:border-color .2s;"
+                     onclick="document.getElementById('fileInput').click()">
+                    <div id="uploadPrompt">
+                        <i class="fas fa-cloud-upload-alt" style="font-size:28px; color:var(--text-secondary); margin-bottom:8px;"></i>
+                        <p style="font-size:13px; color:var(--text-secondary); margin:0;">Fayl seçmək üçün klikləyin</p>
+                        <p style="font-size:11px; color:var(--text-secondary); margin:4px 0 0;">PDF, Word, Excel, Şəkil, ZIP (maks 10 MB)</p>
+                    </div>
+                    <div id="uploadedFile" style="display:none; align-items:center; gap:8px; justify-content:center;">
+                        <i class="fas fa-file-alt" style="color:#22c55e; font-size:20px;"></i>
+                        <span id="uploadedFileName" style="font-size:13px; font-weight:500;"></span>
+                        <button type="button" onclick="clearFile(event)" style="background:none; border:none; color:#ef4444; cursor:pointer; padding:2px 6px;">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <input type="file" id="fileInput" style="display:none"
+                       accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.gif,.zip,.txt,.pptx" />
+                <div id="uploadError" style="color:#ef4444; font-size:12px; margin-top:4px; display:none;"></div>
+                <div id="uploadProgress" style="display:none; margin-top:8px;">
+                    <div style="background:var(--bg-hover); border-radius:4px; height:4px; overflow:hidden;">
+                        <div id="progressBar" style="background:var(--primary-color); height:100%; width:0%; transition:width .3s;"></div>
+                    </div>
+                    <span style="font-size:11px; color:var(--text-secondary);">Yüklənir...</span>
+                </div>
+            </div>
+
+            <div class="form-group" style="display:flex; align-items:center; gap:8px;">
+                <input type="checkbox" name="IsVisible" value="true" id="isVisible" @(Model.IsVisible ? "checked" : "") />
+                <input type="hidden" name="IsVisible" value="false" />
+                <label for="isVisible" style="margin:0; cursor:pointer;">Tələbələrə görünsün</label>
+            </div>
+
+            <div style="display:flex; gap:8px; margin-top:8px;">
+                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Yarat</button>
+                <a href="/Teacher/Assignments/Index?courseOfferingId=@Model.CourseOfferingId" class="btn btn-secondary">Ləğv et</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+    document.getElementById('fileInput').addEventListener('change', async function() {
+        const file = this.files[0];
+        if (!file) return;
+        await uploadFile(file);
+    });
+
+    const zone = document.getElementById('uploadZone');
+    zone.addEventListener('dragover', e => { e.preventDefault(); zone.style.borderColor = 'var(--primary-color)'; });
+    zone.addEventListener('dragleave', () => { zone.style.borderColor = 'var(--border-color)'; });
+    zone.addEventListener('drop', async e => {
+        e.preventDefault();
+        zone.style.borderColor = 'var(--border-color)';
+        const file = e.dataTransfer.files[0];
+        if (file) await uploadFile(file);
+    });
+
+    async function uploadFile(file) {
+        document.getElementById('uploadError').style.display = 'none';
+        document.getElementById('uploadProgress').style.display = 'block';
+        document.getElementById('progressBar').style.width = '30%';
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+            const res = await fetch('/Upload/File', {
+                method: 'POST',
+                headers: { 'RequestVerificationToken': token },
+                body: formData
+            });
+            document.getElementById('progressBar').style.width = '100%';
+
+            if (!res.ok) {
+                const err = await res.json();
+                showError(err.error || 'Fayl yüklənmədi');
+                return;
+            }
+            const data = await res.json();
+            document.getElementById('attachmentUrl').value = data.url;
+            document.getElementById('uploadedFileName').textContent = data.name;
+            document.getElementById('uploadPrompt').style.display = 'none';
+            document.getElementById('uploadedFile').style.display = 'flex';
+        } catch {
+            showError('Fayl yüklənmədi, yenidən cəhd edin');
+        } finally {
+            setTimeout(() => document.getElementById('uploadProgress').style.display = 'none', 500);
+        }
+    }
+
+    function showError(msg) {
+        const el = document.getElementById('uploadError');
+        el.textContent = msg;
+        el.style.display = 'block';
+    }
+
+    function clearFile(e) {
+        e.stopPropagation();
+        document.getElementById('attachmentUrl').value = '';
+        document.getElementById('fileInput').value = '';
+        document.getElementById('uploadedFile').style.display = 'none';
+        document.getElementById('uploadPrompt').style.display = 'block';
+    }
+</script>
+}

@@ -17,19 +17,22 @@ namespace SIS.BLL.Services.Implementations
         private readonly IStudentService _studentService;
         private readonly IActivityLogger _activityLogger;
         private readonly IClock _clock;
+        private readonly ICurrentUser _currentUser;
 
         public GradeService(
             IUnitOfWork unitOfWork,
             IMapper mapper,
             IStudentService studentService,
             IActivityLogger activityLogger,
-            IClock clock)
+            IClock clock,
+            ICurrentUser currentUser)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _studentService = studentService;
             _activityLogger = activityLogger;
             _clock = clock;
+            _currentUser = currentUser;
         }
 
         public async Task<IEnumerable<GradeDto>> GetGradesByEnrollmentAsync(int enrollmentId)
@@ -107,6 +110,8 @@ namespace SIS.BLL.Services.Implementations
             var enrollment = await _unitOfWork.Enrollments.GetEnrollmentWithDetailsAsync(enrollmentId);
             if (enrollment == null)
                 throw new NotFoundException("Qeydiyyat tapılmadı");
+
+            if (_currentUser.CanBypassPhaseRules) return;
 
             TermPhaseGuard.EnsurePhase(_clock, enrollment.CourseOffering.AcademicTerm,
                 "Qiymət əməliyyatı",

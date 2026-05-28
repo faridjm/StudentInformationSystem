@@ -16,5 +16,6 @@ namespace SIS.Entities.Models
         public ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
         public ICollection<WeeklySchedulePattern> WeeklySchedules { get; set; } = new List<WeeklySchedulePattern>();
         public ICollection<ClassSession> ClassSessions { get; set; } = new List<ClassSession>();
+        public ICollection<Assignment> Assignments { get; set; } = new List<Assignment>();
     }
 }

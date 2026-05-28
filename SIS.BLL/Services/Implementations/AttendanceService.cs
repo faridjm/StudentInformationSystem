@@ -15,12 +15,14 @@ namespace SIS.BLL.Services.Implementations
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IClock _clock;
+        private readonly ICurrentUser _currentUser;
 
-        public AttendanceService(IUnitOfWork unitOfWork, IMapper mapper, IClock clock)
+        public AttendanceService(IUnitOfWork unitOfWork, IMapper mapper, IClock clock, ICurrentUser currentUser)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _clock = clock;
+            _currentUser = currentUser;
         }
 
         public async Task<IEnumerable<AttendanceDto>> GetAttendanceByEnrollmentAsync(int enrollmentId)
@@ -64,20 +66,48 @@ namespace SIS.BLL.Services.Implementations
             var dtoList = dtos.ToList();
             if (dtoList.Count == 0) return;
 
-            // Bütün dtos eyni Enrollment-lərə aiddir, amma müxtəlif gün ola bilər.
-            // Birinci dto-nun enrollment-i üzərindən Term-i yoxlayırıq (hamısı eyni offering-ə aid olmalıdır).
             await EnsureAttendanceAllowedAsync(dtoList[0].EnrollmentId, dtoList[0].SessionDate);
+
+            // ClassSessionId varsa, onun mövcudluğunu yoxla və tarixi sessiyadan al
+            if (dtoList[0].ClassSessionId.HasValue)
+            {
+                var session = await _unitOfWork.ClassSessions.GetByIdAsync(dtoList[0].ClassSessionId.Value);
+                if (session == null)
+                    throw new NotFoundException("Seçilmiş dərs sessiyası tapılmadı");
+
+                if (session.Status == ClassSessionStatus.Cancelled)
+                    throw new BadRequestException("Ləğv olunmuş sessiya üçün davamiyyət qeyd edilə bilməz");
+
+                // Hər bir dto üçün SessionDate-i sessiyadan ayarla (consistency üçün)
+                foreach (var dto in dtoList)
+                {
+                    dto.SessionDate = session.Date.ToDateTime(TimeOnly.MinValue);
+                }
+            }
 
             foreach (var dto in dtoList)
             {
-                var existing = await _unitOfWork.AttendanceRecords.GetAsync(
-                    a => a.EnrollmentId == dto.EnrollmentId
-                      && a.SessionDate.Date == dto.SessionDate.Date);
+                // ClassSessionId varsa, ona görə tapırıq; yoxdursa köhnə üsulla SessionDate-ə görə
+                AttendanceRecord? existing = null;
+                if (dto.ClassSessionId.HasValue)
+                {
+                    existing = await _unitOfWork.AttendanceRecords.GetAsync(
+                        a => a.EnrollmentId == dto.EnrollmentId
+                          && a.ClassSessionId == dto.ClassSessionId);
+                }
+                else
+                {
+                    existing = await _unitOfWork.AttendanceRecords.GetAsync(
+                        a => a.EnrollmentId == dto.EnrollmentId
+                          && a.SessionDate.Date == dto.SessionDate.Date);
+                }
 
                 if (existing != null)
                 {
                     existing.Status = dto.Status;
                     existing.Note = dto.Note;
+                    if (dto.ClassSessionId.HasValue)
+                        existing.ClassSessionId = dto.ClassSessionId;
                     _unitOfWork.AttendanceRecords.Update(existing);
                 }
                 else
@@ -87,6 +117,19 @@ namespace SIS.BLL.Services.Implementations
                 }
             }
             await _unitOfWork.SaveAsync();
+
+            // Sessiya statusunu Scheduled → Completed yenilə (əgər keçmişdə deyildirsə)
+            if (dtoList[0].ClassSessionId.HasValue)
+            {
+                var session = await _unitOfWork.ClassSessions.GetByIdAsync(dtoList[0].ClassSessionId.Value);
+                if (session != null && session.Status == ClassSessionStatus.Scheduled)
+                {
+                    session.Status = ClassSessionStatus.Completed;
+                    session.UpdatedAt = _clock.UtcNow;
+                    _unitOfWork.ClassSessions.Update(session);
+                    await _unitOfWork.SaveAsync();
+                }
+            }
         }
 
         /// <summary>
@@ -100,12 +143,15 @@ namespace SIS.BLL.Services.Implementations
             if (enrollment == null)
                 throw new NotFoundException("Qeydiyyat tapılmadı");
 
-            TermPhaseGuard.EnsurePhase(_clock, enrollment.CourseOffering.AcademicTerm,
-                "Davamiyyət qeydi",
-                TermPhase.Active, TermPhase.ExamPeriod);
+            if (!_currentUser.CanBypassPhaseRules)
+            {
+                TermPhaseGuard.EnsurePhase(_clock, enrollment.CourseOffering.AcademicTerm,
+                    "Davamiyyət qeydi",
+                    TermPhase.Active, TermPhase.ExamPeriod);
 
-            if (sessionDate.Date > _clock.UtcNow.Date)
-                throw new BadRequestException("Sessiya tarixi gələcəkdə ola bilməz");
+                if (sessionDate.Date > _clock.UtcNow.Date)
+                    throw new BadRequestException("Sessiya tarixi gələcəkdə ola bilməz");
+            }
         }
     }
 }

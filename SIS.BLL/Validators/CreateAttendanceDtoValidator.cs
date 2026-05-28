@@ -12,9 +12,9 @@ namespace SIS.BLL.Validators
                 .GreaterThan(0).WithMessage("Qeydiyyat seçilməlidir");
 
             RuleFor(x => x.SessionDate)
-                .NotEmpty().WithMessage("Sessiya tarixi boş ola bilməz")
-                .Must(date => date.Date <= DateTime.Now.Date)
-                .WithMessage("Sessiya tarixi gələcəkdə ola bilməz");
+                .NotEmpty().WithMessage("Sessiya tarixi boş ola bilməz");
+            // Qeyd: "Gələcək tarix qadağan" qaydası AttendanceService-də yoxlanır,
+            // çünki admin/superadmin bypass etmək imkanı olmalıdır.
         }
     }
 }

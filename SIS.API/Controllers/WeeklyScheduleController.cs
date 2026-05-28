@@ -27,7 +27,7 @@ namespace SIS.API.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = $"{RoleConstants.Admin},{RoleConstants.SuperAdmin},{RoleConstants.Teacher}")]
+        [Authorize(Roles = $"{RoleConstants.Admin},{RoleConstants.SuperAdmin}")]
         public async Task<IActionResult> Set([FromBody] SetWeeklyScheduleDto dto)
         {
             await _service.SetScheduleAsync(dto);
@@ -35,7 +35,7 @@ namespace SIS.API.Controllers
         }
 
         [HttpDelete("course/{courseOfferingId}")]
-        [Authorize(Roles = $"{RoleConstants.Admin},{RoleConstants.SuperAdmin},{RoleConstants.Teacher}")]
+        [Authorize(Roles = $"{RoleConstants.Admin},{RoleConstants.SuperAdmin}")]
         public async Task<IActionResult> Clear(int courseOfferingId)
         {
             await _service.ClearScheduleAsync(courseOfferingId);

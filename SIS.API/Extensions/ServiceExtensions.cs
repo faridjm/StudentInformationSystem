@@ -13,7 +13,10 @@ namespace SIS.API.Extensions
     {
         public static IServiceCollection AddServices(this IServiceCollection services)
         {
-            services.AddSingleton<IClock, SystemClock>();
+            // Global simulasiya rejimi: Admin tərəfindən idarə olunur, bütün istifadəçilərə tətbiq edilir
+            services.AddSingleton<SimulationService>();
+            services.AddScoped<IClock, SIS.API.Time.GlobalClock>();
+            services.AddScoped<ICurrentUser, CurrentUser>();
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
@@ -33,6 +36,7 @@ namespace SIS.API.Extensions
             services.AddScoped<IAcademicTermService, AcademicTermService>();
             services.AddScoped<IWeeklySchedulePatternService, WeeklySchedulePatternService>();
             services.AddScoped<IClassSessionService, ClassSessionService>();
+            services.AddScoped<IAssignmentService, AssignmentService>();
             services.AddScoped<IRealtimeNotifier, SignalRNotifier>();
             services.AddHttpContextAccessor();
             services.AddScoped<IActivityLogger, ActivityLogger>();

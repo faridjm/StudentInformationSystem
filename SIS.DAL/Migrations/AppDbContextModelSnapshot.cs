@@ -476,6 +476,113 @@ namespace SIS.DAL.Migrations
                     b.ToTable("Announcements");
                 });
 
+            modelBuilder.Entity("SIS.Entities.Models.Assignment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AttachmentUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("CourseOfferingId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<DateTime>("DueDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsVisible")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal>("MaxScore")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CourseOfferingId");
+
+                    b.ToTable("Assignments");
+                });
+
+            modelBuilder.Entity("SIS.Entities.Models.AssignmentSubmission", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AssignmentId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Comment")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("EnrollmentId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Feedback")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("FileUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsGraded")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal?>("Score")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<DateTime>("SubmittedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EnrollmentId");
+
+                    b.HasIndex("AssignmentId", "EnrollmentId")
+                        .IsUnique();
+
+                    b.ToTable("AssignmentSubmissions");
+                });
+
             modelBuilder.Entity("SIS.Entities.Models.AttendanceRecord", b =>
                 {
                     b.Property<int>("Id")
@@ -483,6 +590,9 @@ namespace SIS.DAL.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("ClassSessionId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -507,6 +617,8 @@ namespace SIS.DAL.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ClassSessionId");
 
                     b.HasIndex("EnrollmentId", "SessionDate")
                         .IsUnique();
@@ -1136,13 +1248,50 @@ namespace SIS.DAL.Migrations
                     b.Navigation("CourseOffering");
                 });
 
+            modelBuilder.Entity("SIS.Entities.Models.Assignment", b =>
+                {
+                    b.HasOne("SIS.Entities.Models.CourseOffering", "CourseOffering")
+                        .WithMany("Assignments")
+                        .HasForeignKey("CourseOfferingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CourseOffering");
+                });
+
+            modelBuilder.Entity("SIS.Entities.Models.AssignmentSubmission", b =>
+                {
+                    b.HasOne("SIS.Entities.Models.Assignment", "Assignment")
+                        .WithMany("Submissions")
+                        .HasForeignKey("AssignmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SIS.Entities.Models.Enrollment", "Enrollment")
+                        .WithMany("AssignmentSubmissions")
+                        .HasForeignKey("EnrollmentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Assignment");
+
+                    b.Navigation("Enrollment");
+                });
+
             modelBuilder.Entity("SIS.Entities.Models.AttendanceRecord", b =>
                 {
+                    b.HasOne("SIS.Entities.Models.ClassSession", "ClassSession")
+                        .WithMany("AttendanceRecords")
+                        .HasForeignKey("ClassSessionId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("SIS.Entities.Models.Enrollment", "Enrollment")
                         .WithMany("AttendanceRecords")
                         .HasForeignKey("EnrollmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("ClassSession");
 
                     b.Navigation("Enrollment");
                 });
@@ -1339,6 +1488,16 @@ namespace SIS.DAL.Migrations
                     b.Navigation("Terms");
                 });
 
+            modelBuilder.Entity("SIS.Entities.Models.Assignment", b =>
+                {
+                    b.Navigation("Submissions");
+                });
+
+            modelBuilder.Entity("SIS.Entities.Models.ClassSession", b =>
+                {
+                    b.Navigation("AttendanceRecords");
+                });
+
             modelBuilder.Entity("SIS.Entities.Models.Course", b =>
                 {
                     b.Navigation("CourseOfferings");
@@ -1346,6 +1505,8 @@ namespace SIS.DAL.Migrations
 
             modelBuilder.Entity("SIS.Entities.Models.CourseOffering", b =>
                 {
+                    b.Navigation("Assignments");
+
                     b.Navigation("ClassSessions");
 
                     b.Navigation("Enrollments");
@@ -1364,6 +1525,8 @@ namespace SIS.DAL.Migrations
 
             modelBuilder.Entity("SIS.Entities.Models.Enrollment", b =>
                 {
+                    b.Navigation("AssignmentSubmissions");
+
                     b.Navigation("AttendanceRecords");
 
                     b.Navigation("Grades");

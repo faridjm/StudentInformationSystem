@@ -402,11 +402,17 @@
         <a href="/Student/Courses" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Courses" ? "active" : "")">
             <i class="fas fa-book"></i> Kurslarım
         </a>
+        <a href="/Student/Schedule" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Schedule" ? "active" : "")">
+            <i class="fas fa-calendar-week"></i> Cədvəlim
+        </a>
         <a href="/Student/Grades" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Grades" ? "active" : "")">
             <i class="fas fa-star"></i> Qiymətlərim
         </a>
         <a href="/Student/Announcements" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Announcements" ? "active" : "")">
             <i class="fas fa-bullhorn"></i> Elanlar
+        </a>
+        <a href="/Student/Assignments" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Assignments" ? "active" : "")">
+            <i class="fas fa-tasks"></i> Tapşırıqlar
         </a>
 
         <div class="sidebar-footer">
@@ -439,7 +445,16 @@
             </div>
         </header>
 
+        @inject SIS.UI.Time.GlobalSimulationState SimState
         <main class="page-content">
+            @if (SimState.IsActive)
+            {
+                <div style="background:rgba(234,179,8,0.15); border:1px solid rgba(234,179,8,0.3); color:#eab308; padding:10px 16px; border-radius:8px; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+                    <i class="fas fa-clock"></i>
+                    <strong>Simulasiya rejimi:</strong> Bu gün <strong>@SimState.DateDisplay</strong> olaraq qəbul edilir
+                </div>
+            }
+
             @if (TempData["Success"] != null)
             {
                 <div class="alert alert-success"><i class="fas fa-check-circle"></i> @TempData["Success"]</div>

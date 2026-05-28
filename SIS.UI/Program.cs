@@ -1,5 +1,7 @@
 using FluentValidation.AspNetCore;
+using SIS.Common.Time;
 using SIS.UI.Extensions;
+using SIS.UI.Time;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +10,10 @@ builder.Services.AddAuth();
 builder.Services.AddApiClients(builder.Configuration);
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddFluentValidationAutoValidation();
+
+// Global simulasiya vəziyyəti — singleton, bütün istifadəçilərə tətbiq edilir
+builder.Services.AddSingleton<GlobalSimulationState>();
+builder.Services.AddScoped<IClock, GlobalClock>();
 
 var app = builder.Build();
 

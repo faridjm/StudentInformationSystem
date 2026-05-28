@@ -16,17 +16,20 @@ namespace SIS.BLL.Services.Implementations
         private readonly IMapper _mapper;
         private readonly IActivityLogger _activityLogger;
         private readonly IClock _clock;
+        private readonly ICurrentUser _currentUser;
 
         public EnrollmentService(
             IUnitOfWork unitOfWork,
             IMapper mapper,
             IActivityLogger activityLogger,
-            IClock clock)
+            IClock clock,
+            ICurrentUser currentUser)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _activityLogger = activityLogger;
             _clock = clock;
+            _currentUser = currentUser;
         }
 
         public async Task<IEnumerable<EnrollmentListDto>> GetAllEnrollmentsAsync()
@@ -76,9 +79,13 @@ namespace SIS.BLL.Services.Implementations
             if (offering == null)
                 throw new NotFoundException("Kurs təklifi tapılmadı");
 
-            // Faza yoxlaması — yalnız sezona bağlı yeni Term-lər üçün
-            TermPhaseGuard.EnsurePhase(_clock, offering.AcademicTerm, "Tələbə qeydiyyatı",
-                TermPhase.Registration);
+            // Faza yoxlaması — yalnız sezona bağlı yeni Term-lər üçün.
+            // Admin/SuperAdmin manual override edə bilər (late registration).
+            if (!_currentUser.CanBypassPhaseRules)
+            {
+                TermPhaseGuard.EnsurePhase(_clock, offering.AcademicTerm, "Tələbə qeydiyyatı",
+                    TermPhase.Registration);
+            }
 
             var isEnrolled = await _unitOfWork.Enrollments
                 .IsStudentEnrolledAsync(dto.StudentId, dto.CourseOfferingId);
@@ -104,14 +111,17 @@ namespace SIS.BLL.Services.Implementations
             if (enrollment == null)
                 throw new NotFoundException("Qeydiyyat tapılmadı");
 
-            // Drop son tarixi yalnız sezona bağlı yeni Term-lər üçün yoxlanır
+            // Drop son tarixi yalnız sezona bağlı yeni Term-lər üçün yoxlanır.
+            // Admin/SuperAdmin son tarix keçsə də manual drop edə bilər.
             var term = enrollment.CourseOffering.AcademicTerm;
-            if (term.AcademicYearId.HasValue && term.DropDeadline.HasValue)
+            if (!_currentUser.CanBypassPhaseRules
+                && term.AcademicYearId.HasValue
+                && term.DropDeadline.HasValue
+                && _clock.UtcNow > term.DropDeadline.Value)
             {
-                if (_clock.UtcNow > term.DropDeadline.Value)
-                    throw new BadRequestException(
-                        $"Drop son tarixi keçib ({term.DropDeadline.Value:dd.MM.yyyy}). " +
-                        "Kursdan çıxma artıq F qiyməti ilə nəticələnir — admin ilə əlaqə saxlayın.");
+                throw new BadRequestException(
+                    $"Drop son tarixi keçib ({term.DropDeadline.Value:dd.MM.yyyy}). " +
+                    "Kursdan çıxma artıq F qiyməti ilə nəticələnir — admin ilə əlaqə saxlayın.");
             }
 
             enrollment.Status = EnrollmentStatus.Dropped;

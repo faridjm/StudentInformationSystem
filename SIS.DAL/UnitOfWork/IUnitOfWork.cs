@@ -24,7 +24,8 @@ namespace SIS.DAL.UnitOfWork
         IAcademicYearRepository AcademicYears { get; }
         IAcademicTermRepository AcademicTerms { get; }
         IRefreshTokenRepository RefreshTokens { get; }
-
+        IAssignmentRepository Assignments { get; }
+        IAssignmentSubmissionRepository AssignmentSubmissions { get; }
 
         Task<int> SaveAsync();
 

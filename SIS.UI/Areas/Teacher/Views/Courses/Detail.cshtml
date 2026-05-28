@@ -12,12 +12,18 @@
     </div>
 </div>
 
-<div style="display:flex; gap:8px; margin-bottom:20px;">
+<div style="display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap;">
+    <a href="/Teacher/Schedule/Sessions/@offering?.Id" class="btn btn-secondary btn-sm">
+        <i class="fas fa-calendar-day"></i> Dərs Günləri
+    </a>
     <a href="/Teacher/Courses/Grades/@offering?.Id" class="btn btn-primary btn-sm">
         <i class="fas fa-star"></i> Qiymətlər
     </a>
     <a href="/Teacher/Courses/Attendance/@offering?.Id" class="btn btn-success btn-sm">
         <i class="fas fa-clipboard-check"></i> Davamiyyət
+    </a>
+    <a href="/Teacher/Assignments/Index?courseOfferingId=@offering?.Id" class="btn btn-secondary btn-sm">
+        <i class="fas fa-tasks"></i> Tapşırıqlar
     </a>
 </div>
 

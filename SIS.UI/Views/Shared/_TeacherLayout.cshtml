@@ -481,7 +481,16 @@
             </div>
         </header>
 
+        @inject SIS.UI.Time.GlobalSimulationState SimState
         <main class="page-content">
+            @if (SimState.IsActive)
+            {
+                <div style="background:rgba(234,179,8,0.15); border:1px solid rgba(234,179,8,0.3); color:#eab308; padding:10px 16px; border-radius:8px; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+                    <i class="fas fa-clock"></i>
+                    <strong>Simulasiya rejimi:</strong> Bu gün <strong>@SimState.DateDisplay</strong> olaraq qəbul edilir
+                </div>
+            }
+
             @if (TempData["Success"] != null)
             {
                 <div class="alert alert-success"><i class="fas fa-check-circle"></i> @TempData["Success"]</div>

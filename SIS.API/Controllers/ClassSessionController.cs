@@ -58,7 +58,7 @@ namespace SIS.API.Controllers
         }
 
         [HttpPost("generate/{courseOfferingId}")]
-        [Authorize(Roles = $"{RoleConstants.Admin},{RoleConstants.SuperAdmin},{RoleConstants.Teacher}")]
+        [Authorize(Roles = $"{RoleConstants.Admin},{RoleConstants.SuperAdmin}")]
         public async Task<IActionResult> Generate(int courseOfferingId)
         {
             var count = await _service.GenerateFromWeeklyScheduleAsync(courseOfferingId);
@@ -66,13 +66,14 @@ namespace SIS.API.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = $"{RoleConstants.Admin},{RoleConstants.SuperAdmin},{RoleConstants.Teacher}")]
+        [Authorize(Roles = $"{RoleConstants.Admin},{RoleConstants.SuperAdmin}")]
         public async Task<IActionResult> Create([FromBody] CreateClassSessionDto dto)
         {
             var id = await _service.CreateAsync(dto);
             return Ok(new { Message = "Sessiya yaradıldı", Id = id });
         }
 
+        // Update həm admin (tarix/saat/otaq/mövzu hamısı), həm müəllim (yalnız mövzu/qeyd) tərəfindən çağırılır.
         [HttpPut]
         [Authorize(Roles = $"{RoleConstants.Admin},{RoleConstants.SuperAdmin},{RoleConstants.Teacher}")]
         public async Task<IActionResult> Update([FromBody] UpdateClassSessionDto dto)
@@ -82,7 +83,7 @@ namespace SIS.API.Controllers
         }
 
         [HttpPost("cancel")]
-        [Authorize(Roles = $"{RoleConstants.Admin},{RoleConstants.SuperAdmin},{RoleConstants.Teacher}")]
+        [Authorize(Roles = $"{RoleConstants.Admin},{RoleConstants.SuperAdmin}")]
         public async Task<IActionResult> Cancel([FromBody] CancelClassSessionDto dto)
         {
             await _service.CancelAsync(dto);
@@ -90,7 +91,7 @@ namespace SIS.API.Controllers
         }
 
         [HttpPost("makeup")]
-        [Authorize(Roles = $"{RoleConstants.Admin},{RoleConstants.SuperAdmin},{RoleConstants.Teacher}")]
+        [Authorize(Roles = $"{RoleConstants.Admin},{RoleConstants.SuperAdmin}")]
         public async Task<IActionResult> CreateMakeup([FromBody] CreateMakeupSessionDto dto)
         {
             var id = await _service.CreateMakeupAsync(dto);
@@ -98,7 +99,7 @@ namespace SIS.API.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = $"{RoleConstants.Admin},{RoleConstants.SuperAdmin},{RoleConstants.Teacher}")]
+        [Authorize(Roles = $"{RoleConstants.Admin},{RoleConstants.SuperAdmin}")]
         public async Task<IActionResult> Delete(int id)
         {
             await _service.DeleteAsync(id);

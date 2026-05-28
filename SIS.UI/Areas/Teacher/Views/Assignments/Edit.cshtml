@@ -1,0 +1,163 @@
+@model SIS.BLL.Services.DTOs.Assignment.UpdateAssignmentDto
+@{
+    var offering = ViewBag.Offering as SIS.BLL.Services.DTOs.CourseOffering.CourseOfferingDetailDto;
+    ViewData["Title"] = "Tapşırığı Redaktə Et";
+}
+
+<div style="margin-bottom:20px;">
+    <a href="/Teacher/Assignments/Index?courseOfferingId=@offering?.Id" style="color:var(--text-secondary); text-decoration:none;">
+        <i class="fas fa-arrow-left"></i> Geri
+    </a>
+</div>
+
+<div class="card" style="max-width:640px;">
+    <div class="card-header"><h3 style="font-size:16px; font-weight:600; margin:0;">Tapşırığı Redaktə Et</h3></div>
+    <div class="card-body" style="padding:24px;">
+        <form method="post" action="/Teacher/Assignments/Edit" id="assignmentForm">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="Id" value="@Model.Id" />
+            <input type="hidden" name="courseOfferingId" value="@offering?.Id" />
+            <input type="hidden" name="AttachmentUrl" id="attachmentUrl" value="@Model.AttachmentUrl" />
+
+            <div class="form-group">
+                <label>Başlıq *</label>
+                <input type="text" name="Title" class="form-control" value="@Model.Title" required maxlength="200" />
+            </div>
+
+            <div class="form-group">
+                <label>Növ</label>
+                <select name="Type" class="form-control">
+                    @foreach (var t in Enum.GetValues<SIS.Entities.Enums.AssignmentType>())
+                    {
+                        var label = t switch {
+                            SIS.Entities.Enums.AssignmentType.Assignment => "Tapşırıq",
+                            SIS.Entities.Enums.AssignmentType.Quiz => "Quiz",
+                            SIS.Entities.Enums.AssignmentType.Project => "Layihə",
+                            SIS.Entities.Enums.AssignmentType.Exam => "İmtahan",
+                            _ => t.ToString()
+                        };
+                        <option value="@t" @(Model.Type == t ? "selected" : "")>@label</option>
+                    }
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Təsvir</label>
+                <textarea name="Description" class="form-control" rows="4" maxlength="2000">@Model.Description</textarea>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                <div class="form-group">
+                    <label>Son Tarix *</label>
+                    <input type="datetime-local" name="DueDate" class="form-control"
+                           value="@Model.DueDate.ToString("yyyy-MM-ddTHH:mm")" required />
+                </div>
+                <div class="form-group">
+                    <label>Maksimum Xal *</label>
+                    <input type="number" name="MaxScore" class="form-control" value="@Model.MaxScore" min="1" max="1000" step="0.5" required />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Material / Fayl (istəyə bağlı)</label>
+                @if (!string.IsNullOrEmpty(Model.AttachmentUrl))
+                {
+                    <div id="existingFile" style="display:flex; align-items:center; gap:8px; padding:10px; background:var(--bg-hover); border-radius:6px; margin-bottom:8px;">
+                        <i class="fas fa-file-alt" style="color:#22c55e;"></i>
+                        <a href="@Model.AttachmentUrl" target="_blank" style="font-size:13px; flex:1;">Mövcud fayl</a>
+                        <button type="button" onclick="clearExistingFile()" style="background:none; border:none; color:#ef4444; cursor:pointer; font-size:12px;">
+                            <i class="fas fa-trash"></i> Sil
+                        </button>
+                    </div>
+                }
+                <div id="uploadZone" style="border:2px dashed var(--border-color); border-radius:8px; padding:16px; text-align:center; cursor:pointer;"
+                     onclick="document.getElementById('fileInput').click()">
+                    <div id="uploadPrompt">
+                        <i class="fas fa-cloud-upload-alt" style="font-size:24px; color:var(--text-secondary);"></i>
+                        <p style="font-size:13px; color:var(--text-secondary); margin:4px 0 0;">Yeni fayl yükləmək üçün klikləyin</p>
+                    </div>
+                    <div id="uploadedFile" style="display:none; align-items:center; gap:8px; justify-content:center;">
+                        <i class="fas fa-file-alt" style="color:#22c55e;"></i>
+                        <span id="uploadedFileName" style="font-size:13px; font-weight:500;"></span>
+                        <button type="button" onclick="clearNewFile(event)" style="background:none; border:none; color:#ef4444; cursor:pointer;">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <input type="file" id="fileInput" style="display:none"
+                       accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.gif,.zip,.txt,.pptx" />
+                <div id="uploadError" style="color:#ef4444; font-size:12px; margin-top:4px; display:none;"></div>
+            </div>
+
+            <div class="form-group" style="display:flex; align-items:center; gap:8px;">
+                <input type="checkbox" name="IsVisible" value="true" id="isVisible" @(Model.IsVisible ? "checked" : "") />
+                <input type="hidden" name="IsVisible" value="false" />
+                <label for="isVisible" style="margin:0; cursor:pointer;">Tələbələrə görünsün</label>
+            </div>
+
+            <div style="display:flex; gap:8px; margin-top:8px;">
+                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Saxla</button>
+                <a href="/Teacher/Assignments/Index?courseOfferingId=@offering?.Id" class="btn btn-secondary">Ləğv et</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+    const origUrl = '@Model.AttachmentUrl';
+
+    document.getElementById('fileInput').addEventListener('change', async function() {
+        const file = this.files[0];
+        if (file) await uploadFile(file);
+    });
+
+    async function uploadFile(file) {
+        document.getElementById('uploadError').style.display = 'none';
+        const formData = new FormData();
+        formData.append('file', file);
+        try {
+            const res = await fetch('/Upload/File', {
+                method: 'POST',
+                headers: { 'RequestVerificationToken': token },
+                body: formData
+            });
+            if (!res.ok) {
+                const err = await res.json();
+                showError(err.error || 'Fayl yüklənmədi');
+                return;
+            }
+            const data = await res.json();
+            document.getElementById('attachmentUrl').value = data.url;
+            document.getElementById('uploadedFileName').textContent = data.name;
+            document.getElementById('uploadPrompt').style.display = 'none';
+            document.getElementById('uploadedFile').style.display = 'flex';
+            const ex = document.getElementById('existingFile');
+            if (ex) ex.style.display = 'none';
+        } catch {
+            showError('Fayl yüklənmədi');
+        }
+    }
+
+    function showError(msg) {
+        const el = document.getElementById('uploadError');
+        el.textContent = msg; el.style.display = 'block';
+    }
+
+    function clearExistingFile() {
+        document.getElementById('attachmentUrl').value = '';
+        document.getElementById('existingFile').style.display = 'none';
+    }
+
+    function clearNewFile(e) {
+        e.stopPropagation();
+        document.getElementById('attachmentUrl').value = origUrl;
+        document.getElementById('fileInput').value = '';
+        document.getElementById('uploadedFile').style.display = 'none';
+        document.getElementById('uploadPrompt').style.display = 'block';
+        const ex = document.getElementById('existingFile');
+        if (ex && origUrl !== '') ex.style.display = 'flex';
+    }
+</script>
+}

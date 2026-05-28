@@ -562,6 +562,9 @@
         <a href="/Admin/AcademicTerm" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "AcademicTerm" ? "active" : "")">
             <i class="fas fa-calendar"></i> Semestrlər
         </a>
+        <a href="/Admin/Schedule" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Schedule" ? "active" : "")">
+            <i class="fas fa-calendar-week"></i> Dərs Cədvəli
+        </a>
         <a href="/Admin/Announcement" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Announcement" ? "active" : "")">
             <i class="fas fa-bullhorn"></i> Elanlar
         </a>
@@ -604,7 +607,41 @@
             </div>
         </header>
 
+        @inject SIS.UI.Time.GlobalSimulationState SimState
         <main class="page-content">
+            @if (SimState.IsActive)
+            {
+                <div style="background:rgba(234,179,8,0.15); border:1px solid rgba(234,179,8,0.3); color:#eab308; padding:10px 16px; border-radius:8px; margin-bottom:12px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+                    <div>
+                        <i class="fas fa-clock"></i>
+                        <strong>Simulasiya rejimi:</strong> Bütün istifadəçilər üçün bu gün <strong>@SimState.DateDisplay</strong> olaraq qəbul edilir
+                    </div>
+                    <div style="display:flex; gap:6px; align-items:center;">
+                        <form method="post" action="/Simulation/Set" style="display:flex; gap:6px; align-items:center;">
+                            @Html.AntiForgeryToken()
+                            <input type="date" name="date" value="@SimState.DateString" style="background:var(--bg-hover); border:1px solid var(--border); color:var(--text-primary); border-radius:6px; padding:4px 8px; font-size:13px;" />
+                            <input type="hidden" name="returnUrl" value="@Context.Request.Path@Context.Request.QueryString" />
+                            <button type="submit" class="btn btn-sm btn-primary">Dəyiş</button>
+                        </form>
+                        <form method="post" action="/Simulation/Clear" style="display:inline;">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="returnUrl" value="@Context.Request.Path@Context.Request.QueryString" />
+                            <button type="submit" class="btn btn-sm btn-danger">Bağla</button>
+                        </form>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div style="margin-bottom:12px;">
+                    <form method="post" action="/Simulation/Set" style="display:flex; gap:6px; align-items:center;">
+                        @Html.AntiForgeryToken()
+                        <input type="date" name="date" style="background:var(--bg-hover); border:1px solid var(--border); color:var(--text-primary); border-radius:6px; padding:4px 8px; font-size:13px;" />
+                        <input type="hidden" name="returnUrl" value="@Context.Request.Path@Context.Request.QueryString" />
+                        <button type="submit" class="btn btn-sm btn-secondary"><i class="fas fa-clock"></i> Simulasiya başlat</button>
+                    </form>
+                </div>
+            }
             @if (TempData["Success"] != null)
             {
                 <div class="alert alert-success"><i class="fas fa-check-circle me-2"></i>@TempData["Success"]</div>

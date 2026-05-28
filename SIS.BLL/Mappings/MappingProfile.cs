@@ -28,21 +28,21 @@ namespace SIS.BLL.Mappings
         {
             
             CreateMap<Student, StudentListDto>()
-                .ForMember(d => d.FullName, o => o.MapFrom(s => s.AppUser.FullName))
-                .ForMember(d => d.FinCode, o => o.MapFrom(s => s.AppUser.FinCode))
-                .ForMember(d => d.Email, o => o.MapFrom(s => s.AppUser.Email))
-                .ForMember(d => d.ProgramName, o => o.MapFrom(s => s.AcademicProgram.Name))
-                .ForMember(d => d.IsActive, o => o.MapFrom(s => s.AppUser.IsActive));
+                .ForMember(d => d.FullName, o => o.MapFrom(s => s.AppUser != null ? s.AppUser.FullName : ""))
+                .ForMember(d => d.FinCode, o => o.MapFrom(s => s.AppUser != null ? s.AppUser.FinCode : null))
+                .ForMember(d => d.Email, o => o.MapFrom(s => s.AppUser != null ? s.AppUser.Email : ""))
+                .ForMember(d => d.ProgramName, o => o.MapFrom(s => s.AcademicProgram != null ? s.AcademicProgram.Name : "—"))
+                .ForMember(d => d.IsActive, o => o.MapFrom(s => s.AppUser != null && s.AppUser.IsActive));
 
             CreateMap<Student, StudentDetailDto>()
-                .ForMember(d => d.FullName, o => o.MapFrom(s => s.AppUser.FullName))
-                .ForMember(d => d.FinCode, o => o.MapFrom(s => s.AppUser.FinCode))
-                .ForMember(d => d.Email, o => o.MapFrom(s => s.AppUser.Email))
-                .ForMember(d => d.PhoneNumber, o => o.MapFrom(s => s.AppUser.PhoneNumber))
-                .ForMember(d => d.ProfilePhoto, o => o.MapFrom(s => s.AppUser.ProfilePhoto))
-                .ForMember(d => d.ProgramName, o => o.MapFrom(s => s.AcademicProgram.Name))
-                .ForMember(d => d.DepartmentName, o => o.MapFrom(s => s.AcademicProgram.Department.Name))
-                .ForMember(d => d.IsActive, o => o.MapFrom(s => s.AppUser.IsActive));
+                .ForMember(d => d.FullName, o => o.MapFrom(s => s.AppUser != null ? s.AppUser.FullName : ""))
+                .ForMember(d => d.FinCode, o => o.MapFrom(s => s.AppUser != null ? s.AppUser.FinCode : null))
+                .ForMember(d => d.Email, o => o.MapFrom(s => s.AppUser != null ? s.AppUser.Email : ""))
+                .ForMember(d => d.PhoneNumber, o => o.MapFrom(s => s.AppUser != null ? s.AppUser.PhoneNumber : null))
+                .ForMember(d => d.ProfilePhoto, o => o.MapFrom(s => s.AppUser != null ? s.AppUser.ProfilePhoto : null))
+                .ForMember(d => d.ProgramName, o => o.MapFrom(s => s.AcademicProgram != null ? s.AcademicProgram.Name : "—"))
+                .ForMember(d => d.DepartmentName, o => o.MapFrom(s => s.AcademicProgram != null && s.AcademicProgram.Department != null ? s.AcademicProgram.Department.Name : "—"))
+                .ForMember(d => d.IsActive, o => o.MapFrom(s => s.AppUser != null && s.AppUser.IsActive));
 
             CreateMap<CreateStudentDto, Student>();
             CreateMap<UpdateStudentDto, Student>();
@@ -103,6 +103,7 @@ namespace SIS.BLL.Mappings
             
             CreateMap<Enrollment, EnrollmentListDto>()
                 .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))
+                .ForMember(d => d.CourseOfferingId, o => o.MapFrom(s => s.CourseOfferingId))
                 .ForMember(d => d.StudentName, o => o.MapFrom(s => s.Student.AppUser.FullName))
                 .ForMember(d => d.StudentNumber, o => o.MapFrom(s => s.Student.StudentNumber))
                 .ForMember(d => d.CourseName, o => o.MapFrom(s => s.CourseOffering.Course.Name))

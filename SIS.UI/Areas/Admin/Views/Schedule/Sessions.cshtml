@@ -1,0 +1,308 @@
+@using SIS.Entities.Enums
+@{
+    ViewData["Title"] = "Dərs Günləri";
+    var offering = ViewBag.Offering as SIS.BLL.Services.DTOs.CourseOffering.CourseOfferingDetailDto;
+    var sessions = ViewBag.Sessions as List<SIS.BLL.Services.DTOs.ClassSession.ClassSessionDto> ?? new();
+
+    string StatusBadge(ClassSessionStatus status) => status switch
+    {
+        ClassSessionStatus.Scheduled => "<span class='badge badge-info'>Planlaşdırılıb</span>",
+        ClassSessionStatus.Completed => "<span class='badge badge-success'>Keçirilib</span>",
+        ClassSessionStatus.Cancelled => "<span class='badge badge-danger'>Ləğv olunub</span>",
+        ClassSessionStatus.Makeup => "<span class='badge badge-warning'>Makeup</span>",
+        _ => "<span class='badge'>—</span>"
+    };
+
+    string[] azDayNames = { "Bazar", "B.e.", "Ç.a.", "Çər.", "C.a.", "Cüm.", "Şən." };
+}
+
+@if (TempData["Error"] != null)
+{
+    <div style="background:rgba(239,68,68,0.15); color:#f87171; padding:10px 14px; border-radius:8px; margin-bottom:10px;">
+        @TempData["Error"]
+    </div>
+}
+@if (TempData["Success"] != null)
+{
+    <div style="background:rgba(34,197,94,0.15); color:#22c55e; padding:10px 14px; border-radius:8px; margin-bottom:10px;">
+        @TempData["Success"]
+    </div>
+}
+
+<div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
+    <a href="/Admin/Schedule" class="btn btn-secondary btn-sm">
+        <i class="fas fa-arrow-left"></i>
+    </a>
+    <div>
+        <h2 style="font-size:20px; font-weight:700;">Dərs Günləri — @offering?.CourseName</h2>
+        <p style="color:var(--text-secondary); font-size:13px;">@offering?.TermName • Cəmi @sessions.Count dərs • Müəllim: @offering?.TeacherName</p>
+    </div>
+</div>
+
+<div style="display:flex; gap:8px; margin-bottom:16px;">
+    <a href="/Admin/Schedule/Weekly/@offering?.Id" class="btn btn-secondary btn-sm">
+        <i class="fas fa-calendar-week"></i> Həftəlik Cədvəl
+    </a>
+    <form method="post" action="/Admin/Schedule/Generate/@offering?.Id" style="display:inline;">
+        @Html.AntiForgeryToken()
+        <button type="submit" class="btn btn-success btn-sm"
+                onclick="return confirm('Cədvələ uyğun çatışmayan günləri yaratmaq istəyirsiniz?')">
+            <i class="fas fa-magic"></i> Yenidən Generasiya
+        </button>
+    </form>
+</div>
+
+@if (sessions.Count == 0)
+{
+    <div class="card">
+        <div class="card-body" style="text-align:center; color:var(--text-secondary); padding:40px;">
+            <i class="fas fa-calendar-times" style="font-size:32px; margin-bottom:12px; display:block;"></i>
+            Hələ heç bir dərs günü yaradılmayıb.<br />
+            <small>Əvvəl həftəlik cədvəl qoyun, sonra "Sessiyaları Yarat" düyməsinə basın.</small>
+        </div>
+    </div>
+}
+else
+{
+    <div class="card">
+        <div style="overflow-x:auto;">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Tarix</th>
+                        <th>Gün</th>
+                        <th>Saat</th>
+                        <th>Otaq</th>
+                        <th>Mövzu</th>
+                        <th>Status</th>
+                        <th>Əməliyyat</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{ int i = 1; }
+                    @foreach (var s in sessions)
+                    {
+                        <tr>
+                            <td>@i</td>
+                            <td>@s.Date.ToString("dd.MM.yyyy")</td>
+                            <td style="color:var(--text-secondary);">@azDayNames[(int)s.Date.DayOfWeek]</td>
+                            <td>@s.StartTime.ToString("HH:mm") – @s.EndTime.ToString("HH:mm")</td>
+                            <td>@(s.Room ?? "—")</td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(s.Topic))
+                                {
+                                    <span>@s.Topic</span>
+                                }
+                                else
+                                {
+                                    <span style="color:var(--text-secondary); font-style:italic;">təyin olunmayıb</span>
+                                }
+                            </td>
+                            <td>
+                                @Html.Raw(StatusBadge(s.Status))
+                                @if (s.Status == ClassSessionStatus.Cancelled && !string.IsNullOrEmpty(s.CancellationReason))
+                                {
+                                    <div style="font-size:11px; color:var(--text-secondary); margin-top:4px;">@s.CancellationReason</div>
+                                }
+                            </td>
+                            <td>
+                                <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                                    @if (s.Status != ClassSessionStatus.Completed)
+                                    {
+                                        @if (s.Status != ClassSessionStatus.Cancelled)
+                                        {
+                                            <button type="button" class="btn btn-sm btn-secondary"
+                                                    title="Redaktə"
+                                                    onclick="openEdit(@s.Id, '@s.Date.ToString("yyyy-MM-dd")', '@s.StartTime.ToString("HH:mm")', '@s.EndTime.ToString("HH:mm")', '@(s.Room ?? "")', `@(s.Topic ?? "")`, `@(s.Notes ?? "")`)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-danger"
+                                                    title="Ləğv"
+                                                    onclick="openCancel(@s.Id)">
+                                                <i class="fas fa-ban"></i>
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <button type="button" class="btn btn-sm btn-warning"
+                                                    title="Makeup yarat"
+                                                    onclick="openMakeup(@s.Id, '@s.StartTime.ToString("HH:mm")', '@s.EndTime.ToString("HH:mm")', '@(s.Room ?? "")')">
+                                                <i class="fas fa-redo"></i>
+                                            </button>
+                                        }
+                                        <form method="post" action="/Admin/Schedule/DeleteSession" style="display:inline;"
+                                              onsubmit="return confirm('Sessiyanı silmək istəyirsiniz?')">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="sessionId" value="@s.Id" />
+                                            <input type="hidden" name="courseOfferingId" value="@offering?.Id" />
+                                            <button type="submit" class="btn btn-sm btn-danger" title="Sil">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                        i++;
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+
+<!-- Edit modal -->
+<div id="editModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:1000; align-items:center; justify-content:center;">
+    <div class="card" style="max-width:600px; width:90%;">
+        <div class="card-header">
+            <span>Sessiyanı Redaktə Et</span>
+            <button type="button" onclick="closeEdit()" style="background:none; border:none; color:var(--text-secondary); font-size:20px; cursor:pointer;">&times;</button>
+        </div>
+        <div class="card-body">
+            <form method="post" action="/Admin/Schedule/UpdateSession">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="sessionId" id="edit_sessionId" />
+                <input type="hidden" name="courseOfferingId" value="@offering?.Id" />
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                    <div class="form-group">
+                        <label class="form-label">Tarix</label>
+                        <input type="date" name="date" id="edit_date" class="form-control" required />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Otaq</label>
+                        <input type="text" name="room" id="edit_room" class="form-control" maxlength="50" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Başlama</label>
+                        <input type="time" name="startTime" id="edit_startTime" class="form-control" required />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Bitmə</label>
+                        <input type="time" name="endTime" id="edit_endTime" class="form-control" required />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Mövzu</label>
+                    <input type="text" name="topic" id="edit_topic" class="form-control" maxlength="200" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Qeydlər</label>
+                    <textarea name="notes" id="edit_notes" class="form-control" rows="3" maxlength="2000"></textarea>
+                </div>
+
+                <div style="display:flex; gap:10px; margin-top:8px;">
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Yenilə</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeEdit()">Ləğv et</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Cancel modal -->
+<div id="cancelModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:1000; align-items:center; justify-content:center;">
+    <div class="card" style="max-width:480px; width:90%;">
+        <div class="card-header">
+            <span>Sessiyanı Ləğv Et</span>
+            <button type="button" onclick="closeCancel()" style="background:none; border:none; color:var(--text-secondary); font-size:20px; cursor:pointer;">&times;</button>
+        </div>
+        <div class="card-body">
+            <form method="post" action="/Admin/Schedule/CancelSession">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="sessionId" id="cancel_sessionId" />
+                <input type="hidden" name="courseOfferingId" value="@offering?.Id" />
+
+                <div class="form-group">
+                    <label class="form-label">Səbəb</label>
+                    <textarea name="reason" class="form-control" rows="3" maxlength="500" required placeholder="Məs. Müəllim xəstə, bayram, və s."></textarea>
+                </div>
+
+                <div style="display:flex; gap:10px; margin-top:8px;">
+                    <button type="submit" class="btn btn-danger"><i class="fas fa-ban"></i> Ləğv Et</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeCancel()">Geri</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Makeup modal -->
+<div id="makeupModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:1000; align-items:center; justify-content:center;">
+    <div class="card" style="max-width:600px; width:90%;">
+        <div class="card-header">
+            <span>Makeup Sessiyası</span>
+            <button type="button" onclick="closeMakeup()" style="background:none; border:none; color:var(--text-secondary); font-size:20px; cursor:pointer;">&times;</button>
+        </div>
+        <div class="card-body">
+            <form method="post" action="/Admin/Schedule/CreateMakeup">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="originalSessionId" id="makeup_originalSessionId" />
+                <input type="hidden" name="courseOfferingId" value="@offering?.Id" />
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                    <div class="form-group">
+                        <label class="form-label">Yeni Tarix</label>
+                        <input type="date" name="date" class="form-control" required />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Otaq</label>
+                        <input type="text" name="room" id="makeup_room" class="form-control" maxlength="50" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Başlama</label>
+                        <input type="time" name="startTime" id="makeup_startTime" class="form-control" required />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Bitmə</label>
+                        <input type="time" name="endTime" id="makeup_endTime" class="form-control" required />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Mövzu (isteğe bağlı)</label>
+                    <input type="text" name="topic" class="form-control" maxlength="200" />
+                </div>
+
+                <div style="display:flex; gap:10px; margin-top:8px;">
+                    <button type="submit" class="btn btn-warning"><i class="fas fa-redo"></i> Makeup Yarat</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeMakeup()">Geri</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function openEdit(id, date, startTime, endTime, room, topic, notes) {
+            document.getElementById('edit_sessionId').value = id;
+            document.getElementById('edit_date').value = date;
+            document.getElementById('edit_startTime').value = startTime;
+            document.getElementById('edit_endTime').value = endTime;
+            document.getElementById('edit_room').value = room;
+            document.getElementById('edit_topic').value = topic;
+            document.getElementById('edit_notes').value = notes;
+            document.getElementById('editModal').style.display = 'flex';
+        }
+        function closeEdit() { document.getElementById('editModal').style.display = 'none'; }
+
+        function openCancel(id) {
+            document.getElementById('cancel_sessionId').value = id;
+            document.getElementById('cancelModal').style.display = 'flex';
+        }
+        function closeCancel() { document.getElementById('cancelModal').style.display = 'none'; }
+
+        function openMakeup(id, startTime, endTime, room) {
+            document.getElementById('makeup_originalSessionId').value = id;
+            document.getElementById('makeup_startTime').value = startTime;
+            document.getElementById('makeup_endTime').value = endTime;
+            document.getElementById('makeup_room').value = room;
+            document.getElementById('makeupModal').style.display = 'flex';
+        }
+        function closeMakeup() { document.getElementById('makeupModal').style.display = 'none'; }
+    </script>
+}
