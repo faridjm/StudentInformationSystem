@@ -359,6 +359,16 @@
   },
   {
     "ContainingType": "SIS.API.Controllers.AnnouncementController",
+    "Method": "GetMyTeacherAnnouncements",
+    "RelativePath": "api/Announcement/my-teacher-announcements",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SIS.API.Controllers.AnnouncementController",
     "Method": "GetByStudent",
     "RelativePath": "api/Announcement/student/{studentId}",
     "HttpMethod": "GET",
@@ -625,6 +635,22 @@
   },
   {
     "ContainingType": "SIS.API.Controllers.AuthController",
+    "Method": "AdminSetPassword",
+    "RelativePath": "api/Auth/admin/set-password",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "SIS.BLL.Services.DTOs.Auth.AdminSetPasswordDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SIS.API.Controllers.AuthController",
     "Method": "ChangePassword",
     "RelativePath": "api/Auth/change-password",
     "HttpMethod": "POST",
@@ -648,8 +674,8 @@
     "Order": 0,
     "Parameters": [
       {
-        "Name": "email",
-        "Type": "System.String",
+        "Name": "dto",
+        "Type": "SIS.BLL.Services.DTOs.Auth.ForgotPasswordDto",
         "IsRequired": true
       }
     ],
@@ -708,6 +734,22 @@
       {
         "Name": "dto",
         "Type": "SIS.BLL.Services.DTOs.Auth.ResetPasswordDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SIS.API.Controllers.AuthController",
+    "Method": "SetPassword",
+    "RelativePath": "api/Auth/set-password",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "SIS.BLL.Services.DTOs.Auth.SetPasswordDto",
         "IsRequired": true
       }
     ],

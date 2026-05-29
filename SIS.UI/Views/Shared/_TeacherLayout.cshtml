@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] — SIS Müəllim</title>
+    <title>@ViewData["Title"] — Acadex Müəllim</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <style>
             :root {
@@ -434,7 +434,7 @@
 
     <nav class="sidebar">
         <div class="sidebar-logo">
-            <div class="logo-text">SIS</div>
+            <div class="logo-text">Acadex</div>
             <div class="logo-sub">Müəllim Paneli</div>
         </div>
 
@@ -452,6 +452,9 @@
         </a>
 
         <div class="sidebar-footer">
+            <a href="/Teacher/Profile/ChangePassword" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Profile" ? "active" : "")">
+                <i class="fas fa-key"></i> Şifrəni Dəyiş
+            </a>
             <form asp-area="" asp-controller="Auth" asp-action="Logout" method="post">
                 <button type="submit" class="sidebar-item w-100" style="border:none; background:none; cursor:pointer; width:100%;">
                     <i class="fas fa-sign-out-alt"></i> Çıxış

@@ -3,6 +3,7 @@
     public class TeacherDetailDto
     {
         public int Id { get; set; }
+        public string AppUserId { get; set; } = null!;
         public string FullName { get; set; } = null!;
         public string? FinCode { get; set; }
         public string Email { get; set; } = null!;

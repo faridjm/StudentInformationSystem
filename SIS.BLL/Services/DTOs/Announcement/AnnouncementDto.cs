@@ -15,8 +15,7 @@ namespace SIS.BLL.Services.DTOs.Announcement
         public string? CourseName { get; set; }
         public DateTime CreatedAt { get; set; }
         public bool IsGlobal { get; set; }
-        
-
+        public string? AttachmentUrl { get; set; }
     }
 
 

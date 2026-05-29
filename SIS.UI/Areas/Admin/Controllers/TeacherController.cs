@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SIS.BLL.Services.DTOs.Auth;
 using SIS.BLL.Services.DTOs.Teacher;
 using SIS.Common.Pagination;
 using SIS.UI.ApiClients;
@@ -12,11 +13,13 @@ namespace SIS.UI.Areas.Admin.Controllers
     {
         private readonly ITeacherApi _teacherApi;
         private readonly IDepartmentApi _departmentApi;
+        private readonly IAuthApi _authApi;
 
-        public TeacherController(ITeacherApi teacherApi, IDepartmentApi departmentApi)
+        public TeacherController(ITeacherApi teacherApi, IDepartmentApi departmentApi, IAuthApi authApi)
         {
             _teacherApi = teacherApi;
             _departmentApi = departmentApi;
+            _authApi = authApi;
         }
 
         public async Task<IActionResult> Index(int page = 1, string? search = null)
@@ -153,6 +156,32 @@ namespace SIS.UI.Areas.Admin.Controllers
                 TempData["Error"] = "Silmə zamanı xəta baş verdi";
             }
             return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SetPassword(string userId, string newPassword, string confirmPassword, int teacherId)
+        {
+            if (newPassword != confirmPassword)
+            {
+                TempData["Error"] = "Şifrələr uyğun gəlmir";
+                return RedirectToAction("Detail", new { id = teacherId });
+            }
+            try
+            {
+                await _authApi.AdminSetPasswordAsync(new AdminSetPasswordDto
+                {
+                    UserId = userId,
+                    NewPassword = newPassword,
+                    ConfirmPassword = confirmPassword
+                });
+                TempData["Success"] = "Şifrə uğurla dəyişdirildi";
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+            }
+            return RedirectToAction("Detail", new { id = teacherId });
         }
     }
 }

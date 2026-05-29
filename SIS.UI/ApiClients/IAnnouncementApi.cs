@@ -14,6 +14,9 @@ namespace SIS.UI.ApiClients
         [Get("/api/announcement/my-announcements")]
         Task<IEnumerable<AnnouncementDto>> GetMyAnnouncementsAsync();
 
+        [Get("/api/announcement/my-teacher-announcements")]
+        Task<IEnumerable<AnnouncementDto>> GetMyTeacherAnnouncementsAsync();
+
         [Post("/api/announcement")]
         Task CreateAsync([Body] CreateAnnouncementDto dto);
 

@@ -1,4 +1,4 @@
-﻿@model IEnumerable<SIS.BLL.Services.DTOs.Announcement.AnnouncementDto>
+@model IEnumerable<SIS.BLL.Services.DTOs.Announcement.AnnouncementDto>
 
 @{
     ViewData["Title"] = "Elanlar";
@@ -6,50 +6,77 @@
 
 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
     <h2 style="font-size:20px; font-weight:700;">Elanlar</h2>
-    <a href="/Teacher/Announcements/Create" class="btn btn-primary">
-        <i class="fas fa-plus"></i> Yeni Elan
-    </a>
 </div>
 
-<div class="card">
-    <div style="overflow-x:auto;">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Başlıq</th>
-                    <th>Növ</th>
-                    <th>Tarix</th>
-                    <th>Əməliyyat</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var a in Model)
-                {
-                    <tr>
-                        <td style="font-weight:500;">@a.Title</td>
-                        <td>
-                            @if (a.IsGlobal)
-                            {
-                                <span class="badge badge-info">Global</span>
-                            }
-                            else
-                            {
-                                <span class="badge badge-warning">Kurs</span>
-                            }
-                        </td>
-                        <td style="color:var(--text-secondary); font-size:13px;">@a.CreatedAt.ToString("dd.MM.yyyy HH:mm")</td>
-                        <td>
-                            <form method="post" action="/Teacher/Announcements/Delete/@a.Id"
-                                  onsubmit="return confirm('Elanı silmək istədiyinizdən əminsinizmi?')">
-                                @Html.AntiForgeryToken()
-                                <button type="submit" class="btn btn-sm btn-danger">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+@if (!Model.Any())
+{
+    <div style="text-align:center; padding:60px 20px; color:var(--text-secondary);">
+        <i class="fas fa-bullhorn" style="font-size:40px; opacity:.3; margin-bottom:12px; display:block;"></i>
+        <p>Hələ heç bir elan yoxdur</p>
     </div>
-</div>
+}
+else
+{
+    <div style="display:flex; flex-direction:column; gap:10px;">
+        @foreach (var a in Model.OrderByDescending(x => x.CreatedAt))
+        {
+            <div class="card" style="cursor:pointer; transition:box-shadow .15s;" onclick="openAnnouncement(@a.Id)" onmouseenter="this.style.boxShadow='0 4px 16px rgba(0,0,0,.15)'" onmouseleave="this.style.boxShadow=''">
+                <div class="card-body" style="display:flex; align-items:center; gap:16px; padding:14px 20px;">
+                    <div style="width:40px; height:40px; border-radius:50%; background:rgba(233,69,96,.12); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                        <i class="fas fa-bullhorn" style="color:#e94560; font-size:15px;"></i>
+                    </div>
+                    <div style="flex:1; min-width:0;">
+                        <div style="font-weight:600; font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">@a.Title</div>
+                        <div style="font-size:12px; color:var(--text-secondary); margin-top:2px;">
+                            <i class="fas fa-user" style="margin-right:4px;"></i>@a.AuthorName
+                            @if (!string.IsNullOrEmpty(a.AttachmentUrl))
+                            {
+                                <span style="margin-left:10px;"><i class="fas fa-paperclip"></i> Fayl əlavəsi var</span>
+                            }
+                        </div>
+                    </div>
+                    <div style="font-size:12px; color:var(--text-secondary); flex-shrink:0;">@a.CreatedAt.ToString("dd.MM.yyyy HH:mm")</div>
+                    <i class="fas fa-chevron-right" style="color:var(--text-secondary); font-size:12px; flex-shrink:0;"></i>
+                </div>
+            </div>
+
+            <!-- Modal -->
+            <div id="modal-@a.Id" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:1000; align-items:center; justify-content:center; padding:20px;">
+                <div style="background:var(--bg-card); border-radius:12px; max-width:600px; width:100%; max-height:80vh; overflow-y:auto; box-shadow:0 20px 60px rgba(0,0,0,.3);">
+                    <div style="padding:20px 24px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
+                        <h3 style="font-size:17px; font-weight:700; margin:0;">@a.Title</h3>
+                        <button onclick="closeAnnouncement(@a.Id)" style="background:none; border:none; color:var(--text-secondary); cursor:pointer; font-size:18px;"><i class="fas fa-times"></i></button>
+                    </div>
+                    <div style="padding:24px;">
+                        <p style="line-height:1.7; color:var(--text-primary); white-space:pre-wrap; margin:0;">@a.Content</p>
+                        @if (!string.IsNullOrEmpty(a.AttachmentUrl))
+                        {
+                            <div style="margin-top:20px; padding:12px 16px; background:var(--bg-hover); border-radius:8px;">
+                                <a href="@a.AttachmentUrl" target="_blank" style="color:#e94560; text-decoration:none; font-size:14px;">
+                                    <i class="fas fa-paperclip" style="margin-right:6px;"></i>Əlavə faylı yüklə
+                                </a>
+                            </div>
+                        }
+                        <div style="margin-top:16px; padding-top:16px; border-top:1px solid var(--border); font-size:12px; color:var(--text-secondary);">
+                            <i class="fas fa-user" style="margin-right:4px;"></i>@a.AuthorName &nbsp;·&nbsp;
+                            <i class="fas fa-clock" style="margin-right:4px;"></i>@a.CreatedAt.ToString("dd.MM.yyyy HH:mm")
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+<script>
+function openAnnouncement(id) {
+    const m = document.getElementById('modal-' + id);
+    m.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+function closeAnnouncement(id) {
+    document.getElementById('modal-' + id).style.display = 'none';
+    document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('[id^="modal-"]').forEach(m => { m.style.display='none'; document.body.style.overflow=''; }); });
+</script>

@@ -4,7 +4,7 @@
     {
         public static string Generate(int enrollmentYear, int sequence)
         {
-            return $"{enrollmentYear}{sequence:D5}";
+            return $"STU{sequence:D3}";
         }
     }
 }

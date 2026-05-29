@@ -77,4 +77,69 @@
     <a href="/Admin/Student/Edit/@Model.Id" class="btn btn-primary">
         <i class="fas fa-edit"></i> Düzəlt
     </a>
+    <button type="button" class="btn btn-secondary" onclick="document.getElementById('pwdCard').style.display='block'; this.style.display='none'">
+        <i class="fas fa-key"></i> Şifrəni Dəyiş
+    </button>
 </div>
+
+@if (TempData["Success"] != null)
+{
+    <div style="margin-top:12px; padding:12px 16px; background:#dcfce7; color:#16a34a; border-radius:8px;">
+        <i class="fas fa-check-circle"></i> @TempData["Success"]
+    </div>
+}
+@if (TempData["Error"] != null)
+{
+    <div style="margin-top:12px; padding:12px 16px; background:#fee2e2; color:#dc2626; border-radius:8px;">
+        <i class="fas fa-exclamation-circle"></i> @TempData["Error"]
+    </div>
+}
+
+<div id="pwdCard" class="card" style="max-width:400px; margin-top:16px; display:none;">
+    <div class="card-header"><i class="fas fa-key"></i> Şifrəni Dəyiş</div>
+    <div class="card-body" style="padding:20px;">
+        <form method="post" action="/Admin/Student/SetPassword">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="userId" value="@Model.AppUserId" />
+            <input type="hidden" name="studentId" value="@Model.Id" />
+            <div class="form-group">
+                <label style="font-size:13px;">Yeni Şifrə</label>
+                <div style="position:relative;">
+                    <input type="password" id="adm_pwd1" name="newPassword" class="form-control" required minlength="6" style="padding-right:40px;" />
+                    <button type="button" onclick="togglePwd('adm_pwd1',this)" tabindex="-1"
+                            style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:14px;">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label style="font-size:13px;">Şifrəni Təsdiqlə</label>
+                <div style="position:relative;">
+                    <input type="password" id="adm_pwd2" name="confirmPassword" class="form-control" required minlength="6" style="padding-right:40px;" />
+                    <button type="button" onclick="togglePwd('adm_pwd2',this)" tabindex="-1"
+                            style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:14px;">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+            </div>
+            <div style="display:flex; gap:8px;">
+                <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-save"></i> Yadda Saxla</button>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('pwdCard').style.display='none'">Ləğv et</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function togglePwd(id, btn) {
+    const input = document.getElementById(id);
+    const icon = btn.querySelector('i');
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.replace('fa-eye', 'fa-eye-slash');
+    } else {
+        input.type = 'password';
+        icon.classList.replace('fa-eye-slash', 'fa-eye');
+    }
+}
+</script>

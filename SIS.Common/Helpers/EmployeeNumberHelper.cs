@@ -4,7 +4,7 @@
     {
         public static string Generate(int year, int sequence)
         {
-            return $"EMP{year}{sequence:D5}";
+            return $"TCH{sequence:D3}";
         }
     }
 }

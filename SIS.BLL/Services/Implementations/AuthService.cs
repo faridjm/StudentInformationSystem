@@ -122,6 +122,17 @@ namespace SIS.BLL.Services.Implementations
                 throw new BadRequestException(string.Join(", ", result.Errors.Select(e => e.Description)));
         }
 
+        public async Task SetPasswordAsync(string userId, string newPassword)
+        {
+            var user = await _userManager.FindByIdAsync(userId)
+                ?? throw new NotFoundException("İstifadəçi tapılmadı");
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var result = await _userManager.ResetPasswordAsync(user, token, newPassword);
+            if (!result.Succeeded)
+                throw new BadRequestException(string.Join(", ", result.Errors.Select(e => e.Description)));
+        }
+
         public async Task ForgotPasswordAsync(string email)
         {
             var user = await _userManager.FindByEmailAsync(email);
@@ -129,7 +140,9 @@ namespace SIS.BLL.Services.Implementations
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
             var frontendUrl = _configuration["App:FrontendUrl"];
-            var resetLink = $"{frontendUrl}/Auth/ResetPassword?email={WebUtility.UrlEncode(email)}&token={WebUtility.UrlEncode(token)}";
+            var safeToken = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(token))
+                .Replace('+', '-').Replace('/', '_').Replace("=", "");
+            var resetLink = $"{frontendUrl}/Auth/ResetPassword?email={WebUtility.UrlEncode(email)}&token={safeToken}";
 
             await _emailService.SendPasswordResetAsync(user.Email!, resetLink);
         }
@@ -143,7 +156,12 @@ namespace SIS.BLL.Services.Implementations
             if (user == null)
                 throw new NotFoundException("İstifadəçi tapılmadı");
 
-            var result = await _userManager.ResetPasswordAsync(user, dto.Token, dto.NewPassword);
+            // Base64Url decode
+            var base64 = dto.Token.Replace('-', '+').Replace('_', '/');
+            var padding = base64.Length % 4 == 0 ? "" : new string('=', 4 - base64.Length % 4);
+            var rawToken = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(base64 + padding));
+
+            var result = await _userManager.ResetPasswordAsync(user, rawToken, dto.NewPassword);
             if (!result.Succeeded)
                 throw new BadRequestException(string.Join(", ", result.Errors.Select(e => e.Description)));
         }

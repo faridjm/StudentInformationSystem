@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SIS.BLL.Services.DTOs.Auth;
 using SIS.BLL.Services.Interfaces;
+using SIS.Common.Constants;
 
 namespace SIS.API.Controllers
 {
@@ -48,10 +49,31 @@ namespace SIS.API.Controllers
             return Ok(new { Message = "Şifrə uğurla dəyişdirildi" });
         }
 
-        [HttpPost("forgot-password")]
-        public async Task<IActionResult> ForgotPassword([FromBody] string email)
+        [HttpPost("set-password")]
+        [Authorize]
+        public async Task<IActionResult> SetPassword([FromBody] SetPasswordDto dto)
         {
-            await _authService.ForgotPasswordAsync(email);
+            if (dto.NewPassword != dto.ConfirmPassword)
+                return BadRequest(new { Message = "Şifrələr uyğun gəlmir" });
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            await _authService.SetPasswordAsync(userId!, dto.NewPassword);
+            return Ok(new { Message = "Şifrə uğurla dəyişdirildi" });
+        }
+
+        [HttpPost("admin/set-password")]
+        [Authorize(Roles = $"{RoleConstants.Admin},{RoleConstants.SuperAdmin}")]
+        public async Task<IActionResult> AdminSetPassword([FromBody] AdminSetPasswordDto dto)
+        {
+            if (dto.NewPassword != dto.ConfirmPassword)
+                return BadRequest(new { Message = "Şifrələr uyğun gəlmir" });
+            await _authService.SetPasswordAsync(dto.UserId, dto.NewPassword);
+            return Ok(new { Message = "Şifrə uğurla dəyişdirildi" });
+        }
+
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto dto)
+        {
+            await _authService.ForgotPasswordAsync(dto.Email);
             return Ok(new { Message = "Şifrə sıfırlama linki göndərildi" });
         }
 

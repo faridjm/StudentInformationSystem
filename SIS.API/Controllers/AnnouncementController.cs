@@ -13,13 +13,16 @@ namespace SIS.API.Controllers
     {
         private readonly IAnnouncementService _announcementService;
         private readonly IStudentService _studentService;
+        private readonly ITeacherService _teacherService;
 
         public AnnouncementController(
             IAnnouncementService announcementService,
-            IStudentService studentService)
+            IStudentService studentService,
+            ITeacherService teacherService)
         {
             _announcementService = announcementService;
             _studentService = studentService;
+            _teacherService = teacherService;
         }
 
         [HttpGet("global")]
@@ -54,6 +57,14 @@ namespace SIS.API.Controllers
             var student = await _studentService.GetStudentByUserIdAsync(userId!);
             if (student == null) return NotFound();
             var announcements = await _announcementService.GetAnnouncementsForStudentAsync(student.Id);
+            return Ok(announcements);
+        }
+
+        [HttpGet("my-teacher-announcements")]
+        [Authorize(Roles = RoleConstants.Teacher)]
+        public async Task<IActionResult> GetMyTeacherAnnouncements()
+        {
+            var announcements = await _announcementService.GetGlobalAnnouncementsAsync();
             return Ok(announcements);
         }
 

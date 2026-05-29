@@ -9,5 +9,6 @@ namespace SIS.BLL.Services.DTOs.Announcement
         public AnnouncementTarget TargetType { get; set; }
         public int? CourseOfferingId { get; set; }
         public bool IsGlobal { get; set; } = true;
+        public string? AttachmentUrl { get; set; }
     }
 }

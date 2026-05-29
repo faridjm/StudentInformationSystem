@@ -11,6 +11,7 @@ namespace SIS.Entities.Models
         public AnnouncementTarget TargetType { get; set; }
         public string AuthorId { get; set; } = null!;
         public int? CourseOfferingId { get; set; }
+        public string? AttachmentUrl { get; set; }
         public AppUser Author { get; set; } = null!;
         public CourseOffering? CourseOffering { get; set; }
 

@@ -1,4 +1,4 @@
-﻿@model SIS.BLL.Services.DTOs.Announcement.CreateAnnouncementDto
+@model SIS.BLL.Services.DTOs.Announcement.CreateAnnouncementDto
 
 @{
     ViewData["Title"] = "Yeni Elan";
@@ -9,10 +9,11 @@
     <h2 style="font-size:20px; font-weight:700;">Yeni Elan</h2>
 </div>
 
-<div class="card" style="max-width:600px;">
+<div class="card" style="max-width:640px;">
     <div class="card-body">
-        <form method="post">
+        <form method="post" id="announcementForm">
             @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="AttachmentUrl" id="attachmentUrlInput" />
             <div asp-validation-summary="ModelOnly" style="color:#f87171; margin-bottom:12px; font-size:13px;"></div>
 
             <div class="form-group">
@@ -28,16 +29,67 @@
             </div>
 
             <div class="form-group">
-                <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
-                    <input asp-for="IsGlobal" type="checkbox" style="width:16px; height:16px; accent-color:#e94560;" />
-                    <span class="form-label" style="margin:0;">Global elan (bütün istifadəçilərə görünür)</span>
-                </label>
+                <label class="form-label">Hədəf Auditoriya</label>
+                <select asp-for="TargetType" class="form-control">
+                    <option value="0">Hamı (Tələbə + Müəllim)</option>
+                    <option value="1">Yalnız Tələbələr</option>
+                    <option value="2">Yalnız Müəllimlər</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Əlavə Fayl <span style="color:var(--text-secondary); font-size:12px;">(şəkil, PDF, Word, ZIP...)</span></label>
+                <div id="dropZone" style="border:2px dashed var(--border); border-radius:8px; padding:24px; text-align:center; cursor:pointer; transition:border-color .2s;"
+                     onclick="document.getElementById('attachFile').click()"
+                     ondragover="event.preventDefault(); this.style.borderColor='#e94560';"
+                     ondragleave="this.style.borderColor='var(--border)'"
+                     ondrop="handleDrop(event)">
+                    <i class="fas fa-paperclip" style="font-size:22px; color:var(--text-secondary); margin-bottom:8px; display:block;"></i>
+                    <p style="color:var(--text-secondary); font-size:13px; margin:0;">Faylı sürükləyin və ya klikləyin</p>
+                    <input type="file" id="attachFile" style="display:none;" onchange="uploadFile(this.files[0])" />
+                </div>
+                <div id="attachPreview" style="display:none; margin-top:10px; padding:10px 14px; background:var(--bg-hover); border-radius:6px; align-items:center; gap:10px;">
+                    <i class="fas fa-file-alt" style="color:#e94560;"></i>
+                    <span id="attachName" style="font-size:13px; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"></span>
+                    <button type="button" onclick="removeAttachment()" style="background:none; border:none; color:var(--text-secondary); cursor:pointer;"><i class="fas fa-times"></i></button>
+                </div>
+                <div id="uploadProgress" style="display:none; margin-top:8px; font-size:12px; color:var(--text-secondary);"><i class="fas fa-spinner fa-spin"></i> Yüklənir...</div>
             </div>
 
             <div style="display:flex; gap:10px; margin-top:8px;">
-                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Yarat</button>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-bullhorn"></i> Yayımla</button>
                 <a href="/Admin/Announcement" class="btn btn-secondary">Ləğv et</a>
             </div>
         </form>
     </div>
 </div>
+
+<script>
+function handleDrop(e) {
+    e.preventDefault();
+    document.getElementById('dropZone').style.borderColor = 'var(--border)';
+    const file = e.dataTransfer.files[0];
+    if (file) uploadFile(file);
+}
+async function uploadFile(file) {
+    if (!file) return;
+    document.getElementById('uploadProgress').style.display = 'block';
+    document.getElementById('attachPreview').style.display = 'none';
+    const formData = new FormData();
+    formData.append('file', file);
+    const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+    const res = await fetch('/Upload/File', { method: 'POST', headers: { 'RequestVerificationToken': token }, body: formData });
+    document.getElementById('uploadProgress').style.display = 'none';
+    if (res.ok) {
+        const data = await res.json();
+        document.getElementById('attachmentUrlInput').value = data.url;
+        document.getElementById('attachName').textContent = data.name;
+        document.getElementById('attachPreview').style.display = 'flex';
+    }
+}
+function removeAttachment() {
+    document.getElementById('attachmentUrlInput').value = '';
+    document.getElementById('attachPreview').style.display = 'none';
+    document.getElementById('attachFile').value = '';
+}
+</script>

@@ -109,5 +109,52 @@ namespace SIS.UI.Controllers
         }
 
         public IActionResult AccessDenied() => View();
+
+        [HttpGet]
+        public IActionResult ForgotPassword() => View();
+
+        [HttpPost]
+        public async Task<IActionResult> ForgotPassword(string email)
+        {
+            if (string.IsNullOrEmpty(email))
+            {
+                ModelState.AddModelError("", "Email daxil edin");
+                return View();
+            }
+            try { await _authApi.ForgotPasswordAsync(new SIS.BLL.Services.DTOs.Auth.ForgotPasswordDto { Email = email }); } catch { }
+            ViewBag.Sent = true;
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult ResetPassword(string email, string token)
+        {
+            return View(new ResetPasswordDto { Email = email, Token = token });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(ResetPasswordDto dto)
+        {
+            if (!ModelState.IsValid) return View(dto);
+            try
+            {
+                await _authApi.ResetPasswordAsync(dto);
+                ViewBag.Done = true;
+                return View(dto);
+            }
+            catch (ApiException ex)
+            {
+                var message = "Xəta baş verdi";
+                try
+                {
+                    var err = System.Text.Json.JsonDocument.Parse(ex.Content ?? "");
+                    if (err.RootElement.TryGetProperty("message", out var msg))
+                        message = msg.GetString() ?? message;
+                }
+                catch { }
+                ModelState.AddModelError("", message);
+                return View(dto);
+            }
+        }
     }
 }

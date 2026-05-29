@@ -17,19 +17,22 @@ namespace SIS.BLL.Services.Implementations
         private readonly IActivityLogger _activityLogger;
         private readonly IClock _clock;
         private readonly ICurrentUser _currentUser;
+        private readonly IEmailService _emailService;
 
         public EnrollmentService(
             IUnitOfWork unitOfWork,
             IMapper mapper,
             IActivityLogger activityLogger,
             IClock clock,
-            ICurrentUser currentUser)
+            ICurrentUser currentUser,
+            IEmailService emailService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _activityLogger = activityLogger;
             _clock = clock;
             _currentUser = currentUser;
+            _emailService = emailService;
         }
 
         public async Task<IEnumerable<EnrollmentListDto>> GetAllEnrollmentsAsync()
@@ -100,6 +103,17 @@ namespace SIS.BLL.Services.Implementations
             var enrollment = _mapper.Map<Enrollment>(dto);
             await _unitOfWork.Enrollments.AddAsync(enrollment);
             await _unitOfWork.SaveAsync();
+
+            // Tələbəyə qeydiyyat emaili göndər
+            var student = await _unitOfWork.Students.GetStudentWithDetailsAsync(dto.StudentId);
+            if (student?.AppUser?.Email != null)
+            {
+                var teacherName = offering.Teacher?.AppUser?.FullName ?? "";
+                var termName = offering.AcademicTerm?.Name ?? "";
+                _ = _emailService.SendEnrollmentConfirmationAsync(
+                    student.AppUser.Email, student.AppUser.FullName,
+                    offering.Course.Name, teacherName, termName);
+            }
 
             await _activityLogger.LogAsync("Create", "Enrollment", enrollment.Id.ToString(),
                 null, new { dto.StudentId, dto.CourseOfferingId });

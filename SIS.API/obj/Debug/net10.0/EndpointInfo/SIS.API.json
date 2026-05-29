@@ -568,6 +568,18 @@
         }
       }
     },
+    "/api/Announcement/my-teacher-announcements": {
+      "get": {
+        "tags": [
+          "Announcement"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/Announcement": {
       "post": {
         "tags": [
@@ -1197,6 +1209,70 @@
         }
       }
     },
+    "/api/Auth/set-password": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetPasswordDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetPasswordDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetPasswordDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Auth/admin/set-password": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminSetPasswordDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminSetPasswordDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminSetPasswordDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/Auth/forgot-password": {
       "post": {
         "tags": [
@@ -1206,17 +1282,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "string"
+                "$ref": "#/components/schemas/ForgotPasswordDto"
               }
             },
             "text/json": {
               "schema": {
-                "type": "string"
+                "$ref": "#/components/schemas/ForgotPasswordDto"
               }
             },
             "application/*+json": {
               "schema": {
-                "type": "string"
+                "$ref": "#/components/schemas/ForgotPasswordDto"
               }
             }
           },
@@ -3054,6 +3130,20 @@
   },
   "components": {
     "schemas": {
+      "AdminSetPasswordDto": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string"
+          },
+          "newPassword": {
+            "type": "string"
+          },
+          "confirmPassword": {
+            "type": "string"
+          }
+        }
+      },
       "AnnouncementTarget": {
         "type": "integer"
       },
@@ -3213,6 +3303,12 @@
           },
           "isGlobal": {
             "type": "boolean"
+          },
+          "attachmentUrl": {
+            "type": [
+              "null",
+              "string"
+            ]
           }
         }
       },
@@ -3245,6 +3341,12 @@
           },
           "isVisible": {
             "type": "boolean"
+          },
+          "attachmentUrl": {
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "courseOfferingId": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
@@ -3650,6 +3752,14 @@
       "DayOfWeek": {
         "type": "integer"
       },
+      "ForgotPasswordDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          }
+        }
+      },
       "GradeSubmissionDto": {
         "type": "object",
         "properties": {
@@ -3707,6 +3817,17 @@
             "type": "string"
           },
           "confirmNewPassword": {
+            "type": "string"
+          }
+        }
+      },
+      "SetPasswordDto": {
+        "type": "object",
+        "properties": {
+          "newPassword": {
+            "type": "string"
+          },
+          "confirmPassword": {
             "type": "string"
           }
         }
@@ -3897,6 +4018,12 @@
           },
           "isVisible": {
             "type": "boolean"
+          },
+          "attachmentUrl": {
+            "type": [
+              "null",
+              "string"
+            ]
           }
         }
       },

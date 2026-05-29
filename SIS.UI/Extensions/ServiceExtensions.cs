@@ -27,7 +27,8 @@ namespace SIS.UI.Extensions
             services.AddTransient<AuthDelegatingHandler>();
 
             services.AddRefitClient<IAuthApi>(RefitSettings)
-                .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBase));
+                .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBase))
+                .AddHttpMessageHandler<AuthDelegatingHandler>();
 
             services.AddRefitClient<IStudentApi>(RefitSettings)
                 .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBase))

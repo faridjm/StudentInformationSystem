@@ -10,10 +10,14 @@ namespace SIS.BLL.Services.Implementations
     public class AssignmentService : IAssignmentService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IStudentService _studentService;
+        private readonly IEmailService _emailService;
 
-        public AssignmentService(IUnitOfWork unitOfWork)
+        public AssignmentService(IUnitOfWork unitOfWork, IStudentService studentService, IEmailService emailService)
         {
             _unitOfWork = unitOfWork;
+            _studentService = studentService;
+            _emailService = emailService;
         }
 
         public async Task<IEnumerable<AssignmentDto>> GetByCourseOfferingAsync(int courseOfferingId)
@@ -184,6 +188,19 @@ namespace SIS.BLL.Services.Implementations
             }
 
             await _unitOfWork.SaveAsync();
+
+            // GPA-nı yenilə + email göndər
+            var enrollment = await _unitOfWork.Enrollments.GetEnrollmentWithDetailsAsync(submission.EnrollmentId);
+            if (enrollment != null)
+            {
+                await _studentService.UpdateGPAAsync(enrollment.StudentId);
+
+                var studentEmail = enrollment.Student?.AppUser?.Email;
+                var studentName = enrollment.Student?.AppUser?.FullName ?? "";
+                var courseName = enrollment.CourseOffering?.Course?.Name ?? "";
+                if (!string.IsNullOrEmpty(studentEmail))
+                    _ = _emailService.SendGradeNotificationAsync(studentEmail, studentName, assignment.Title, courseName, dto.Score, assignment.MaxScore, dto.Feedback);
+            }
         }
 
         // ── Helpers ──────────────────────────────────────────────────

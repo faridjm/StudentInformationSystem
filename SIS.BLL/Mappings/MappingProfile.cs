@@ -35,6 +35,7 @@ namespace SIS.BLL.Mappings
                 .ForMember(d => d.IsActive, o => o.MapFrom(s => s.AppUser != null && s.AppUser.IsActive));
 
             CreateMap<Student, StudentDetailDto>()
+                .ForMember(d => d.AppUserId, o => o.MapFrom(s => s.AppUser != null ? s.AppUser.Id : ""))
                 .ForMember(d => d.FullName, o => o.MapFrom(s => s.AppUser != null ? s.AppUser.FullName : ""))
                 .ForMember(d => d.FinCode, o => o.MapFrom(s => s.AppUser != null ? s.AppUser.FinCode : null))
                 .ForMember(d => d.Email, o => o.MapFrom(s => s.AppUser != null ? s.AppUser.Email : ""))
@@ -56,6 +57,7 @@ namespace SIS.BLL.Mappings
                 .ForMember(d => d.IsActive, o => o.MapFrom(s => s.AppUser.IsActive));
 
             CreateMap<Teacher, TeacherDetailDto>()
+                .ForMember(d => d.AppUserId, o => o.MapFrom(s => s.AppUser.Id))
                 .ForMember(d => d.FullName, o => o.MapFrom(s => s.AppUser.FullName))
                 .ForMember(d => d.FinCode, o => o.MapFrom(s => s.AppUser.FinCode))
                 .ForMember(d => d.Email, o => o.MapFrom(s => s.AppUser.Email))

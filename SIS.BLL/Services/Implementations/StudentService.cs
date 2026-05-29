@@ -20,17 +20,20 @@ namespace SIS.BLL.Services.Implementations
         private readonly IMapper _mapper;
         private readonly UserManager<AppUser> _userManager;
         private readonly IActivityLogger _activityLogger;
+        private readonly IEmailService _emailService;
 
         public StudentService(
             IUnitOfWork unitOfWork,
             IMapper mapper,
             UserManager<AppUser> userManager,
-            IActivityLogger activityLogger)
+            IActivityLogger activityLogger,
+            IEmailService emailService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _userManager = userManager;
             _activityLogger = activityLogger;
+            _emailService = emailService;
         }
 
         public async Task<PagedResult<StudentListDto>> GetAllStudentsAsync(PagedRequest request)
@@ -111,6 +114,14 @@ namespace SIS.BLL.Services.Implementations
 
             await _unitOfWork.Students.AddAsync(student);
             await _unitOfWork.SaveAsync();
+
+            // UserName-i StudentNumber ilə yenilə
+            user.UserName = student.StudentNumber;
+            user.NormalizedUserName = student.StudentNumber.ToUpper();
+            await _userManager.UpdateAsync(user);
+
+            // Xoş gəldin emaili göndər
+            _ = _emailService.SendWelcomeAsync(dto.Email, dto.FullName, student.StudentNumber, dto.Password, "Student");
 
             await _activityLogger.LogAsync("Create", "Student", student.Id.ToString(),
                 null, new { dto.FullName, dto.Email });
