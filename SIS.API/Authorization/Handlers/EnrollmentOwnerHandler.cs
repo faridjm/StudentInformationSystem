@@ -43,7 +43,7 @@ namespace SIS.API.Authorization.Handlers
                 return;
             }
 
-            var enrollment = await _enrollmentService.GetEnrollmentByIdAsync(enrollmentId);
+            var enrollment = await _enrollmentService.GetByIdAsync(enrollmentId);
             if (enrollment == null)
             {
                 context.Fail();

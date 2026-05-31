@@ -1,4 +1,4 @@
-﻿using Refit;
+using Refit;
 using SIS.UI.ApiClients;
 using SIS.UI.Handlers;
 using System.Text.Json;
@@ -18,89 +18,33 @@ namespace SIS.UI.Extensions
                 })
         };
 
-        public static IServiceCollection AddApiClients(
-            this IServiceCollection services,
-            IConfiguration configuration)
+        public static IServiceCollection AddApiClients(this IServiceCollection services, IConfiguration configuration)
         {
             var apiBase = configuration["ApiSettings:BaseUrl"]!;
-
             services.AddTransient<AuthDelegatingHandler>();
 
-            services.AddRefitClient<IAuthApi>(RefitSettings)
-                .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBase))
-                .AddHttpMessageHandler<AuthDelegatingHandler>();
+            void Add<T>() where T : class =>
+                services.AddRefitClient<T>(RefitSettings)
+                    .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBase))
+                    .AddHttpMessageHandler<AuthDelegatingHandler>();
 
-            services.AddRefitClient<IStudentApi>(RefitSettings)
-                .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBase))
-                .AddHttpMessageHandler<AuthDelegatingHandler>();
-
-            services.AddRefitClient<ITeacherApi>(RefitSettings)
-                .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBase))
-                .AddHttpMessageHandler<AuthDelegatingHandler>();
-
-            services.AddRefitClient<ICourseApi>(RefitSettings)
-                .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBase))
-                .AddHttpMessageHandler<AuthDelegatingHandler>();
-
-            services.AddRefitClient<ICourseOfferingApi>(RefitSettings)
-                .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBase))
-                .AddHttpMessageHandler<AuthDelegatingHandler>();
-
-            services.AddRefitClient<IEnrollmentApi>(RefitSettings)
-                .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBase))
-                .AddHttpMessageHandler<AuthDelegatingHandler>();
-
-            services.AddRefitClient<IGradeApi>(RefitSettings)
-                .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBase))
-                .AddHttpMessageHandler<AuthDelegatingHandler>();
-
-            services.AddRefitClient<IAttendanceApi>(RefitSettings)
-                .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBase))
-                .AddHttpMessageHandler<AuthDelegatingHandler>();
-
-            services.AddRefitClient<IDepartmentApi>(RefitSettings)
-                .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBase))
-                .AddHttpMessageHandler<AuthDelegatingHandler>();
-
-            services.AddRefitClient<IAcademicProgramApi>(RefitSettings)
-                .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBase))
-                .AddHttpMessageHandler<AuthDelegatingHandler>();
-
-            services.AddRefitClient<IAcademicYearApi>(RefitSettings)
-                .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBase))
-                .AddHttpMessageHandler<AuthDelegatingHandler>();
-
-            services.AddRefitClient<IAcademicTermApi>(RefitSettings)
-                .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBase))
-                .AddHttpMessageHandler<AuthDelegatingHandler>();
-
-            services.AddRefitClient<IWeeklyScheduleApi>(RefitSettings)
-                .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBase))
-                .AddHttpMessageHandler<AuthDelegatingHandler>();
-
-            services.AddRefitClient<IClassSessionApi>(RefitSettings)
-                .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBase))
-                .AddHttpMessageHandler<AuthDelegatingHandler>();
-
-            services.AddRefitClient<IAnnouncementApi>(RefitSettings)
-                .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBase))
-                .AddHttpMessageHandler<AuthDelegatingHandler>();
-
-            services.AddRefitClient<INotificationApi>(RefitSettings)
-                .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBase))
-                .AddHttpMessageHandler<AuthDelegatingHandler>();
-
-            services.AddRefitClient<IActivityLogApi>(RefitSettings)
-                .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBase))
-                .AddHttpMessageHandler<AuthDelegatingHandler>();
-
-            services.AddRefitClient<IAssignmentApi>(RefitSettings)
-                .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBase))
-                .AddHttpMessageHandler<AuthDelegatingHandler>();
-
-            services.AddRefitClient<ISimulationApi>(RefitSettings)
-                .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBase))
-                .AddHttpMessageHandler<AuthDelegatingHandler>();
+            Add<IAuthApi>();
+            Add<IStudentApi>();
+            Add<ITeacherApi>();
+            Add<ICourseApi>();
+            Add<IGroupApi>();
+            Add<IEnrollmentApi>();
+            Add<IAssessmentApi>();
+            Add<IGradeApi>();
+            Add<IAttendanceApi>();
+            Add<IAcademicYearApi>();
+            Add<IClassSessionApi>();
+            Add<IAnnouncementApi>();
+            Add<INotificationApi>();
+            Add<IActivityLogApi>();
+            Add<IAssignmentApi>();
+            Add<ISimulationApi>();
+            Add<ITranscriptApi>();
 
             return services;
         }

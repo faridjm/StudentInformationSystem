@@ -1,4 +1,3 @@
-using AutoMapper;
 using SIS.BLL.Services.DTOs.AcademicYear;
 using SIS.BLL.Services.Interfaces;
 using SIS.DAL.UnitOfWork;
@@ -10,124 +9,87 @@ namespace SIS.BLL.Services.Implementations
     public class AcademicYearService : IAcademicYearService
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
         private readonly IActivityLogger _activityLogger;
 
-        public AcademicYearService(
-            IUnitOfWork unitOfWork,
-            IMapper mapper,
-            IActivityLogger activityLogger)
+        public AcademicYearService(IUnitOfWork unitOfWork, IActivityLogger activityLogger)
         {
             _unitOfWork = unitOfWork;
-            _mapper = mapper;
             _activityLogger = activityLogger;
         }
 
         public async Task<IEnumerable<AcademicYearDto>> GetAllYearsAsync()
         {
-            var years = await _unitOfWork.AcademicYears.GetAllWithTermsAsync();
-            return _mapper.Map<IEnumerable<AcademicYearDto>>(years);
+            var years = await _unitOfWork.AcademicYears.GetAllAsync();
+            return years.Select(MapToDto);
         }
 
         public async Task<AcademicYearDto?> GetYearByIdAsync(int id)
         {
-            var year = await _unitOfWork.AcademicYears.GetByIdAsync(id);
-            return _mapper.Map<AcademicYearDto>(year);
+            var y = await _unitOfWork.AcademicYears.GetByIdAsync(id);
+            return y == null ? null : MapToDto(y);
         }
 
         public async Task<AcademicYearDto?> GetActiveYearAsync()
         {
-            var year = await _unitOfWork.AcademicYears.GetActiveYearAsync();
-            return _mapper.Map<AcademicYearDto>(year);
+            var y = await _unitOfWork.AcademicYears.GetActiveYearAsync();
+            return y == null ? null : MapToDto(y);
         }
 
         public async Task CreateYearAsync(CreateAcademicYearDto dto)
         {
-            // Eyni adlı sezon olmamalıdır
             var existing = await _unitOfWork.AcademicYears.GetByNameAsync(dto.Name);
             if (existing != null)
-                throw new ConflictException($"\"{dto.Name}\" adlı dərs sezonu artıq mövcuddur");
+                throw new ConflictException($"\"{dto.Name}\" adlı sezon artıq mövcuddur");
 
-            // Üst-üstə düşən tarix aralığı olmamalıdır
-            var overlapping = await _unitOfWork.AcademicYears
-                .GetAllAsync(y => dto.StartDate <= y.EndDate && dto.EndDate >= y.StartDate);
-            if (overlapping.Any())
-                throw new ConflictException("Bu tarix aralığı başqa sezonla üst-üstə düşür");
-
-            var year = _mapper.Map<AcademicYear>(dto);
+            var year = new AcademicYear
+            {
+                Name = dto.Name, StartDate = dto.StartDate,
+                EndDate = dto.EndDate, CreatedAt = DateTime.UtcNow
+            };
             await _unitOfWork.AcademicYears.AddAsync(year);
             await _unitOfWork.SaveAsync();
-
-            await _activityLogger.LogAsync("Create", "AcademicYear", year.Id.ToString(),
-                null, new { dto.Name, dto.StartDate, dto.EndDate });
+            await _activityLogger.LogAsync("Create", "AcademicYear", year.Id.ToString(), null, new { dto.Name });
         }
 
         public async Task UpdateYearAsync(UpdateAcademicYearDto dto)
         {
-            var year = await _unitOfWork.AcademicYears.GetByIdAsync(dto.Id);
-            if (year == null)
-                throw new NotFoundException("Dərs sezonu tapılmadı");
+            var year = await _unitOfWork.AcademicYears.GetByIdAsync(dto.Id)
+                ?? throw new NotFoundException("Sezon tapılmadı");
 
-            // Ad dəyişirsə, eyni adlı başqa sezon olmamalıdır
-            if (year.Name != dto.Name)
-            {
-                var existing = await _unitOfWork.AcademicYears.GetByNameAsync(dto.Name);
-                if (existing != null && existing.Id != dto.Id)
-                    throw new ConflictException($"\"{dto.Name}\" adlı dərs sezonu artıq mövcuddur");
-            }
-
-            var oldValue = new { year.Name, year.StartDate, year.EndDate };
-
-            _mapper.Map(dto, year);
-            year.UpdatedAt = DateTime.UtcNow;
+            year.Name = dto.Name; year.StartDate = dto.StartDate;
+            year.EndDate = dto.EndDate; year.UpdatedAt = DateTime.UtcNow;
             _unitOfWork.AcademicYears.Update(year);
             await _unitOfWork.SaveAsync();
-
-            await _activityLogger.LogAsync("Update", "AcademicYear", dto.Id.ToString(),
-                oldValue, new { dto.Name, dto.StartDate, dto.EndDate });
         }
 
         public async Task SetActiveYearAsync(int id)
         {
-            var allYears = await _unitOfWork.AcademicYears.GetAllAsync();
-            foreach (var y in allYears)
+            var all = await _unitOfWork.AcademicYears.GetAllAsync();
+            foreach (var y in all.Where(y => y.IsActive))
             {
-                if (y.IsActive)
-                {
-                    y.IsActive = false;
-                    _unitOfWork.AcademicYears.Update(y);
-                }
+                y.IsActive = false;
+                _unitOfWork.AcademicYears.Update(y);
             }
-
-            var year = await _unitOfWork.AcademicYears.GetByIdAsync(id);
-            if (year == null)
-                throw new NotFoundException("Dərs sezonu tapılmadı");
-
-            year.IsActive = true;
-            year.UpdatedAt = DateTime.UtcNow;
+            var year = await _unitOfWork.AcademicYears.GetByIdAsync(id)
+                ?? throw new NotFoundException("Sezon tapılmadı");
+            year.IsActive = true; year.UpdatedAt = DateTime.UtcNow;
             _unitOfWork.AcademicYears.Update(year);
             await _unitOfWork.SaveAsync();
-
-            await _activityLogger.LogAsync("SetActive", "AcademicYear", id.ToString(),
-                null, new { year.Name });
         }
 
         public async Task DeleteYearAsync(int id)
         {
-            var year = await _unitOfWork.AcademicYears.GetByIdAsync(id);
-            if (year == null)
-                throw new NotFoundException("Dərs sezonu tapılmadı");
-
-            // Bağlı semestrlər varsa silmək olmaz
-            var hasTerms = await _unitOfWork.AcademicTerms.AnyAsync(t => t.AcademicYearId == id);
-            if (hasTerms)
-                throw new ConflictException("Bu sezona bağlı semestrlər var. Əvvəl onları silin.");
-
+            var year = await _unitOfWork.AcademicYears.GetByIdAsync(id)
+                ?? throw new NotFoundException("Sezon tapılmadı");
             _unitOfWork.AcademicYears.SoftDelete(year);
             await _unitOfWork.SaveAsync();
-
-            await _activityLogger.LogAsync("Delete", "AcademicYear", id.ToString(),
-                new { year.Name }, null);
         }
+
+        private static AcademicYearDto MapToDto(AcademicYear y) => new()
+        {
+            Id = y.Id, Name = y.Name, StartDate = y.StartDate,
+            EndDate = y.EndDate, IsActive = y.IsActive,
+            IsCurrent = y.StartDate <= DateTime.UtcNow && DateTime.UtcNow <= y.EndDate
+        };
     }
 }

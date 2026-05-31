@@ -1,150 +1,114 @@
-using AutoMapper;
-using SIS.BLL.Helpers;
 using SIS.BLL.Services.DTOs.Enrollment;
 using SIS.BLL.Services.Interfaces;
-using SIS.Common.Time;
 using SIS.DAL.UnitOfWork;
 using SIS.Entities.Enums;
 using SIS.Entities.Models;
 using static SIS.BLL.Exceptions.AppException;
+// AssessmentSubmission is in SIS.Entities.Models
 
 namespace SIS.BLL.Services.Implementations
 {
     public class EnrollmentService : IEnrollmentService
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
-        private readonly IActivityLogger _activityLogger;
-        private readonly IClock _clock;
-        private readonly ICurrentUser _currentUser;
         private readonly IEmailService _emailService;
 
-        public EnrollmentService(
-            IUnitOfWork unitOfWork,
-            IMapper mapper,
-            IActivityLogger activityLogger,
-            IClock clock,
-            ICurrentUser currentUser,
-            IEmailService emailService)
+        public EnrollmentService(IUnitOfWork unitOfWork, IEmailService emailService)
         {
             _unitOfWork = unitOfWork;
-            _mapper = mapper;
-            _activityLogger = activityLogger;
-            _clock = clock;
-            _currentUser = currentUser;
             _emailService = emailService;
         }
 
-        public async Task<IEnumerable<EnrollmentListDto>> GetAllEnrollmentsAsync()
+        public async Task<IEnumerable<EnrollmentListDto>> GetByGroupAsync(int groupId)
         {
-            var enrollments = await _unitOfWork.Enrollments.GetAllAsync();
-            return _mapper.Map<IEnumerable<EnrollmentListDto>>(enrollments);
+            var enrollments = await _unitOfWork.Enrollments.GetByGroupAsync(groupId);
+            return enrollments.Select(MapToDto);
         }
 
-        public async Task<EnrollmentDetailDto?> GetEnrollmentByIdAsync(int id)
+        public async Task<IEnumerable<EnrollmentListDto>> GetByStudentAsync(int studentId)
         {
-            var enrollment = await _unitOfWork.Enrollments.GetEnrollmentWithDetailsAsync(id);
-            if (enrollment == null) return null;
-
-            var dto = _mapper.Map<EnrollmentDetailDto>(enrollment);
-            dto.AverageScore = await _unitOfWork.Grades.GetAverageScoreAsync(id);
-            dto.AttendancePercentage = await _unitOfWork.AttendanceRecords.GetAttendancePercentageAsync(id);
-            return dto;
+            var enrollments = await _unitOfWork.Enrollments.GetByStudentAsync(studentId);
+            return enrollments.Select(MapToDto);
         }
 
-        public async Task<IEnumerable<EnrollmentListDto>> GetStudentEnrollmentsAsync(int studentId)
+        public async Task EnrollAsync(CreateEnrollmentDto dto)
         {
-            var enrollments = await _unitOfWork.Enrollments.GetStudentEnrollmentsAsync(studentId);
-            return _mapper.Map<IEnumerable<EnrollmentListDto>>(enrollments);
-        }
+            if (await _unitOfWork.Enrollments.IsStudentEnrolledAsync(dto.StudentId, dto.GroupId))
+                throw new ConflictException("Tələbə artıq bu qrupa qeydiyyatlıdır");
 
-        public async Task<IEnumerable<EnrollmentListDto>> GetCourseEnrollmentsAsync(int courseOfferingId)
-        {
-            var enrollments = await _unitOfWork.Enrollments.GetCourseEnrollmentsAsync(courseOfferingId);
-            return enrollments.Select(e => new EnrollmentListDto
+            var group = await _unitOfWork.Groups.GetGroupWithDetailsAsync(dto.GroupId)
+                ?? throw new NotFoundException("Qrup tapılmadı");
+
+            if (group.Enrollments.Count(e => !e.IsDeleted) >= group.Capacity)
+                throw new BadRequestException("Qrupda boş yer yoxdur");
+
+            var enrollment = new Enrollment
             {
-                Id = e.Id,
-                StudentName = e.Student.AppUser.FullName,
-                StudentNumber = e.Student.StudentNumber,
-                CourseName = e.CourseOffering.Course.Name,
-                CourseCode = e.CourseOffering.Course.Code,
-                TeacherName = e.CourseOffering.Teacher.AppUser.FullName,
-                TermName = e.CourseOffering.AcademicTerm.Name,
-                Status = e.Status,
-                EnrolledAt = e.EnrolledAt
-            }).ToList();
-        }
+                StudentId = dto.StudentId,
+                GroupId = dto.GroupId,
+                EnrolledAt = DateTime.UtcNow,
+                CreatedAt = DateTime.UtcNow
+            };
 
-        public async Task EnrollStudentAsync(CreateEnrollmentDto dto)
-        {
-            var offering = await _unitOfWork.CourseOfferings
-                .GetOfferingWithDetailsAsync(dto.CourseOfferingId);
-            if (offering == null)
-                throw new NotFoundException("Kurs təklifi tapılmadı");
-
-            // Faza yoxlaması — yalnız sezona bağlı yeni Term-lər üçün.
-            // Admin/SuperAdmin manual override edə bilər (late registration).
-            if (!_currentUser.CanBypassPhaseRules)
-            {
-                TermPhaseGuard.EnsurePhase(_clock, offering.AcademicTerm, "Tələbə qeydiyyatı",
-                    TermPhase.Registration);
-            }
-
-            var isEnrolled = await _unitOfWork.Enrollments
-                .IsStudentEnrolledAsync(dto.StudentId, dto.CourseOfferingId);
-            if (isEnrolled)
-                throw new ConflictException("Tələbə artıq bu kursa qeydiyyatlıdır");
-
-            var hasCapacity = await _unitOfWork.CourseOfferings
-                .HasCapacityAsync(dto.CourseOfferingId);
-            if (!hasCapacity)
-                throw new BadRequestException("Kursda boş yer yoxdur");
-
-            var enrollment = _mapper.Map<Enrollment>(dto);
             await _unitOfWork.Enrollments.AddAsync(enrollment);
             await _unitOfWork.SaveAsync();
 
-            // Tələbəyə qeydiyyat emaili göndər
+            // Bu qrupun bütün assessment item-ləri üçün submission yarat
+            var assessmentItems = await _unitOfWork.AssessmentItems.GetByGroupAsync(dto.GroupId);
+            foreach (var item in assessmentItems)
+            {
+                await _unitOfWork.AssessmentSubmissions.AddAsync(new AssessmentSubmission
+                {
+                    AssessmentItemId = item.Id,
+                    EnrollmentId = enrollment.Id,
+                    IsGraded = false,
+                    CreatedAt = DateTime.UtcNow
+                });
+            }
+            if (assessmentItems.Any())
+                await _unitOfWork.SaveAsync();
+
+            // Email göndər
             var student = await _unitOfWork.Students.GetStudentWithDetailsAsync(dto.StudentId);
             if (student?.AppUser?.Email != null)
             {
-                var teacherName = offering.Teacher?.AppUser?.FullName ?? "";
-                var termName = offering.AcademicTerm?.Name ?? "";
+                var teacherName = group.Teacher?.AppUser?.FullName ?? "";
                 _ = _emailService.SendEnrollmentConfirmationAsync(
                     student.AppUser.Email, student.AppUser.FullName,
-                    offering.Course.Name, teacherName, termName);
+                    group.Course?.Name ?? "", teacherName, group.AcademicYear?.Name ?? "");
             }
-
-            await _activityLogger.LogAsync("Create", "Enrollment", enrollment.Id.ToString(),
-                null, new { dto.StudentId, dto.CourseOfferingId });
         }
 
-        public async Task DropEnrollmentAsync(int enrollmentId)
+        public async Task<EnrollmentListDto?> GetByIdAsync(int enrollmentId)
         {
-            var enrollment = await _unitOfWork.Enrollments.GetEnrollmentWithDetailsAsync(enrollmentId);
-            if (enrollment == null)
-                throw new NotFoundException("Qeydiyyat tapılmadı");
+            var e = await _unitOfWork.Enrollments.GetEnrollmentWithDetailsAsync(enrollmentId);
+            return e == null ? null : MapToDto(e);
+        }
 
-            // Drop son tarixi yalnız sezona bağlı yeni Term-lər üçün yoxlanır.
-            // Admin/SuperAdmin son tarix keçsə də manual drop edə bilər.
-            var term = enrollment.CourseOffering.AcademicTerm;
-            if (!_currentUser.CanBypassPhaseRules
-                && term.AcademicYearId.HasValue
-                && term.DropDeadline.HasValue
-                && _clock.UtcNow > term.DropDeadline.Value)
-            {
-                throw new BadRequestException(
-                    $"Drop son tarixi keçib ({term.DropDeadline.Value:dd.MM.yyyy}). " +
-                    "Kursdan çıxma artıq F qiyməti ilə nəticələnir — admin ilə əlaqə saxlayın.");
-            }
+        public async Task DropAsync(int enrollmentId)
+        {
+            var enrollment = await _unitOfWork.Enrollments.GetByIdAsync(enrollmentId)
+                ?? throw new NotFoundException("Qeydiyyat tapılmadı");
 
             enrollment.Status = EnrollmentStatus.Dropped;
-            enrollment.UpdatedAt = _clock.UtcNow;
+            enrollment.UpdatedAt = DateTime.UtcNow;
             _unitOfWork.Enrollments.Update(enrollment);
             await _unitOfWork.SaveAsync();
-
-            await _activityLogger.LogAsync("Update", "Enrollment", enrollmentId.ToString(),
-                new { Status = "Active" }, new { Status = "Dropped" });
         }
+
+        private static EnrollmentListDto MapToDto(Enrollment e) => new()
+        {
+            Id = e.Id,
+            StudentId = e.StudentId,
+            StudentName = e.Student?.AppUser?.FullName ?? "",
+            StudentNumber = e.Student?.StudentNumber ?? "",
+            GroupId = e.GroupId,
+            GroupName = e.Group?.Name ?? "",
+            CourseName = e.Group?.Course?.Name ?? "",
+            TeacherId = e.Group?.TeacherId ?? 0,
+            TeacherName = e.Group?.Teacher?.AppUser?.FullName ?? "",
+            Status = e.Status,
+            EnrolledAt = e.EnrolledAt
+        };
     }
 }

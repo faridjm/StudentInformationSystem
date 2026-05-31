@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using SIS.DAL.Context;
 using SIS.DAL.Repositories.Interfaces;
 using SIS.Entities.Enums;
@@ -8,11 +8,23 @@ namespace SIS.DAL.Repositories.Implementations
 {
     public class AnnouncementRepository : GenericRepository<Announcement>, IAnnouncementRepository
     {
-        public AnnouncementRepository(AppDbContext context) : base(context)
-        {
-        }
+        public AnnouncementRepository(AppDbContext context) : base(context) { }
+
+        public async Task<IEnumerable<Announcement>> GetAllWithAuthorsAsync()
+            => await _dbSet
+                .Include(a => a.Author)
+                .OrderByDescending(a => a.CreatedAt)
+                .ToListAsync();
 
         public async Task<IEnumerable<Announcement>> GetGlobalAnnouncementsAsync()
+            => await _dbSet
+                .Include(a => a.Author)
+                .Where(a => a.TargetType == AnnouncementTarget.All
+                         || a.TargetType == AnnouncementTarget.Teachers)
+                .OrderByDescending(a => a.CreatedAt)
+                .ToListAsync();
+
+        public async Task<IEnumerable<Announcement>> GetForStudentAsync(int studentId)
             => await _dbSet
                 .Include(a => a.Author)
                 .Where(a => a.TargetType == AnnouncementTarget.All
@@ -20,25 +32,11 @@ namespace SIS.DAL.Repositories.Implementations
                 .OrderByDescending(a => a.CreatedAt)
                 .ToListAsync();
 
-        public async Task<IEnumerable<Announcement>> GetCourseAnnouncementsAsync(int courseOfferingId)
+        public async Task<IEnumerable<Announcement>> GetByGroupAsync(int groupId)
             => await _dbSet
                 .Include(a => a.Author)
-                .Where(a => a.CourseOfferingId == courseOfferingId
-                         && a.TargetType == AnnouncementTarget.Course)
-                .OrderByDescending(a => a.CreatedAt)
-                .ToListAsync();
-
-        public async Task<IEnumerable<Announcement>> GetAnnouncementsForStudentAsync(int studentId)
-            => await _dbSet
-                .Include(a => a.Author)
-                .Include(a => a.CourseOffering)
-                .Where(a => a.TargetType == AnnouncementTarget.All
-                         || a.TargetType == AnnouncementTarget.Students
-                         || (a.TargetType == AnnouncementTarget.Course
-                             && a.CourseOffering!.Enrollments
-                                 .Any(e => e.StudentId == studentId)))
+                .Where(a => a.GroupId == groupId)
                 .OrderByDescending(a => a.CreatedAt)
                 .ToListAsync();
     }
 }
-

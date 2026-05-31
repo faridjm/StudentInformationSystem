@@ -1,12 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
-using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using SIS.BLL.Services.DTOs.Student;
 using SIS.BLL.Services.Interfaces;
 using SIS.Common.Constants;
 using SIS.Common.Extensions;
 using SIS.Common.Helpers;
-using SIS.Common.Pagination;
 using SIS.DAL.UnitOfWork;
 using SIS.Entities.Identity;
 using SIS.Entities.Models;
@@ -17,82 +15,57 @@ namespace SIS.BLL.Services.Implementations
     public class StudentService : IStudentService
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
         private readonly UserManager<AppUser> _userManager;
         private readonly IActivityLogger _activityLogger;
         private readonly IEmailService _emailService;
 
-        public StudentService(
-            IUnitOfWork unitOfWork,
-            IMapper mapper,
-            UserManager<AppUser> userManager,
-            IActivityLogger activityLogger,
-            IEmailService emailService)
+        public StudentService(IUnitOfWork unitOfWork, UserManager<AppUser> userManager,
+            IActivityLogger activityLogger, IEmailService emailService)
         {
             _unitOfWork = unitOfWork;
-            _mapper = mapper;
             _userManager = userManager;
             _activityLogger = activityLogger;
             _emailService = emailService;
         }
 
-        public async Task<PagedResult<StudentListDto>> GetAllStudentsAsync(PagedRequest request)
+        public async Task<IEnumerable<StudentListDto>> GetAllStudentsAsync()
         {
-            var pagedStudents = await _unitOfWork.Students.GetPagedAsync(request);
-
-            return new PagedResult<StudentListDto>
+            var students = await _unitOfWork.Students.GetAllWithUsersAsync();
+            return students.Select(s => new StudentListDto
             {
-                Items = _mapper.Map<IEnumerable<StudentListDto>>(pagedStudents.Items),
-                TotalCount = pagedStudents.TotalCount,
-                Page = pagedStudents.Page,
-                PageSize = pagedStudents.PageSize
-            };
+                Id = s.Id, FullName = s.AppUser?.FullName ?? "",
+                FinCode = s.AppUser?.FinCode, Email = s.AppUser?.Email ?? "",
+                StudentNumber = s.StudentNumber, EnrollmentYear = s.EnrollmentYear,
+                CurrentGPA = s.CurrentGPA, IsActive = s.AppUser?.IsActive ?? false
+            });
         }
 
         public async Task<StudentDetailDto?> GetStudentByIdAsync(int id)
         {
-            var student = await _unitOfWork.Students.GetStudentWithDetailsAsync(id);
-            return _mapper.Map<StudentDetailDto>(student);
+            var s = await _unitOfWork.Students.GetStudentWithDetailsAsync(id);
+            if (s == null) return null;
+            return MapToDetail(s);
         }
 
         public async Task<StudentDetailDto?> GetStudentByUserIdAsync(string userId)
         {
-            var student = await _unitOfWork.Students.GetStudentByUserIdAsync(userId);
-            return _mapper.Map<StudentDetailDto>(student);
-        }
-
-        public async Task<IEnumerable<StudentListDto>> GetStudentsByProgramAsync(int programId)
-        {
-            var students = await _unitOfWork.Students.GetStudentsByProgramAsync(programId);
-            return _mapper.Map<IEnumerable<StudentListDto>>(students);
+            var s = await _unitOfWork.Students.GetStudentByUserIdAsync(userId);
+            if (s == null) return null;
+            return MapToDetail(s);
         }
 
         public async Task CreateStudentAsync(CreateStudentDto dto)
         {
-            if (!string.IsNullOrEmpty(dto.PhoneNumber))
-            {
-                var phoneExists = await _userManager.Users
-                    .AnyAsync(u => u.PhoneNumber == dto.PhoneNumber);
-                if (phoneExists)
-                    throw new ConflictException("Bu telefon nömrəsi artıq istifadədədir");
-            }
-
             if (!string.IsNullOrEmpty(dto.FinCode))
-            {
-                var finExists = await _userManager.Users
-                    .AnyAsync(u => u.FinCode == dto.FinCode);
-                if (finExists)
+                if (await _userManager.Users.AnyAsync(u => u.FinCode == dto.FinCode))
                     throw new ConflictException("Bu FIN kod artıq istifadədədir");
-            }
 
             var user = new AppUser
             {
-                FullName = dto.FullName.ToTitleCase(),
-                FinCode = dto.FinCode,
-                Email = dto.Email,
-                UserName = dto.Email,
-                PhoneNumber = dto.PhoneNumber,
-                IsActive = true
+                FullName = dto.FullName.ToTitleCase(), FinCode = dto.FinCode,
+                BirthDate = dto.BirthDate,
+                Email = dto.Email, UserName = dto.Email,
+                PhoneNumber = dto.PhoneNumber, IsActive = true
             };
 
             var result = await _userManager.CreateAsync(user, dto.Password);
@@ -101,72 +74,53 @@ namespace SIS.BLL.Services.Implementations
 
             await _userManager.AddToRoleAsync(user, RoleConstants.Student);
 
-            // Sequential student number
-            var studentCount = await _unitOfWork.Students.CountAsync(s => !s.IsDeleted);
-
+            var count = await _unitOfWork.Students.CountAsync(s => !s.IsDeleted);
             var student = new Student
             {
                 AppUserId = user.Id,
-                StudentNumber = StudentNumberHelper.Generate(dto.EnrollmentYear, studentCount + 1),
+                StudentNumber = StudentNumberHelper.Generate(dto.EnrollmentYear, count + 1),
                 EnrollmentYear = dto.EnrollmentYear,
-                AcademicProgramId = dto.AcademicProgramId
+                CreatedAt = DateTime.UtcNow
             };
 
             await _unitOfWork.Students.AddAsync(student);
             await _unitOfWork.SaveAsync();
 
-            // UserName-i StudentNumber ilə yenilə
             user.UserName = student.StudentNumber;
             user.NormalizedUserName = student.StudentNumber.ToUpper();
             await _userManager.UpdateAsync(user);
 
-            // Xoş gəldin emaili göndər
             _ = _emailService.SendWelcomeAsync(dto.Email, dto.FullName, student.StudentNumber, dto.Password, "Student");
-
-            await _activityLogger.LogAsync("Create", "Student", student.Id.ToString(),
-                null, new { dto.FullName, dto.Email });
+            await _activityLogger.LogAsync("Create", "Student", student.Id.ToString(), null, new { dto.FullName, dto.Email });
         }
 
         public async Task UpdateStudentAsync(UpdateStudentDto dto)
         {
-            var student = await _unitOfWork.Students.GetStudentWithDetailsAsync(dto.Id);
-            if (student == null)
-                throw new NotFoundException("Tələbə tapılmadı");
-
-            var oldValue = new { student.AppUser.FullName, student.AcademicProgramId };
+            var student = await _unitOfWork.Students.GetStudentWithDetailsAsync(dto.Id)
+                ?? throw new NotFoundException("Tələbə tapılmadı");
 
             student.AppUser.FullName = dto.FullName.ToTitleCase();
             student.AppUser.FinCode = dto.FinCode;
             student.AppUser.PhoneNumber = dto.PhoneNumber;
             await _userManager.UpdateAsync(student.AppUser);
 
-            student.AcademicProgramId = dto.AcademicProgramId;
             student.UpdatedAt = DateTime.UtcNow;
             _unitOfWork.Students.Update(student);
             await _unitOfWork.SaveAsync();
-
-            await _activityLogger.LogAsync("Update", "Student", dto.Id.ToString(),
-                oldValue, new { dto.FullName, dto.AcademicProgramId });
         }
 
         public async Task DeleteStudentAsync(int id)
         {
-            var student = await _unitOfWork.Students.GetStudentWithDetailsAsync(id);
-            if (student == null)
-                throw new NotFoundException("Tələbə tapılmadı");
+            var student = await _unitOfWork.Students.GetStudentWithDetailsAsync(id)
+                ?? throw new NotFoundException("Tələbə tapılmadı");
 
             student.AppUser.Email = $"deleted_{id}_{student.AppUser.Email}";
-            student.AppUser.NormalizedEmail = student.AppUser.Email.ToUpper();
             student.AppUser.UserName = student.AppUser.Email;
-            student.AppUser.NormalizedUserName = student.AppUser.Email.ToUpper();
             student.AppUser.IsActive = false;
             await _userManager.UpdateAsync(student.AppUser);
 
             _unitOfWork.Students.SoftDelete(student);
             await _unitOfWork.SaveAsync();
-
-            await _activityLogger.LogAsync("Delete", "Student", id.ToString(),
-                new { student.AppUser.FullName }, null);
         }
 
         public async Task UpdateGPAAsync(int studentId)
@@ -174,24 +128,36 @@ namespace SIS.BLL.Services.Implementations
             var student = await _unitOfWork.Students.GetStudentWithDetailsAsync(studentId);
             if (student == null) return;
 
-            var items = new List<(int credits, decimal score)>();
+            var enrollments = await _unitOfWork.Enrollments.GetByStudentAsync(studentId);
+            decimal totalWeight = 0, totalWeightedScore = 0;
 
-            foreach (var enrollment in student.Enrollments
-                .Where(e => e.Status == SIS.Entities.Enums.EnrollmentStatus.Active
-                         || e.Status == SIS.Entities.Enums.EnrollmentStatus.Completed))
+            foreach (var enrollment in enrollments.Where(e => e.Status == SIS.Entities.Enums.EnrollmentStatus.Active))
             {
-                var avgScore = await _unitOfWork.Grades.GetAverageScoreAsync(enrollment.Id);
-                if (avgScore > 0)
+                var subs = await _unitOfWork.AssessmentSubmissions.GetByEnrollmentAsync(enrollment.Id);
+                foreach (var sub in subs.Where(s => s.IsGraded && s.Score.HasValue))
                 {
-                    var credits = enrollment.CourseOffering.Course.Credits;
-                    items.Add((credits, avgScore));
+                    var weight = sub.AssessmentItem?.WeightPercent ?? 0;
+                    var pct = sub.AssessmentItem?.MaxScore > 0 ? sub.Score!.Value / sub.AssessmentItem.MaxScore * 100 : 0;
+                    totalWeightedScore += pct * weight;
+                    totalWeight += weight;
                 }
             }
 
-            student.CurrentGPA = GpaHelper.CalculateGPA(items);
+            var avgPct = totalWeight > 0 ? totalWeightedScore / totalWeight : 0;
+            student.CurrentGPA = GpaHelper.CalculateGPA(new[] { (1, avgPct) });
             student.UpdatedAt = DateTime.UtcNow;
             _unitOfWork.Students.Update(student);
             await _unitOfWork.SaveAsync();
         }
+
+        private static StudentDetailDto MapToDetail(Student s) => new()
+        {
+            Id = s.Id, AppUserId = s.AppUserId,
+            FullName = s.AppUser?.FullName ?? "", FinCode = s.AppUser?.FinCode,
+            Email = s.AppUser?.Email ?? "", PhoneNumber = s.AppUser?.PhoneNumber,
+            StudentNumber = s.StudentNumber, EnrollmentYear = s.EnrollmentYear,
+            CurrentGPA = s.CurrentGPA, IsActive = s.AppUser?.IsActive ?? false,
+            CreatedAt = s.CreatedAt
+        };
     }
 }

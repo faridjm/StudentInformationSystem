@@ -1,0 +1,65 @@
+@model IEnumerable<SIS.BLL.Services.DTOs.Groups.GroupListDto>
+@{
+    ViewData["Title"] = "Qruplar";
+}
+
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+    <h2 style="font-size:20px; font-weight:700;">Qruplar</h2>
+    <a href="/Admin/Group/Create" class="btn btn-primary"><i class="fas fa-plus"></i> Yeni Qrup</a>
+</div>
+
+<div class="card">
+    <div class="card-body" style="padding:0;">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Qrup Adı</th>
+                    <th>Tədris Proqramı</th>
+                    <th>Müəllim</th>
+                    <th>Sezon</th>
+                    <th>Başlama</th>
+                    <th>Bitmə</th>
+                    <th>Tələbə</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var g in Model)
+                {
+                    <tr>
+                        <td><strong>@g.Name</strong></td>
+                        <td>@g.CourseName</td>
+                        <td>@g.TeacherName</td>
+                        <td>@(g.SeasonName ?? "—")</td>
+                        <td>@g.StartDate.ToString("dd.MM.yyyy")</td>
+                        <td>@g.EndDate.ToString("dd.MM.yyyy")</td>
+                        <td>@g.EnrolledCount / @g.Capacity</td>
+                        <td>
+                            @if (g.IsActive)
+                            {
+                                <span class="badge badge-success">Aktiv</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-danger">Deaktiv</span>
+                            }
+                        </td>
+                        <td style="text-align:right;">
+                            <a href="/Admin/Group/Detail/@g.Id" class="btn btn-sm btn-secondary"><i class="fas fa-eye"></i></a>
+                            <a href="/Admin/Group/Edit/@g.Id" class="btn btn-sm btn-secondary"><i class="fas fa-edit"></i></a>
+                            <form method="post" action="/Admin/Group/Delete/@g.Id" style="display:inline;" onsubmit="return confirm('Qrupu silmək istəyirsiniz?')">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="9" style="text-align:center; color:var(--text-secondary); padding:30px;">Hələ qrup yoxdur</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -3,80 +3,24 @@
   "WorkspaceRootPath": "C:\\Users\\ASUS\\source\\repos\\SIS\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Migrations\\20260529111944_AddAnnouncementAttachment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:SIS.DAL\\Migrations\\20260529111944_AddAnnouncementAttachment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Migrations\\20260531193750_AddAssessmentItemIdToAssignment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:SIS.DAL\\Migrations\\20260531193750_AddAssessmentItemIdToAssignment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{CCEFE404-8F91-AAA4-3076-751590919141}|SIS.API\\SIS.API.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{CCEFE404-8F91-AAA4-3076-751590919141}|SIS.API\\SIS.API.csproj|solutionrelative:sis.api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Migrations\\20260531193417_AddAssessmentItemIdToAssignment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:SIS.DAL\\Migrations\\20260531193417_AddAssessmentItemIdToAssignment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FEB487-405F-892A-3742-207A95F79B88}|SIS.DAL\\SIS.DAL.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.dal\\migrations\\20260528121005_addassignmentattachment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A2FEB487-405F-892A-3742-207A95F79B88}|SIS.DAL\\SIS.DAL.csproj|solutionrelative:sis.dal\\migrations\\20260528121005_addassignmentattachment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{CCEFE404-8F91-AAA4-3076-751590919141}|SIS.API\\SIS.API.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.api\\services\\transcriptpdfservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CCEFE404-8F91-AAA4-3076-751590919141}|SIS.API\\SIS.API.csproj|solutionrelative:sis.api\\services\\transcriptpdfservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{C644E217-18C3-61E2-A87C-BECD5FA3E199}|SIS.BLL\\SIS.BLL.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.bll\\mappings\\mappingprofile.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C644E217-18C3-61E2-A87C-BECD5FA3E199}|SIS.BLL\\SIS.BLL.csproj|solutionrelative:sis.bll\\mappings\\mappingprofile.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A2FEB487-405F-892A-3742-207A95F79B88}|SIS.DAL\\SIS.DAL.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.dal\\migrations\\20260529210609_addbirthdatetoappuser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FEB487-405F-892A-3742-207A95F79B88}|SIS.DAL\\SIS.DAL.csproj|solutionrelative:sis.dal\\migrations\\20260529210609_addbirthdatetoappuser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{C644E217-18C3-61E2-A87C-BECD5FA3E199}|SIS.BLL\\SIS.BLL.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.bll\\services\\dtos\\enrollment\\enrollmentlistdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C644E217-18C3-61E2-A87C-BECD5FA3E199}|SIS.BLL\\SIS.BLL.csproj|solutionrelative:sis.bll\\services\\dtos\\enrollment\\enrollmentlistdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C644E217-18C3-61E2-A87C-BECD5FA3E199}|SIS.BLL\\SIS.BLL.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.bll\\services\\implementations\\assignmentservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C644E217-18C3-61E2-A87C-BECD5FA3E199}|SIS.BLL\\SIS.BLL.csproj|solutionrelative:sis.bll\\services\\implementations\\assignmentservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{39972673-1515-4AD6-9D01-4C3B62D7E497}|SIS.UI\\SIS.UI.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.ui\\areas\\teacher\\controllers\\assignmentscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{39972673-1515-4AD6-9D01-4C3B62D7E497}|SIS.UI\\SIS.UI.csproj|solutionrelative:sis.ui\\areas\\teacher\\controllers\\assignmentscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{39972673-1515-4AD6-9D01-4C3B62D7E497}|SIS.UI\\SIS.UI.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.ui\\areas\\student\\views\\assignments\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{39972673-1515-4AD6-9D01-4C3B62D7E497}|SIS.UI\\SIS.UI.csproj|solutionrelative:sis.ui\\areas\\student\\views\\assignments\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{39972673-1515-4AD6-9D01-4C3B62D7E497}|SIS.UI\\SIS.UI.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.ui\\apiclients\\iassignmentapi.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{39972673-1515-4AD6-9D01-4C3B62D7E497}|SIS.UI\\SIS.UI.csproj|solutionrelative:sis.ui\\apiclients\\iassignmentapi.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{CDEA2B27-0091-9B53-B0F3-EB793148630A}|SIS.Common\\SIS.Common.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.common\\time\\systemclock.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{CDEA2B27-0091-9B53-B0F3-EB793148630A}|SIS.Common\\SIS.Common.csproj|solutionrelative:sis.common\\time\\systemclock.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FEB487-405F-892A-3742-207A95F79B88}|SIS.DAL\\SIS.DAL.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.dal\\migrations\\20260527102400_addclasssessionidtoattendancerecord.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A2FEB487-405F-892A-3742-207A95F79B88}|SIS.DAL\\SIS.DAL.csproj|solutionrelative:sis.dal\\migrations\\20260527102400_addclasssessionidtoattendancerecord.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{CDEA2B27-0091-9B53-B0F3-EB793148630A}|SIS.Common\\SIS.Common.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.common\\time\\iclock.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{CDEA2B27-0091-9B53-B0F3-EB793148630A}|SIS.Common\\SIS.Common.csproj|solutionrelative:sis.common\\time\\iclock.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C644E217-18C3-61E2-A87C-BECD5FA3E199}|SIS.BLL\\SIS.BLL.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.bll\\services\\implementations\\enrollmentservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C644E217-18C3-61E2-A87C-BECD5FA3E199}|SIS.BLL\\SIS.BLL.csproj|solutionrelative:sis.bll\\services\\implementations\\enrollmentservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{39972673-1515-4AD6-9D01-4C3B62D7E497}|SIS.UI\\SIS.UI.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.ui\\views\\_viewimports.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{39972673-1515-4AD6-9D01-4C3B62D7E497}|SIS.UI\\SIS.UI.csproj|solutionrelative:sis.ui\\views\\_viewimports.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C644E217-18C3-61E2-A87C-BECD5FA3E199}|SIS.BLL\\SIS.BLL.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.bll\\validators\\createattendancedtovalidator.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C644E217-18C3-61E2-A87C-BECD5FA3E199}|SIS.BLL\\SIS.BLL.csproj|solutionrelative:sis.bll\\validators\\createattendancedtovalidator.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FEB487-405F-892A-3742-207A95F79B88}|SIS.DAL\\SIS.DAL.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.dal\\migrations\\20260525214404_addacademicyearandtermphases.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A2FEB487-405F-892A-3742-207A95F79B88}|SIS.DAL\\SIS.DAL.csproj|solutionrelative:sis.dal\\migrations\\20260525214404_addacademicyearandtermphases.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FEB487-405F-892A-3742-207A95F79B88}|SIS.DAL\\SIS.DAL.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.dal\\migrations\\20260526090434_addclasssessionandweeklyschedule.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A2FEB487-405F-892A-3742-207A95F79B88}|SIS.DAL\\SIS.DAL.csproj|solutionrelative:sis.dal\\migrations\\20260526090434_addclasssessionandweeklyschedule.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FEB487-405F-892A-3742-207A95F79B88}|SIS.DAL\\SIS.DAL.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.dal\\migrations\\20260526084811_addprogramidtocourse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A2FEB487-405F-892A-3742-207A95F79B88}|SIS.DAL\\SIS.DAL.csproj|solutionrelative:sis.dal\\migrations\\20260526084811_addprogramidtocourse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FEB487-405F-892A-3742-207A95F79B88}|SIS.DAL\\SIS.DAL.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.dal\\migrations\\20260528115600_addassignments.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A2FEB487-405F-892A-3742-207A95F79B88}|SIS.DAL\\SIS.DAL.csproj|solutionrelative:sis.dal\\migrations\\20260528115600_addassignments.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A2FEB487-405F-892A-3742-207A95F79B88}|SIS.DAL\\SIS.DAL.csproj|c:\\users\\asus\\source\\repos\\sis\\sis.dal\\migrations\\20260529200221_addgroupsandassessments.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FEB487-405F-892A-3742-207A95F79B88}|SIS.DAL\\SIS.DAL.csproj|solutionrelative:sis.dal\\migrations\\20260529200221_addgroupsandassessments.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -95,233 +39,65 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "20260529111944_AddAnnouncementAttachment.cs",
-              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Migrations\\20260529111944_AddAnnouncementAttachment.cs",
-              "RelativeDocumentMoniker": "SIS.DAL\\Migrations\\20260529111944_AddAnnouncementAttachment.cs",
-              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Migrations\\20260529111944_AddAnnouncementAttachment.cs",
-              "RelativeToolTip": "SIS.DAL\\Migrations\\20260529111944_AddAnnouncementAttachment.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAA+AAAAAAAAAA==",
+              "Title": "20260531193750_AddAssessmentItemIdToAssignment.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Migrations\\20260531193750_AddAssessmentItemIdToAssignment.cs",
+              "RelativeDocumentMoniker": "SIS.DAL\\Migrations\\20260531193750_AddAssessmentItemIdToAssignment.cs",
+              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Migrations\\20260531193750_AddAssessmentItemIdToAssignment.cs",
+              "RelativeToolTip": "SIS.DAL\\Migrations\\20260531193750_AddAssessmentItemIdToAssignment.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-29T11:19:45.092Z",
+              "WhenOpened": "2026-05-31T19:37:50.162Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "appsettings.json",
-              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.API\\appsettings.json",
-              "RelativeDocumentMoniker": "SIS.API\\appsettings.json",
-              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.API\\appsettings.json",
-              "RelativeToolTip": "SIS.API\\appsettings.json",
-              "ViewState": "AgIAAAgAAAAAAAAAAADwvxQAAAAEAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2026-05-29T10:44:52.667Z",
+              "Title": "20260531193417_AddAssessmentItemIdToAssignment.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Migrations\\20260531193417_AddAssessmentItemIdToAssignment.cs",
+              "RelativeDocumentMoniker": "SIS.DAL\\Migrations\\20260531193417_AddAssessmentItemIdToAssignment.cs",
+              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Migrations\\20260531193417_AddAssessmentItemIdToAssignment.cs",
+              "RelativeToolTip": "SIS.DAL\\Migrations\\20260531193417_AddAssessmentItemIdToAssignment.cs",
+              "ViewState": "AgIAACAAAAAAAAAAAAAjwCEAAAAgAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-31T19:34:17.755Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 2,
-              "Title": "20260528121005_AddAssignmentAttachment.cs",
-              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Migrations\\20260528121005_AddAssignmentAttachment.cs",
-              "RelativeDocumentMoniker": "SIS.DAL\\Migrations\\20260528121005_AddAssignmentAttachment.cs",
-              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Migrations\\20260528121005_AddAssignmentAttachment.cs",
-              "RelativeToolTip": "SIS.DAL\\Migrations\\20260528121005_AddAssignmentAttachment.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Title": "TranscriptPdfService.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.API\\Services\\TranscriptPdfService.cs",
+              "RelativeDocumentMoniker": "SIS.API\\Services\\TranscriptPdfService.cs",
+              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.API\\Services\\TranscriptPdfService.cs",
+              "RelativeToolTip": "SIS.API\\Services\\TranscriptPdfService.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAAOUAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-28T12:10:06.027Z",
+              "WhenOpened": "2026-05-31T15:12:51.505Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 18,
-              "Title": "20260528115600_AddAssignments.cs",
-              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Migrations\\20260528115600_AddAssignments.cs",
-              "RelativeDocumentMoniker": "SIS.DAL\\Migrations\\20260528115600_AddAssignments.cs",
-              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Migrations\\20260528115600_AddAssignments.cs",
-              "RelativeToolTip": "SIS.DAL\\Migrations\\20260528115600_AddAssignments.cs",
+              "DocumentIndex": 3,
+              "Title": "20260529210609_AddBirthDateToAppUser.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Migrations\\20260529210609_AddBirthDateToAppUser.cs",
+              "RelativeDocumentMoniker": "SIS.DAL\\Migrations\\20260529210609_AddBirthDateToAppUser.cs",
+              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Migrations\\20260529210609_AddBirthDateToAppUser.cs",
+              "RelativeToolTip": "SIS.DAL\\Migrations\\20260529210609_AddBirthDateToAppUser.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-28T11:56:00.966Z"
+              "WhenOpened": "2026-05-29T21:06:10.172Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 4,
-              "Title": "EnrollmentListDto.cs",
-              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.BLL\\Services\\DTOs\\Enrollment\\EnrollmentListDto.cs",
-              "RelativeDocumentMoniker": "SIS.BLL\\Services\\DTOs\\Enrollment\\EnrollmentListDto.cs",
-              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.BLL\\Services\\DTOs\\Enrollment\\EnrollmentListDto.cs",
-              "RelativeToolTip": "SIS.BLL\\Services\\DTOs\\Enrollment\\EnrollmentListDto.cs",
-              "ViewState": "AgIAAAwAAAAAAAAAAAAiwAAAAAAAAAAAAAAAAA==",
+              "Title": "20260529200221_AddGroupsAndAssessments.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Migrations\\20260529200221_AddGroupsAndAssessments.cs",
+              "RelativeDocumentMoniker": "SIS.DAL\\Migrations\\20260529200221_AddGroupsAndAssessments.cs",
+              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Migrations\\20260529200221_AddGroupsAndAssessments.cs",
+              "RelativeToolTip": "SIS.DAL\\Migrations\\20260529200221_AddGroupsAndAssessments.cs",
+              "ViewState": "AgIAAAcAAAAAAAAAAAAqwAsAAABFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-28T11:52:46.904Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "AssignmentService.cs",
-              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.BLL\\Services\\Implementations\\AssignmentService.cs",
-              "RelativeDocumentMoniker": "SIS.BLL\\Services\\Implementations\\AssignmentService.cs",
-              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.BLL\\Services\\Implementations\\AssignmentService.cs",
-              "RelativeToolTip": "SIS.BLL\\Services\\Implementations\\AssignmentService.cs",
-              "ViewState": "AgIAAD8AAAAAAAAAAAAjwEYAAABSAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-28T11:50:46.854Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "AssignmentsController.cs",
-              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.UI\\Areas\\Teacher\\Controllers\\AssignmentsController.cs",
-              "RelativeDocumentMoniker": "SIS.UI\\Areas\\Teacher\\Controllers\\AssignmentsController.cs",
-              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.UI\\Areas\\Teacher\\Controllers\\AssignmentsController.cs",
-              "RelativeToolTip": "SIS.UI\\Areas\\Teacher\\Controllers\\AssignmentsController.cs",
-              "ViewState": "AgIAAFQAAAAAAAAAAAASwFYAAAAPAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-28T11:45:29.829Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "Index.cshtml",
-              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.UI\\Areas\\Student\\Views\\Assignments\\Index.cshtml",
-              "RelativeDocumentMoniker": "SIS.UI\\Areas\\Student\\Views\\Assignments\\Index.cshtml",
-              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.UI\\Areas\\Student\\Views\\Assignments\\Index.cshtml",
-              "RelativeToolTip": "SIS.UI\\Areas\\Student\\Views\\Assignments\\Index.cshtml",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAABiAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-05-28T11:42:00.44Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "IAssignmentApi.cs",
-              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.UI\\ApiClients\\IAssignmentApi.cs",
-              "RelativeDocumentMoniker": "SIS.UI\\ApiClients\\IAssignmentApi.cs",
-              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.UI\\ApiClients\\IAssignmentApi.cs",
-              "RelativeToolTip": "SIS.UI\\ApiClients\\IAssignmentApi.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABcAAAAZAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-28T11:41:47.718Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 10,
-              "Title": "20260527102400_AddClassSessionIdToAttendanceRecord.cs",
-              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Migrations\\20260527102400_AddClassSessionIdToAttendanceRecord.cs",
-              "RelativeDocumentMoniker": "SIS.DAL\\Migrations\\20260527102400_AddClassSessionIdToAttendanceRecord.cs",
-              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Migrations\\20260527102400_AddClassSessionIdToAttendanceRecord.cs",
-              "RelativeToolTip": "SIS.DAL\\Migrations\\20260527102400_AddClassSessionIdToAttendanceRecord.cs",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAYAAAAEAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-27T10:24:00.547Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "SystemClock.cs",
-              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.Common\\Time\\SystemClock.cs",
-              "RelativeDocumentMoniker": "SIS.Common\\Time\\SystemClock.cs",
-              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.Common\\Time\\SystemClock.cs",
-              "RelativeToolTip": "SIS.Common\\Time\\SystemClock.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAsAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-26T09:10:29.942Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 11,
-              "Title": "IClock.cs",
-              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.Common\\Time\\IClock.cs",
-              "RelativeDocumentMoniker": "SIS.Common\\Time\\IClock.cs",
-              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.Common\\Time\\IClock.cs",
-              "RelativeToolTip": "SIS.Common\\Time\\IClock.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAfAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-26T09:10:01.374Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 16,
-              "Title": "20260526090434_AddClassSessionAndWeeklySchedule.cs",
-              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Migrations\\20260526090434_AddClassSessionAndWeeklySchedule.cs",
-              "RelativeDocumentMoniker": "SIS.DAL\\Migrations\\20260526090434_AddClassSessionAndWeeklySchedule.cs",
-              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Migrations\\20260526090434_AddClassSessionAndWeeklySchedule.cs",
-              "RelativeToolTip": "SIS.DAL\\Migrations\\20260526090434_AddClassSessionAndWeeklySchedule.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAACMAAABEAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-26T09:04:34.252Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 17,
-              "Title": "20260526084811_AddProgramIdToCourse.cs",
-              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Migrations\\20260526084811_AddProgramIdToCourse.cs",
-              "RelativeDocumentMoniker": "SIS.DAL\\Migrations\\20260526084811_AddProgramIdToCourse.cs",
-              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Migrations\\20260526084811_AddProgramIdToCourse.cs",
-              "RelativeToolTip": "SIS.DAL\\Migrations\\20260526084811_AddProgramIdToCourse.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-26T08:48:11.506Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 15,
-              "Title": "20260525214404_AddAcademicYearAndTermPhases.cs",
-              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Migrations\\20260525214404_AddAcademicYearAndTermPhases.cs",
-              "RelativeDocumentMoniker": "SIS.DAL\\Migrations\\20260525214404_AddAcademicYearAndTermPhases.cs",
-              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.DAL\\Migrations\\20260525214404_AddAcademicYearAndTermPhases.cs",
-              "RelativeToolTip": "SIS.DAL\\Migrations\\20260525214404_AddAcademicYearAndTermPhases.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAABFAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-25T21:44:05.168Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 13,
-              "Title": "_ViewImports.cshtml",
-              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.UI\\Views\\_ViewImports.cshtml",
-              "RelativeDocumentMoniker": "SIS.UI\\Views\\_ViewImports.cshtml",
-              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.UI\\Views\\_ViewImports.cshtml",
-              "RelativeToolTip": "SIS.UI\\Views\\_ViewImports.cshtml",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAhAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-05-25T16:10:11.645Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "MappingProfile.cs",
-              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.BLL\\Mappings\\MappingProfile.cs",
-              "RelativeDocumentMoniker": "SIS.BLL\\Mappings\\MappingProfile.cs",
-              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.BLL\\Mappings\\MappingProfile.cs",
-              "RelativeToolTip": "SIS.BLL\\Mappings\\MappingProfile.cs",
-              "ViewState": "AgIAALsAAAAAAAAAAAAcwAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-25T13:16:18.255Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 14,
-              "Title": "CreateAttendanceDtoValidator.cs",
-              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.BLL\\Validators\\CreateAttendanceDtoValidator.cs",
-              "RelativeDocumentMoniker": "SIS.BLL\\Validators\\CreateAttendanceDtoValidator.cs",
-              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.BLL\\Validators\\CreateAttendanceDtoValidator.cs",
-              "RelativeToolTip": "SIS.BLL\\Validators\\CreateAttendanceDtoValidator.cs",
-              "ViewState": "AgIAAA8AAAAAAAAAAIBJwAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-25T13:14:13.307Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 12,
-              "Title": "EnrollmentService.cs",
-              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.BLL\\Services\\Implementations\\EnrollmentService.cs",
-              "RelativeDocumentMoniker": "SIS.BLL\\Services\\Implementations\\EnrollmentService.cs",
-              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\SIS\\SIS.BLL\\Services\\Implementations\\EnrollmentService.cs",
-              "RelativeToolTip": "SIS.BLL\\Services\\Implementations\\EnrollmentService.cs",
-              "ViewState": "AgIAACkAAAAAAAAAAAAgwAkAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-25T13:06:25.421Z"
+              "WhenOpened": "2026-05-29T20:02:21.665Z"
             }
           ]
         },

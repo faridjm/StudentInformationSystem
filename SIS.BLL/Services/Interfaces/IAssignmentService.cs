@@ -4,7 +4,7 @@ namespace SIS.BLL.Services.Interfaces
 {
     public interface IAssignmentService
     {
-        Task<IEnumerable<AssignmentDto>> GetByCourseOfferingAsync(int courseOfferingId);
+        Task<IEnumerable<AssignmentDto>> GetByGroupAsync(int groupId);
         Task<AssignmentDto?> GetByIdAsync(int id);
         Task<AssignmentDto> CreateAsync(CreateAssignmentDto dto);
         Task UpdateAsync(UpdateAssignmentDto dto);

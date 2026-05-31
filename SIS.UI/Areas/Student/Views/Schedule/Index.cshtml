@@ -1,149 +1,141 @@
+@using SIS.BLL.Services.DTOs.ClassSession
+@using SIS.BLL.Services.DTOs.Assessment
 @using SIS.Entities.Enums
 @{
-    ViewData["Title"] = "Cədvəlim";
-    var sessions = ViewBag.Sessions as List<SIS.BLL.Services.DTOs.ClassSession.ClassSessionDto> ?? new();
+    ViewData["Title"] = "Dərs Cədvəlim";
+    var sessions = (List<ClassSessionDto>)ViewBag.Sessions;
+    var assessments = (List<AssessmentItemDto>)ViewBag.Assessments;
+    var today = (DateOnly)ViewBag.Today;
     var from = (DateOnly)ViewBag.From;
     var to = (DateOnly)ViewBag.To;
-    var today = (DateOnly)ViewBag.Today;
-
-    string StatusBadge(ClassSessionStatus status) => status switch
-    {
-        ClassSessionStatus.Scheduled => "<span class='badge badge-info'>Planlaşdırılıb</span>",
-        ClassSessionStatus.Completed => "<span class='badge badge-success'>Keçirilib</span>",
-        ClassSessionStatus.Cancelled => "<span class='badge badge-danger'>Ləğv olunub</span>",
-        ClassSessionStatus.Makeup => "<span class='badge badge-warning'>Makeup</span>",
-        _ => "<span class='badge'>—</span>"
-    };
-
-    string[] azDayNames = { "Bazar", "Bazar ertəsi", "Çərşənbə axşamı", "Çərşənbə", "Cümə axşamı", "Cümə", "Şənbə" };
-
-    // Tarixə görə qruplaşdırma
-    var sessionsByDate = sessions.GroupBy(s => s.Date)
-        .OrderBy(g => g.Key)
-        .ToList();
 }
 
-<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:12px;">
-    <div>
-        <h2 style="font-size:20px; font-weight:700;">Dərs Cədvəlim</h2>
-        <p style="color:var(--text-secondary); font-size:13px;">@from.ToString("dd.MM.yyyy") – @to.ToString("dd.MM.yyyy")</p>
-    </div>
-
-    <form method="get" style="display:flex; gap:8px; align-items:end;">
-        <div class="form-group" style="margin:0;">
-            <label class="form-label" style="font-size:11px;">Başlanğıc</label>
-            <input type="date" name="from" value="@from.ToString("yyyy-MM-dd")" class="form-control" style="width:160px;" />
-        </div>
-        <div class="form-group" style="margin:0;">
-            <label class="form-label" style="font-size:11px;">Son</label>
-            <input type="date" name="to" value="@to.ToString("yyyy-MM-dd")" class="form-control" style="width:160px;" />
-        </div>
-        <button type="submit" class="btn btn-primary btn-sm">
-            <i class="fas fa-filter"></i> Filtr
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+    <h2 style="font-size:20px; font-weight:700;">Dərs Cədvəlim</h2>
+    <form method="get" style="display:flex; gap:8px; align-items:center;">
+        <input type="date" name="from" value="@from.ToString("yyyy-MM-dd")"
+               class="form-control" style="width:145px;" />
+        <span style="color:var(--text-secondary);">—</span>
+        <input type="date" name="to" value="@to.ToString("yyyy-MM-dd")"
+               class="form-control" style="width:145px;" />
+        <button type="submit" class="btn btn-secondary btn-sm">
+            <i class="fas fa-filter"></i>
         </button>
     </form>
 </div>
 
-<div style="display:flex; gap:8px; margin-bottom:16px;">
-    @{
-        var thisWeekStart = today.AddDays(-(int)today.DayOfWeek + 1); // Monday
-        var thisWeekEnd = thisWeekStart.AddDays(6);
-        var nextWeekStart = thisWeekEnd.AddDays(1);
-        var nextWeekEnd = nextWeekStart.AddDays(6);
-        var thisMonthStart = new DateOnly(today.Year, today.Month, 1);
-        var thisMonthEnd = thisMonthStart.AddMonths(1).AddDays(-1);
-    }
-    <a href="?from=@thisWeekStart.ToString("yyyy-MM-dd")&to=@thisWeekEnd.ToString("yyyy-MM-dd")" class="btn btn-sm btn-secondary">Bu həftə</a>
-    <a href="?from=@nextWeekStart.ToString("yyyy-MM-dd")&to=@nextWeekEnd.ToString("yyyy-MM-dd")" class="btn btn-sm btn-secondary">Növbəti həftə</a>
-    <a href="?from=@thisMonthStart.ToString("yyyy-MM-dd")&to=@thisMonthEnd.ToString("yyyy-MM-dd")" class="btn btn-sm btn-secondary">Bu ay</a>
-</div>
-
-@if (sessions.Count == 0)
-{
-    <div class="card">
-        <div class="card-body" style="text-align:center; color:var(--text-secondary); padding:40px;">
-            <i class="fas fa-calendar-times" style="font-size:32px; margin-bottom:12px; display:block;"></i>
-            Seçilmiş aralıqda dərs yoxdur.<br />
-            <small>Tarix aralığını dəyişməyə cəhd edin.</small>
-        </div>
-    </div>
+<!-- Upcoming assessments -->
+@{
+    var upcomingAssessments = assessments
+        .Where(a => DateOnly.FromDateTime(a.Date) >= today)
+        .OrderBy(a => a.Date).Take(5).ToList();
 }
-else
+@if (upcomingAssessments.Any())
 {
-    <div style="display:flex; flex-direction:column; gap:12px;">
-        @foreach (var dayGroup in sessionsByDate)
+    <div style="display:flex; gap:10px; margin-bottom:16px; overflow-x:auto; padding-bottom:4px;">
+        @foreach (var a in upcomingAssessments)
         {
-            var date = dayGroup.Key;
-            var isPast = date < today;
-            var isToday = date == today;
-            var isFuture = date > today;
-
-            <div class="card" style="@(isToday ? "border:2px solid var(--accent);" : "")">
-                <div class="card-header" style="background:@(isToday ? "rgba(59,130,246,0.1)" : "transparent");">
-                    <span>
-                        <strong>@date.ToString("dd.MM.yyyy")</strong>
-                        <span style="color:var(--text-secondary); margin-left:8px; font-weight:normal;">
-                            @azDayNames[(int)date.DayOfWeek]
-                        </span>
-                        @if (isToday)
-                        {
-                            <span class="badge badge-info" style="margin-left:8px;">Bu gün</span>
-                        }
-                        else if (isPast)
-                        {
-                            <span style="color:var(--text-secondary); font-size:11px; margin-left:8px;">keçmiş</span>
-                        }
-                    </span>
-                    <span style="font-size:12px; color:var(--text-secondary);">
-                        @dayGroup.Count() dərs
-                    </span>
+            var color = a.Type == AssessmentType.Quiz ? "#3b82f6" :
+                        a.Type == AssessmentType.FinalProject ? "#e94560" : "#eab308";
+            var icon = a.Type == AssessmentType.Quiz ? "fa-question-circle" :
+                       a.Type == AssessmentType.FinalProject ? "fa-trophy" : "fa-file-alt";
+            var label = a.Type == AssessmentType.Quiz ? "Quiz" :
+                        a.Type == AssessmentType.FinalProject ? "Final" : "Tapşırıq";
+            var daysLeft = DateOnly.FromDateTime(a.Date).DayNumber - today.DayNumber;
+            <div style="min-width:160px; background:@(color)15; border:1px solid @(color)44; border-radius:10px; padding:12px; flex-shrink:0;">
+                <div style="font-size:10px; font-weight:700; color:@color; text-transform:uppercase; margin-bottom:4px;">
+                    <i class="fas @icon"></i> @label
                 </div>
-                <div style="overflow-x:auto;">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th style="width:130px;">Saat</th>
-                                <th>Kurs</th>
-                                <th>Müəllim</th>
-                                <th>Otaq</th>
-                                <th>Mövzu</th>
-                                <th style="width:130px;">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var s in dayGroup.OrderBy(x => x.StartTime))
-                            {
-                                <tr style="@(s.Status == ClassSessionStatus.Cancelled ? "opacity:0.6;" : "")">
-                                    <td>@s.StartTime.ToString("HH:mm") – @s.EndTime.ToString("HH:mm")</td>
-                                    <td style="font-weight:500;">
-                                        @s.CourseName
-                                        <div style="font-size:11px; color:var(--text-secondary);">@s.CourseCode</div>
-                                    </td>
-                                    <td style="color:var(--text-secondary);">@(s.TeacherName ?? "—")</td>
-                                    <td>@(s.Room ?? "—")</td>
-                                    <td>
-                                        @if (!string.IsNullOrEmpty(s.Topic))
-                                        {
-                                            <span>@s.Topic</span>
-                                        }
-                                        else
-                                        {
-                                            <span style="color:var(--text-secondary); font-style:italic;">—</span>
-                                        }
-                                    </td>
-                                    <td>
-                                        @Html.Raw(StatusBadge(s.Status))
-                                        @if (s.Status == ClassSessionStatus.Cancelled && !string.IsNullOrEmpty(s.CancellationReason))
-                                        {
-                                            <div style="font-size:11px; color:var(--text-secondary); margin-top:4px;">@s.CancellationReason</div>
-                                        }
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
+                <div style="font-size:13px; font-weight:600; margin-bottom:4px;">@a.Title</div>
+                <div style="font-size:11px; color:var(--text-secondary);">@a.Date.ToString("dd.MM.yyyy")</div>
+                <div style="font-size:11px; color:@color; font-weight:600; margin-top:4px;">
+                    @(daysLeft == 0 ? "Bu gün!" : daysLeft == 1 ? "Sabah" : $"{daysLeft} gün qaldı")
                 </div>
             </div>
         }
     </div>
 }
+
+<!-- Main schedule table -->
+<div class="card">
+    <div class="card-body" style="padding:0;">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th style="width:50px;">#</th>
+                    <th style="width:100px;">Tarix</th>
+                    <th style="width:80px;">Gün</th>
+                    <th style="width:120px;">Saat</th>
+                    <th>Mövzu</th>
+                    <th style="width:100px;">Qiymət</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var s in sessions)
+                {
+                    var isToday = s.Date == today;
+                    var isPast = s.Date < today;
+                    var aOnDate = assessments
+                        .Where(a => DateOnly.FromDateTime(a.Date) == s.Date).ToList();
+                    var rowBg = isToday ? "background:rgba(59,130,246,0.08);" :
+                                isPast ? "opacity:0.65;" : "";
+                    <tr style="@rowBg">
+                        <td style="color:var(--text-secondary); font-size:13px;">@s.SessionNumber</td>
+                        <td>
+                            <div style="font-weight:@(isToday ? "700" : "400");">
+                                @s.Date.ToString("dd.MM.yyyy")
+                            </div>
+                            @if (isToday)
+                            {
+                                <span style="font-size:10px; background:#3b82f6; color:#fff; padding:1px 6px; border-radius:4px; font-weight:600;">Bu gün</span>
+                            }
+                        </td>
+                        @{
+                            var dayName = s.Date.DayOfWeek switch {
+                                DayOfWeek.Monday => "B.ertəsi",
+                                DayOfWeek.Tuesday => "Çər.ax.",
+                                DayOfWeek.Wednesday => "Çərşənbə",
+                                DayOfWeek.Thursday => "C.ax.",
+                                DayOfWeek.Friday => "Cümə",
+                                DayOfWeek.Saturday => "Şənbə",
+                                _ => "Bazar"
+                            };
+                        }
+                        <td style="font-size:12px; color:var(--text-secondary);">@dayName</td>
+                        <td style="font-size:12px; color:var(--text-secondary);">@s.StartTime — @s.EndTime</td>
+                        <td>
+                            @if (!string.IsNullOrEmpty(s.Topic))
+                            {
+                                <span style="font-size:13px;">@s.Topic</span>
+                            }
+                            else
+                            {
+                                <span style="color:var(--text-secondary); font-size:12px; font-style:italic;">—</span>
+                            }
+                        </td>
+                        <td>
+                            @foreach (var a in aOnDate)
+                            {
+                                var color = a.Type == AssessmentType.Quiz ? "#3b82f6" :
+                                            a.Type == AssessmentType.FinalProject ? "#e94560" : "#eab308";
+                                var label = a.Type == AssessmentType.Quiz ? "Quiz" :
+                                            a.Type == AssessmentType.FinalProject ? "Final" : "Tapş.";
+                                <div style="font-size:10px; background:@(color)22; color:@color; padding:2px 7px; border-radius:4px; font-weight:700; margin-bottom:2px; white-space:nowrap;">
+                                    @label: @a.Title
+                                </div>
+                            }
+                        </td>
+                    </tr>
+                }
+                @if (!sessions.Any())
+                {
+                    <tr>
+                        <td colspan="6" style="text-align:center; color:var(--text-secondary); padding:30px;">
+                            Bu tarix aralığında dərs yoxdur
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

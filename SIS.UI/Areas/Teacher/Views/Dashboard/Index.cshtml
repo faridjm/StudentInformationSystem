@@ -1,102 +1,161 @@
-﻿@{
+@using SIS.BLL.Services.DTOs.Assessment
+@using SIS.Entities.Enums
+@{
     ViewData["Title"] = "Dashboard";
-    var teacher = ViewBag.Teacher as SIS.BLL.Services.DTOs.Teacher.TeacherDetailDto;
-    var offerings = ViewBag.Offerings as IEnumerable<SIS.BLL.Services.DTOs.CourseOffering.CourseOfferingListDto>;
-    var announcements = ViewBag.Announcements as IEnumerable<SIS.BLL.Services.DTOs.Announcement.AnnouncementDto>;
+    var today = (DateOnly)ViewBag.Today;
+    var groups = (IEnumerable<SIS.BLL.Services.DTOs.Groups.GroupListDto>)ViewBag.Groups;
+    var todaySessions = (List<SIS.UI.Areas.Teacher.Controllers.TodaySessionVm>)ViewBag.TodaySessions;
 }
 
-<div style="margin-bottom:24px;">
-    <h2 style="font-size:20px; font-weight:700;">
-        Xoş gəldiniz, @(teacher?.FullName ?? User.Identity?.Name)!
-    </h2>
-    <p style="color:var(--text-secondary); font-size:14px;">@DateTime.Now.ToString("dd MMMM yyyy, dddd")</p>
+<h2 style="font-size:20px; font-weight:700; margin-bottom:4px;">Dashboard</h2>
+<div style="color:var(--text-secondary); font-size:13px; margin-bottom:20px;">
+    <i class="fas fa-calendar-day"></i> Bu gün: <strong style="color:var(--text-primary);">@today.ToString("dd MMMM yyyy")</strong>
 </div>
 
-<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:24px;">
-    <div class="stat-card">
-        <div class="stat-icon" style="background:rgba(59,130,246,0.15); color:#3b82f6;">
-            <i class="fas fa-book"></i>
+@if (todaySessions.Any())
+{
+    <div style="margin-bottom:24px;">
+        <div style="font-size:15px; font-weight:600; margin-bottom:12px; color:var(--accent);">
+            <i class="fas fa-chalkboard-teacher"></i> Bu günün dərsləri
         </div>
-        <div>
-            <div class="stat-value">@ViewBag.CourseCount</div>
-            <div class="stat-label">Aktiv Kurs</div>
-        </div>
-    </div>
-    <div class="stat-card">
-        <div class="stat-icon" style="background:rgba(34,197,94,0.15); color:#22c55e;">
-            <i class="fas fa-users"></i>
-        </div>
-        <div>
-            <div class="stat-value">@(offerings?.Sum(o => o.EnrolledCount) ?? 0)</div>
-            <div class="stat-label">Ümumi Tələbə</div>
-        </div>
-    </div>
-    <div class="stat-card">
-        <div class="stat-icon" style="background:rgba(168,85,247,0.15); color:#a855f7;">
-            <i class="fas fa-bullhorn"></i>
-        </div>
-        <div>
-            <div class="stat-value">@(announcements?.Count() ?? 0)</div>
-            <div class="stat-label">Elanlar</div>
-        </div>
-    </div>
-</div>
-
-<div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
-    <div class="card">
-        <div class="card-header">
-            <span><i class="fas fa-book" style="margin-right:8px;"></i>Kurslarım</span>
-            <a href="/Teacher/Courses" class="btn btn-primary btn-sm">Hamısı</a>
-        </div>
-        <div style="overflow-x:auto;">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Kurs</th>
-                        <th>Tələbə</th>
-                        <th>Otaq</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (offerings != null)
-                    {
-                        @foreach (var o in offerings.Take(5))
+        @foreach (var vm in todaySessions)
+        {
+            <div class="card" style="margin-bottom:16px;">
+                <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <strong>@vm.GroupName</strong>
+                        <span style="color:var(--text-secondary); font-size:13px; margin-left:8px;">@vm.CourseName</span>
+                        <span style="margin-left:8px; font-size:12px; color:var(--text-secondary);">
+                            #@vm.Session.SessionNumber · @vm.Session.StartTime — @vm.Session.EndTime
+                        </span>
+                    </div>
+                    <div style="display:flex; gap:8px; align-items:center;">
+                        @if (vm.AttendanceTaken)
                         {
-                            <tr>
-                                <td>
-                                    <div style="font-weight:500;">@o.CourseName</div>
-                                    <div style="font-size:12px; color:var(--text-secondary);">@o.CourseCode</div>
-                                </td>
-                                <td><span class="badge badge-info">@o.EnrolledCount / @o.Capacity</span></td>
-                                <td style="color:var(--text-secondary);">@(o.Room ?? "—")</td>
-                            </tr>
+                            <span class="badge badge-success"><i class="fas fa-check"></i> Qayıb alınıb</span>
                         }
-                    }
-                </tbody>
-            </table>
-        </div>
-    </div>
+                        @foreach (var a in vm.TodayAssessments)
+                        {
+                            var color = a.Type == AssessmentType.Quiz ? "#3b82f6" : a.Type == AssessmentType.FinalProject ? "#e94560" : "#eab308";
+                            var label = a.Type == AssessmentType.Quiz ? "Quiz" : a.Type == AssessmentType.FinalProject ? "Final" : "Tapşırıq";
+                            <span style="font-size:11px; background:@(color)22; color:@color; padding:3px 8px; border-radius:6px; font-weight:600;">
+                                <i class="fas fa-clipboard-check"></i> @label: @a.Title
+                            </span>
+                        }
+                    </div>
+                </div>
 
-    <div class="card">
-        <div class="card-header">
-            <span><i class="fas fa-bullhorn" style="margin-right:8px;"></i>Son Elanlar</span>
-            <a href="/Teacher/Announcements" class="btn btn-primary btn-sm">Hamısı</a>
-        </div>
-        <div class="card-body">
-            @if (announcements != null && announcements.Any())
-            {
-                @foreach (var a in announcements)
+                @if (!string.IsNullOrEmpty(vm.Session.Topic))
                 {
-                    <div style="padding:10px 0; border-bottom:1px solid var(--border);">
-                        <div style="font-weight:500; font-size:14px;">@a.Title</div>
-                        <div style="font-size:12px; color:var(--text-secondary);">@a.CreatedAt.ToString("dd.MM.yyyy")</div>
+                    <div style="padding:10px 20px; background:rgba(59,130,246,0.08); border-bottom:1px solid var(--border); font-size:13px;">
+                        <i class="fas fa-book-open" style="color:#3b82f6; margin-right:6px;"></i>
+                        <strong>Bu günün mövzusu:</strong> @vm.Session.Topic
                     </div>
                 }
-            }
-            else
-            {
-                <p style="color:var(--text-secondary); text-align:center;">Elan yoxdur</p>
-            }
-        </div>
+
+                <div class="card-body">
+                    <!-- Qayıb alma formu -->
+                    <form method="post" action="/Teacher/Dashboard/SaveAttendance">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="sessionId" value="@vm.Session.Id" />
+                        <div style="font-size:13px; font-weight:600; margin-bottom:10px;">
+                            <i class="fas fa-user-check"></i> Davamiyyət
+                        </div>
+                        <table style="width:100%; font-size:13px;">
+                            <thead>
+                                <tr style="color:var(--text-secondary); border-bottom:1px solid var(--border);">
+                                    <td style="padding:6px 0; width:40%;">Tələbə</td>
+                                    <td style="padding:6px; text-align:center;">İştirak</td>
+                                    <td style="padding:6px; text-align:center;">Gecikmə</td>
+                                    <td style="padding:6px; text-align:center;">Qayıb</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{ int si = 0; }
+                                @foreach (var e in vm.Enrollments)
+                                {
+                                    var existing = vm.ExistingAttendance.FirstOrDefault(a => a.EnrollmentId == e.Id);
+                                    var curStatus = existing?.Status ?? AttendanceStatus.Present;
+                                    var rName = $"att_{vm.Session.Id}_{si}";
+                                    <tr style="border-bottom:1px solid var(--border);">
+                                        <td style="padding:8px 0;">
+                                            <input type="hidden" name="enrollmentIds" value="@e.Id" />
+                                            <input type="hidden" class="status-value" name="statuses" value="@((int)curStatus)" />
+                                            <strong>@e.StudentName</strong>
+                                            <div style="font-size:11px; color:var(--text-secondary);">@e.StudentNumber</div>
+                                        </td>
+                                        <td style="text-align:center; padding:8px;">
+                                            <input type="radio" name="@rName" value="0"
+                                                   @(curStatus == AttendanceStatus.Present ? "checked" : "")
+                                                   onchange="this.closest('tr').querySelector('.status-value').value=this.value"
+                                                   style="accent-color:#22c55e; width:18px; height:18px;" />
+                                        </td>
+                                        <td style="text-align:center; padding:8px;">
+                                            <input type="radio" name="@rName" value="2"
+                                                   @(curStatus == AttendanceStatus.Late ? "checked" : "")
+                                                   onchange="this.closest('tr').querySelector('.status-value').value=this.value"
+                                                   style="accent-color:#eab308; width:18px; height:18px;" />
+                                        </td>
+                                        <td style="text-align:center; padding:8px;">
+                                            <input type="radio" name="@rName" value="1"
+                                                   @(curStatus == AttendanceStatus.Absent ? "checked" : "")
+                                                   onchange="this.closest('tr').querySelector('.status-value').value=this.value"
+                                                   style="accent-color:#ef4444; width:18px; height:18px;" />
+                                        </td>
+                                    </tr>
+                                    si++;
+                                }
+                            </tbody>
+                        </table>
+                        <div style="display:flex; gap:8px; margin-top:12px;">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Davamiyyəti saxla
+                            </button>
+                            @if (vm.TodayAssessments.Any())
+                            {
+                                <a href="/Teacher/Courses/Detail/@vm.GroupId?tab=assessments" class="btn btn-secondary">
+                                    <i class="fas fa-pen"></i> Qiymətlər
+                                </a>
+                            }
+                        </div>
+                    </form>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="card" style="margin-bottom:20px; padding:24px; text-align:center; color:var(--text-secondary);">
+        <i class="fas fa-coffee" style="font-size:32px; margin-bottom:12px; display:block;"></i>
+        Bu gün (@today.ToString("dd.MM.yyyy")) dərs yoxdur
+    </div>
+}
+
+<!-- Qruplar xülasəsi -->
+<div class="card">
+    <div class="card-header">Bütün Qruplarım</div>
+    <div class="card-body" style="padding:0;">
+        <table class="table">
+            <thead>
+                <tr><th>Qrup</th><th>Proqram</th><th>Tələbə</th><th>Tarix</th><th></th></tr>
+            </thead>
+            <tbody>
+                @foreach (var g in groups)
+                {
+                    <tr>
+                        <td><strong>@g.Name</strong></td>
+                        <td>@g.CourseName</td>
+                        <td>@g.EnrolledCount / @g.Capacity</td>
+                        <td style="font-size:13px; color:var(--text-secondary);">@g.StartDate.ToString("dd.MM.yy") — @g.EndDate.ToString("dd.MM.yy")</td>
+                        <td><a href="/Teacher/Courses/Detail/@g.Id" class="btn btn-sm btn-secondary">Aç</a></td>
+                    </tr>
+                }
+                @if (!groups.Any())
+                {
+                    <tr><td colspan="5" style="text-align:center; color:var(--text-secondary); padding:24px;">Qrup yoxdur</td></tr>
+                }
+            </tbody>
+        </table>
     </div>
 </div>

@@ -1,9 +1,8 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SIS.BLL.Services.DTOs.Course;
 using SIS.BLL.Services.Interfaces;
 using SIS.Common.Constants;
-using SIS.Common.Pagination;
 
 namespace SIS.API.Controllers
 {
@@ -12,60 +11,41 @@ namespace SIS.API.Controllers
     [Authorize]
     public class CourseController : ControllerBase
     {
-        private readonly ICourseService _courseService;
-
-        public CourseController(ICourseService courseService)
-        {
-            _courseService = courseService;
-        }
+        private readonly ICourseService _service;
+        public CourseController(ICourseService service) { _service = service; }
 
         [HttpGet]
-        [Authorize(Roles = $"{RoleConstants.Admin},{RoleConstants.Moderator},{RoleConstants.SuperAdmin},{RoleConstants.Teacher},{RoleConstants.Student}")]
-        public async Task<IActionResult> GetAll([FromQuery] PagedRequest request)
-        {
-            var result = await _courseService.GetAllCoursesAsync(request);
-            return Ok(result);
-        }
+        public async Task<IActionResult> GetAll() => Ok(await _service.GetAllAsync());
 
         [HttpGet("{id}")]
-        [Authorize(Roles = $"{RoleConstants.Admin},{RoleConstants.Moderator},{RoleConstants.SuperAdmin},{RoleConstants.Teacher},{RoleConstants.Student}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var course = await _courseService.GetCourseByIdAsync(id);
-            if (course == null) return NotFound();
-            return Ok(course);
-        }
-
-        [HttpGet("department/{departmentId}")]
-        [Authorize(Roles = $"{RoleConstants.Admin},{RoleConstants.Moderator},{RoleConstants.SuperAdmin}")]
-        public async Task<IActionResult> GetByDepartment(int departmentId)
-        {
-            var courses = await _courseService.GetCoursesByDepartmentAsync(departmentId);
-            return Ok(courses);
+            var c = await _service.GetByIdAsync(id);
+            return c == null ? NotFound() : Ok(c);
         }
 
         [HttpPost]
         [Authorize(Roles = $"{RoleConstants.Admin},{RoleConstants.SuperAdmin}")]
         public async Task<IActionResult> Create([FromBody] CreateCourseDto dto)
         {
-            await _courseService.CreateCourseAsync(dto);
-            return Ok(new { Message = "Kurs uğurla yaradıldı" });
+            var result = await _service.CreateAsync(dto);
+            return Ok(result);
         }
 
         [HttpPut]
         [Authorize(Roles = $"{RoleConstants.Admin},{RoleConstants.SuperAdmin}")]
         public async Task<IActionResult> Update([FromBody] UpdateCourseDto dto)
         {
-            await _courseService.UpdateCourseAsync(dto);
-            return Ok(new { Message = "Kurs uğurla yeniləndi" });
+            await _service.UpdateAsync(dto);
+            return Ok();
         }
 
         [HttpDelete("{id}")]
         [Authorize(Roles = $"{RoleConstants.Admin},{RoleConstants.SuperAdmin}")]
         public async Task<IActionResult> Delete(int id)
         {
-            await _courseService.DeleteCourseAsync(id);
-            return Ok(new { Message = "Kurs uğurla silindi" });
+            await _service.DeleteAsync(id);
+            return Ok();
         }
     }
 }

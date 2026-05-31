@@ -1,4 +1,3 @@
-﻿using AutoMapper;
 using SIS.BLL.Services.DTOs.Notification;
 using SIS.BLL.Services.Interfaces;
 using SIS.DAL.UnitOfWork;
@@ -10,23 +9,22 @@ namespace SIS.BLL.Services.Implementations
     public class NotificationService : INotificationService
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
         private readonly IRealtimeNotifier _realtimeNotifier;
 
-        public NotificationService(
-            IUnitOfWork unitOfWork,
-            IMapper mapper,
-            IRealtimeNotifier realtimeNotifier)
+        public NotificationService(IUnitOfWork unitOfWork, IRealtimeNotifier realtimeNotifier)
         {
             _unitOfWork = unitOfWork;
-            _mapper = mapper;
             _realtimeNotifier = realtimeNotifier;
         }
 
         public async Task<IEnumerable<NotificationDto>> GetUserNotificationsAsync(string userId)
         {
             var notifications = await _unitOfWork.Notifications.GetUserNotificationsAsync(userId);
-            return _mapper.Map<IEnumerable<NotificationDto>>(notifications);
+            return notifications.Select(n => new NotificationDto
+            {
+                Id = n.Id, Title = n.Title, Message = n.Message,
+                Type = n.Type, IsRead = n.IsRead, CreatedAt = n.CreatedAt
+            });
         }
 
         public async Task<int> GetUnreadCountAsync(string userId)
@@ -40,20 +38,13 @@ namespace SIS.BLL.Services.Implementations
 
         public async Task SendNotificationAsync(string userId, string title, string message, NotificationType type)
         {
-            
             var notification = new Notification
             {
-                UserId = userId,
-                Title = title,
-                Message = message,
-                Type = type,
-                IsRead = false
+                UserId = userId, Title = title, Message = message,
+                Type = type, IsRead = false, CreatedAt = DateTime.UtcNow
             };
-
             await _unitOfWork.Notifications.AddAsync(notification);
             await _unitOfWork.SaveAsync();
-
-            
             await _realtimeNotifier.NotifyUserAsync(userId, title, message, type.ToString());
         }
     }

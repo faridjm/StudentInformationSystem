@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SIS.Entities.Models;
 
@@ -8,12 +8,10 @@ namespace SIS.DAL.Configurations
     {
         public void Configure(EntityTypeBuilder<Course> builder)
         {
+            builder.HasKey(c => c.Id);
+            builder.Property(c => c.Name).IsRequired().HasMaxLength(200);
+            builder.Property(c => c.Description).HasMaxLength(1000);
             builder.HasQueryFilter(c => !c.IsDeleted);
-
-            builder.HasOne(c => c.AcademicProgram)
-                .WithMany(p => p.Courses)
-                .HasForeignKey(c => c.AcademicProgramId)
-                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

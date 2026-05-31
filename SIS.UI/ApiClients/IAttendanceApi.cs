@@ -19,6 +19,9 @@ namespace SIS.UI.ApiClients
 
         [Post("/api/attendance/bulk")]
         Task RecordBulkAsync([Body] IEnumerable<CreateAttendanceDto> dtos);
+
+        [Get("/api/attendance/session/{sessionId}")]
+        Task<IEnumerable<AttendanceDto>> GetBySessionAsync(int sessionId);
     }
 
 

@@ -7,6 +7,7 @@ using SIS.API.Extensions;
 using SIS.API.Hubs;
 using SIS.API.Middlewares;
 using System.Text.Json.Serialization;
+using QuestPDF.Infrastructure;
 
 namespace SIS.API
 {
@@ -14,6 +15,8 @@ namespace SIS.API
     {
         public static void Main(string[] args)
         {
+            QuestPDF.Settings.License = LicenseType.Community;
+
             var builder = WebApplication.CreateBuilder(args);
 
             // Services

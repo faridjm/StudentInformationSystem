@@ -1,47 +1,171 @@
-﻿@model IEnumerable<SIS.BLL.Services.DTOs.Grade.GradeDto>
-
+@using SIS.BLL.Services.DTOs.Enrollment
+@using SIS.BLL.Services.DTOs.Assessment
+@using SIS.BLL.Services.DTOs.Assignment
+@using SIS.Entities.Enums
 @{
     ViewData["Title"] = "Qiymətlərim";
+    var enrollments = (List<EnrollmentListDto>)ViewBag.Enrollments;
+    var submissionsMap = (Dictionary<int, IEnumerable<AssessmentSubmissionDto>>)ViewBag.SubmissionsPerEnrollment;
+    var assignmentSubsMap = (Dictionary<int, IEnumerable<SubmissionDto>>)ViewBag.AssignmentSubsPerEnrollment;
 }
 
 <div style="margin-bottom:20px;">
     <h2 style="font-size:20px; font-weight:700;">Qiymətlərim</h2>
 </div>
 
-<div class="card">
-    <div style="overflow-x:auto;">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Növ</th>
-                    <th>Bal</th>
-                    <th>Maks Bal</th>
-                    <th>Hərf</th>
-                    <th>Tarix</th>
-                </tr>
-            </thead>
-            <tbody>
-                @{
-                    int i = 1;
-                }
-                @foreach (var g in Model)
+@if (!enrollments.Any())
+{
+    <div class="card"><div class="card-body" style="color:var(--text-secondary); text-align:center; padding:40px;">
+        Hələ heç bir qrupa qeydiyyatınız yoxdur
+    </div></div>
+}
+
+@foreach (var enrollment in enrollments)
+{
+    var subs = submissionsMap.GetValueOrDefault(enrollment.Id, []).ToList();
+    var gradedSubs = subs.Where(s => s.IsGraded).ToList();
+    var assignmentSubs = assignmentSubsMap.GetValueOrDefault(enrollment.Id, []).ToList();
+    var gradedAssignments = assignmentSubs.Where(s => s.IsGraded).ToList();
+
+    // ── OfficialGrade: çəkili ortalama (AssessmentSubmission-lardan) ──
+    // WeightPercent submission DTO-da yoxdur, sadə bal/maxBal faiz istifadə edəcəyik
+    // Əsl çəkili ortalama backend-də (UpdateGPAAsync) hesablanır
+    decimal officialSum = 0;
+    int officialCount = 0;
+    foreach (var s in gradedSubs)
+    {
+        if (s.MaxScore > 0)
+        {
+            officialSum += (s.Score ?? 0) / s.MaxScore * 100;
+            officialCount++;
+        }
+    }
+    var officialGrade = officialCount > 0 ? officialSum / officialCount : (decimal?)null;
+    var officialColor = officialGrade == null ? "var(--text-secondary)" : officialGrade >= 70 ? "#22c55e" : officialGrade >= 50 ? "#eab308" : "#ef4444";
+
+    // ── AssignmentAverage: ev tapşırıqları ortalaması ──
+    decimal hwSum = 0;
+    int hwCount = 0;
+    foreach (var s in gradedAssignments)
+    {
+        if (s.MaxScore > 0)
+        {
+            hwSum += (s.Score ?? 0) / s.MaxScore * 100;
+            hwCount++;
+        }
+    }
+    var hwAvg = hwCount > 0 ? hwSum / hwCount : (decimal?)null;
+    var hwColor = hwAvg == null ? "var(--text-secondary)" : hwAvg >= 70 ? "#22c55e" : hwAvg >= 50 ? "#eab308" : "#ef4444";
+
+    <div class="card" style="margin-bottom:20px;">
+        <div class="card-header">
+            <div>
+                <strong>@enrollment.GroupName</strong>
+                <span style="color:var(--text-secondary); font-size:13px; margin-left:8px;">@enrollment.CourseName</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:16px;">
+                @if (officialGrade != null)
                 {
-                    <tr>
-                        <td>@i</td>
-                        <td>@g.Type</td>
-                        <td style="font-weight:600;">@g.Score</td>
-                        <td style="color:var(--text-secondary);">@g.MaxScore</td>
-                        <td>
-                            <span class="badge @(g.LetterGrade == "A" || g.LetterGrade == "B" ? "badge-success" : g.LetterGrade == "C" ? "badge-warning" : "badge-danger")">
-                                @g.LetterGrade
-                            </span>
-                        </td>
-                        <td style="color:var(--text-secondary); font-size:13px;">@g.GradedAt.ToString("dd.MM.yyyy")</td>
-                    </tr>
-                    i++;
+                    <div style="text-align:center;">
+                        <div style="font-size:20px; font-weight:800; color:@officialColor;">%@officialGrade.Value.ToString("F0")</div>
+                        <div style="font-size:10px; color:var(--text-secondary);">Rəsmi Qiymət</div>
+                    </div>
                 }
-            </tbody>
-        </table>
+                @if (hwAvg != null)
+                {
+                    <div style="text-align:center;">
+                        <div style="font-size:16px; font-weight:600; color:@hwColor;">%@hwAvg.Value.ToString("F0")</div>
+                        <div style="font-size:10px; color:var(--text-secondary);">Tapşırıq Ort.</div>
+                    </div>
+                }
+                @if (officialGrade == null && hwAvg == null)
+                {
+                    <span style="color:var(--text-secondary); font-size:13px;">Hələ qiymət yoxdur</span>
+                }
+            </div>
+        </div>
+
+        <!-- Rəsmi Qiymətləndirmə -->
+        @if (subs.Any())
+        {
+            <div style="padding:12px 20px 4px; font-size:12px; font-weight:600; color:var(--accent); text-transform:uppercase; letter-spacing:.5px;">
+                <i class="fas fa-graduation-cap" style="margin-right:4px;"></i> Rəsmi Qiymətləndirmə
+            </div>
+            <div style="padding:0;">
+                <table class="table">
+                    <thead>
+                        <tr><th>Başlıq</th><th>Bal</th><th>Faiz</th><th>Status</th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var s in subs.OrderBy(x => x.AssessmentTitle))
+                        {
+                            var pct = s.IsGraded && s.MaxScore > 0 ? (double)(s.Score ?? 0) / (double)s.MaxScore * 100 : (double?)null;
+                            var scoreColor = pct == null ? "var(--text-secondary)" : pct >= 70 ? "#22c55e" : pct >= 50 ? "#eab308" : "#ef4444";
+                            <tr>
+                                <td><strong>@s.AssessmentTitle</strong></td>
+                                <td>
+                                    @if (s.IsGraded)
+                                    {
+                                        <span style="font-weight:700; color:@scoreColor;">@s.Score / @s.MaxScore</span>
+                                    }
+                                    else { <span style="color:var(--text-secondary);">—</span> }
+                                </td>
+                                <td>
+                                    @if (pct != null) { <span style="color:@scoreColor; font-weight:600;">%@pct.Value.ToString("F0")</span> }
+                                </td>
+                                <td>
+                                    @if (s.IsGraded) { <span class="badge badge-success">Qiymətləndirildi</span> }
+                                    else { <span class="badge badge-warning">Gözlənilir</span> }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+
+        <!-- Ev Tapşırıqları -->
+        @if (assignmentSubs.Any())
+        {
+            <div style="padding:12px 20px 4px; font-size:12px; font-weight:600; color:#a855f7; text-transform:uppercase; letter-spacing:.5px; border-top:1px solid var(--border);">
+                <i class="fas fa-book" style="margin-right:4px;"></i> Ev Tapşırıqları
+            </div>
+            <div style="padding:0;">
+                <table class="table">
+                    <thead>
+                        <tr><th>Başlıq</th><th>Bal</th><th>Faiz</th><th>Status</th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var s in assignmentSubs.OrderBy(x => x.AssignmentTitle))
+                        {
+                            var pct = s.IsGraded && s.MaxScore > 0 ? (double)(s.Score ?? 0) / (double)s.MaxScore * 100 : (double?)null;
+                            var scoreColor = pct == null ? "var(--text-secondary)" : pct >= 70 ? "#22c55e" : pct >= 50 ? "#eab308" : "#ef4444";
+                            <tr>
+                                <td><strong>@s.AssignmentTitle</strong></td>
+                                <td>
+                                    @if (s.IsGraded)
+                                    {
+                                        <span style="font-weight:700; color:@scoreColor;">@s.Score / @s.MaxScore</span>
+                                    }
+                                    else { <span style="color:var(--text-secondary);">—</span> }
+                                </td>
+                                <td>
+                                    @if (pct != null) { <span style="color:@scoreColor; font-weight:600;">%@pct.Value.ToString("F0")</span> }
+                                </td>
+                                <td>
+                                    @if (s.IsGraded) { <span class="badge badge-success">Qiymətləndirildi</span> }
+                                    else { <span class="badge badge-warning">Gözlənilir</span> }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+
+        @if (!subs.Any() && !assignmentSubs.Any())
+        {
+            <div class="card-body" style="color:var(--text-secondary); font-size:13px;">Bu qrup üçün hələ qiymətləndirmə planı yoxdur</div>
+        }
     </div>
-</div>
+}

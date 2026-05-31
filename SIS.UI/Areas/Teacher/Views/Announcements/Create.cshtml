@@ -1,47 +1,35 @@
-﻿@model SIS.BLL.Services.DTOs.Announcement.CreateAnnouncementDto
-
 @{
     ViewData["Title"] = "Yeni Elan";
 }
-
-<div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
-    <a href="/Teacher/Announcements" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i></a>
-    <h2 style="font-size:20px; font-weight:700;">Yeni Elan</h2>
-</div>
-
-<div class="card" style="max-width:600px;">
-    <div class="card-body">
-        <form method="post">
-            @Html.AntiForgeryToken()
-            <div asp-validation-summary="ModelOnly" style="color:#f87171; margin-bottom:12px; font-size:13px;"></div>
-
-            <div class="form-group">
-                <label class="form-label">Başlıq</label>
-                <input asp-for="Title" class="form-control" placeholder="Elan başlığı" />
-                <span asp-validation-for="Title" style="color:#f87171; font-size:12px;"></span>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Məzmun</label>
-                <textarea asp-for="Content" class="form-control" rows="5"></textarea>
-                <span asp-validation-for="Content" style="color:#f87171; font-size:12px;"></span>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Kurs (boş buraxsanız global elan olacaq)</label>
-                <select asp-for="CourseOfferingId" class="form-control">
-                    <option value="">Global elan</option>
-                    @foreach (var o in ViewBag.Offerings as IEnumerable<SIS.BLL.Services.DTOs.CourseOffering.CourseOfferingListDto> ?? [])
-                    {
-                        <option value="@o.Id">@o.CourseName (@o.TermName)</option>
-                    }
-                </select>
-            </div>
-
-            <div style="display:flex; gap:10px; margin-top:8px;">
-                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Yarat</button>
-                <a href="/Teacher/Announcements" class="btn btn-secondary">Ləğv et</a>
-            </div>
-        </form>
+<div style="max-width:600px; margin:0 auto;">
+    <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
+        <a href="/Teacher/Announcements" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i></a>
+        <h2 style="font-size:20px; font-weight:700;">Yeni Elan</h2>
     </div>
+    <form method="post" action="/Teacher/Announcements/Create">
+        @Html.AntiForgeryToken()
+        <div class="card">
+            <div class="card-body">
+                <div class="form-group">
+                    <label class="form-label">Başlıq *</label>
+                    <input name="Title" class="form-control" required />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Məzmun *</label>
+                    <textarea name="Content" class="form-control" rows="5" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Hədəf</label>
+                    <select name="TargetType" class="form-control">
+                        <option value="1">Tələbələr</option>
+                        <option value="0">Hamı</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div style="display:flex; gap:12px; margin-top:16px;">
+            <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Yayımla</button>
+            <a href="/Teacher/Announcements" class="btn btn-secondary">Ləğv et</a>
+        </div>
+    </form>
 </div>

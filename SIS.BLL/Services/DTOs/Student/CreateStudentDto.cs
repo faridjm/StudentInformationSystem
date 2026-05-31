@@ -1,4 +1,4 @@
-﻿namespace SIS.BLL.Services.DTOs.Student
+namespace SIS.BLL.Services.DTOs.Student
 {
     public class CreateStudentDto
     {
@@ -7,8 +7,7 @@
         public string Password { get; set; } = null!;
         public string? FinCode { get; set; }
         public string? PhoneNumber { get; set; }
-        public int AcademicProgramId { get; set; }
+        public DateTime? BirthDate { get; set; }
         public int EnrollmentYear { get; set; }
     }
 }
-

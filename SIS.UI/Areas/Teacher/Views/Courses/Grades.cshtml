@@ -1,73 +1,12 @@
-﻿@if (TempData["Error"] != null)
-{
-    <div style="background:red; color:white; padding:10px; margin-bottom:10px;">
-        @TempData["Error"]
-    </div>
-}
-@if (TempData["Success"] != null)
-{
-    <div style="background:green; color:white; padding:10px; margin-bottom:10px;">
-        @TempData["Success"]
-    </div>
-}
-
 @{
     ViewData["Title"] = "Qiymətlər";
-    var offering = ViewBag.Offering as SIS.BLL.Services.DTOs.CourseOffering.CourseOfferingDetailDto;
-    var enrollments = ViewBag.Enrollments as IEnumerable<SIS.BLL.Services.DTOs.Enrollment.EnrollmentListDto>;
+    var groupId = ViewBag.GroupId as int? ?? 0;
 }
-
 <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
-    <a href="/Teacher/Courses/Detail/@offering?.Id" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i></a>
-    <div>
-        <h2 style="font-size:20px; font-weight:700;">Qiymət Giriş — @offering?.CourseName</h2>
-        <p style="color:var(--text-secondary); font-size:13px;">@offering?.TermName</p>
-    </div>
+    <a href="/Teacher/Courses" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i></a>
+    <h2 style="font-size:20px; font-weight:700;">Qiymətlər</h2>
 </div>
-
-<div class="card">
-    <div class="card-header">Qiymət Əlavə Et</div>
-    <div class="card-body">
-        <form method="post" action="/Teacher/Courses/AddGrade">
-            @Html.AntiForgeryToken()
-            <input type="hidden" name="courseOfferingId" value="@offering?.Id" />
-
-            <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr auto; gap:12px; align-items:end;">
-                <div class="form-group" style="margin:0;">
-                    <label class="form-label">Tələbə</label>
-                    <select name="dto.EnrollmentId" class="form-control">
-                        <option value="">Tələbə seçin</option>
-                        @if (enrollments != null)
-                        {
-                            @foreach (var e in enrollments)
-                            {
-                                <option value="@e.Id">@e.StudentName</option>
-                            }
-                        }
-                    </select>
-                </div>
-                <div class="form-group" style="margin:0;">
-                    <label class="form-label">Növ</label>
-                    <select name="dto.Type" class="form-control">
-                        <option value="0">Midterm</option>
-                        <option value="1">Final</option>
-                        <option value="2">Quiz</option>
-                        <option value="3">Tapşırıq</option>
-                        <option value="4">Layihə</option>
-                    </select>
-                </div>
-                <div class="form-group" style="margin:0;">
-                    <label class="form-label">Bal</label>
-                    <input type="number" name="dto.Score" class="form-control" min="0" max="100" placeholder="85" />
-                </div>
-                <div class="form-group" style="margin:0;">
-                    <label class="form-label">Maks Bal</label>
-                    <input type="number" name="dto.MaxScore" class="form-control" min="0" max="100" value="100" />
-                </div>
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-plus"></i> Əlavə et
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
+<p style="color:var(--text-secondary); margin-bottom:16px;">Qiymətlər Qiymətləndirmə bölməsindən idarə olunur.</p>
+<a href="/Teacher/Assessments/GroupAssessments/@groupId" class="btn btn-primary">
+    <i class="fas fa-tasks"></i> Qiymətləndirməyə keç
+</a>

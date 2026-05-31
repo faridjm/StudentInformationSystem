@@ -13,320 +13,6 @@
     }
   ],
   "paths": {
-    "/api/AcademicProgram": {
-      "get": {
-        "tags": [
-          "AcademicProgram"
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "AcademicProgram"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateAcademicProgramDto"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateAcademicProgramDto"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateAcademicProgramDto"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      },
-      "put": {
-        "tags": [
-          "AcademicProgram"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateAcademicProgramDto"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateAcademicProgramDto"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateAcademicProgramDto"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/AcademicProgram/{id}": {
-      "get": {
-        "tags": [
-          "AcademicProgram"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "pattern": "^-?(?:0|[1-9]\\d*)$",
-              "type": [
-                "integer",
-                "string"
-              ],
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "AcademicProgram"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "pattern": "^-?(?:0|[1-9]\\d*)$",
-              "type": [
-                "integer",
-                "string"
-              ],
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/AcademicProgram/department/{departmentId}": {
-      "get": {
-        "tags": [
-          "AcademicProgram"
-        ],
-        "parameters": [
-          {
-            "name": "departmentId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "pattern": "^-?(?:0|[1-9]\\d*)$",
-              "type": [
-                "integer",
-                "string"
-              ],
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/AcademicTerm": {
-      "get": {
-        "tags": [
-          "AcademicTerm"
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "AcademicTerm"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateAcademicTermDto"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateAcademicTermDto"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateAcademicTermDto"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      },
-      "put": {
-        "tags": [
-          "AcademicTerm"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateAcademicTermDto"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateAcademicTermDto"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateAcademicTermDto"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/AcademicTerm/active": {
-      "get": {
-        "tags": [
-          "AcademicTerm"
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/AcademicTerm/{id}": {
-      "get": {
-        "tags": [
-          "AcademicTerm"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "pattern": "^-?(?:0|[1-9]\\d*)$",
-              "type": [
-                "integer",
-                "string"
-              ],
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "AcademicTerm"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "pattern": "^-?(?:0|[1-9]\\d*)$",
-              "type": [
-                "integer",
-                "string"
-              ],
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/AcademicTerm/{id}/set-active": {
-      "put": {
-        "tags": [
-          "AcademicTerm"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "pattern": "^-?(?:0|[1-9]\\d*)$",
-              "type": [
-                "integer",
-                "string"
-              ],
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
     "/api/AcademicYear": {
       "get": {
         "tags": [
@@ -529,6 +215,33 @@
         }
       }
     },
+    "/api/Announcement/group/{groupId}": {
+      "get": {
+        "tags": [
+          "Announcement"
+        ],
+        "parameters": [
+          {
+            "name": "groupId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/Announcement/student/{studentId}": {
       "get": {
         "tags": [
@@ -639,14 +352,241 @@
         }
       }
     },
-    "/api/Assignment/course/{courseOfferingId}": {
+    "/api/Assessment/group/{groupId}": {
+      "get": {
+        "tags": [
+          "Assessment"
+        ],
+        "parameters": [
+          {
+            "name": "groupId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Assessment/{id}": {
+      "get": {
+        "tags": [
+          "Assessment"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Assessment"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Assessment": {
+      "post": {
+        "tags": [
+          "Assessment"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAssessmentItemDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAssessmentItemDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAssessmentItemDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Assessment"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAssessmentItemDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAssessmentItemDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAssessmentItemDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Assessment/{id}/submissions": {
+      "get": {
+        "tags": [
+          "Assessment"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Assessment/my-submissions/{enrollmentId}": {
+      "get": {
+        "tags": [
+          "Assessment"
+        ],
+        "parameters": [
+          {
+            "name": "enrollmentId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Assessment/grade": {
+      "post": {
+        "tags": [
+          "Assessment"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GradeAssessmentDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GradeAssessmentDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/GradeAssessmentDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Assignment/group/{groupId}": {
       "get": {
         "tags": [
           "Assignment"
         ],
         "parameters": [
           {
-            "name": "courseOfferingId",
+            "name": "groupId",
             "in": "path",
             "required": true,
             "schema": {
@@ -807,47 +747,7 @@
         }
       }
     },
-    "/api/Assignment/{assignmentId}/submission/{enrollmentId}": {
-      "get": {
-        "tags": [
-          "Assignment"
-        ],
-        "parameters": [
-          {
-            "name": "assignmentId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "pattern": "^-?(?:0|[1-9]\\d*)$",
-              "type": [
-                "integer",
-                "string"
-              ],
-              "format": "int32"
-            }
-          },
-          {
-            "name": "enrollmentId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "pattern": "^-?(?:0|[1-9]\\d*)$",
-              "type": [
-                "integer",
-                "string"
-              ],
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/Assignment/enrollment/{enrollmentId}/submissions": {
+    "/api/Assignment/my-submissions/{enrollmentId}": {
       "get": {
         "tags": [
           "Assignment"
@@ -965,14 +865,14 @@
         }
       }
     },
-    "/api/Attendance/course/{courseOfferingId}/date/{date}": {
+    "/api/Attendance/session/{sessionId}": {
       "get": {
         "tags": [
           "Attendance"
         ],
         "parameters": [
           {
-            "name": "courseOfferingId",
+            "name": "sessionId",
             "in": "path",
             "required": true,
             "schema": {
@@ -982,15 +882,6 @@
                 "string"
               ],
               "format": "int32"
-            }
-          },
-          {
-            "name": "date",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "date-time"
             }
           }
         ],
@@ -1021,38 +912,6 @@
             }
           }
         ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/Attendance": {
-      "post": {
-        "tags": [
-          "Attendance"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateAttendanceDto"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateAttendanceDto"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateAttendanceDto"
-              }
-            }
-          },
-          "required": true
-        },
         "responses": {
           "200": {
             "description": "OK"
@@ -1337,6 +1196,33 @@
         }
       }
     },
+    "/api/ClassSession/group/{groupId}": {
+      "get": {
+        "tags": [
+          "ClassSession"
+        ],
+        "parameters": [
+          {
+            "name": "groupId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/ClassSession/{id}": {
       "get": {
         "tags": [
@@ -1362,8 +1248,57 @@
             "description": "OK"
           }
         }
-      },
-      "delete": {
+      }
+    },
+    "/api/ClassSession/{id}/topic": {
+      "put": {
+        "tags": [
+          "ClassSession"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTopicDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTopicDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTopicDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/ClassSession/{id}/complete": {
+      "put": {
         "tags": [
           "ClassSession"
         ],
@@ -1389,323 +1324,10 @@
         }
       }
     },
-    "/api/ClassSession/course/{courseOfferingId}": {
-      "get": {
-        "tags": [
-          "ClassSession"
-        ],
-        "parameters": [
-          {
-            "name": "courseOfferingId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "pattern": "^-?(?:0|[1-9]\\d*)$",
-              "type": [
-                "integer",
-                "string"
-              ],
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/ClassSession/course/{courseOfferingId}/range": {
-      "get": {
-        "tags": [
-          "ClassSession"
-        ],
-        "parameters": [
-          {
-            "name": "courseOfferingId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "pattern": "^-?(?:0|[1-9]\\d*)$",
-              "type": [
-                "integer",
-                "string"
-              ],
-              "format": "int32"
-            }
-          },
-          {
-            "name": "from",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "format": "date"
-            }
-          },
-          {
-            "name": "to",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "format": "date"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/ClassSession/student/{studentId}/range": {
-      "get": {
-        "tags": [
-          "ClassSession"
-        ],
-        "parameters": [
-          {
-            "name": "studentId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "pattern": "^-?(?:0|[1-9]\\d*)$",
-              "type": [
-                "integer",
-                "string"
-              ],
-              "format": "int32"
-            }
-          },
-          {
-            "name": "from",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "format": "date"
-            }
-          },
-          {
-            "name": "to",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "format": "date"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/ClassSession/generate/{courseOfferingId}": {
-      "post": {
-        "tags": [
-          "ClassSession"
-        ],
-        "parameters": [
-          {
-            "name": "courseOfferingId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "pattern": "^-?(?:0|[1-9]\\d*)$",
-              "type": [
-                "integer",
-                "string"
-              ],
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/ClassSession": {
-      "post": {
-        "tags": [
-          "ClassSession"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateClassSessionDto"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateClassSessionDto"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateClassSessionDto"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      },
-      "put": {
-        "tags": [
-          "ClassSession"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateClassSessionDto"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateClassSessionDto"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateClassSessionDto"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/ClassSession/cancel": {
-      "post": {
-        "tags": [
-          "ClassSession"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CancelClassSessionDto"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CancelClassSessionDto"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/CancelClassSessionDto"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/ClassSession/makeup": {
-      "post": {
-        "tags": [
-          "ClassSession"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateMakeupSessionDto"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateMakeupSessionDto"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateMakeupSessionDto"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
     "/api/Course": {
       "get": {
         "tags": [
           "Course"
-        ],
-        "parameters": [
-          {
-            "name": "Page",
-            "in": "query",
-            "schema": {
-              "pattern": "^-?(?:0|[1-9]\\d*)$",
-              "type": [
-                "integer",
-                "string"
-              ],
-              "format": "int32"
-            }
-          },
-          {
-            "name": "PageSize",
-            "in": "query",
-            "schema": {
-              "pattern": "^-?(?:0|[1-9]\\d*)$",
-              "type": [
-                "integer",
-                "string"
-              ],
-              "format": "int32"
-            }
-          },
-          {
-            "name": "SearchTerm",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "SortBy",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "SortDescending",
-            "in": "query",
-            "schema": {
-              "type": "boolean"
-            }
-          }
         ],
         "responses": {
           "200": {
@@ -1826,444 +1448,14 @@
         }
       }
     },
-    "/api/Course/department/{departmentId}": {
-      "get": {
-        "tags": [
-          "Course"
-        ],
-        "parameters": [
-          {
-            "name": "departmentId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "pattern": "^-?(?:0|[1-9]\\d*)$",
-              "type": [
-                "integer",
-                "string"
-              ],
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/CourseOffering": {
-      "get": {
-        "tags": [
-          "CourseOffering"
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "CourseOffering"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateCourseOfferingDto"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateCourseOfferingDto"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateCourseOfferingDto"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      },
-      "put": {
-        "tags": [
-          "CourseOffering"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateCourseOfferingDto"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateCourseOfferingDto"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateCourseOfferingDto"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/CourseOffering/{id}": {
-      "get": {
-        "tags": [
-          "CourseOffering"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "pattern": "^-?(?:0|[1-9]\\d*)$",
-              "type": [
-                "integer",
-                "string"
-              ],
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "CourseOffering"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "pattern": "^-?(?:0|[1-9]\\d*)$",
-              "type": [
-                "integer",
-                "string"
-              ],
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/CourseOffering/active": {
-      "get": {
-        "tags": [
-          "CourseOffering"
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/CourseOffering/teacher/{teacherId}": {
-      "get": {
-        "tags": [
-          "CourseOffering"
-        ],
-        "parameters": [
-          {
-            "name": "teacherId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "pattern": "^-?(?:0|[1-9]\\d*)$",
-              "type": [
-                "integer",
-                "string"
-              ],
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/CourseOffering/term/{termId}": {
-      "get": {
-        "tags": [
-          "CourseOffering"
-        ],
-        "parameters": [
-          {
-            "name": "termId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "pattern": "^-?(?:0|[1-9]\\d*)$",
-              "type": [
-                "integer",
-                "string"
-              ],
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/Department": {
-      "get": {
-        "tags": [
-          "Department"
-        ],
-        "parameters": [
-          {
-            "name": "Page",
-            "in": "query",
-            "schema": {
-              "pattern": "^-?(?:0|[1-9]\\d*)$",
-              "type": [
-                "integer",
-                "string"
-              ],
-              "format": "int32"
-            }
-          },
-          {
-            "name": "PageSize",
-            "in": "query",
-            "schema": {
-              "pattern": "^-?(?:0|[1-9]\\d*)$",
-              "type": [
-                "integer",
-                "string"
-              ],
-              "format": "int32"
-            }
-          },
-          {
-            "name": "SearchTerm",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "SortBy",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "SortDescending",
-            "in": "query",
-            "schema": {
-              "type": "boolean"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "Department"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateDepartmentDto"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateDepartmentDto"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateDepartmentDto"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      },
-      "put": {
-        "tags": [
-          "Department"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateDepartmentDto"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateDepartmentDto"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateDepartmentDto"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/Department/{id}": {
-      "get": {
-        "tags": [
-          "Department"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "pattern": "^-?(?:0|[1-9]\\d*)$",
-              "type": [
-                "integer",
-                "string"
-              ],
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "Department"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "pattern": "^-?(?:0|[1-9]\\d*)$",
-              "type": [
-                "integer",
-                "string"
-              ],
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/Enrollment": {
-      "get": {
-        "tags": [
-          "Enrollment"
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "Enrollment"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateEnrollmentDto"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateEnrollmentDto"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateEnrollmentDto"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/Enrollment/{id}": {
+    "/api/Enrollment/group/{groupId}": {
       "get": {
         "tags": [
           "Enrollment"
         ],
         "parameters": [
           {
-            "name": "id",
+            "name": "groupId",
             "in": "path",
             "required": true,
             "schema": {
@@ -2310,7 +1502,7 @@
         }
       }
     },
-    "/api/Enrollment/my-enrollments": {
+    "/api/Enrollment/my": {
       "get": {
         "tags": [
           "Enrollment"
@@ -2322,26 +1514,31 @@
         }
       }
     },
-    "/api/Enrollment/course/{courseOfferingId}": {
-      "get": {
+    "/api/Enrollment": {
+      "post": {
         "tags": [
           "Enrollment"
         ],
-        "parameters": [
-          {
-            "name": "courseOfferingId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "pattern": "^-?(?:0|[1-9]\\d*)$",
-              "type": [
-                "integer",
-                "string"
-              ],
-              "format": "int32"
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateEnrollmentDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateEnrollmentDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateEnrollmentDto"
+              }
             }
-          }
-        ],
+          },
+          "required": true
+        },
         "responses": {
           "200": {
             "description": "OK"
@@ -2349,8 +1546,8 @@
         }
       }
     },
-    "/api/Enrollment/{id}/drop": {
-      "put": {
+    "/api/Enrollment/{id}": {
+      "delete": {
         "tags": [
           "Enrollment"
         ],
@@ -2531,6 +1728,169 @@
         }
       }
     },
+    "/api/Group": {
+      "get": {
+        "tags": [
+          "Group"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Group"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateGroupDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateGroupDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateGroupDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Group"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateGroupDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateGroupDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateGroupDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Group/{id}": {
+      "get": {
+        "tags": [
+          "Group"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Group"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Group/my-groups": {
+      "get": {
+        "tags": [
+          "Group"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Group/{id}/generate-sessions": {
+      "post": {
+        "tags": [
+          "Group"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/Notification": {
       "get": {
         "tags": [
@@ -2627,53 +1987,6 @@
       "get": {
         "tags": [
           "Student"
-        ],
-        "parameters": [
-          {
-            "name": "Page",
-            "in": "query",
-            "schema": {
-              "pattern": "^-?(?:0|[1-9]\\d*)$",
-              "type": [
-                "integer",
-                "string"
-              ],
-              "format": "int32"
-            }
-          },
-          {
-            "name": "PageSize",
-            "in": "query",
-            "schema": {
-              "pattern": "^-?(?:0|[1-9]\\d*)$",
-              "type": [
-                "integer",
-                "string"
-              ],
-              "format": "int32"
-            }
-          },
-          {
-            "name": "SearchTerm",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "SortBy",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "SortDescending",
-            "in": "query",
-            "schema": {
-              "type": "boolean"
-            }
-          }
         ],
         "responses": {
           "200": {
@@ -2806,84 +2119,10 @@
         }
       }
     },
-    "/api/Student/program/{programId}": {
-      "get": {
-        "tags": [
-          "Student"
-        ],
-        "parameters": [
-          {
-            "name": "programId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "pattern": "^-?(?:0|[1-9]\\d*)$",
-              "type": [
-                "integer",
-                "string"
-              ],
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
     "/api/Teacher": {
       "get": {
         "tags": [
           "Teacher"
-        ],
-        "parameters": [
-          {
-            "name": "Page",
-            "in": "query",
-            "schema": {
-              "pattern": "^-?(?:0|[1-9]\\d*)$",
-              "type": [
-                "integer",
-                "string"
-              ],
-              "format": "int32"
-            }
-          },
-          {
-            "name": "PageSize",
-            "in": "query",
-            "schema": {
-              "pattern": "^-?(?:0|[1-9]\\d*)$",
-              "type": [
-                "integer",
-                "string"
-              ],
-              "format": "int32"
-            }
-          },
-          {
-            "name": "SearchTerm",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "SortBy",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "SortDescending",
-            "in": "query",
-            "schema": {
-              "type": "boolean"
-            }
-          }
         ],
         "responses": {
           "200": {
@@ -3016,14 +2255,14 @@
         }
       }
     },
-    "/api/Teacher/department/{departmentId}": {
+    "/api/Transcript/{enrollmentId}": {
       "get": {
         "tags": [
-          "Teacher"
+          "Transcript"
         ],
         "parameters": [
           {
-            "name": "departmentId",
+            "name": "enrollmentId",
             "in": "path",
             "required": true,
             "schema": {
@@ -3043,14 +2282,14 @@
         }
       }
     },
-    "/api/WeeklySchedule/course/{courseOfferingId}": {
+    "/api/Transcript/{enrollmentId}/pdf": {
       "get": {
         "tags": [
-          "WeeklySchedule"
+          "Transcript"
         ],
         "parameters": [
           {
-            "name": "courseOfferingId",
+            "name": "enrollmentId",
             "in": "path",
             "required": true,
             "schema": {
@@ -3063,63 +2302,6 @@
             }
           }
         ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "WeeklySchedule"
-        ],
-        "parameters": [
-          {
-            "name": "courseOfferingId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "pattern": "^-?(?:0|[1-9]\\d*)$",
-              "type": [
-                "integer",
-                "string"
-              ],
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/WeeklySchedule": {
-      "post": {
-        "tags": [
-          "WeeklySchedule"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SetWeeklyScheduleDto"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SetWeeklyScheduleDto"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/SetWeeklyScheduleDto"
-              }
-            }
-          },
-          "required": true
-        },
         "responses": {
           "200": {
             "description": "OK"
@@ -3147,27 +2329,14 @@
       "AnnouncementTarget": {
         "type": "integer"
       },
+      "AssessmentType": {
+        "type": "integer"
+      },
       "AssignmentType": {
         "type": "integer"
       },
       "AttendanceStatus": {
         "type": "integer"
-      },
-      "CancelClassSessionDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": [
-              "integer",
-              "string"
-            ],
-            "format": "int32"
-          },
-          "reason": {
-            "type": "string"
-          }
-        }
       },
       "ChangePasswordDto": {
         "type": "object",
@@ -3180,87 +2349,6 @@
           },
           "confirmNewPassword": {
             "type": "string"
-          }
-        }
-      },
-      "CreateAcademicProgramDto": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "code": {
-            "type": "string"
-          },
-          "departmentId": {
-            "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": [
-              "integer",
-              "string"
-            ],
-            "format": "int32"
-          },
-          "durationYears": {
-            "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": [
-              "integer",
-              "string"
-            ],
-            "format": "int32"
-          },
-          "description": {
-            "type": [
-              "null",
-              "string"
-            ]
-          }
-        }
-      },
-      "CreateAcademicTermDto": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "academicYearId": {
-            "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": [
-              "integer",
-              "string"
-            ],
-            "format": "int32"
-          },
-          "registrationStart": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "registrationEnd": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "startDate": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "dropDeadline": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "endDate": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "examPeriodStart": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "examPeriodEnd": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "gradeSubmissionDeadline": {
-            "type": "string",
-            "format": "date-time"
           }
         }
       },
@@ -3292,7 +2380,7 @@
           "targetType": {
             "$ref": "#/components/schemas/AnnouncementTarget"
           },
-          "courseOfferingId": {
+          "groupId": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
             "type": [
               "null",
@@ -3309,6 +2397,54 @@
               "null",
               "string"
             ]
+          }
+        }
+      },
+      "CreateAssessmentItemDto": {
+        "type": "object",
+        "properties": {
+          "groupId": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "type": {
+            "$ref": "#/components/schemas/AssessmentType"
+          },
+          "title": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "maxScore": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "weightPercent": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "description": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "isVisible": {
+            "type": "boolean"
           }
         }
       },
@@ -3348,9 +2484,18 @@
               "string"
             ]
           },
-          "courseOfferingId": {
+          "groupId": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
             "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "assessmentItemId": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
               "integer",
               "string"
             ],
@@ -3369,6 +2514,15 @@
             ],
             "format": "int32"
           },
+          "classSessionId": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
           "sessionDate": {
             "type": "string",
             "format": "date-time"
@@ -3381,58 +2535,6 @@
               "null",
               "string"
             ]
-          },
-          "classSessionId": {
-            "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": [
-              "null",
-              "integer",
-              "string"
-            ],
-            "format": "int32"
-          }
-        }
-      },
-      "CreateClassSessionDto": {
-        "type": "object",
-        "properties": {
-          "courseOfferingId": {
-            "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": [
-              "integer",
-              "string"
-            ],
-            "format": "int32"
-          },
-          "date": {
-            "type": "string",
-            "format": "date"
-          },
-          "startTime": {
-            "type": "string",
-            "format": "time"
-          },
-          "endTime": {
-            "type": "string",
-            "format": "time"
-          },
-          "room": {
-            "type": [
-              "null",
-              "string"
-            ]
-          },
-          "topic": {
-            "type": [
-              "null",
-              "string"
-            ]
-          },
-          "notes": {
-            "type": [
-              "null",
-              "string"
-            ]
           }
         }
       },
@@ -3440,93 +2542,6 @@
         "type": "object",
         "properties": {
           "name": {
-            "type": "string"
-          },
-          "code": {
-            "type": "string"
-          },
-          "credits": {
-            "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": [
-              "integer",
-              "string"
-            ],
-            "format": "int32"
-          },
-          "description": {
-            "type": [
-              "null",
-              "string"
-            ]
-          },
-          "departmentId": {
-            "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": [
-              "integer",
-              "string"
-            ],
-            "format": "int32"
-          },
-          "academicProgramId": {
-            "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": [
-              "integer",
-              "string"
-            ],
-            "format": "int32"
-          }
-        }
-      },
-      "CreateCourseOfferingDto": {
-        "type": "object",
-        "properties": {
-          "courseId": {
-            "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": [
-              "integer",
-              "string"
-            ],
-            "format": "int32"
-          },
-          "academicTermId": {
-            "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": [
-              "integer",
-              "string"
-            ],
-            "format": "int32"
-          },
-          "teacherId": {
-            "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": [
-              "integer",
-              "string"
-            ],
-            "format": "int32"
-          },
-          "capacity": {
-            "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": [
-              "integer",
-              "string"
-            ],
-            "format": "int32"
-          },
-          "room": {
-            "type": [
-              "null",
-              "string"
-            ]
-          }
-        }
-      },
-      "CreateDepartmentDto": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "code": {
             "type": "string"
           },
           "description": {
@@ -3548,7 +2563,7 @@
             ],
             "format": "int32"
           },
-          "courseOfferingId": {
+          "groupId": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
             "type": [
               "integer",
@@ -3596,10 +2611,13 @@
           }
         }
       },
-      "CreateMakeupSessionDto": {
+      "CreateGroupDto": {
         "type": "object",
         "properties": {
-          "originalSessionId": {
+          "name": {
+            "type": "string"
+          },
+          "courseId": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
             "type": [
               "integer",
@@ -3607,29 +2625,58 @@
             ],
             "format": "int32"
           },
-          "date": {
+          "teacherId": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "academicYearId": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "startDate": {
             "type": "string",
-            "format": "date"
+            "format": "date-time"
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "capacity": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "scheduleDays": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CreateScheduleDayDto"
+            }
+          }
+        }
+      },
+      "CreateScheduleDayDto": {
+        "type": "object",
+        "properties": {
+          "dayOfWeek": {
+            "$ref": "#/components/schemas/DayOfWeek"
           },
           "startTime": {
-            "type": "string",
-            "format": "time"
+            "type": "string"
           },
           "endTime": {
-            "type": "string",
-            "format": "time"
-          },
-          "room": {
-            "type": [
-              "null",
-              "string"
-            ]
-          },
-          "topic": {
-            "type": [
-              "null",
-              "string"
-            ]
+            "type": "string"
           }
         }
       },
@@ -3657,13 +2704,12 @@
               "string"
             ]
           },
-          "academicProgramId": {
-            "pattern": "^-?(?:0|[1-9]\\d*)$",
+          "birthDate": {
             "type": [
-              "integer",
+              "null",
               "string"
             ],
-            "format": "int32"
+            "format": "date-time"
           },
           "enrollmentYear": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
@@ -3732,19 +2778,11 @@
               "string"
             ]
           },
-          "title": {
-            "type": "string"
-          },
-          "departmentId": {
-            "pattern": "^-?(?:0|[1-9]\\d*)$",
+          "birthDate": {
             "type": [
-              "integer",
+              "null",
               "string"
             ],
-            "format": "int32"
-          },
-          "hireDate": {
-            "type": "string",
             "format": "date-time"
           }
         }
@@ -3757,6 +2795,33 @@
         "properties": {
           "email": {
             "type": "string"
+          }
+        }
+      },
+      "GradeAssessmentDto": {
+        "type": "object",
+        "properties": {
+          "submissionId": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "score": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "feedback": {
+            "type": [
+              "null",
+              "string"
+            ]
           }
         }
       },
@@ -3841,122 +2906,6 @@
           }
         }
       },
-      "SetWeeklyScheduleDto": {
-        "type": "object",
-        "properties": {
-          "courseOfferingId": {
-            "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": [
-              "integer",
-              "string"
-            ],
-            "format": "int32"
-          },
-          "slots": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/WeeklySlotDto"
-            }
-          }
-        }
-      },
-      "UpdateAcademicProgramDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": [
-              "integer",
-              "string"
-            ],
-            "format": "int32"
-          },
-          "name": {
-            "type": "string"
-          },
-          "code": {
-            "type": "string"
-          },
-          "departmentId": {
-            "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": [
-              "integer",
-              "string"
-            ],
-            "format": "int32"
-          },
-          "durationYears": {
-            "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": [
-              "integer",
-              "string"
-            ],
-            "format": "int32"
-          },
-          "description": {
-            "type": [
-              "null",
-              "string"
-            ]
-          }
-        }
-      },
-      "UpdateAcademicTermDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": [
-              "integer",
-              "string"
-            ],
-            "format": "int32"
-          },
-          "name": {
-            "type": "string"
-          },
-          "academicYearId": {
-            "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": [
-              "integer",
-              "string"
-            ],
-            "format": "int32"
-          },
-          "registrationStart": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "registrationEnd": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "startDate": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "dropDeadline": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "endDate": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "examPeriodStart": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "examPeriodEnd": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "gradeSubmissionDeadline": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
-      },
       "UpdateAcademicYearDto": {
         "type": "object",
         "properties": {
@@ -3978,6 +2927,51 @@
           "endDate": {
             "type": "string",
             "format": "date-time"
+          }
+        }
+      },
+      "UpdateAssessmentItemDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "title": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "maxScore": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "weightPercent": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "description": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "isVisible": {
+            "type": "boolean"
           }
         }
       },
@@ -4027,49 +3021,6 @@
           }
         }
       },
-      "UpdateClassSessionDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": [
-              "integer",
-              "string"
-            ],
-            "format": "int32"
-          },
-          "date": {
-            "type": "string",
-            "format": "date"
-          },
-          "startTime": {
-            "type": "string",
-            "format": "time"
-          },
-          "endTime": {
-            "type": "string",
-            "format": "time"
-          },
-          "room": {
-            "type": [
-              "null",
-              "string"
-            ]
-          },
-          "topic": {
-            "type": [
-              "null",
-              "string"
-            ]
-          },
-          "notes": {
-            "type": [
-              "null",
-              "string"
-            ]
-          }
-        }
-      },
       "UpdateCourseDto": {
         "type": "object",
         "properties": {
@@ -4084,95 +3035,14 @@
           "name": {
             "type": "string"
           },
-          "credits": {
-            "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": [
-              "integer",
-              "string"
-            ],
-            "format": "int32"
-          },
           "description": {
             "type": [
               "null",
               "string"
             ]
           },
-          "departmentId": {
-            "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": [
-              "integer",
-              "string"
-            ],
-            "format": "int32"
-          },
-          "academicProgramId": {
-            "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": [
-              "integer",
-              "string"
-            ],
-            "format": "int32"
-          }
-        }
-      },
-      "UpdateCourseOfferingDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": [
-              "integer",
-              "string"
-            ],
-            "format": "int32"
-          },
-          "teacherId": {
-            "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": [
-              "integer",
-              "string"
-            ],
-            "format": "int32"
-          },
-          "capacity": {
-            "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": [
-              "integer",
-              "string"
-            ],
-            "format": "int32"
-          },
-          "room": {
-            "type": [
-              "null",
-              "string"
-            ]
-          }
-        }
-      },
-      "UpdateDepartmentDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": [
-              "integer",
-              "string"
-            ],
-            "format": "int32"
-          },
-          "name": {
-            "type": "string"
-          },
-          "code": {
-            "type": "string"
-          },
-          "description": {
-            "type": [
-              "null",
-              "string"
-            ]
+          "isActive": {
+            "type": "boolean"
           }
         }
       },
@@ -4195,11 +3065,77 @@
             ],
             "format": "double"
           },
+          "maxScore": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
           "note": {
             "type": [
               "null",
               "string"
             ]
+          }
+        }
+      },
+      "UpdateGroupDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "name": {
+            "type": "string"
+          },
+          "teacherId": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "academicYearId": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "capacity": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "scheduleDays": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CreateScheduleDayDto"
+            }
           }
         }
       },
@@ -4228,14 +3164,6 @@
               "null",
               "string"
             ]
-          },
-          "academicProgramId": {
-            "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": [
-              "integer",
-              "string"
-            ],
-            "format": "int32"
           }
         }
       },
@@ -4265,34 +3193,19 @@
               "string"
             ]
           },
-          "title": {
-            "type": "string"
-          },
-          "departmentId": {
-            "pattern": "^-?(?:0|[1-9]\\d*)$",
+          "birthDate": {
             "type": [
-              "integer",
+              "null",
               "string"
             ],
-            "format": "int32"
+            "format": "date-time"
           }
         }
       },
-      "WeeklySlotDto": {
+      "UpdateTopicDto": {
         "type": "object",
         "properties": {
-          "dayOfWeek": {
-            "$ref": "#/components/schemas/DayOfWeek"
-          },
-          "startTime": {
-            "type": "string",
-            "format": "time"
-          },
-          "endTime": {
-            "type": "string",
-            "format": "time"
-          },
-          "room": {
+          "topic": {
             "type": [
               "null",
               "string"
@@ -4304,16 +3217,13 @@
   },
   "tags": [
     {
-      "name": "AcademicProgram"
-    },
-    {
-      "name": "AcademicTerm"
-    },
-    {
       "name": "AcademicYear"
     },
     {
       "name": "Announcement"
+    },
+    {
+      "name": "Assessment"
     },
     {
       "name": "Assignment"
@@ -4331,16 +3241,13 @@
       "name": "Course"
     },
     {
-      "name": "CourseOffering"
-    },
-    {
-      "name": "Department"
-    },
-    {
       "name": "Enrollment"
     },
     {
       "name": "Grade"
+    },
+    {
+      "name": "Group"
     },
     {
       "name": "Notification"
@@ -4355,7 +3262,7 @@
       "name": "Teacher"
     },
     {
-      "name": "WeeklySchedule"
+      "name": "Transcript"
     }
   ]
 }

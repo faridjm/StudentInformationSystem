@@ -1,0 +1,282 @@
+@model SIS.BLL.Services.DTOs.Groups.GroupDetailDto
+@using SIS.BLL.Services.DTOs.ClassSession
+@using SIS.BLL.Services.DTOs.Assessment
+@using SIS.Entities.Enums
+@{
+    ViewData["Title"] = Model.Name;
+    var sessions = (List<ClassSessionDto>)ViewBag.Sessions;
+    var assessments = (List<AssessmentItemDto>)ViewBag.Assessments;
+    var totalWeight = assessments.Sum(a => a.WeightPercent);
+}
+
+<div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
+    <a href="/Admin/Group" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i></a>
+    <div>
+        <h2 style="font-size:20px; font-weight:700; margin:0;">@Model.Name</h2>
+        <div style="font-size:13px; color:var(--text-secondary);">@Model.CourseName — @Model.TeacherName</div>
+    </div>
+    <div style="margin-left:auto; display:flex; gap:8px;">
+        <a href="/Admin/Group/Edit/@Model.Id" class="btn btn-secondary btn-sm"><i class="fas fa-edit"></i> Düzəlt</a>
+        <a href="/Admin/Enrollment/Create?groupId=@Model.Id" class="btn btn-primary btn-sm"><i class="fas fa-user-plus"></i> Tələbə qeydiyyat</a>
+    </div>
+</div>
+
+<!-- Stat cards -->
+<div style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:20px;">
+    <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(233,69,96,0.15); color:var(--accent);"><i class="fas fa-users"></i></div>
+        <div><div class="stat-value">@Model.EnrolledCount / @Model.Capacity</div><div class="stat-label">Tələbə</div></div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(59,130,246,0.15); color:#3b82f6;"><i class="fas fa-chalkboard"></i></div>
+        <div><div class="stat-value">@sessions.Count</div><div class="stat-label">Dərs</div></div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(34,197,94,0.15); color:#22c55e;"><i class="fas fa-calendar"></i></div>
+        <div><div class="stat-value">@Model.StartDate.ToString("dd.MM.yy")</div><div class="stat-label">Başlama</div></div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(234,179,8,0.15); color:#eab308;"><i class="fas fa-flag-checkered"></i></div>
+        <div><div class="stat-value">@Model.EndDate.ToString("dd.MM.yy")</div><div class="stat-label">Bitmə</div></div>
+    </div>
+</div>
+
+<!-- Tabs -->
+<div style="display:flex; gap:4px; margin-bottom:16px; border-bottom:1px solid var(--border); padding-bottom:0;">
+    <button onclick="showTab('curriculum')" id="tab-curriculum"
+            style="padding:10px 18px; border:none; background:none; color:var(--accent); font-weight:600; cursor:pointer; border-bottom:2px solid var(--accent); font-size:14px;">
+        <i class="fas fa-book-open"></i> Tədris Planı
+    </button>
+    <button onclick="showTab('assessment')" id="tab-assessment"
+            style="padding:10px 18px; border:none; background:none; color:var(--text-secondary); cursor:pointer; border-bottom:2px solid transparent; font-size:14px;">
+        <i class="fas fa-tasks"></i> Qiymətləndirmə
+        @if (assessments.Any())
+        {
+            <span style="background:var(--accent); color:#fff; border-radius:10px; padding:1px 7px; font-size:11px; margin-left:4px;">@assessments.Count</span>
+        }
+    </button>
+</div>
+
+<!-- TAB: Tədris Planı -->
+<div id="panel-curriculum">
+    <div class="card">
+        <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+            <span>Dərs Cədvəli və Mövzular</span>
+            <span style="font-size:12px; color:var(--text-secondary);">
+                @sessions.Count(s => !string.IsNullOrEmpty(s.Topic)) / @sessions.Count mövzu daxil edilib
+            </span>
+        </div>
+        <div style="max-height:600px; overflow-y:auto;">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th style="width:40px;">#</th>
+                        <th style="width:70px;">Tarix</th>
+                        <th style="width:130px;">Saat</th>
+                        <th>Mövzu</th>
+                        <th style="width:80px;">Qiymət</th>
+                        <th style="width:40px;"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var s in sessions)
+                    {
+                        var aOnDate = assessments.Where(a => a.Date.Date == s.Date.ToDateTime(TimeOnly.MinValue).Date).ToList();
+                        <tr>
+                            <td style="color:var(--text-secondary); font-size:13px;">@s.SessionNumber</td>
+                            <td style="font-weight:500;">@s.Date.ToString("dd.MM")</td>
+                            <td style="font-size:12px; color:var(--text-secondary);">@s.StartTime — @s.EndTime</td>
+                            <td>
+                                <span id="topic-display-@s.Id"
+                                      style="cursor:pointer; @(string.IsNullOrEmpty(s.Topic) ? "color:var(--text-secondary); font-style:italic;" : "")"
+                                      onclick="openTopicEdit(@s.Id, @Model.Id, '@(s.Topic?.Replace("'","\\'")??"")' )">
+                                    @(string.IsNullOrEmpty(s.Topic) ? "Mövzu əlavə et..." : s.Topic)
+                                </span>
+                            </td>
+                            <td>
+                                @foreach (var a in aOnDate)
+                                {
+                                    var color = a.Type == AssessmentType.Quiz ? "#3b82f6" :
+                                                a.Type == AssessmentType.FinalProject ? "#e94560" : "#eab308";
+                                    var label = a.Type == AssessmentType.Quiz ? "Quiz" :
+                                                a.Type == AssessmentType.FinalProject ? "Final" : "Tapş.";
+                                    <span style="font-size:10px; background:@(color)22; color:@color; padding:2px 6px; border-radius:4px; font-weight:600; display:block; margin-bottom:2px;">@label</span>
+                                }
+                            </td>
+                            <td>
+                                <button onclick="openTopicEdit(@s.Id, @Model.Id, '@(s.Topic?.Replace("'","\\'")??"")' )"
+                                        class="btn btn-sm btn-secondary" style="padding:3px 8px;">
+                                    <i class="fas fa-pen" style="font-size:11px;"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- TAB: Qiymətləndirmə -->
+<div id="panel-assessment" style="display:none;">
+    <div style="display:grid; grid-template-columns:1fr 380px; gap:16px;">
+        <!-- Timeline -->
+        <div class="card">
+            <div class="card-header">Qiymətləndirmə Cədvəli</div>
+            <div class="card-body" style="padding:12px;">
+                @if (!assessments.Any())
+                {
+                    <div style="color:var(--text-secondary); text-align:center; padding:30px;">Hələ qiymətləndirmə planı yoxdur</div>
+                }
+                @foreach (var a in assessments)
+                {
+                    var typeColor = a.Type == AssessmentType.Quiz ? "#3b82f6" :
+                                   a.Type == AssessmentType.FinalProject ? "#e94560" : "#eab308";
+                    var typeLabel = a.Type == AssessmentType.Quiz ? "Quiz" :
+                                   a.Type == AssessmentType.FinalProject ? "Final Layihəsi" : "Tapşırıq";
+                    var matchSession = sessions.FirstOrDefault(s => s.Date.ToDateTime(TimeOnly.MinValue).Date == a.Date.Date);
+                    <div style="display:flex; gap:12px; align-items:flex-start; padding:10px; border-radius:8px; background:var(--bg-hover); margin-bottom:8px;">
+                        <div style="min-width:48px; height:48px; background:@(typeColor)22; border-radius:8px; display:flex; align-items:center; justify-content:center; color:@typeColor; font-weight:700; font-size:11px; text-align:center; line-height:1.2;">
+                            @a.Date.ToString("dd")<br/><span style="font-size:9px;">@a.Date.ToString("MMM")</span>
+                        </div>
+                        <div style="flex:1;">
+                            <div style="font-size:13px; font-weight:600;">@a.Title</div>
+                            <div style="font-size:12px; color:var(--text-secondary);">
+                                <span style="background:@(typeColor)22; color:@typeColor; padding:1px 6px; border-radius:4px; font-size:10px; font-weight:600; margin-right:6px;">@typeLabel</span>
+                                Max: @a.MaxScore bal · Çəki: %@a.WeightPercent
+                                @if (matchSession != null) { <span> · Dərs #@matchSession.SessionNumber</span> }
+                            </div>
+                        </div>
+                        <form method="post" action="/Admin/Assessment/Delete/@a.Id?returnGroupId=@Model.Id" onsubmit="return confirm('Silinsin?')">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                        </form>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Add + Summary -->
+        <div>
+            <div class="card" style="margin-bottom:12px;">
+                <div class="card-header">Yeni Qiymətləndirmə</div>
+                <div class="card-body">
+                    <form method="post" action="/Admin/Assessment/Create">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="GroupId" value="@Model.Id" />
+                        <div class="form-group">
+                            <label class="form-label">Növ</label>
+                            <select name="Type" class="form-control" onchange="updateTitle(this)">
+                                <option value="0">Quiz</option>
+                                <option value="2">Final Layihəsi</option>
+                                <option value="1">Tapşırıq</option>
+                                <option value="4">Ev Tapşırığı</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Başlıq</label>
+                            <input name="Title" id="assessTitle" class="form-control" placeholder="məs: Quiz 1" required />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Tarix (dərs günü)</label>
+                            <select name="Date" class="form-control" required>
+                                <option value="">Seçin...</option>
+                                @foreach (var s in sessions)
+                                {
+                                    <option value="@s.Date.ToDateTime(TimeOnly.Parse(s.StartTime)).ToString("yyyy-MM-ddTHH:mm:ss")">
+                                        #@s.SessionNumber — @s.Date.ToString("dd.MM.yyyy") (@s.StartTime)
+                                    </option>
+                                }
+                            </select>
+                        </div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                            <div class="form-group">
+                                <label class="form-label">Max bal</label>
+                                <input name="MaxScore" type="number" min="1" value="100" class="form-control" required />
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Çəki (%)</label>
+                                <input name="WeightPercent" type="number" min="1" max="100" value="10" class="form-control" required />
+                            </div>
+                        </div>
+                        <input type="hidden" name="IsVisible" value="true" />
+                        <button type="submit" class="btn btn-primary" style="width:100%;"><i class="fas fa-plus"></i> Əlavə et</button>
+                    </form>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <div style="font-size:13px; color:var(--text-secondary); margin-bottom:8px;">Ümumi çəki</div>
+                    <div style="font-size:28px; font-weight:800; color:@(totalWeight == 100 ? "#22c55e" : totalWeight > 100 ? "#ef4444" : "#eab308");">
+                        %@totalWeight
+                    </div>
+                    @if (totalWeight != 100)
+                    {
+                        <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">
+                            @(totalWeight > 100 ? "⚠ 100%-dən çoxdur!" : $"Qalan: %{100 - totalWeight}")
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Topic Edit Modal -->
+<div id="topicModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:1000; align-items:center; justify-content:center;">
+    <div style="background:var(--bg-card); border-radius:12px; padding:24px; width:520px; border:1px solid var(--border);">
+        <h3 id="topicModalTitle" style="margin-bottom:16px; font-size:16px;">Mövzu redaktəsi</h3>
+        <form method="post" action="/Admin/Group/UpdateTopic">
+            @Html.AntiForgeryToken()
+            <input type="hidden" id="topicSessionId" name="sessionId" />
+            <input type="hidden" name="groupId" value="@Model.Id" />
+            <div class="form-group">
+                <label class="form-label">Mövzu başlığı</label>
+                <input id="topicInput" name="topic" class="form-control" placeholder="məs: Dəyişənlər və tiplər, Funksiyalar..." />
+                <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">Boş buraxsanız mövzu silinir</div>
+            </div>
+            <div style="display:flex; gap:8px; margin-top:8px;">
+                <button type="submit" class="btn btn-primary">Yadda saxla</button>
+                <button type="button" onclick="closeTopicModal()" class="btn btn-secondary">Ləğv et</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+function showTab(name) {
+    document.getElementById('panel-curriculum').style.display = name === 'curriculum' ? '' : 'none';
+    document.getElementById('panel-assessment').style.display = name === 'assessment' ? '' : 'none';
+    document.getElementById('tab-curriculum').style.color = name === 'curriculum' ? 'var(--accent)' : 'var(--text-secondary)';
+    document.getElementById('tab-curriculum').style.borderBottom = name === 'curriculum' ? '2px solid var(--accent)' : '2px solid transparent';
+    document.getElementById('tab-assessment').style.color = name === 'assessment' ? 'var(--accent)' : 'var(--text-secondary)';
+    document.getElementById('tab-assessment').style.borderBottom = name === 'assessment' ? '2px solid var(--accent)' : '2px solid transparent';
+}
+
+function openTopicEdit(sessionId, groupId, currentTopic) {
+    document.getElementById('topicSessionId').value = sessionId;
+    document.getElementById('topicInput').value = currentTopic;
+    document.getElementById('topicModal').style.display = 'flex';
+    setTimeout(() => document.getElementById('topicInput').focus(), 50);
+}
+
+function closeTopicModal() {
+    document.getElementById('topicModal').style.display = 'none';
+}
+
+document.getElementById('topicModal').addEventListener('click', function(e) {
+    if (e.target === this) closeTopicModal();
+});
+
+const quizCount = @assessments.Count(a => a.Type == AssessmentType.Quiz);
+const titles = { '0': `Quiz ${quizCount+1}`, '2': 'Final Layihəsi', '1': `Tapşırıq ${assessments.Count(a => a.Type == AssessmentType.Assignment)+1}`, '4': `Ev Tapşırığı ${assessments.Count(a => a.Type == AssessmentType.Homework)+1}` };
+function updateTitle(sel) {
+    document.getElementById('assessTitle').value = titles[sel.value] || '';
+}
+updateTitle(document.querySelector('select[name="Type"]'));
+
+// Tab-ı URL hash-a görə seç
+if (window.location.hash === '#assessment') showTab('assessment');
+</script>
+}

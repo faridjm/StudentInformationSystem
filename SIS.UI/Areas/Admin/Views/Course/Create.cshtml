@@ -1,113 +1,29 @@
-﻿@model SIS.BLL.Services.DTOs.Course.CreateCourseDto
-
+@model SIS.BLL.Services.DTOs.Course.CreateCourseDto
 @{
-    ViewData["Title"] = "Yeni Kurs";
+    ViewData["Title"] = "Yeni Tədris Proqramı";
 }
-
-<div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
-    <a href="/Admin/Course" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i></a>
-    <h2 style="font-size:20px; font-weight:700;">Yeni Kurs</h2>
-</div>
-
-<div class="card" style="max-width:500px;">
-    <div class="card-body">
-        <form method="post">
-            @Html.AntiForgeryToken()
-            <div asp-validation-summary="ModelOnly" style="color:#f87171; margin-bottom:12px; font-size:13px;"></div>
-
-            <div class="form-group">
-                <label class="form-label">Ad</label>
-                <input asp-for="Name" class="form-control" placeholder="Kurs adı" />
-                <span asp-validation-for="Name" style="color:#f87171; font-size:12px;"></span>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Kod</label>
-                <input asp-for="Code" class="form-control" placeholder="CS101" />
-                <span asp-validation-for="Code" style="color:#f87171; font-size:12px;"></span>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Kredit</label>
-                <input asp-for="Credits" type="number" class="form-control" min="1" max="10" placeholder="3" />
-                <span asp-validation-for="Credits" style="color:#f87171; font-size:12px;"></span>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Departament</label>
-                <select asp-for="DepartmentId" id="DepartmentId" class="form-control" required>
-                    <option value="">Departament seçin</option>
-                    @foreach (var d in ViewBag.Departments as IEnumerable<SIS.BLL.Services.DTOs.Department.DepartmentDto> ?? [])
-                    {
-                        <option value="@d.Id" data-deptid="@d.Id">@d.Name</option>
-                    }
-                </select>
-                <span asp-validation-for="DepartmentId" style="color:#f87171; font-size:12px;"></span>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Akademik Proqram</label>
-                <select asp-for="AcademicProgramId" id="AcademicProgramId" class="form-control" required>
-                    <option value="">Əvvəl departament seçin</option>
-                    @foreach (var p in ViewBag.Programs as IEnumerable<SIS.BLL.Services.DTOs.AcademicProgram.AcademicProgramDto> ?? [])
-                    {
-                        <option value="@p.Id" data-deptid="@p.DepartmentId">@p.Name (@p.Code)</option>
-                    }
-                </select>
-                <span asp-validation-for="AcademicProgramId" style="color:#f87171; font-size:12px;"></span>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Təsvir</label>
-                <textarea asp-for="Description" class="form-control" rows="3"></textarea>
-            </div>
-
-            <div style="display:flex; gap:10px; margin-top:8px;">
-                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Yarat</button>
-                <a href="/Admin/Course" class="btn btn-secondary">Ləğv et</a>
-            </div>
-        </form>
+<div style="max-width:560px; margin:0 auto;">
+    <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
+        <a href="/Admin/Course" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i></a>
+        <h2 style="font-size:20px; font-weight:700;">Yeni Tədris Proqramı</h2>
     </div>
+    <form method="post" action="/Admin/Course/Create">
+        @Html.AntiForgeryToken()
+        <div class="card">
+            <div class="card-body">
+                <div class="form-group">
+                    <label class="form-label">Proqram adı *</label>
+                    <input name="Name" class="form-control" placeholder="məs: Proqramlaşdırma, Data Analytics, AI/ML" required />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Təsvir</label>
+                    <textarea name="Description" class="form-control" rows="3" placeholder="Proqram haqqında qısa məlumat..."></textarea>
+                </div>
+            </div>
+        </div>
+        <div style="display:flex; gap:12px; margin-top:16px;">
+            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Yadda saxla</button>
+            <a href="/Admin/Course" class="btn btn-secondary">Ləğv et</a>
+        </div>
+    </form>
 </div>
-
-@section Scripts {
-    <script>
-        (function () {
-            const deptSelect = document.getElementById('DepartmentId');
-            const progSelect = document.getElementById('AcademicProgramId');
-            if (!deptSelect || !progSelect) return;
-
-            // Bütün program seçimlərini ilkin yadda saxla
-            const allOptions = Array.from(progSelect.querySelectorAll('option[data-deptid]'))
-                .map(o => ({ value: o.value, deptId: o.dataset.deptid, text: o.textContent }));
-
-            function refreshPrograms(selectedProgramId) {
-                const deptId = deptSelect.value;
-                // Mövcud option-ları təmizlə (ilk option-u saxla)
-                while (progSelect.options.length > 1) progSelect.remove(1);
-
-                if (!deptId) {
-                    progSelect.options[0].text = 'Əvvəl departament seçin';
-                    return;
-                }
-                progSelect.options[0].text = 'Proqram seçin';
-
-                const filtered = allOptions.filter(o => o.deptId === deptId);
-                filtered.forEach(o => {
-                    const opt = document.createElement('option');
-                    opt.value = o.value;
-                    opt.textContent = o.text;
-                    opt.dataset.deptid = o.deptId;
-                    if (selectedProgramId && o.value === String(selectedProgramId)) opt.selected = true;
-                    progSelect.appendChild(opt);
-                });
-            }
-
-            deptSelect.addEventListener('change', () => refreshPrograms(null));
-            // İlkin yüklənmədə əgər departament seçilibsə (Edit səhifəsi), uyğunlaşdır
-            const initialDept = deptSelect.value;
-            const initialProg = progSelect.value;
-            if (initialDept) refreshPrograms(initialProg);
-        })();
-    </script>
-}

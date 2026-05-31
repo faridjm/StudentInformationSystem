@@ -1,4 +1,4 @@
-﻿namespace SIS.BLL.Services.DTOs.Student
+namespace SIS.BLL.Services.DTOs.Student
 {
     public class UpdateStudentDto
     {
@@ -6,7 +6,5 @@
         public string FullName { get; set; } = null!;
         public string? FinCode { get; set; }
         public string? PhoneNumber { get; set; }
-        public int AcademicProgramId { get; set; }
     }
 }
-

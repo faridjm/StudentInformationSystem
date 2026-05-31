@@ -11,6 +11,9 @@ namespace SIS.UI.ApiClients
         [Get("/api/announcement/course/{courseOfferingId}")]
         Task<IEnumerable<AnnouncementDto>> GetByCourseAsync(int courseOfferingId);
 
+        [Get("/api/announcement/group/{groupId}")]
+        Task<IEnumerable<AnnouncementDto>> GetByGroupAsync(int groupId);
+
         [Get("/api/announcement/my-announcements")]
         Task<IEnumerable<AnnouncementDto>> GetMyAnnouncementsAsync();
 

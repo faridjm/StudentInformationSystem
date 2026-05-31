@@ -1,163 +1,43 @@
+@model IEnumerable<SIS.BLL.Services.DTOs.ClassSession.ClassSessionDto>
 @using SIS.Entities.Enums
 @{
-    ViewData["Title"] = "Dərs Günləri";
-    var offering = ViewBag.Offering as SIS.BLL.Services.DTOs.CourseOffering.CourseOfferingDetailDto;
-    var sessions = ViewBag.Sessions as List<SIS.BLL.Services.DTOs.ClassSession.ClassSessionDto> ?? new();
-
-    string StatusBadge(ClassSessionStatus status) => status switch
-    {
-        ClassSessionStatus.Scheduled => "<span class='badge badge-info'>Planlaşdırılıb</span>",
-        ClassSessionStatus.Completed => "<span class='badge badge-success'>Keçirilib</span>",
-        ClassSessionStatus.Cancelled => "<span class='badge badge-danger'>Ləğv olunub</span>",
-        ClassSessionStatus.Makeup => "<span class='badge badge-warning'>Makeup</span>",
-        _ => "<span class='badge'>—</span>"
-    };
-
-    string[] azDayNames = { "Bazar", "B.e.", "Ç.a.", "Çər.", "C.a.", "Cüm.", "Şən." };
+    ViewData["Title"] = "Dərs Sessiyaları";
 }
-
-@if (TempData["Error"] != null)
-{
-    <div style="background:rgba(239,68,68,0.15); color:#f87171; padding:10px 14px; border-radius:8px; margin-bottom:10px;">
-        @TempData["Error"]
-    </div>
-}
-@if (TempData["Success"] != null)
-{
-    <div style="background:rgba(34,197,94,0.15); color:#22c55e; padding:10px 14px; border-radius:8px; margin-bottom:10px;">
-        @TempData["Success"]
-    </div>
-}
-
 <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
-    <a href="/Teacher/Courses/Detail/@offering?.Id" class="btn btn-secondary btn-sm">
-        <i class="fas fa-arrow-left"></i>
-    </a>
-    <div>
-        <h2 style="font-size:20px; font-weight:700;">Dərs Günləri — @offering?.CourseName</h2>
-        <p style="color:var(--text-secondary); font-size:13px;">@offering?.TermName • Cəmi @sessions.Count dərs</p>
-    </div>
+    <a href="/Teacher/Courses" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i></a>
+    <h2 style="font-size:20px; font-weight:700;">Dərs Sessiyaları</h2>
 </div>
-
-<div style="background:rgba(59,130,246,0.1); color:#3b82f6; padding:10px 14px; border-radius:8px; margin-bottom:16px; font-size:13px;">
-    <i class="fas fa-info-circle"></i> Cədvəli admin idarə edir. Siz hər dərsə mövzu və qeyd yaza bilərsiniz.
-</div>
-
-@if (sessions.Count == 0)
-{
-    <div class="card">
-        <div class="card-body" style="text-align:center; color:var(--text-secondary); padding:40px;">
-            <i class="fas fa-calendar-times" style="font-size:32px; margin-bottom:12px; display:block;"></i>
-            Hələ heç bir dərs günü yoxdur.<br />
-            <small>Admin cədvəli qurub sessiyaları yaratdıqdan sonra burada görünəcək.</small>
-        </div>
-    </div>
-}
-else
-{
-    <div class="card">
-        <div style="overflow-x:auto;">
-            <table class="table">
-                <thead>
+<div class="card">
+    <div class="card-body" style="padding:0;">
+        <table class="table">
+            <thead>
+                <tr><th>#</th><th>Tarix</th><th>Saat</th><th>Mövzu</th><th>Status</th></tr>
+            </thead>
+            <tbody>
+                @foreach (var s in Model.OrderBy(x => x.Date))
+                {
                     <tr>
-                        <th>#</th>
-                        <th>Tarix</th>
-                        <th>Gün</th>
-                        <th>Saat</th>
-                        <th>Otaq</th>
-                        <th>Mövzu</th>
-                        <th>Status</th>
-                        <th>Əməliyyat</th>
+                        <td style="color:var(--text-secondary);">@s.SessionNumber</td>
+                        <td>@s.Date.ToString("dd.MM.yyyy")</td>
+                        <td style="font-size:13px; color:var(--text-secondary);">@s.StartTime — @s.EndTime</td>
+                        <td>@(string.IsNullOrEmpty(s.Topic) ? "—" : s.Topic)</td>
+                        <td>
+                            @if (s.Status == ClassSessionStatus.Scheduled)
+                            {
+                                <span class="badge badge-info">Planlaşdırılıb</span>
+                            }
+                            else if (s.Status == ClassSessionStatus.Completed)
+                            {
+                                <span class="badge badge-success">Keçirildi</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-danger">Ləğv edildi</span>
+                            }
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
-                    @{ int i = 1; }
-                    @foreach (var s in sessions)
-                    {
-                        <tr>
-                            <td>@i</td>
-                            <td>@s.Date.ToString("dd.MM.yyyy")</td>
-                            <td style="color:var(--text-secondary);">@azDayNames[(int)s.Date.DayOfWeek]</td>
-                            <td>@s.StartTime.ToString("HH:mm") – @s.EndTime.ToString("HH:mm")</td>
-                            <td>@(s.Room ?? "—")</td>
-                            <td>
-                                @if (!string.IsNullOrEmpty(s.Topic))
-                                {
-                                    <span>@s.Topic</span>
-                                }
-                                else
-                                {
-                                    <span style="color:var(--text-secondary); font-style:italic;">təyin olunmayıb</span>
-                                }
-                            </td>
-                            <td>
-                                @Html.Raw(StatusBadge(s.Status))
-                                @if (s.Status == ClassSessionStatus.Cancelled && !string.IsNullOrEmpty(s.CancellationReason))
-                                {
-                                    <div style="font-size:11px; color:var(--text-secondary); margin-top:4px;">@s.CancellationReason</div>
-                                }
-                            </td>
-                            <td>
-                                @if (s.Status != ClassSessionStatus.Cancelled)
-                                {
-                                    <button type="button" class="btn btn-sm btn-secondary"
-                                            title="Mövzu/qeyd yaz"
-                                            onclick="openTopic(@s.Id, `@(s.Topic ?? "")`, `@(s.Notes ?? "")`)">
-                                        <i class="fas fa-edit"></i> Mövzu
-                                    </button>
-                                }
-                            </td>
-                        </tr>
-                        i++;
-                    }
-                </tbody>
-            </table>
-        </div>
-    </div>
-}
-
-<!-- Topic/Notes modal -->
-<div id="topicModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:1000; align-items:center; justify-content:center;">
-    <div class="card" style="max-width:600px; width:90%;">
-        <div class="card-header">
-            <span>Mövzu və Qeydlər</span>
-            <button type="button" onclick="closeTopic()" style="background:none; border:none; color:var(--text-secondary); font-size:20px; cursor:pointer;">&times;</button>
-        </div>
-        <div class="card-body">
-            <form method="post" action="/Teacher/Schedule/UpdateTopic">
-                @Html.AntiForgeryToken()
-                <input type="hidden" name="sessionId" id="topic_sessionId" />
-                <input type="hidden" name="courseOfferingId" value="@offering?.Id" />
-
-                <div class="form-group">
-                    <label class="form-label">Mövzu</label>
-                    <input type="text" name="topic" id="topic_topic" class="form-control" maxlength="200"
-                           placeholder="Məs. Calculus II — Limitlər" />
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Qeydlər</label>
-                    <textarea name="notes" id="topic_notes" class="form-control" rows="4" maxlength="2000"
-                              placeholder="Material linkləri, mənbələr, ev tapşırığı qeydləri..."></textarea>
-                </div>
-
-                <div style="display:flex; gap:10px; margin-top:8px;">
-                    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Saxla</button>
-                    <button type="button" class="btn btn-secondary" onclick="closeTopic()">Ləğv et</button>
-                </div>
-            </form>
-        </div>
+                }
+            </tbody>
+        </table>
     </div>
 </div>
-
-@section Scripts {
-    <script>
-        function openTopic(id, topic, notes) {
-            document.getElementById('topic_sessionId').value = id;
-            document.getElementById('topic_topic').value = topic;
-            document.getElementById('topic_notes').value = notes;
-            document.getElementById('topicModal').style.display = 'flex';
-        }
-        function closeTopic() { document.getElementById('topicModal').style.display = 'none'; }
-    </script>
-}

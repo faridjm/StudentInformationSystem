@@ -1,0 +1,155 @@
+@model SIS.BLL.Services.DTOs.Groups.GroupDetailDto
+@{
+    ViewData["Title"] = "Qrupu Düzəlt";
+}
+
+<div style="max-width:700px; margin:0 auto;">
+    <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
+        <a href="/Admin/Group/Detail/@Model.Id" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i></a>
+        <h2 style="font-size:20px; font-weight:700;">@Model.Name — Düzəlt</h2>
+    </div>
+
+    <form method="post" action="/Admin/Group/Edit">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="Id" value="@Model.Id" />
+        <input type="hidden" name="CourseId" value="@Model.CourseId" />
+
+        <div class="card" style="margin-bottom:16px;">
+            <div class="card-header">Məlumatlar</div>
+            <div class="card-body">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                    <div class="form-group" style="grid-column:1/-1;">
+                        <label class="form-label">Qrup adı *</label>
+                        <input name="Name" value="@Model.Name" class="form-control" required />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Müəllim *</label>
+                        <select name="TeacherId" class="form-control" required>
+                            @foreach (var t in (IEnumerable<SIS.BLL.Services.DTOs.Teacher.TeacherListDto>)ViewBag.Teachers)
+                            {
+                                if (t.Id == Model.TeacherId)
+                                {
+                                    <option value="@t.Id" selected="selected">@t.FullName</option>
+                                }
+                                else
+                                {
+                                    <option value="@t.Id">@t.FullName</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Sezon</label>
+                        <select name="AcademicYearId" class="form-control">
+                            <option value="">—</option>
+                            @foreach (var s in (IEnumerable<SIS.BLL.Services.DTOs.AcademicYear.AcademicYearDto>)ViewBag.Seasons)
+                            {
+                                if (Model.SeasonName == s.Name)
+                                {
+                                    <option value="@s.Id" selected="selected">@s.Name</option>
+                                }
+                                else
+                                {
+                                    <option value="@s.Id">@s.Name</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Tutum</label>
+                        <input name="Capacity" type="number" value="@Model.Capacity" class="form-control" required />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Aktiv?</label>
+                        <select name="IsActive" class="form-control">
+                            @if (Model.IsActive)
+                            {
+                                <option value="true" selected="selected">Aktiv</option>
+                                <option value="false">Deaktiv</option>
+                            }
+                            else
+                            {
+                                <option value="true">Aktiv</option>
+                                <option value="false" selected="selected">Deaktiv</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Başlama tarixi</label>
+                        <input name="StartDate" type="date" value="@Model.StartDate.ToString("yyyy-MM-dd")" class="form-control" required />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Bitmə tarixi</label>
+                        <input name="EndDate" type="date" value="@Model.EndDate.ToString("yyyy-MM-dd")" class="form-control" required />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" style="margin-bottom:16px;">
+            <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+                <span>Cədvəl günləri</span>
+                <button type="button" onclick="addDay()" class="btn btn-sm btn-secondary"><i class="fas fa-plus"></i></button>
+            </div>
+            <div class="card-body">
+                <div id="scheduleDays">
+                    @{ int di = 0; }
+                    @foreach (var d in Model.ScheduleDays)
+                    {
+                        <div id="day_@di" style="display:grid; grid-template-columns:2fr 1fr 1fr auto; gap:10px; align-items:center; margin-bottom:10px;">
+                            <select name="ScheduleDays[@di].DayOfWeek" class="form-control">
+                                @{
+                                    var dayNames = new[]{"Bazar ertəsi","Çərşənbə axşamı","Çərşənbə","Cümə axşamı","Cümə","Şənbə","Bazar"};
+                                    for (int wd = 0; wd < 7; wd++)
+                                    {
+                                        if (d.DayOfWeek == (DayOfWeek)wd)
+                                        {
+                                            <option value="@wd" selected="selected">@dayNames[wd]</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@wd">@dayNames[wd]</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                            <input name="ScheduleDays[@di].StartTime" type="time" value="@d.StartTime" class="form-control" />
+                            <input name="ScheduleDays[@di].EndTime" type="time" value="@d.EndTime" class="form-control" />
+                            <button type="button" onclick="document.getElementById('day_@di').remove()" class="btn btn-sm btn-danger"><i class="fas fa-times"></i></button>
+                        </div>
+                        di++;
+                    }
+                </div>
+                <div id="dayCounterHolder" data-count="@di"></div>
+            </div>
+        </div>
+
+        <div style="display:flex; gap:12px;">
+            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Yadda saxla</button>
+            <a href="/Admin/Group/Detail/@Model.Id" class="btn btn-secondary">Ləğv et</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+<script>
+    const days = ['Bazar ertəsi','Çərşənbə axşamı','Çərşənbə','Cümə axşamı','Cümə','Şənbə','Bazar'];
+    let dayCount = parseInt(document.getElementById('dayCounterHolder').dataset.count);
+
+    function addDay() {
+        const i = dayCount++;
+        const div = document.createElement('div');
+        div.id = 'day_' + i;
+        div.style.cssText = 'display:grid; grid-template-columns:2fr 1fr 1fr auto; gap:10px; align-items:center; margin-bottom:10px;';
+        div.innerHTML = `
+            <select name="ScheduleDays[${i}].DayOfWeek" class="form-control">
+                ${days.map((d,idx) => `<option value="${idx}">${d}</option>`).join('')}
+            </select>
+            <input name="ScheduleDays[${i}].StartTime" type="time" class="form-control" value="09:00" />
+            <input name="ScheduleDays[${i}].EndTime" type="time" class="form-control" value="11:00" />
+            <button type="button" onclick="document.getElementById('day_${i}').remove()" class="btn btn-sm btn-danger"><i class="fas fa-times"></i></button>
+        `;
+        document.getElementById('scheduleDays').appendChild(div);
+    }
+</script>
+}

@@ -1,76 +1,65 @@
-﻿@model SIS.BLL.Services.DTOs.Teacher.CreateTeacherDto
-
 @{
     ViewData["Title"] = "Yeni Müəllim";
 }
-
-<div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
-    <a href="/Admin/Teacher" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i></a>
-    <h2 style="font-size:20px; font-weight:700;">Yeni Müəllim</h2>
-</div>
-
-<div class="card" style="max-width:600px;">
-    <div class="card-body">
-        <form method="post">
-            @Html.AntiForgeryToken()
-            <div asp-validation-summary="ModelOnly" style="color:#f87171; margin-bottom:12px; font-size:13px;"></div>
-
-            <div class="form-group">
-                <label class="form-label">Ad Soyad</label>
-                <input asp-for="FullName" class="form-control" placeholder="Ad Soyad" />
-                <span asp-validation-for="FullName" style="color:#f87171; font-size:12px;"></span>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">FIN Kod</label>
-                <input asp-for="FinCode" class="form-control" placeholder="5XB9Z23" />
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Email</label>
-                <input asp-for="Email" class="form-control" placeholder="email@sis.az" />
-                <span asp-validation-for="Email" style="color:#f87171; font-size:12px;"></span>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Şifrə</label>
-                <input asp-for="Password" type="password" class="form-control" placeholder="Minimum 8 simvol" />
-                <span asp-validation-for="Password" style="color:#f87171; font-size:12px;"></span>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Telefon</label>
-                <input asp-for="PhoneNumber" class="form-control" placeholder="+994501234567" />
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Titul</label>
-                <input asp-for="Title" class="form-control" placeholder="Dr., Prof., Müəllim" />
-                <span asp-validation-for="Title" style="color:#f87171; font-size:12px;"></span>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Departament</label>
-                <select asp-for="DepartmentId" class="form-control">
-                    <option value="">Departament seçin</option>
-                    @foreach (var d in ViewBag.Departments as IEnumerable<SIS.BLL.Services.DTOs.Department.DepartmentDto> ?? [])
-                    {
-                        <option value="@d.Id">@d.Name</option>
-                    }
-                </select>
-                <span asp-validation-for="DepartmentId" style="color:#f87171; font-size:12px;"></span>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">İşə Başlama Tarixi</label>
-                <input asp-for="HireDate" type="date" class="form-control" />
-                <span asp-validation-for="HireDate" style="color:#f87171; font-size:12px;"></span>
-            </div>
-
-            <div style="display:flex; gap:10px; margin-top:8px;">
-                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Yarat</button>
-                <a href="/Admin/Teacher" class="btn btn-secondary">Ləğv et</a>
-            </div>
-        </form>
+<div style="max-width:560px; margin:0 auto;">
+    <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
+        <a href="/Admin/Teacher" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i></a>
+        <h2 style="font-size:20px; font-weight:700;">Yeni Müəllim</h2>
     </div>
+    <form method="post" action="/Admin/Teacher/Create">
+        @Html.AntiForgeryToken()
+        <div class="card">
+            <div class="card-body">
+                <div class="form-group">
+                    <label class="form-label">Ad Soyad *</label>
+                    <input name="FullName" class="form-control" placeholder="Anar Məmmədov" required />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email *</label>
+                    <input name="Email" type="email" class="form-control" placeholder="anar@example.com" required />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Şifrə *</label>
+                    <div style="position:relative;">
+                        <input name="Password" id="passwordInput" type="password" class="form-control"
+                               placeholder="Ən azı 6 simvol" required style="padding-right:44px;" />
+                        <button type="button" onclick="togglePass()"
+                                style="position:absolute; right:12px; top:50%; transform:translateY(-50%);
+                                       background:none; border:none; color:var(--text-secondary); cursor:pointer; font-size:16px;">
+                            <i id="passIcon" class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                    <div class="form-group">
+                        <label class="form-label">Əlaqə nömrəsi</label>
+                        <input name="PhoneNumber" class="form-control" placeholder="+994501234567" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">FİN kod</label>
+                        <input name="FinCode" class="form-control" placeholder="7KUE4F8" maxlength="7" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Doğum tarixi</label>
+                    <input name="BirthDate" type="date" class="form-control" />
+                </div>
+            </div>
+        </div>
+        <div style="display:flex; gap:12px; margin-top:16px;">
+            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Yadda saxla</button>
+            <a href="/Admin/Teacher" class="btn btn-secondary">Ləğv et</a>
+        </div>
+    </form>
 </div>
+
+@section Scripts {
+<script>
+function togglePass() {
+    const input = document.getElementById('passwordInput');
+    const icon = document.getElementById('passIcon');
+    if (input.type === 'password') { input.type = 'text'; icon.className = 'fas fa-eye-slash'; }
+    else { input.type = 'password'; icon.className = 'fas fa-eye'; }
+}
+</script>
+}

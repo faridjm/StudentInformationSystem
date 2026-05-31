@@ -1,14 +1,13 @@
-﻿using SIS.BLL.Services.DTOs.Enrollment;
+using SIS.BLL.Services.DTOs.Enrollment;
 
 namespace SIS.BLL.Services.Interfaces
 {
     public interface IEnrollmentService
     {
-        Task<IEnumerable<EnrollmentListDto>> GetAllEnrollmentsAsync();
-        Task<EnrollmentDetailDto?> GetEnrollmentByIdAsync(int id);
-        Task<IEnumerable<EnrollmentListDto>> GetStudentEnrollmentsAsync(int studentId);
-        Task<IEnumerable<EnrollmentListDto>> GetCourseEnrollmentsAsync(int courseOfferingId);
-        Task EnrollStudentAsync(CreateEnrollmentDto dto);
-        Task DropEnrollmentAsync(int enrollmentId);
+        Task<IEnumerable<EnrollmentListDto>> GetByGroupAsync(int groupId);
+        Task<IEnumerable<EnrollmentListDto>> GetByStudentAsync(int studentId);
+        Task<EnrollmentListDto?> GetByIdAsync(int enrollmentId);
+        Task EnrollAsync(CreateEnrollmentDto dto);
+        Task DropAsync(int enrollmentId);
     }
 }

@@ -1,195 +1,5 @@
 [
   {
-    "ContainingType": "SIS.API.Controllers.AcademicProgramController",
-    "Method": "GetAll",
-    "RelativePath": "api/AcademicProgram",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "SIS.API.Controllers.AcademicProgramController",
-    "Method": "Create",
-    "RelativePath": "api/AcademicProgram",
-    "HttpMethod": "POST",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "dto",
-        "Type": "SIS.BLL.Services.DTOs.AcademicProgram.CreateAcademicProgramDto",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "SIS.API.Controllers.AcademicProgramController",
-    "Method": "Update",
-    "RelativePath": "api/AcademicProgram",
-    "HttpMethod": "PUT",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "dto",
-        "Type": "SIS.BLL.Services.DTOs.AcademicProgram.UpdateAcademicProgramDto",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "SIS.API.Controllers.AcademicProgramController",
-    "Method": "GetById",
-    "RelativePath": "api/AcademicProgram/{id}",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
-        "Type": "System.Int32",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "SIS.API.Controllers.AcademicProgramController",
-    "Method": "Delete",
-    "RelativePath": "api/AcademicProgram/{id}",
-    "HttpMethod": "DELETE",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
-        "Type": "System.Int32",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "SIS.API.Controllers.AcademicProgramController",
-    "Method": "GetByDepartment",
-    "RelativePath": "api/AcademicProgram/department/{departmentId}",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "departmentId",
-        "Type": "System.Int32",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "SIS.API.Controllers.AcademicTermController",
-    "Method": "GetAll",
-    "RelativePath": "api/AcademicTerm",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "SIS.API.Controllers.AcademicTermController",
-    "Method": "Create",
-    "RelativePath": "api/AcademicTerm",
-    "HttpMethod": "POST",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "dto",
-        "Type": "SIS.BLL.Services.DTOs.AcademicTerm.CreateAcademicTermDto",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "SIS.API.Controllers.AcademicTermController",
-    "Method": "Update",
-    "RelativePath": "api/AcademicTerm",
-    "HttpMethod": "PUT",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "dto",
-        "Type": "SIS.BLL.Services.DTOs.AcademicTerm.UpdateAcademicTermDto",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "SIS.API.Controllers.AcademicTermController",
-    "Method": "GetById",
-    "RelativePath": "api/AcademicTerm/{id}",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
-        "Type": "System.Int32",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "SIS.API.Controllers.AcademicTermController",
-    "Method": "Delete",
-    "RelativePath": "api/AcademicTerm/{id}",
-    "HttpMethod": "DELETE",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
-        "Type": "System.Int32",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "SIS.API.Controllers.AcademicTermController",
-    "Method": "SetActive",
-    "RelativePath": "api/AcademicTerm/{id}/set-active",
-    "HttpMethod": "PUT",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
-        "Type": "System.Int32",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "SIS.API.Controllers.AcademicTermController",
-    "Method": "GetActive",
-    "RelativePath": "api/AcademicTerm/active",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [],
-    "ReturnTypes": []
-  },
-  {
     "ContainingType": "SIS.API.Controllers.AcademicYearController",
     "Method": "GetAll",
     "RelativePath": "api/AcademicYear",
@@ -349,6 +159,22 @@
   },
   {
     "ContainingType": "SIS.API.Controllers.AnnouncementController",
+    "Method": "GetByGroup",
+    "RelativePath": "api/Announcement/group/{groupId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "groupId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SIS.API.Controllers.AnnouncementController",
     "Method": "GetMyAnnouncements",
     "RelativePath": "api/Announcement/my-announcements",
     "HttpMethod": "GET",
@@ -384,6 +210,134 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "SIS.API.Controllers.AssessmentController",
+    "Method": "Create",
+    "RelativePath": "api/Assessment",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "SIS.BLL.Services.DTOs.Assessment.CreateAssessmentItemDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SIS.API.Controllers.AssessmentController",
+    "Method": "Update",
+    "RelativePath": "api/Assessment",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "SIS.BLL.Services.DTOs.Assessment.UpdateAssessmentItemDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SIS.API.Controllers.AssessmentController",
+    "Method": "GetById",
+    "RelativePath": "api/Assessment/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SIS.API.Controllers.AssessmentController",
+    "Method": "Delete",
+    "RelativePath": "api/Assessment/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SIS.API.Controllers.AssessmentController",
+    "Method": "GetSubmissions",
+    "RelativePath": "api/Assessment/{id}/submissions",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SIS.API.Controllers.AssessmentController",
+    "Method": "Grade",
+    "RelativePath": "api/Assessment/grade",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "SIS.BLL.Services.DTOs.Assessment.GradeAssessmentDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SIS.API.Controllers.AssessmentController",
+    "Method": "GetByGroup",
+    "RelativePath": "api/Assessment/group/{groupId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "groupId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SIS.API.Controllers.AssessmentController",
+    "Method": "GetMySubmissions",
+    "RelativePath": "api/Assessment/my-submissions/{enrollmentId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "enrollmentId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "SIS.API.Controllers.AssignmentController",
     "Method": "Create",
     "RelativePath": "api/Assignment",
@@ -410,27 +364,6 @@
       {
         "Name": "dto",
         "Type": "SIS.BLL.Services.DTOs.Assignment.UpdateAssignmentDto",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "SIS.API.Controllers.AssignmentController",
-    "Method": "GetSubmission",
-    "RelativePath": "api/Assignment/{assignmentId}/submission/{enrollmentId}",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "assignmentId",
-        "Type": "System.Int32",
-        "IsRequired": true
-      },
-      {
-        "Name": "enrollmentId",
-        "Type": "System.Int32",
         "IsRequired": true
       }
     ],
@@ -486,38 +419,6 @@
   },
   {
     "ContainingType": "SIS.API.Controllers.AssignmentController",
-    "Method": "GetByCourse",
-    "RelativePath": "api/Assignment/course/{courseOfferingId}",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "courseOfferingId",
-        "Type": "System.Int32",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "SIS.API.Controllers.AssignmentController",
-    "Method": "GetMySubmissions",
-    "RelativePath": "api/Assignment/enrollment/{enrollmentId}/submissions",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "enrollmentId",
-        "Type": "System.Int32",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "SIS.API.Controllers.AssignmentController",
     "Method": "Grade",
     "RelativePath": "api/Assignment/grade",
     "HttpMethod": "POST",
@@ -527,6 +428,38 @@
       {
         "Name": "dto",
         "Type": "SIS.BLL.Services.DTOs.Assignment.GradeSubmissionDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SIS.API.Controllers.AssignmentController",
+    "Method": "GetByGroup",
+    "RelativePath": "api/Assignment/group/{groupId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "groupId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SIS.API.Controllers.AssignmentController",
+    "Method": "GetMySubmissions",
+    "RelativePath": "api/Assignment/my-submissions/{enrollmentId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "enrollmentId",
+        "Type": "System.Int32",
         "IsRequired": true
       }
     ],
@@ -550,22 +483,6 @@
   },
   {
     "ContainingType": "SIS.API.Controllers.AttendanceController",
-    "Method": "Record",
-    "RelativePath": "api/Attendance",
-    "HttpMethod": "POST",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "dto",
-        "Type": "SIS.BLL.Services.DTOs.Attendance.CreateAttendanceDto",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "SIS.API.Controllers.AttendanceController",
     "Method": "RecordBulk",
     "RelativePath": "api/Attendance/bulk",
     "HttpMethod": "POST",
@@ -575,27 +492,6 @@
       {
         "Name": "dtos",
         "Type": "System.Collections.Generic.IEnumerable\u00601[[SIS.BLL.Services.DTOs.Attendance.CreateAttendanceDto, SIS.BLL, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "SIS.API.Controllers.AttendanceController",
-    "Method": "GetByDate",
-    "RelativePath": "api/Attendance/course/{courseOfferingId}/date/{date}",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "courseOfferingId",
-        "Type": "System.Int32",
-        "IsRequired": true
-      },
-      {
-        "Name": "date",
-        "Type": "System.DateTime",
         "IsRequired": true
       }
     ],
@@ -627,6 +523,22 @@
     "Parameters": [
       {
         "Name": "enrollmentId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SIS.API.Controllers.AttendanceController",
+    "Method": "GetBySession",
+    "RelativePath": "api/Attendance/session/{sessionId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "sessionId",
         "Type": "System.Int32",
         "IsRequired": true
       }
@@ -757,38 +669,6 @@
   },
   {
     "ContainingType": "SIS.API.Controllers.ClassSessionController",
-    "Method": "Create",
-    "RelativePath": "api/ClassSession",
-    "HttpMethod": "POST",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "dto",
-        "Type": "SIS.BLL.Services.DTOs.ClassSession.CreateClassSessionDto",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "SIS.API.Controllers.ClassSessionController",
-    "Method": "Update",
-    "RelativePath": "api/ClassSession",
-    "HttpMethod": "PUT",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "dto",
-        "Type": "SIS.BLL.Services.DTOs.ClassSession.UpdateClassSessionDto",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "SIS.API.Controllers.ClassSessionController",
     "Method": "GetById",
     "RelativePath": "api/ClassSession/{id}",
     "HttpMethod": "GET",
@@ -805,9 +685,9 @@
   },
   {
     "ContainingType": "SIS.API.Controllers.ClassSessionController",
-    "Method": "Delete",
-    "RelativePath": "api/ClassSession/{id}",
-    "HttpMethod": "DELETE",
+    "Method": "CompleteSession",
+    "RelativePath": "api/ClassSession/{id}/complete",
+    "HttpMethod": "PUT",
     "IsController": true,
     "Order": 0,
     "Parameters": [
@@ -821,15 +701,20 @@
   },
   {
     "ContainingType": "SIS.API.Controllers.ClassSessionController",
-    "Method": "Cancel",
-    "RelativePath": "api/ClassSession/cancel",
-    "HttpMethod": "POST",
+    "Method": "UpdateTopic",
+    "RelativePath": "api/ClassSession/{id}/topic",
+    "HttpMethod": "PUT",
     "IsController": true,
     "Order": 0,
     "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
       {
         "Name": "dto",
-        "Type": "SIS.BLL.Services.DTOs.ClassSession.CancelClassSessionDto",
+        "Type": "SIS.BLL.Services.DTOs.ClassSession.UpdateTopicDto",
         "IsRequired": true
       }
     ],
@@ -837,100 +722,16 @@
   },
   {
     "ContainingType": "SIS.API.Controllers.ClassSessionController",
-    "Method": "GetByCourse",
-    "RelativePath": "api/ClassSession/course/{courseOfferingId}",
+    "Method": "GetByGroup",
+    "RelativePath": "api/ClassSession/group/{groupId}",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "courseOfferingId",
+        "Name": "groupId",
         "Type": "System.Int32",
         "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "SIS.API.Controllers.ClassSessionController",
-    "Method": "GetByCourseRange",
-    "RelativePath": "api/ClassSession/course/{courseOfferingId}/range",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "courseOfferingId",
-        "Type": "System.Int32",
-        "IsRequired": true
-      },
-      {
-        "Name": "from",
-        "Type": "System.DateOnly",
-        "IsRequired": false
-      },
-      {
-        "Name": "to",
-        "Type": "System.DateOnly",
-        "IsRequired": false
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "SIS.API.Controllers.ClassSessionController",
-    "Method": "Generate",
-    "RelativePath": "api/ClassSession/generate/{courseOfferingId}",
-    "HttpMethod": "POST",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "courseOfferingId",
-        "Type": "System.Int32",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "SIS.API.Controllers.ClassSessionController",
-    "Method": "CreateMakeup",
-    "RelativePath": "api/ClassSession/makeup",
-    "HttpMethod": "POST",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "dto",
-        "Type": "SIS.BLL.Services.DTOs.ClassSession.CreateMakeupSessionDto",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "SIS.API.Controllers.ClassSessionController",
-    "Method": "GetByStudentRange",
-    "RelativePath": "api/ClassSession/student/{studentId}/range",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "studentId",
-        "Type": "System.Int32",
-        "IsRequired": true
-      },
-      {
-        "Name": "from",
-        "Type": "System.DateOnly",
-        "IsRequired": false
-      },
-      {
-        "Name": "to",
-        "Type": "System.DateOnly",
-        "IsRequired": false
       }
     ],
     "ReturnTypes": []
@@ -942,33 +743,7 @@
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
-    "Parameters": [
-      {
-        "Name": "Page",
-        "Type": "System.Int32",
-        "IsRequired": false
-      },
-      {
-        "Name": "PageSize",
-        "Type": "System.Int32",
-        "IsRequired": false
-      },
-      {
-        "Name": "SearchTerm",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "SortBy",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "SortDescending",
-        "Type": "System.Boolean",
-        "IsRequired": false
-      }
-    ],
+    "Parameters": [],
     "ReturnTypes": []
   },
   {
@@ -1036,248 +811,6 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "SIS.API.Controllers.CourseController",
-    "Method": "GetByDepartment",
-    "RelativePath": "api/Course/department/{departmentId}",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "departmentId",
-        "Type": "System.Int32",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "SIS.API.Controllers.CourseOfferingController",
-    "Method": "GetAll",
-    "RelativePath": "api/CourseOffering",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "SIS.API.Controllers.CourseOfferingController",
-    "Method": "Create",
-    "RelativePath": "api/CourseOffering",
-    "HttpMethod": "POST",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "dto",
-        "Type": "SIS.BLL.Services.DTOs.CourseOffering.CreateCourseOfferingDto",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "SIS.API.Controllers.CourseOfferingController",
-    "Method": "Update",
-    "RelativePath": "api/CourseOffering",
-    "HttpMethod": "PUT",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "dto",
-        "Type": "SIS.BLL.Services.DTOs.CourseOffering.UpdateCourseOfferingDto",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "SIS.API.Controllers.CourseOfferingController",
-    "Method": "GetById",
-    "RelativePath": "api/CourseOffering/{id}",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
-        "Type": "System.Int32",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "SIS.API.Controllers.CourseOfferingController",
-    "Method": "Delete",
-    "RelativePath": "api/CourseOffering/{id}",
-    "HttpMethod": "DELETE",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
-        "Type": "System.Int32",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "SIS.API.Controllers.CourseOfferingController",
-    "Method": "GetActive",
-    "RelativePath": "api/CourseOffering/active",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "SIS.API.Controllers.CourseOfferingController",
-    "Method": "GetByTeacher",
-    "RelativePath": "api/CourseOffering/teacher/{teacherId}",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "teacherId",
-        "Type": "System.Int32",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "SIS.API.Controllers.CourseOfferingController",
-    "Method": "GetByTerm",
-    "RelativePath": "api/CourseOffering/term/{termId}",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "termId",
-        "Type": "System.Int32",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "SIS.API.Controllers.DepartmentController",
-    "Method": "GetAll",
-    "RelativePath": "api/Department",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "Page",
-        "Type": "System.Int32",
-        "IsRequired": false
-      },
-      {
-        "Name": "PageSize",
-        "Type": "System.Int32",
-        "IsRequired": false
-      },
-      {
-        "Name": "SearchTerm",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "SortBy",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "SortDescending",
-        "Type": "System.Boolean",
-        "IsRequired": false
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "SIS.API.Controllers.DepartmentController",
-    "Method": "Create",
-    "RelativePath": "api/Department",
-    "HttpMethod": "POST",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "dto",
-        "Type": "SIS.BLL.Services.DTOs.Department.CreateDepartmentDto",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "SIS.API.Controllers.DepartmentController",
-    "Method": "Update",
-    "RelativePath": "api/Department",
-    "HttpMethod": "PUT",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "dto",
-        "Type": "SIS.BLL.Services.DTOs.Department.UpdateDepartmentDto",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "SIS.API.Controllers.DepartmentController",
-    "Method": "GetById",
-    "RelativePath": "api/Department/{id}",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
-        "Type": "System.Int32",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "SIS.API.Controllers.DepartmentController",
-    "Method": "Delete",
-    "RelativePath": "api/Department/{id}",
-    "HttpMethod": "DELETE",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
-        "Type": "System.Int32",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "SIS.API.Controllers.EnrollmentController",
-    "Method": "GetAll",
-    "RelativePath": "api/Enrollment",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [],
-    "ReturnTypes": []
-  },
-  {
     "ContainingType": "SIS.API.Controllers.EnrollmentController",
     "Method": "Enroll",
     "RelativePath": "api/Enrollment",
@@ -1295,25 +828,9 @@
   },
   {
     "ContainingType": "SIS.API.Controllers.EnrollmentController",
-    "Method": "GetById",
-    "RelativePath": "api/Enrollment/{id}",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
-        "Type": "System.Int32",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "SIS.API.Controllers.EnrollmentController",
     "Method": "Drop",
-    "RelativePath": "api/Enrollment/{id}/drop",
-    "HttpMethod": "PUT",
+    "RelativePath": "api/Enrollment/{id}",
+    "HttpMethod": "DELETE",
     "IsController": true,
     "Order": 0,
     "Parameters": [
@@ -1327,14 +844,14 @@
   },
   {
     "ContainingType": "SIS.API.Controllers.EnrollmentController",
-    "Method": "GetByCourse",
-    "RelativePath": "api/Enrollment/course/{courseOfferingId}",
+    "Method": "GetByGroup",
+    "RelativePath": "api/Enrollment/group/{groupId}",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "courseOfferingId",
+        "Name": "groupId",
         "Type": "System.Int32",
         "IsRequired": true
       }
@@ -1344,7 +861,7 @@
   {
     "ContainingType": "SIS.API.Controllers.EnrollmentController",
     "Method": "GetMyEnrollments",
-    "RelativePath": "api/Enrollment/my-enrollments",
+    "RelativePath": "api/Enrollment/my",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -1458,6 +975,106 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "SIS.API.Controllers.GroupController",
+    "Method": "GetAll",
+    "RelativePath": "api/Group",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SIS.API.Controllers.GroupController",
+    "Method": "Create",
+    "RelativePath": "api/Group",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "SIS.BLL.Services.DTOs.Groups.CreateGroupDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SIS.API.Controllers.GroupController",
+    "Method": "Update",
+    "RelativePath": "api/Group",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "SIS.BLL.Services.DTOs.Groups.UpdateGroupDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SIS.API.Controllers.GroupController",
+    "Method": "GetById",
+    "RelativePath": "api/Group/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SIS.API.Controllers.GroupController",
+    "Method": "Delete",
+    "RelativePath": "api/Group/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SIS.API.Controllers.GroupController",
+    "Method": "GenerateSessions",
+    "RelativePath": "api/Group/{id}/generate-sessions",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SIS.API.Controllers.GroupController",
+    "Method": "GetMyGroups",
+    "RelativePath": "api/Group/my-groups",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "SIS.API.Controllers.NotificationController",
     "Method": "GetMyNotifications",
     "RelativePath": "api/Notification",
@@ -1530,33 +1147,7 @@
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
-    "Parameters": [
-      {
-        "Name": "Page",
-        "Type": "System.Int32",
-        "IsRequired": false
-      },
-      {
-        "Name": "PageSize",
-        "Type": "System.Int32",
-        "IsRequired": false
-      },
-      {
-        "Name": "SearchTerm",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "SortBy",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "SortDescending",
-        "Type": "System.Boolean",
-        "IsRequired": false
-      }
-    ],
+    "Parameters": [],
     "ReturnTypes": []
   },
   {
@@ -1634,55 +1225,13 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "SIS.API.Controllers.StudentController",
-    "Method": "GetByProgram",
-    "RelativePath": "api/Student/program/{programId}",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "programId",
-        "Type": "System.Int32",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
     "ContainingType": "SIS.API.Controllers.TeacherController",
     "Method": "GetAll",
     "RelativePath": "api/Teacher",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
-    "Parameters": [
-      {
-        "Name": "Page",
-        "Type": "System.Int32",
-        "IsRequired": false
-      },
-      {
-        "Name": "PageSize",
-        "Type": "System.Int32",
-        "IsRequired": false
-      },
-      {
-        "Name": "SearchTerm",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "SortBy",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "SortDescending",
-        "Type": "System.Boolean",
-        "IsRequired": false
-      }
-    ],
+    "Parameters": [],
     "ReturnTypes": []
   },
   {
@@ -1751,22 +1300,6 @@
   },
   {
     "ContainingType": "SIS.API.Controllers.TeacherController",
-    "Method": "GetByDepartment",
-    "RelativePath": "api/Teacher/department/{departmentId}",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "departmentId",
-        "Type": "System.Int32",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "SIS.API.Controllers.TeacherController",
     "Method": "GetMe",
     "RelativePath": "api/Teacher/me",
     "HttpMethod": "GET",
@@ -1776,31 +1309,15 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "SIS.API.Controllers.WeeklyScheduleController",
-    "Method": "Set",
-    "RelativePath": "api/WeeklySchedule",
-    "HttpMethod": "POST",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "dto",
-        "Type": "SIS.BLL.Services.DTOs.WeeklySchedule.SetWeeklyScheduleDto",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "SIS.API.Controllers.WeeklyScheduleController",
-    "Method": "GetByCourse",
-    "RelativePath": "api/WeeklySchedule/course/{courseOfferingId}",
+    "ContainingType": "SIS.API.Controllers.TranscriptController",
+    "Method": "GetTranscript",
+    "RelativePath": "api/Transcript/{enrollmentId}",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "courseOfferingId",
+        "Name": "enrollmentId",
         "Type": "System.Int32",
         "IsRequired": true
       }
@@ -1808,15 +1325,15 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "SIS.API.Controllers.WeeklyScheduleController",
-    "Method": "Clear",
-    "RelativePath": "api/WeeklySchedule/course/{courseOfferingId}",
-    "HttpMethod": "DELETE",
+    "ContainingType": "SIS.API.Controllers.TranscriptController",
+    "Method": "GetTranscriptPdf",
+    "RelativePath": "api/Transcript/{enrollmentId}/pdf",
+    "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "courseOfferingId",
+        "Name": "enrollmentId",
         "Type": "System.Int32",
         "IsRequired": true
       }

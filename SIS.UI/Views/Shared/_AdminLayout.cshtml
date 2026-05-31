@@ -540,36 +540,21 @@
 
         <div class="sidebar-section">Akademik</div>
         <a href="/Admin/Course" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Course" ? "active" : "")">
-            <i class="fas fa-book"></i> Kurslar
+            <i class="fas fa-graduation-cap"></i> Tədris Proqramları
         </a>
-        <a href="/Admin/CourseOffering" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "CourseOffering" ? "active" : "")">
-            <i class="fas fa-calendar-alt"></i> Kurs Təklifləri
+        <a href="/Admin/Group" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Group" ? "active" : "")">
+            <i class="fas fa-users"></i> Qruplar
         </a>
         <a href="/Admin/Enrollment" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Enrollment" ? "active" : "")">
             <i class="fas fa-clipboard-list"></i> Qeydiyyatlar
         </a>
 
         <div class="sidebar-section">Sistem</div>
-        <a href="/Admin/Department" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Department" ? "active" : "")">
-            <i class="fas fa-building"></i> Departamentlər
-        </a>
-        <a href="/Admin/AcademicProgram" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "AcademicProgram" ? "active" : "")">
-            <i class="fas fa-graduation-cap"></i> Proqramlar
-        </a>
         <a href="/Admin/AcademicYear" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "AcademicYear" ? "active" : "")">
-            <i class="fas fa-calendar-alt"></i> Dərs Sezonları
-        </a>
-        <a href="/Admin/AcademicTerm" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "AcademicTerm" ? "active" : "")">
-            <i class="fas fa-calendar"></i> Semestrlər
-        </a>
-        <a href="/Admin/Schedule" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Schedule" ? "active" : "")">
-            <i class="fas fa-calendar-week"></i> Dərs Cədvəli
+            <i class="fas fa-calendar-alt"></i> Sezonlar
         </a>
         <a href="/Admin/Announcement" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Announcement" ? "active" : "")">
             <i class="fas fa-bullhorn"></i> Elanlar
-        </a>
-        <a href="/Admin/ActivityLog" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "ActivityLog" ? "active" : "")">
-            <i class="fas fa-history"></i> Aktivlik Loqu
         </a>
 
         <div class="sidebar-footer">

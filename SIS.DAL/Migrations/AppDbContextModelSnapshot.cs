@@ -163,6 +163,9 @@ namespace SIS.DAL.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
+                    b.Property<DateTime?>("BirthDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
@@ -239,107 +242,6 @@ namespace SIS.DAL.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("SIS.Entities.Models.AcademicProgram", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("DepartmentId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("DurationYears")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DepartmentId");
-
-                    b.ToTable("AcademicPrograms");
-                });
-
-            modelBuilder.Entity("SIS.Entities.Models.AcademicTerm", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("AcademicYearId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DropDeadline")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("EndDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("ExamPeriodEnd")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("ExamPeriodStart")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("GradeSubmissionDeadline")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("RegistrationEnd")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("RegistrationStart")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AcademicYearId");
-
-                    b.ToTable("AcademicTerms");
-                });
-
             modelBuilder.Entity("SIS.Entities.Models.AcademicYear", b =>
                 {
                     b.Property<int>("Id")
@@ -362,8 +264,8 @@ namespace SIS.DAL.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
@@ -450,13 +352,16 @@ namespace SIS.DAL.Migrations
                         .HasMaxLength(2000)
                         .HasColumnType("nvarchar(2000)");
 
-                    b.Property<int?>("CourseOfferingId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("GroupId")
+                        .HasColumnType("int");
+
                     b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsGlobal")
                         .HasColumnType("bit");
 
                     b.Property<int>("TargetType")
@@ -474,9 +379,117 @@ namespace SIS.DAL.Migrations
 
                     b.HasIndex("AuthorId");
 
-                    b.HasIndex("CourseOfferingId");
+                    b.HasIndex("GroupId");
 
                     b.ToTable("Announcements");
+                });
+
+            modelBuilder.Entity("SIS.Entities.Models.AssessmentItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("GroupId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsVisible")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal>("MaxScore")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("WeightPercent")
+                        .HasColumnType("decimal(5,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GroupId");
+
+                    b.ToTable("AssessmentItems");
+                });
+
+            modelBuilder.Entity("SIS.Entities.Models.AssessmentSubmission", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AssessmentItemId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Comment")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("EnrollmentId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("EnrollmentId1")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Feedback")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FileUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("GradedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsGraded")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal?>("Score")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<DateTime?>("SubmittedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AssessmentItemId");
+
+                    b.HasIndex("EnrollmentId");
+
+                    b.HasIndex("EnrollmentId1");
+
+                    b.ToTable("AssessmentSubmissions");
                 });
 
             modelBuilder.Entity("SIS.Entities.Models.Assignment", b =>
@@ -487,21 +500,23 @@ namespace SIS.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("AssessmentItemId")
+                        .HasColumnType("int");
+
                     b.Property<string>("AttachmentUrl")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("CourseOfferingId")
-                        .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
-                        .HasMaxLength(2000)
-                        .HasColumnType("nvarchar(2000)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("DueDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("GroupId")
+                        .HasColumnType("int");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -510,8 +525,7 @@ namespace SIS.DAL.Migrations
                         .HasColumnType("bit");
 
                     b.Property<decimal>("MaxScore")
-                        .HasPrecision(5, 2)
-                        .HasColumnType("decimal(5,2)");
+                        .HasColumnType("decimal(10,2)");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -526,7 +540,9 @@ namespace SIS.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CourseOfferingId");
+                    b.HasIndex("AssessmentItemId");
+
+                    b.HasIndex("GroupId");
 
                     b.ToTable("Assignments");
                 });
@@ -638,11 +654,7 @@ namespace SIS.DAL.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("CancellationReason")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<int>("CourseOfferingId")
-                        .HasColumnType("int");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -653,6 +665,9 @@ namespace SIS.DAL.Migrations
                     b.Property<TimeOnly>("EndTime")
                         .HasColumnType("time");
 
+                    b.Property<int>("GroupId")
+                        .HasColumnType("int");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -660,12 +675,11 @@ namespace SIS.DAL.Migrations
                         .HasMaxLength(2000)
                         .HasColumnType("nvarchar(2000)");
 
-                    b.Property<int?>("OriginalSessionId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Room")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("SessionNumber")
+                        .HasColumnType("int");
 
                     b.Property<TimeOnly>("StartTime")
                         .HasColumnType("time");
@@ -674,21 +688,15 @@ namespace SIS.DAL.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Topic")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Date");
-
-                    b.HasIndex("OriginalSessionId");
-
-                    b.HasIndex("CourseOfferingId", "Date", "StartTime")
-                        .IsUnique()
-                        .HasFilter("[IsDeleted] = 0");
+                    b.HasIndex("GroupId");
 
                     b.ToTable("ClassSessions");
                 });
@@ -701,24 +709,12 @@ namespace SIS.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("AcademicProgramId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Credits")
-                        .HasColumnType("int");
-
-                    b.Property<int>("DepartmentId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -728,105 +724,15 @@ namespace SIS.DAL.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AcademicProgramId");
-
-                    b.HasIndex("DepartmentId");
 
                     b.ToTable("Courses");
-                });
-
-            modelBuilder.Entity("SIS.Entities.Models.CourseOffering", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("AcademicTermId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Capacity")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CourseId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Room")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<int>("TeacherId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CourseId");
-
-                    b.HasIndex("TeacherId");
-
-                    b.HasIndex("AcademicTermId", "CourseId", "TeacherId")
-                        .IsUnique();
-
-                    b.ToTable("CourseOfferings");
-                });
-
-            modelBuilder.Entity("SIS.Entities.Models.Department", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Departments");
                 });
 
             modelBuilder.Entity("SIS.Entities.Models.Enrollment", b =>
@@ -837,14 +743,14 @@ namespace SIS.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CourseOfferingId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("EnrolledAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("GroupId")
+                        .HasColumnType("int");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -860,9 +766,9 @@ namespace SIS.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CourseOfferingId");
+                    b.HasIndex("GroupId");
 
-                    b.HasIndex("StudentId", "CourseOfferingId")
+                    b.HasIndex("StudentId", "GroupId")
                         .IsUnique();
 
                     b.ToTable("Enrollments");
@@ -912,6 +818,96 @@ namespace SIS.DAL.Migrations
                         .IsUnique();
 
                     b.ToTable("Grades");
+                });
+
+            modelBuilder.Entity("SIS.Entities.Models.Group", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("AcademicYearId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Capacity")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CourseId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("TeacherId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AcademicYearId");
+
+                    b.HasIndex("CourseId");
+
+                    b.HasIndex("TeacherId");
+
+                    b.ToTable("Groups");
+                });
+
+            modelBuilder.Entity("SIS.Entities.Models.GroupScheduleDay", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DayOfWeek")
+                        .HasColumnType("int");
+
+                    b.Property<TimeOnly>("EndTime")
+                        .HasColumnType("time");
+
+                    b.Property<int>("GroupId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<TimeOnly>("StartTime")
+                        .HasColumnType("time");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GroupId");
+
+                    b.ToTable("GroupScheduleDays");
                 });
 
             modelBuilder.Entity("SIS.Entities.Models.Notification", b =>
@@ -1017,19 +1013,18 @@ namespace SIS.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("AcademicProgramId")
-                        .HasColumnType("int");
-
                     b.Property<string>("AppUserId")
                         .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("AppUserId1")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<decimal>("CurrentGPA")
-                        .HasPrecision(3, 2)
-                        .HasColumnType("decimal(3,2)");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("EnrollmentYear")
                         .HasColumnType("int");
@@ -1047,13 +1042,12 @@ namespace SIS.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AcademicProgramId");
-
                     b.HasIndex("AppUserId")
                         .IsUnique();
 
-                    b.HasIndex("StudentNumber")
-                        .IsUnique();
+                    b.HasIndex("AppUserId1")
+                        .IsUnique()
+                        .HasFilter("[AppUserId1] IS NOT NULL");
 
                     b.ToTable("Students");
                 });
@@ -1070,11 +1064,11 @@ namespace SIS.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("AppUserId1")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
-
-                    b.Property<int>("DepartmentId")
-                        .HasColumnType("int");
 
                     b.Property<string>("EmployeeNumber")
                         .IsRequired()
@@ -1088,9 +1082,8 @@ namespace SIS.DAL.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -1100,54 +1093,11 @@ namespace SIS.DAL.Migrations
                     b.HasIndex("AppUserId")
                         .IsUnique();
 
-                    b.HasIndex("DepartmentId");
-
-                    b.HasIndex("EmployeeNumber")
-                        .IsUnique();
+                    b.HasIndex("AppUserId1")
+                        .IsUnique()
+                        .HasFilter("[AppUserId1] IS NOT NULL");
 
                     b.ToTable("Teachers");
-                });
-
-            modelBuilder.Entity("SIS.Entities.Models.WeeklySchedulePattern", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CourseOfferingId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("DayOfWeek")
-                        .HasColumnType("int");
-
-                    b.Property<TimeOnly>("EndTime")
-                        .HasColumnType("time");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Room")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<TimeOnly>("StartTime")
-                        .HasColumnType("time");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CourseOfferingId", "DayOfWeek", "StartTime")
-                        .IsUnique()
-                        .HasFilter("[IsDeleted] = 0");
-
-                    b.ToTable("WeeklySchedulePatterns");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -1201,27 +1151,6 @@ namespace SIS.DAL.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("SIS.Entities.Models.AcademicProgram", b =>
-                {
-                    b.HasOne("SIS.Entities.Models.Department", "Department")
-                        .WithMany("Programs")
-                        .HasForeignKey("DepartmentId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Department");
-                });
-
-            modelBuilder.Entity("SIS.Entities.Models.AcademicTerm", b =>
-                {
-                    b.HasOne("SIS.Entities.Models.AcademicYear", "AcademicYear")
-                        .WithMany("Terms")
-                        .HasForeignKey("AcademicYearId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("AcademicYear");
-                });
-
             modelBuilder.Entity("SIS.Entities.Models.ActivityLog", b =>
                 {
                     b.HasOne("SIS.Entities.Identity.AppUser", "User")
@@ -1241,25 +1170,66 @@ namespace SIS.DAL.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("SIS.Entities.Models.CourseOffering", "CourseOffering")
+                    b.HasOne("SIS.Entities.Models.Group", "Group")
                         .WithMany()
-                        .HasForeignKey("CourseOfferingId")
+                        .HasForeignKey("GroupId")
                         .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Author");
 
-                    b.Navigation("CourseOffering");
+                    b.Navigation("Group");
+                });
+
+            modelBuilder.Entity("SIS.Entities.Models.AssessmentItem", b =>
+                {
+                    b.HasOne("SIS.Entities.Models.Group", "Group")
+                        .WithMany("AssessmentItems")
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Group");
+                });
+
+            modelBuilder.Entity("SIS.Entities.Models.AssessmentSubmission", b =>
+                {
+                    b.HasOne("SIS.Entities.Models.AssessmentItem", "AssessmentItem")
+                        .WithMany("Submissions")
+                        .HasForeignKey("AssessmentItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SIS.Entities.Models.Enrollment", "Enrollment")
+                        .WithMany()
+                        .HasForeignKey("EnrollmentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SIS.Entities.Models.Enrollment", null)
+                        .WithMany("AssessmentSubmissions")
+                        .HasForeignKey("EnrollmentId1");
+
+                    b.Navigation("AssessmentItem");
+
+                    b.Navigation("Enrollment");
                 });
 
             modelBuilder.Entity("SIS.Entities.Models.Assignment", b =>
                 {
-                    b.HasOne("SIS.Entities.Models.CourseOffering", "CourseOffering")
+                    b.HasOne("SIS.Entities.Models.AssessmentItem", "AssessmentItem")
+                        .WithMany()
+                        .HasForeignKey("AssessmentItemId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("SIS.Entities.Models.Group", "Group")
                         .WithMany("Assignments")
-                        .HasForeignKey("CourseOfferingId")
+                        .HasForeignKey("GroupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("CourseOffering");
+                    b.Navigation("AssessmentItem");
+
+                    b.Navigation("Group");
                 });
 
             modelBuilder.Entity("SIS.Entities.Models.AssignmentSubmission", b =>
@@ -1301,72 +1271,20 @@ namespace SIS.DAL.Migrations
 
             modelBuilder.Entity("SIS.Entities.Models.ClassSession", b =>
                 {
-                    b.HasOne("SIS.Entities.Models.CourseOffering", "CourseOffering")
+                    b.HasOne("SIS.Entities.Models.Group", "Group")
                         .WithMany("ClassSessions")
-                        .HasForeignKey("CourseOfferingId")
+                        .HasForeignKey("GroupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SIS.Entities.Models.ClassSession", "OriginalSession")
-                        .WithMany()
-                        .HasForeignKey("OriginalSessionId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("CourseOffering");
-
-                    b.Navigation("OriginalSession");
-                });
-
-            modelBuilder.Entity("SIS.Entities.Models.Course", b =>
-                {
-                    b.HasOne("SIS.Entities.Models.AcademicProgram", "AcademicProgram")
-                        .WithMany("Courses")
-                        .HasForeignKey("AcademicProgramId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("SIS.Entities.Models.Department", "Department")
-                        .WithMany("Courses")
-                        .HasForeignKey("DepartmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("AcademicProgram");
-
-                    b.Navigation("Department");
-                });
-
-            modelBuilder.Entity("SIS.Entities.Models.CourseOffering", b =>
-                {
-                    b.HasOne("SIS.Entities.Models.AcademicTerm", "AcademicTerm")
-                        .WithMany("CourseOfferings")
-                        .HasForeignKey("AcademicTermId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("SIS.Entities.Models.Course", "Course")
-                        .WithMany("CourseOfferings")
-                        .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("SIS.Entities.Models.Teacher", "Teacher")
-                        .WithMany("CourseOfferings")
-                        .HasForeignKey("TeacherId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("AcademicTerm");
-
-                    b.Navigation("Course");
-
-                    b.Navigation("Teacher");
+                    b.Navigation("Group");
                 });
 
             modelBuilder.Entity("SIS.Entities.Models.Enrollment", b =>
                 {
-                    b.HasOne("SIS.Entities.Models.CourseOffering", "CourseOffering")
+                    b.HasOne("SIS.Entities.Models.Group", "Group")
                         .WithMany("Enrollments")
-                        .HasForeignKey("CourseOfferingId")
+                        .HasForeignKey("GroupId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -1376,7 +1294,7 @@ namespace SIS.DAL.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("CourseOffering");
+                    b.Navigation("Group");
 
                     b.Navigation("Student");
                 });
@@ -1390,6 +1308,43 @@ namespace SIS.DAL.Migrations
                         .IsRequired();
 
                     b.Navigation("Enrollment");
+                });
+
+            modelBuilder.Entity("SIS.Entities.Models.Group", b =>
+                {
+                    b.HasOne("SIS.Entities.Models.AcademicYear", "AcademicYear")
+                        .WithMany("Groups")
+                        .HasForeignKey("AcademicYearId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("SIS.Entities.Models.Course", "Course")
+                        .WithMany("Groups")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SIS.Entities.Models.Teacher", "Teacher")
+                        .WithMany("Groups")
+                        .HasForeignKey("TeacherId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("AcademicYear");
+
+                    b.Navigation("Course");
+
+                    b.Navigation("Teacher");
+                });
+
+            modelBuilder.Entity("SIS.Entities.Models.GroupScheduleDay", b =>
+                {
+                    b.HasOne("SIS.Entities.Models.Group", "Group")
+                        .WithMany("ScheduleDays")
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Group");
                 });
 
             modelBuilder.Entity("SIS.Entities.Models.Notification", b =>
@@ -1416,19 +1371,15 @@ namespace SIS.DAL.Migrations
 
             modelBuilder.Entity("SIS.Entities.Models.Student", b =>
                 {
-                    b.HasOne("SIS.Entities.Models.AcademicProgram", "AcademicProgram")
-                        .WithMany("Students")
-                        .HasForeignKey("AcademicProgramId")
+                    b.HasOne("SIS.Entities.Identity.AppUser", "AppUser")
+                        .WithOne()
+                        .HasForeignKey("SIS.Entities.Models.Student", "AppUserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("SIS.Entities.Identity.AppUser", "AppUser")
+                    b.HasOne("SIS.Entities.Identity.AppUser", null)
                         .WithOne("Student")
-                        .HasForeignKey("SIS.Entities.Models.Student", "AppUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("AcademicProgram");
+                        .HasForeignKey("SIS.Entities.Models.Student", "AppUserId1");
 
                     b.Navigation("AppUser");
                 });
@@ -1436,31 +1387,16 @@ namespace SIS.DAL.Migrations
             modelBuilder.Entity("SIS.Entities.Models.Teacher", b =>
                 {
                     b.HasOne("SIS.Entities.Identity.AppUser", "AppUser")
-                        .WithOne("Teacher")
+                        .WithOne()
                         .HasForeignKey("SIS.Entities.Models.Teacher", "AppUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SIS.Entities.Models.Department", "Department")
-                        .WithMany("Teachers")
-                        .HasForeignKey("DepartmentId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("SIS.Entities.Identity.AppUser", null)
+                        .WithOne("Teacher")
+                        .HasForeignKey("SIS.Entities.Models.Teacher", "AppUserId1");
+
                     b.Navigation("AppUser");
-
-                    b.Navigation("Department");
-                });
-
-            modelBuilder.Entity("SIS.Entities.Models.WeeklySchedulePattern", b =>
-                {
-                    b.HasOne("SIS.Entities.Models.CourseOffering", "CourseOffering")
-                        .WithMany("WeeklySchedules")
-                        .HasForeignKey("CourseOfferingId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CourseOffering");
                 });
 
             modelBuilder.Entity("SIS.Entities.Identity.AppUser", b =>
@@ -1474,21 +1410,14 @@ namespace SIS.DAL.Migrations
                     b.Navigation("Teacher");
                 });
 
-            modelBuilder.Entity("SIS.Entities.Models.AcademicProgram", b =>
-                {
-                    b.Navigation("Courses");
-
-                    b.Navigation("Students");
-                });
-
-            modelBuilder.Entity("SIS.Entities.Models.AcademicTerm", b =>
-                {
-                    b.Navigation("CourseOfferings");
-                });
-
             modelBuilder.Entity("SIS.Entities.Models.AcademicYear", b =>
                 {
-                    b.Navigation("Terms");
+                    b.Navigation("Groups");
+                });
+
+            modelBuilder.Entity("SIS.Entities.Models.AssessmentItem", b =>
+                {
+                    b.Navigation("Submissions");
                 });
 
             modelBuilder.Entity("SIS.Entities.Models.Assignment", b =>
@@ -1503,36 +1432,31 @@ namespace SIS.DAL.Migrations
 
             modelBuilder.Entity("SIS.Entities.Models.Course", b =>
                 {
-                    b.Navigation("CourseOfferings");
+                    b.Navigation("Groups");
                 });
 
-            modelBuilder.Entity("SIS.Entities.Models.CourseOffering", b =>
+            modelBuilder.Entity("SIS.Entities.Models.Enrollment", b =>
                 {
+                    b.Navigation("AssessmentSubmissions");
+
+                    b.Navigation("AssignmentSubmissions");
+
+                    b.Navigation("AttendanceRecords");
+
+                    b.Navigation("Grades");
+                });
+
+            modelBuilder.Entity("SIS.Entities.Models.Group", b =>
+                {
+                    b.Navigation("AssessmentItems");
+
                     b.Navigation("Assignments");
 
                     b.Navigation("ClassSessions");
 
                     b.Navigation("Enrollments");
 
-                    b.Navigation("WeeklySchedules");
-                });
-
-            modelBuilder.Entity("SIS.Entities.Models.Department", b =>
-                {
-                    b.Navigation("Courses");
-
-                    b.Navigation("Programs");
-
-                    b.Navigation("Teachers");
-                });
-
-            modelBuilder.Entity("SIS.Entities.Models.Enrollment", b =>
-                {
-                    b.Navigation("AssignmentSubmissions");
-
-                    b.Navigation("AttendanceRecords");
-
-                    b.Navigation("Grades");
+                    b.Navigation("ScheduleDays");
                 });
 
             modelBuilder.Entity("SIS.Entities.Models.Student", b =>
@@ -1542,7 +1466,7 @@ namespace SIS.DAL.Migrations
 
             modelBuilder.Entity("SIS.Entities.Models.Teacher", b =>
                 {
-                    b.Navigation("CourseOfferings");
+                    b.Navigation("Groups");
                 });
 #pragma warning restore 612, 618
         }

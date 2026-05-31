@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SIS.UI.ApiClients;
 
@@ -13,11 +13,8 @@ namespace SIS.UI.Areas.Student.Controllers
         private readonly IAnnouncementApi _announcementApi;
         private readonly INotificationApi _notificationApi;
 
-        public DashboardController(
-            IStudentApi studentApi,
-            IEnrollmentApi enrollmentApi,
-            IAnnouncementApi announcementApi,
-            INotificationApi notificationApi)
+        public DashboardController(IStudentApi studentApi, IEnrollmentApi enrollmentApi,
+            IAnnouncementApi announcementApi, INotificationApi notificationApi)
         {
             _studentApi = studentApi;
             _enrollmentApi = enrollmentApi;
@@ -30,7 +27,7 @@ namespace SIS.UI.Areas.Student.Controllers
             try
             {
                 var student = await _studentApi.GetMeAsync();
-                var enrollments = await _enrollmentApi.GetMyEnrollmentsAsync();
+                var enrollments = await _enrollmentApi.GetByStudentAsync(student.Id);
                 var announcements = await _announcementApi.GetMyAnnouncementsAsync();
                 var unreadCount = await _notificationApi.GetUnreadCountAsync();
 

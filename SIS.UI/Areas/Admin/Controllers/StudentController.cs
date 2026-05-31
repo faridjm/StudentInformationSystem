@@ -1,8 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SIS.BLL.Services.DTOs.Auth;
 using SIS.BLL.Services.DTOs.Student;
-using SIS.Common.Pagination;
 using SIS.UI.ApiClients;
 
 namespace SIS.UI.Areas.Admin.Controllers
@@ -12,174 +11,90 @@ namespace SIS.UI.Areas.Admin.Controllers
     public class StudentController : Controller
     {
         private readonly IStudentApi _studentApi;
-        private readonly IAcademicProgramApi _programApi;
         private readonly IAuthApi _authApi;
 
-        public StudentController(IStudentApi studentApi, IAcademicProgramApi programApi, IAuthApi authApi)
+        public StudentController(IStudentApi studentApi, IAuthApi authApi)
         {
             _studentApi = studentApi;
-            _programApi = programApi;
             _authApi = authApi;
         }
 
-        public async Task<IActionResult> Index(int page = 1, string? search = null)
-        {
-            var request = new PagedRequest { Page = page, PageSize = 10, SearchTerm = search };
-            var result = await _studentApi.GetAllAsync(request);
-
-            ViewBag.SearchTerm = search;
-            return View(result);
-        }
+        public async Task<IActionResult> Index()
+            => View(await _studentApi.GetAllAsync());
 
         public async Task<IActionResult> Detail(int id)
         {
-            var student = await _studentApi.GetByIdAsync(id);
-            if (student == null) return NotFound();
-            return View(student);
+            var s = await _studentApi.GetByIdAsync(id);
+            return View(s);
         }
 
-        public async Task<IActionResult> Create()
-        {
-            var programs = await _programApi.GetAllAsync();
-            ViewBag.Programs = programs;
-            return View();
-        }
+        public IActionResult Create() => View();
 
         [HttpPost]
         public async Task<IActionResult> Create(CreateStudentDto dto)
         {
-            if (!ModelState.IsValid)
-            {
-                var programs = await _programApi.GetAllAsync();
-                ViewBag.Programs = programs;
-                return View(dto);
-            }
-
+            if (!ModelState.IsValid) return View(dto);
             try
             {
                 await _studentApi.CreateAsync(dto);
-                TempData["Success"] = "Tələbə uğurla yaradıldı";
+                TempData["Success"] = "Tələbə yaradıldı";
                 return RedirectToAction("Index");
             }
-            catch (Refit.ApiException ex)
+            catch (Refit.ApiException apiEx)
             {
-                var message = ex.Content ?? ex.ReasonPhrase ?? "Xəta baş verdi";
-                try
-                {
-                    var error = System.Text.Json.JsonDocument.Parse(message);
-                    if (error.RootElement.TryGetProperty("message", out var msg))
-                        message = msg.GetString() ?? message;
-                    else if (error.RootElement.TryGetProperty("errors", out var errors))
-                        message = errors.ToString();
-                }
-                catch { }
-                ModelState.AddModelError("", message);
-                var programs = await _programApi.GetAllAsync();
-                ViewBag.Programs = programs;
+                TempData["Error"] = await ExtractApiError(apiEx);
                 return View(dto);
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", ex.Message);
-                var programs = await _programApi.GetAllAsync();
-                ViewBag.Programs = programs;
+                TempData["Error"] = ex.Message;
                 return View(dto);
             }
         }
 
         public async Task<IActionResult> Edit(int id)
         {
-            var student = await _studentApi.GetByIdAsync(id);
-            if (student == null) return NotFound();
-
-            var programs = await _programApi.GetAllAsync();
-            ViewBag.Programs = programs;
-
-            var dto = new UpdateStudentDto
-            {
-                Id = student.Id,
-                FullName = student.FullName,
-                PhoneNumber = student.PhoneNumber,
-                AcademicProgramId = 0
-            };
-
-            return View(dto);
+            var s = await _studentApi.GetByIdAsync(id);
+            return View(new UpdateStudentDto { Id = s.Id, FullName = s.FullName, FinCode = s.FinCode, PhoneNumber = s.PhoneNumber });
         }
 
         [HttpPost]
         public async Task<IActionResult> Edit(UpdateStudentDto dto)
         {
-            if (!ModelState.IsValid)
-            {
-                var programs = await _programApi.GetAllAsync();
-                ViewBag.Programs = programs;
-                return View(dto);
-            }
-
-            try
-            {
-                await _studentApi.UpdateAsync(dto);
-                TempData["Success"] = "Tələbə uğurla yeniləndi";
-                return RedirectToAction("Index");
-            }
-            catch (Refit.ApiException ex)
-            {
-                var message = ex.Content ?? ex.ReasonPhrase ?? "Xəta baş verdi";
-                try
-                {
-                    var error = System.Text.Json.JsonDocument.Parse(message);
-                    if (error.RootElement.TryGetProperty("message", out var msg))
-                        message = msg.GetString() ?? message;
-                    else if (error.RootElement.TryGetProperty("errors", out var errors))
-                        message = errors.ToString();
-                }
-                catch { }
-                ModelState.AddModelError("", message);
-                var programs = await _programApi.GetAllAsync();
-                ViewBag.Programs = programs;
-                return View(dto);
-            }
+            if (!ModelState.IsValid) return View(dto);
+            await _studentApi.UpdateAsync(dto);
+            TempData["Success"] = "Dəyişikliklər saxlandı";
+            return RedirectToAction("Detail", new { id = dto.Id });
         }
 
         [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
-            try
-            {
-                await _studentApi.DeleteAsync(id);
-                TempData["Success"] = "Tələbə uğurla silindi";
-            }
-            catch
-            {
-                TempData["Error"] = "Silmə zamanı xəta baş verdi";
-            }
+            await _studentApi.DeleteAsync(id);
+            TempData["Success"] = "Tələbə silindi";
             return RedirectToAction("Index");
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> SetPassword(string userId, string newPassword, string confirmPassword, int studentId)
         {
-            if (newPassword != confirmPassword)
-            {
-                TempData["Error"] = "Şifrələr uyğun gəlmir";
-                return RedirectToAction("Detail", new { id = studentId });
-            }
+            if (newPassword != confirmPassword) { TempData["Error"] = "Şifrələr uyğun deyil"; return RedirectToAction("Detail", new { id = studentId }); }
+            try { await _authApi.AdminSetPasswordAsync(new AdminSetPasswordDto { UserId = userId, NewPassword = newPassword, ConfirmPassword = confirmPassword }); TempData["Success"] = "Şifrə dəyişdirildi"; }
+            catch { TempData["Error"] = "Xəta baş verdi"; }
+            return RedirectToAction("Detail", new { id = studentId });
+        }
+
+        private static async Task<string> ExtractApiError(Refit.ApiException apiEx)
+        {
             try
             {
-                await _authApi.AdminSetPasswordAsync(new AdminSetPasswordDto
-                {
-                    UserId = userId,
-                    NewPassword = newPassword,
-                    ConfirmPassword = confirmPassword
-                });
-                TempData["Success"] = "Şifrə uğurla dəyişdirildi";
+                var content = await apiEx.GetContentAsAsync<System.Text.Json.JsonElement>();
+                if (content.TryGetProperty("message", out var msg)) return msg.GetString() ?? apiEx.ReasonPhrase ?? "Xəta";
+                if (content.TryGetProperty("errors", out var errs))
+                    return string.Join("; ", errs.EnumerateArray().Select(e => e.GetProperty("error").GetString()));
             }
-            catch (Exception ex)
-            {
-                TempData["Error"] = ex.Message;
-            }
-            return RedirectToAction("Detail", new { id = studentId });
+            catch { }
+            return apiEx.ReasonPhrase ?? "Xəta baş verdi";
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿@model SIS.Common.Pagination.PagedResult<SIS.BLL.Services.DTOs.Student.StudentListDto>
+﻿@model IEnumerable<SIS.BLL.Services.DTOs.Student.StudentListDto>
 
 @{
     ViewData["Title"] = "Tələbələr";
@@ -34,7 +34,7 @@
 <!-- Table -->
 <div class="card">
     <div class="card-header">
-        <span>Cəmi: @Model.TotalCount tələbə</span>
+        <span>Cəmi: @Model.Count() tələbə</span>
     </div>
     <div style="overflow-x:auto;">
         <table class="table">
@@ -44,21 +44,21 @@
                     <th>Ad Soyad</th>
                     <th>Email</th>
                     <th>Tələbə №</th>
-                    <th>Proqram</th>
+                    <th>İl</th>
                     <th>GPA</th>
                     <th>Status</th>
                     <th>Əməliyyat</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach (var student in Model.Items)
+                @foreach (var student in Model)
                 {
                     <tr>
                         <td>@student.Id</td>
                         <td>@student.FullName</td>
                         <td style="color:var(--text-secondary);">@student.Email</td>
                         <td><code style="background:var(--bg-hover); padding:2px 8px; border-radius:4px;">@student.StudentNumber</code></td>
-                        <td>@student.ProgramName</td>
+                        <td>@student.EnrollmentYear</td>
                         <td>
                             <span style="font-weight:600; color:@(student.CurrentGPA >= 3 ? "#22c55e" : student.CurrentGPA >= 2 ? "#eab308" : "#ef4444")">
                                 @student.CurrentGPA.ToString("F2")
@@ -97,29 +97,4 @@
         </table>
     </div>
 
-    <!-- Pagination -->
-    @if (Model.TotalPages > 1)
-    {
-        <div style="padding:16px 20px; display:flex; justify-content:center;">
-            <div class="pagination">
-                @if (Model.HasPrevious)
-                {
-                    <a href="?page=@(Model.Page - 1)&search=@ViewBag.SearchTerm" class="page-btn">
-                        <i class="fas fa-chevron-left"></i>
-                    </a>
-                }
-                @for (int i = 1; i <= Model.TotalPages; i++)
-                {
-                    <a href="?page=@i&search=@ViewBag.SearchTerm"
-                       class="page-btn @(i == Model.Page ? "active" : "")">@i</a>
-                }
-                @if (Model.HasNext)
-                {
-                    <a href="?page=@(Model.Page + 1)&search=@ViewBag.SearchTerm" class="page-btn">
-                        <i class="fas fa-chevron-right"></i>
-                    </a>
-                }
-            </div>
-        </div>
-    }
 </div>

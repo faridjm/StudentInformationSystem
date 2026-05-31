@@ -1,4 +1,4 @@
-﻿using FluentValidation;
+using FluentValidation;
 using SIS.BLL.Services.DTOs.Enrollment;
 
 namespace SIS.BLL.Validators
@@ -7,11 +7,8 @@ namespace SIS.BLL.Validators
     {
         public CreateEnrollmentDtoValidator()
         {
-            RuleFor(x => x.StudentId)
-                .GreaterThan(0).WithMessage("Tələbə seçilməlidir");
-
-            RuleFor(x => x.CourseOfferingId)
-                .GreaterThan(0).WithMessage("Kurs təklifi seçilməlidir");
+            RuleFor(x => x.StudentId).GreaterThan(0);
+            RuleFor(x => x.GroupId).GreaterThan(0);
         }
     }
 }

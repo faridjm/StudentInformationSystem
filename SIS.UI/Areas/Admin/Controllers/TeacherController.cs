@@ -1,8 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SIS.BLL.Services.DTOs.Auth;
 using SIS.BLL.Services.DTOs.Teacher;
-using SIS.Common.Pagination;
 using SIS.UI.ApiClients;
 
 namespace SIS.UI.Areas.Admin.Controllers
@@ -12,175 +11,86 @@ namespace SIS.UI.Areas.Admin.Controllers
     public class TeacherController : Controller
     {
         private readonly ITeacherApi _teacherApi;
-        private readonly IDepartmentApi _departmentApi;
         private readonly IAuthApi _authApi;
 
-        public TeacherController(ITeacherApi teacherApi, IDepartmentApi departmentApi, IAuthApi authApi)
+        public TeacherController(ITeacherApi teacherApi, IAuthApi authApi)
         {
             _teacherApi = teacherApi;
-            _departmentApi = departmentApi;
             _authApi = authApi;
         }
 
-        public async Task<IActionResult> Index(int page = 1, string? search = null)
-        {
-            var request = new PagedRequest { Page = page, PageSize = 10, SearchTerm = search };
-            var result = await _teacherApi.GetAllAsync(request);
-            ViewBag.SearchTerm = search;
-            return View(result);
-        }
+        public async Task<IActionResult> Index()
+            => View(await _teacherApi.GetAllAsync());
 
         public async Task<IActionResult> Detail(int id)
-        {
-            var teacher = await _teacherApi.GetByIdAsync(id);
-            if (teacher == null) return NotFound();
-            return View(teacher);
-        }
+            => View(await _teacherApi.GetByIdAsync(id));
 
-        public async Task<IActionResult> Create()
-        {
-            var departments = await _departmentApi.GetAllAsync(new PagedRequest { PageSize = 100 });
-            ViewBag.Departments = departments.Items;
-            return View();
-        }
+        public IActionResult Create() => View();
 
         [HttpPost]
         public async Task<IActionResult> Create(CreateTeacherDto dto)
         {
-            if (!ModelState.IsValid)
-            {
-                var departments = await _departmentApi.GetAllAsync(new PagedRequest { PageSize = 100 });
-                ViewBag.Departments = departments.Items;
-                return View(dto);
-            }
-
+            if (!ModelState.IsValid) return View(dto);
             try
             {
                 await _teacherApi.CreateAsync(dto);
-                TempData["Success"] = "Müəllim uğurla yaradıldı";
+                TempData["Success"] = "Müəllim yaradıldı";
                 return RedirectToAction("Index");
             }
-            catch (Refit.ApiException ex)
+            catch (Refit.ApiException apiEx)
             {
-                var message = ex.Content ?? ex.ReasonPhrase ?? "Xəta baş verdi";
-                try
-                {
-                    var error = System.Text.Json.JsonDocument.Parse(message);
-                    if (error.RootElement.TryGetProperty("message", out var msg))
-                        message = msg.GetString() ?? message;
-                    else if (error.RootElement.TryGetProperty("errors", out var errors))
-                        message = errors.ToString();
-                }
-                catch { }
-                ModelState.AddModelError("", message);
-                var departments = await _departmentApi.GetAllAsync(
-                    new SIS.Common.Pagination.PagedRequest { PageSize = 100 });
-                ViewBag.Departments = departments.Items;
+                TempData["Error"] = await ExtractApiError(apiEx);
                 return View(dto);
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", ex.Message);
-                var departments = await _departmentApi.GetAllAsync(
-                    new SIS.Common.Pagination.PagedRequest { PageSize = 100 });
-                ViewBag.Departments = departments.Items;
+                TempData["Error"] = ex.Message;
                 return View(dto);
             }
         }
 
         public async Task<IActionResult> Edit(int id)
         {
-            var teacher = await _teacherApi.GetByIdAsync(id);
-            if (teacher == null) return NotFound();
-
-            var departments = await _departmentApi.GetAllAsync(new PagedRequest { PageSize = 100 });
-            ViewBag.Departments = departments.Items;
-
-            var dto = new UpdateTeacherDto
-            {
-                Id = teacher.Id,
-                FullName = teacher.FullName,
-                PhoneNumber = teacher.PhoneNumber,
-                Title = teacher.Title,
-                DepartmentId = 0
-            };
-
-            return View(dto);
+            var t = await _teacherApi.GetByIdAsync(id);
+            return View(new UpdateTeacherDto { Id = t.Id, FullName = t.FullName, FinCode = t.FinCode, PhoneNumber = t.PhoneNumber, BirthDate = t.BirthDate });
         }
 
         [HttpPost]
         public async Task<IActionResult> Edit(UpdateTeacherDto dto)
         {
-            if (!ModelState.IsValid)
-            {
-                var departments = await _departmentApi.GetAllAsync(new PagedRequest { PageSize = 100 });
-                ViewBag.Departments = departments.Items;
-                return View(dto);
-            }
+            if (!ModelState.IsValid) return View(dto);
+            await _teacherApi.UpdateAsync(dto);
+            TempData["Success"] = "Dəyişikliklər saxlandı";
+            return RedirectToAction("Detail", new { id = dto.Id });
+        }
 
+        private static async Task<string> ExtractApiError(Refit.ApiException apiEx)
+        {
             try
             {
-                await _teacherApi.UpdateAsync(dto);
-                TempData["Success"] = "Müəllim uğurla yeniləndi";
-                return RedirectToAction("Index");
+                var content = await apiEx.GetContentAsAsync<System.Text.Json.JsonElement>();
+                if (content.TryGetProperty("message", out var msg)) return msg.GetString() ?? apiEx.ReasonPhrase ?? "Xəta";
+                if (content.TryGetProperty("errors", out var errs))
+                    return string.Join("; ", errs.EnumerateArray().Select(e => e.GetProperty("error").GetString()));
             }
-            catch (Refit.ApiException ex)
-            {
-                var message = ex.Content ?? ex.ReasonPhrase ?? "Xəta baş verdi";
-                try
-                {
-                    var error = System.Text.Json.JsonDocument.Parse(message);
-                    if (error.RootElement.TryGetProperty("message", out var msg))
-                        message = msg.GetString() ?? message;
-                    else if (error.RootElement.TryGetProperty("errors", out var errors))
-                        message = errors.ToString();
-                }
-                catch { }
-                ModelState.AddModelError("", message);
-                var departments = await _departmentApi.GetAllAsync(new PagedRequest { PageSize = 100 });
-                ViewBag.Departments = departments.Items;
-                return View(dto);
-            }
+            catch { }
+            return apiEx.ReasonPhrase ?? "Xəta baş verdi";
         }
 
         [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
-            try
-            {
-                await _teacherApi.DeleteAsync(id);
-                TempData["Success"] = "Müəllim uğurla silindi";
-            }
-            catch
-            {
-                TempData["Error"] = "Silmə zamanı xəta baş verdi";
-            }
+            await _teacherApi.DeleteAsync(id);
+            TempData["Success"] = "Müəllim silindi";
             return RedirectToAction("Index");
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> SetPassword(string userId, string newPassword, string confirmPassword, int teacherId)
         {
-            if (newPassword != confirmPassword)
-            {
-                TempData["Error"] = "Şifrələr uyğun gəlmir";
-                return RedirectToAction("Detail", new { id = teacherId });
-            }
-            try
-            {
-                await _authApi.AdminSetPasswordAsync(new AdminSetPasswordDto
-                {
-                    UserId = userId,
-                    NewPassword = newPassword,
-                    ConfirmPassword = confirmPassword
-                });
-                TempData["Success"] = "Şifrə uğurla dəyişdirildi";
-            }
-            catch (Exception ex)
-            {
-                TempData["Error"] = ex.Message;
-            }
+            if (newPassword != confirmPassword) { TempData["Error"] = "Şifrələr uyğun deyil"; return RedirectToAction("Detail", new { id = teacherId }); }
+            try { await _authApi.AdminSetPasswordAsync(new AdminSetPasswordDto { UserId = userId, NewPassword = newPassword, ConfirmPassword = confirmPassword }); TempData["Success"] = "Şifrə dəyişdirildi"; }
+            catch { TempData["Error"] = "Xəta baş verdi"; }
             return RedirectToAction("Detail", new { id = teacherId });
         }
     }

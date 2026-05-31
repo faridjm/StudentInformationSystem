@@ -37,7 +37,15 @@ namespace SIS.API.Controllers
         [Authorize(Roles = $"{RoleConstants.Admin},{RoleConstants.Moderator},{RoleConstants.SuperAdmin},{RoleConstants.Teacher},{RoleConstants.Student}")]
         public async Task<IActionResult> GetByCourse(int courseOfferingId)
         {
-            var announcements = await _announcementService.GetCourseAnnouncementsAsync(courseOfferingId);
+            var announcements = await _announcementService.GetGlobalAnnouncementsAsync();
+            return Ok(announcements);
+        }
+
+        [HttpGet("group/{groupId}")]
+        [Authorize(Roles = $"{RoleConstants.Admin},{RoleConstants.Moderator},{RoleConstants.SuperAdmin},{RoleConstants.Teacher}")]
+        public async Task<IActionResult> GetByGroup(int groupId)
+        {
+            var announcements = await _announcementService.GetByGroupAsync(groupId);
             return Ok(announcements);
         }
 

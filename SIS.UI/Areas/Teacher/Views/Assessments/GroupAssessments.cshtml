@@ -1,0 +1,60 @@
+@model List<SIS.BLL.Services.DTOs.Assessment.AssessmentItemDto>
+@using SIS.Entities.Enums
+@{
+    ViewData["Title"] = "Qiymətləndirmə Planı";
+    var group = (SIS.BLL.Services.DTOs.Groups.GroupDetailDto)ViewBag.Group;
+}
+
+<div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
+    <a href="/Teacher/Assessments" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i></a>
+    <div>
+        <h2 style="font-size:20px; font-weight:700; margin:0;">@group.Name — Qiymətləndirmə</h2>
+        <div style="font-size:13px; color:var(--text-secondary);">@group.CourseName</div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body" style="padding:0;">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Növ</th>
+                    <th>Başlıq</th>
+                    <th>Tarix</th>
+                    <th>Max bal</th>
+                    <th>Çəki</th>
+                    <th>Qiymətləndirilmiş</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var a in Model)
+                {
+                    var typeColor = a.Type == AssessmentType.Quiz ? "#3b82f6" : a.Type == AssessmentType.FinalProject ? "#e94560" : "#eab308";
+                    var typeLabel = a.Type == AssessmentType.Quiz ? "Quiz" : a.Type == AssessmentType.FinalProject ? "Final Layihəsi" : "Tapşırıq";
+                    <tr>
+                        <td><span style="font-size:11px; background:@(typeColor)22; color:@typeColor; padding:3px 8px; border-radius:4px; font-weight:600;">@typeLabel</span></td>
+                        <td><strong>@a.Title</strong></td>
+                        <td>@a.Date.ToString("dd.MM.yyyy")</td>
+                        <td>@a.MaxScore</td>
+                        <td>%@a.WeightPercent</td>
+                        <td>
+                            <span style="color:@(a.GradedCount == a.SubmissionCount && a.SubmissionCount > 0 ? "#22c55e" : "#eab308");">
+                                @a.GradedCount / @a.SubmissionCount
+                            </span>
+                        </td>
+                        <td>
+                            <a href="/Teacher/Assessments/Grade/@a.Id" class="btn btn-sm btn-primary">
+                                <i class="fas fa-pen"></i> Qiymətləndir
+                            </a>
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="7" style="text-align:center; color:var(--text-secondary); padding:30px;">Qiymətləndirmə planı boşdur</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

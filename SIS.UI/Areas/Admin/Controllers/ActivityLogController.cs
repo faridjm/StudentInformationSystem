@@ -15,11 +15,9 @@ namespace SIS.UI.Areas.Admin.Controllers
             _activityLogApi = activityLogApi;
         }
 
-        public async Task<IActionResult> Index(int count = 50)
+        public IActionResult Index()
         {
-            var logs = await _activityLogApi.GetRecentAsync(count);
-            ViewBag.Count = count;
-            return View(logs);
+            return View(Enumerable.Empty<SIS.Entities.Models.ActivityLog>());
         }
     }
 }

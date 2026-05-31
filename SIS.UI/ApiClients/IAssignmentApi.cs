@@ -5,8 +5,8 @@ namespace SIS.UI.ApiClients
 {
     public interface IAssignmentApi
     {
-        [Get("/api/assignment/course/{courseOfferingId}")]
-        Task<IEnumerable<AssignmentDto>> GetByCourseAsync(int courseOfferingId);
+        [Get("/api/assignment/group/{groupId}")]
+        Task<IEnumerable<AssignmentDto>> GetByGroupAsync(int groupId);
 
         [Get("/api/assignment/{id}")]
         Task<AssignmentDto> GetByIdAsync(int id);
@@ -23,10 +23,7 @@ namespace SIS.UI.ApiClients
         [Get("/api/assignment/{id}/submissions")]
         Task<IEnumerable<SubmissionDto>> GetSubmissionsAsync(int id);
 
-        [Get("/api/assignment/{assignmentId}/submission/{enrollmentId}")]
-        Task<SubmissionDto?> GetSubmissionAsync(int assignmentId, int enrollmentId);
-
-        [Get("/api/assignment/enrollment/{enrollmentId}/submissions")]
+        [Get("/api/assignment/my-submissions/{enrollmentId}")]
         Task<IEnumerable<SubmissionDto>> GetMySubmissionsAsync(int enrollmentId);
 
         [Post("/api/assignment/submit")]

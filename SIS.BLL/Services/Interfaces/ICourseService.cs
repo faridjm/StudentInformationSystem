@@ -1,15 +1,13 @@
-﻿using SIS.BLL.Services.DTOs.Course;
-using SIS.Common.Pagination;
+using SIS.BLL.Services.DTOs.Course;
 
 namespace SIS.BLL.Services.Interfaces
 {
     public interface ICourseService
     {
-        Task<PagedResult<CourseListDto>> GetAllCoursesAsync(PagedRequest request);
-        Task<CourseDetailDto?> GetCourseByIdAsync(int id);
-        Task<IEnumerable<CourseListDto>> GetCoursesByDepartmentAsync(int departmentId);
-        Task CreateCourseAsync(CreateCourseDto dto);
-        Task UpdateCourseAsync(UpdateCourseDto dto);
-        Task DeleteCourseAsync(int id);
+        Task<IEnumerable<CourseDto>> GetAllAsync();
+        Task<CourseDto?> GetByIdAsync(int id);
+        Task<CourseDto> CreateAsync(CreateCourseDto dto);
+        Task UpdateAsync(UpdateCourseDto dto);
+        Task DeleteAsync(int id);
     }
 }

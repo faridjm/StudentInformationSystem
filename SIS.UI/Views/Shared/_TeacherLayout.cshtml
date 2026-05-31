@@ -445,10 +445,17 @@
 
         <div class="sidebar-section">Tədris</div>
         <a href="/Teacher/Courses" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Courses" ? "active" : "")">
-            <i class="fas fa-book"></i> Kurslarım
+            <i class="fas fa-layer-group"></i> Qruplarım
         </a>
-        <a href="/Teacher/Announcements" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Announcements" ? "active" : "")">
-            <i class="fas fa-bullhorn"></i> Elanlar
+        <a href="/Teacher/Assessments" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Assessments" ? "active" : "")">
+            <i class="fas fa-tasks"></i> Qiymətləndirmə
+        </a>
+        <a href="/Teacher/Assignments" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Assignments" ? "active" : "")">
+            <i class="fas fa-file-alt"></i> Tapşırıqlar
+        </a>
+        <div class="sidebar-section">Cədvəl</div>
+        <a href="/Teacher/Schedule" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Schedule" ? "active" : "")">
+            <i class="fas fa-calendar-alt"></i> Dərs Cədvəli
         </a>
 
         <div class="sidebar-footer">

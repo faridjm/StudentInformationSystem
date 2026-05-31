@@ -6,6 +6,5 @@ namespace SIS.DAL.Repositories.Interfaces
     {
         Task<AcademicYear?> GetActiveYearAsync();
         Task<AcademicYear?> GetByNameAsync(string name);
-        Task<IEnumerable<AcademicYear>> GetAllWithTermsAsync();
     }
 }

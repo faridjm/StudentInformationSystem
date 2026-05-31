@@ -20,7 +20,11 @@ namespace SIS.BLL.Services.DTOs.Assignment
         public decimal MaxScore { get; set; }
         public bool IsVisible { get; set; }
         public string? AttachmentUrl { get; set; }
-        public int CourseOfferingId { get; set; }
+        public int GroupId { get; set; }
         public int SubmissionCount { get; set; }
+        /// <summary>Rəsmi assessment-ə bağlıdırsa ID-si. null = sadə ev tapşırığı.</summary>
+        public int? AssessmentItemId { get; set; }
+        public string? AssessmentItemTitle { get; set; }
+        public bool IsLinkedToAssessment => AssessmentItemId.HasValue;
     }
 }

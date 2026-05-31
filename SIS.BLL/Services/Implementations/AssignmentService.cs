@@ -20,9 +20,9 @@ namespace SIS.BLL.Services.Implementations
             _emailService = emailService;
         }
 
-        public async Task<IEnumerable<AssignmentDto>> GetByCourseOfferingAsync(int courseOfferingId)
+        public async Task<IEnumerable<AssignmentDto>> GetByGroupAsync(int groupId)
         {
-            var assignments = await _unitOfWork.Assignments.GetByCourseOfferingAsync(courseOfferingId);
+            var assignments = await _unitOfWork.Assignments.GetByGroupAsync(groupId);
             return assignments.Select(MapToDto);
         }
 
@@ -43,7 +43,8 @@ namespace SIS.BLL.Services.Implementations
                 MaxScore = dto.MaxScore,
                 IsVisible = dto.IsVisible,
                 AttachmentUrl = dto.AttachmentUrl,
-                CourseOfferingId = dto.CourseOfferingId,
+                GroupId = dto.GroupId,
+                AssessmentItemId = dto.AssessmentItemId,
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -154,37 +155,21 @@ namespace SIS.BLL.Services.Implementations
             submission.IsGraded = true;
             _unitOfWork.AssignmentSubmissions.Update(submission);
 
-            // Grade cədvəlinə də yaz
-            var gradeType = assignment.Type switch
+            // ── Əgər assignment rəsmi AssessmentItem-ə bağlıdırsa → AssessmentSubmission-a da yaz ──
+            if (assignment.AssessmentItemId.HasValue)
             {
-                AssignmentType.Quiz => GradeType.Quiz,
-                AssignmentType.Project => GradeType.Project,
-                _ => GradeType.Assignment
-            };
+                var assessmentSub = (await _unitOfWork.AssessmentSubmissions
+                    .GetByEnrollmentAsync(submission.EnrollmentId))
+                    .FirstOrDefault(s => s.AssessmentItemId == assignment.AssessmentItemId.Value);
 
-            var existingGrade = await _unitOfWork.Grades.GetAsync(g =>
-                g.EnrollmentId == submission.EnrollmentId &&
-                g.Type == gradeType);
-
-            if (existingGrade != null)
-            {
-                existingGrade.Score = dto.Score;
-                existingGrade.MaxScore = assignment.MaxScore;
-                existingGrade.Note = $"{assignment.Title} — {dto.Feedback}";
-                _unitOfWork.Grades.Update(existingGrade);
-            }
-            else
-            {
-                await _unitOfWork.Grades.AddAsync(new Grade
+                if (assessmentSub != null)
                 {
-                    EnrollmentId = submission.EnrollmentId,
-                    Type = gradeType,
-                    Score = dto.Score,
-                    MaxScore = assignment.MaxScore,
-                    Note = $"{assignment.Title} — {dto.Feedback}",
-                    GradedAt = DateTime.UtcNow,
-                    CreatedAt = DateTime.UtcNow
-                });
+                    assessmentSub.Score = dto.Score;
+                    assessmentSub.Feedback = dto.Feedback;
+                    assessmentSub.IsGraded = true;
+                    assessmentSub.GradedAt = DateTime.UtcNow;
+                    _unitOfWork.AssessmentSubmissions.Update(assessmentSub);
+                }
             }
 
             await _unitOfWork.SaveAsync();
@@ -197,7 +182,7 @@ namespace SIS.BLL.Services.Implementations
 
                 var studentEmail = enrollment.Student?.AppUser?.Email;
                 var studentName = enrollment.Student?.AppUser?.FullName ?? "";
-                var courseName = enrollment.CourseOffering?.Course?.Name ?? "";
+                var courseName = enrollment.Group?.Course?.Name ?? "";
                 if (!string.IsNullOrEmpty(studentEmail))
                     _ = _emailService.SendGradeNotificationAsync(studentEmail, studentName, assignment.Title, courseName, dto.Score, assignment.MaxScore, dto.Feedback);
             }
@@ -215,8 +200,10 @@ namespace SIS.BLL.Services.Implementations
             MaxScore = a.MaxScore,
             IsVisible = a.IsVisible,
             AttachmentUrl = a.AttachmentUrl,
-            CourseOfferingId = a.CourseOfferingId,
-            SubmissionCount = a.Submissions?.Count ?? 0
+            GroupId = a.GroupId,
+            SubmissionCount = a.Submissions?.Count ?? 0,
+            AssessmentItemId = a.AssessmentItemId,
+            AssessmentItemTitle = a.AssessmentItem?.Title
         };
 
         private static SubmissionDto MapSubmissionToDto(AssignmentSubmission s, decimal maxScore) => new()

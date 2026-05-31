@@ -1,5 +1,10 @@
 namespace SIS.BLL.Services.DTOs.ClassSession
 {
+    public class UpdateTopicDto
+    {
+        public string? Topic { get; set; }
+    }
+
     /// <summary>Müəllim mövzu/qeyd/saat/otaq dəyişdirir.</summary>
     public class UpdateClassSessionDto
     {

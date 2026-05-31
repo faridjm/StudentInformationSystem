@@ -7,6 +7,7 @@ namespace SIS.Entities.Identity
     {
         public string FullName { get; set; } = null!;
         public string? FinCode { get; set; }
+        public DateTime? BirthDate { get; set; }
         public string? ProfilePhoto { get; set; }
         public bool IsActive { get; set; } = true;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

@@ -1,57 +1,36 @@
-﻿@model SIS.BLL.Services.DTOs.Student.UpdateStudentDto
-
+@model SIS.BLL.Services.DTOs.Student.UpdateStudentDto
 @{
     ViewData["Title"] = "Tələbəni Düzəlt";
 }
-
-<div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
-    <a href="/Admin/Student" class="btn btn-secondary btn-sm">
-        <i class="fas fa-arrow-left"></i>
-    </a>
-    <h2 style="font-size:20px; font-weight:700;">Tələbəni Düzəlt</h2>
-</div>
-
-<div class="card" style="max-width:600px;">
-    <div class="card-body">
-        <form method="post">
-            @Html.AntiForgeryToken()
-            <input asp-for="Id" type="hidden" />
-
-            <div asp-validation-summary="ModelOnly" style="color:#f87171; margin-bottom:12px; font-size:13px;"></div>
-
-            <div class="form-group">
-                <label class="form-label">Ad Soyad</label>
-                <input asp-for="FullName" class="form-control" />
-                <span asp-validation-for="FullName" style="color:#f87171; font-size:12px;"></span>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">FIN Kod</label>
-                <input asp-for="FinCode" class="form-control" placeholder="5XB9Z23" />
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Telefon</label>
-                <input asp-for="PhoneNumber" class="form-control" />
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Akademik Proqram</label>
-                <select asp-for="AcademicProgramId" class="form-control">
-                    <option value="">Proqram seçin</option>
-                    @foreach (var p in ViewBag.Programs as IEnumerable<SIS.BLL.Services.DTOs.AcademicProgram.AcademicProgramDto> ?? [])
-                    {
-                        <option value="@p.Id">@p.Name</option>
-                    }
-                </select>
-            </div>
-
-            <div style="display:flex; gap:10px; margin-top:8px;">
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-save"></i> Yenilə
-                </button>
-                <a href="/Admin/Student" class="btn btn-secondary">Ləğv et</a>
-            </div>
-        </form>
+<div style="max-width:560px; margin:0 auto;">
+    <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
+        <a href="/Admin/Student/Detail/@Model.Id" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i></a>
+        <h2 style="font-size:20px; font-weight:700;">Tələbəni Düzəlt</h2>
     </div>
+    <form method="post" action="/Admin/Student/Edit">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="Id" value="@Model.Id" />
+        <div class="card">
+            <div class="card-body">
+                <div class="form-group">
+                    <label class="form-label">Ad Soyad *</label>
+                    <input name="FullName" value="@Model.FullName" class="form-control" required />
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                    <div class="form-group">
+                        <label class="form-label">FİN kod</label>
+                        <input name="FinCode" value="@Model.FinCode" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Telefon</label>
+                        <input name="PhoneNumber" value="@Model.PhoneNumber" class="form-control" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="display:flex; gap:12px; margin-top:16px;">
+            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Yadda saxla</button>
+            <a href="/Admin/Student/Detail/@Model.Id" class="btn btn-secondary">Ləğv et</a>
+        </div>
+    </form>
 </div>

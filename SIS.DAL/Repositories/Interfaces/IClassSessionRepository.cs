@@ -4,12 +4,7 @@ namespace SIS.DAL.Repositories.Interfaces
 {
     public interface IClassSessionRepository : IGenericRepository<ClassSession>
     {
-        Task<ClassSession?> GetWithDetailsAsync(int id);
-        Task<IEnumerable<ClassSession>> GetByCourseOfferingAsync(int courseOfferingId);
-        Task<IEnumerable<ClassSession>> GetByCourseOfferingAndDateRangeAsync(
-            int courseOfferingId, DateOnly from, DateOnly to);
-        Task<IEnumerable<ClassSession>> GetByStudentAndDateRangeAsync(
-            int studentId, DateOnly from, DateOnly to);
-        Task<bool> ExistsAsync(int courseOfferingId, DateOnly date, TimeOnly startTime);
+        Task<IEnumerable<ClassSession>> GetByGroupAsync(int groupId);
+        Task<IEnumerable<ClassSession>> GetByDateRangeAsync(int groupId, DateOnly from, DateOnly to);
     }
 }

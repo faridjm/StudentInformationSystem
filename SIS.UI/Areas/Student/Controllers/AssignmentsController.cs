@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SIS.BLL.Services.DTOs.Assignment;
+using SIS.BLL.Services.DTOs.Enrollment;
 using SIS.UI.ApiClients;
 
 namespace SIS.UI.Areas.Student.Controllers
@@ -10,75 +11,74 @@ namespace SIS.UI.Areas.Student.Controllers
     public class AssignmentsController : Controller
     {
         private readonly IAssignmentApi _assignmentApi;
+        private readonly IStudentApi _studentApi;
         private readonly IEnrollmentApi _enrollmentApi;
-        private readonly ICourseOfferingApi _offeringApi;
 
-        public AssignmentsController(
-            IAssignmentApi assignmentApi,
-            IEnrollmentApi enrollmentApi,
-            ICourseOfferingApi offeringApi)
+        public AssignmentsController(IAssignmentApi assignmentApi, IStudentApi studentApi, IEnrollmentApi enrollmentApi)
         {
             _assignmentApi = assignmentApi;
+            _studentApi = studentApi;
             _enrollmentApi = enrollmentApi;
-            _offeringApi = offeringApi;
         }
 
-        // Bütün qeydiyyatlı kursların tapşırıqları
         public async Task<IActionResult> Index()
         {
             var enrollments = (await _enrollmentApi.GetMyEnrollmentsAsync()).ToList();
-            var allAssignments = new List<(SIS.BLL.Services.DTOs.Enrollment.EnrollmentListDto enrollment, AssignmentDto assignment)>();
 
+            var result = new List<(EnrollmentListDto enrollment, AssignmentDto assignment)>();
             foreach (var e in enrollments)
             {
-                var assignments = await _assignmentApi.GetByCourseAsync(e.CourseOfferingId);
-                foreach (var a in assignments.Where(a => a.IsVisible))
-                    allAssignments.Add((e, a));
+                try
+                {
+                    var assignments = await _assignmentApi.GetByGroupAsync(e.GroupId);
+                    foreach (var a in assignments)
+                        result.Add((e, a));
+                }
+                catch { }
             }
 
-            ViewBag.Enrollments = enrollments;
-            return View(allAssignments.OrderBy(x => x.assignment.DueDate).ToList());
+            return View(result);
         }
 
-        // Bir kursun tapşırıqları + cavab statusu
-        public async Task<IActionResult> Course(int enrollmentId)
+        public async Task<IActionResult> Course(int groupId, int enrollmentId)
         {
-            var enrollment = (await _enrollmentApi.GetMyEnrollmentsAsync())
-                .FirstOrDefault(e => e.Id == enrollmentId);
-            if (enrollment == null) return NotFound();
+            // enrollmentId-dən qrup tapırıq
+            if (groupId == 0)
+            {
+                var enrollments = await _enrollmentApi.GetMyEnrollmentsAsync();
+                var match = enrollments.FirstOrDefault(e => e.Id == enrollmentId);
+                if (match != null) groupId = match.GroupId;
+            }
 
-            var assignments = (await _assignmentApi.GetByCourseAsync(enrollment.CourseOfferingId))
-                .Where(a => a.IsVisible).ToList();
+            var allEnrollments = await _enrollmentApi.GetMyEnrollmentsAsync();
+            var enrollment = allEnrollments.FirstOrDefault(e => e.Id == enrollmentId);
 
-            var submissions = (await _assignmentApi.GetMySubmissionsAsync(enrollmentId)).ToList();
-            var submissionMap = submissions.ToDictionary(s => s.AssignmentId);
+            var assignments = await _assignmentApi.GetByGroupAsync(groupId);
+            var mySubmissions = (await _assignmentApi.GetMySubmissionsAsync(enrollmentId)).ToList();
+
+            // SubmissionMap: assignmentId → submission
+            var submissionMap = new Dictionary<int, SubmissionDto>();
+            foreach (var s in mySubmissions)
+                submissionMap[s.AssignmentId] = s;
 
             ViewBag.Enrollment = enrollment;
+            ViewBag.EnrollmentId = enrollmentId;
             ViewBag.SubmissionMap = submissionMap;
             return View(assignments);
         }
 
-        // Tapşırığa cavab ver
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Submit(int assignmentId, int enrollmentId, string? comment, string? fileUrl)
+        public async Task<IActionResult> Submit(CreateSubmissionDto dto)
         {
-            try
-            {
-                await _assignmentApi.SubmitAsync(new CreateSubmissionDto
-                {
-                    AssignmentId = assignmentId,
-                    EnrollmentId = enrollmentId,
-                    Comment = comment,
-                    FileUrl = fileUrl
-                });
-                TempData["Success"] = "Cavabınız göndərildi";
-            }
-            catch (Exception ex)
-            {
-                TempData["Error"] = ex.Message;
-            }
-            return RedirectToAction("Course", new { enrollmentId });
+            await _assignmentApi.SubmitAsync(dto);
+            TempData["Success"] = "Tapşırıq göndərildi";
+
+            // Enrollment-dən groupId-ni tapırıq
+            var enrollments = await _enrollmentApi.GetMyEnrollmentsAsync();
+            var enrollment = enrollments.FirstOrDefault(e => e.Id == dto.EnrollmentId);
+            var groupId = enrollment?.GroupId ?? 0;
+
+            return RedirectToAction("Course", new { groupId, enrollmentId = dto.EnrollmentId });
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿@model SIS.Common.Pagination.PagedResult<SIS.BLL.Services.DTOs.Course.CourseListDto>
+@model IEnumerable<SIS.BLL.Services.DTOs.Course.CourseDto>
 
 @{
     ViewData["Title"] = "Kurslar";
@@ -6,95 +6,44 @@
 
 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
     <h2 style="font-size:20px; font-weight:700;">Kurslar</h2>
-    <a href="/Admin/Course/Create" class="btn btn-primary">
-        <i class="fas fa-plus"></i> Yeni Kurs
-    </a>
+    <a href="/Admin/Course/Create" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Yeni Kurs</a>
 </div>
 
-<div class="card" style="margin-bottom:16px;">
-    <div class="card-body" style="padding:14px 20px;">
-        <form method="get" class="search-box">
-            <input type="text" name="search" value="@ViewBag.SearchTerm"
-                   class="search-input" placeholder="Ad və ya kod ilə axtar..." style="width:300px;" />
-            <button type="submit" class="btn btn-secondary"><i class="fas fa-search"></i> Axtar</button>
-            @if (!string.IsNullOrEmpty(ViewBag.SearchTerm as string))
-            {
-                <a href="/Admin/Course" class="btn btn-secondary"><i class="fas fa-times"></i> Təmizlə</a>
-            }
-        </form>
+@if (TempData["Success"] != null)
+{
+    <div style="margin-bottom:12px; padding:12px 16px; background:#dcfce7; color:#16a34a; border-radius:8px;">
+        <i class="fas fa-check-circle"></i> @TempData["Success"]
     </div>
-</div>
+}
 
 <div class="card">
-    <div class="card-header"><span>Cəmi: @Model.TotalCount kurs</span></div>
-    <div style="overflow-x:auto;">
-        <table class="table">
-            <thead>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Ad</th>
+                <th>Açıqlama</th>
+                <th>Qrup sayı</th>
+                <th>Status</th>
+                <th>Əməliyyat</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var c in Model)
+            {
                 <tr>
-                    <th>#</th>
-                    <th>Ad</th>
-                    <th>Kod</th>
-                    <th>Kredit</th>
-                    <th>Departament</th>
-                    <th>Proqram</th>
-                    <th>Əməliyyat</th>
+                    <td style="font-weight:500;">@c.Name</td>
+                    <td style="color:var(--text-secondary); font-size:13px;">@(c.Description ?? "—")</td>
+                    <td>@c.GroupCount</td>
+                    <td><span class="badge @(c.IsActive ? "badge-success" : "badge-danger")">@(c.IsActive ? "Aktiv" : "Deaktiv")</span></td>
+                    <td style="display:flex; gap:6px;">
+                        <a href="/Admin/Course/Edit/@c.Id" class="btn btn-sm btn-secondary"><i class="fas fa-edit"></i></a>
+                        <form method="post" action="/Admin/Course/Delete/@c.Id" onsubmit="return confirm('Silmək istədiyinizdən əminsinizmi?')" style="margin:0;">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                        </form>
+                    </td>
                 </tr>
-            </thead>
-            <tbody>
-                @foreach (var course in Model.Items)
-                {
-                    <tr>
-                        <td>@course.Id</td>
-                        <td style="font-weight:500;">@course.Name</td>
-                        <td><code style="background:var(--bg-hover); padding:2px 8px; border-radius:4px;">@course.Code</code></td>
-                        <td><span class="badge badge-info">@course.Credits kredit</span></td>
-                        <td>@course.DepartmentName</td>
-                        <td>
-                            @if (course.AcademicProgramName != null)
-                            {
-                                <span>@course.AcademicProgramName</span>
-                            }
-                            else
-                            {
-                                <span style="color:var(--text-secondary); font-style:italic;">təyin olunmayıb</span>
-                            }
-                        </td>
-                        <td>
-                            <div style="display:flex; gap:6px;">
-                                <a href="/Admin/Course/Edit/@course.Id" class="btn btn-sm btn-secondary">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <form method="post" action="/Admin/Course/Delete/@course.Id"
-                                      onsubmit="return confirm('Kursu silmək istədiyinizdən əminsinizmi?')">
-                                    @Html.AntiForgeryToken()
-                                    <button type="submit" class="btn btn-sm btn-danger">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-    @if (Model.TotalPages > 1)
-    {
-        <div style="padding:16px 20px; display:flex; justify-content:center;">
-            <div class="pagination">
-                @if (Model.HasPrevious)
-                {
-                    <a href="?page=@(Model.Page - 1)&search=@ViewBag.SearchTerm" class="page-btn"><i class="fas fa-chevron-left"></i></a>
-                }
-                @for (int i = 1; i <= Model.TotalPages; i++)
-                {
-                    <a href="?page=@i&search=@ViewBag.SearchTerm" class="page-btn @(i == Model.Page ? "active" : "")">@i</a>
-                }
-                @if (Model.HasNext)
-                {
-                    <a href="?page=@(Model.Page + 1)&search=@ViewBag.SearchTerm" class="page-btn"><i class="fas fa-chevron-right"></i></a>
-                }
-            </div>
-        </div>
-    }
+            }
+        </tbody>
+    </table>
 </div>

@@ -1,11 +1,11 @@
-﻿using SIS.Entities.Models;
+using SIS.Entities.Models;
 
 namespace SIS.DAL.Repositories.Interfaces
 {
     public interface IAttendanceRecordRepository : IGenericRepository<AttendanceRecord>
     {
         Task<IEnumerable<AttendanceRecord>> GetAttendanceByEnrollmentAsync(int enrollmentId);
-        Task<IEnumerable<AttendanceRecord>> GetAttendanceByDateAsync(int courseOfferingId, DateTime date);
+        Task<IEnumerable<AttendanceRecord>> GetAttendanceBySessionAsync(int sessionId);
         Task<double> GetAttendancePercentageAsync(int enrollmentId);
     }
 }

@@ -5,7 +5,7 @@
 }
 
 <div style="margin-bottom:20px;">
-    <a href="/Teacher/Assignments/Index?courseOfferingId=@assignment?.CourseOfferingId" style="color:var(--text-secondary); text-decoration:none;">
+    <a href="/Teacher/Assignments/Index?courseOfferingId=@assignment?.GroupId" style="color:var(--text-secondary); text-decoration:none;">
         <i class="fas fa-arrow-left"></i> Geri
     </a>
 </div>
@@ -52,6 +52,14 @@ else
                                 @s.Comment
                             </p>
                         }
+                        @if (!string.IsNullOrEmpty(s.FileUrl))
+                        {
+                            <div style="margin-bottom:6px;">
+                                <a href="@s.FileUrl" target="_blank" style="display:inline-flex; align-items:center; gap:6px; font-size:12px; color:var(--accent); padding:4px 10px; background:var(--accent-soft); border-radius:6px; text-decoration:none;">
+                                    <i class="fas fa-paperclip"></i> Əlavə fayl
+                                </a>
+                            </div>
+                        }
                         <div style="font-size:12px; color:var(--text-secondary);">
                             <i class="fas fa-clock"></i> @s.SubmittedAt.ToString("dd.MM.yyyy HH:mm")
                             @if (s.IsGraded)
@@ -72,7 +80,7 @@ else
                             @Html.AntiForgeryToken()
                             <input type="hidden" name="SubmissionId" value="@s.Id" />
                             <input type="hidden" name="assignmentId" value="@assignment?.Id" />
-                            <input type="hidden" name="courseOfferingId" value="@assignment?.CourseOfferingId" />
+                            <input type="hidden" name="courseOfferingId" value="@assignment?.GroupId" />
                             <div style="display:flex; gap:6px; align-items:flex-end;">
                                 <div style="flex:1;">
                                     <label style="font-size:12px; color:var(--text-secondary);">Xal (maks: @assignment?.MaxScore)</label>

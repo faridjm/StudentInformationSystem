@@ -1,4 +1,4 @@
-﻿@model SIS.Common.Pagination.PagedResult<SIS.BLL.Services.DTOs.Teacher.TeacherListDto>
+﻿@model IEnumerable<SIS.BLL.Services.DTOs.Teacher.TeacherListDto>
 
 @{
     ViewData["Title"] = "Müəllimlər";
@@ -32,7 +32,7 @@
 
 <div class="card">
     <div class="card-header">
-        <span>Cəmi: @Model.TotalCount müəllim</span>
+        <span>Cəmi: @Model.Count() müəllim</span>
     </div>
     <div style="overflow-x:auto;">
         <table class="table">
@@ -42,22 +42,20 @@
                     <th>Ad Soyad</th>
                     <th>Email</th>
                     <th>İşçi №</th>
-                    <th>Titul</th>
-                    <th>Departament</th>
+                    <th>Qrup sayı</th>
                     <th>Status</th>
                     <th>Əməliyyat</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach (var teacher in Model.Items)
+                @foreach (var teacher in Model)
                 {
                     <tr>
                         <td>@teacher.Id</td>
                         <td>@teacher.FullName</td>
                         <td style="color:var(--text-secondary);">@teacher.Email</td>
                         <td><code style="background:var(--bg-hover); padding:2px 8px; border-radius:4px;">@teacher.EmployeeNumber</code></td>
-                        <td>@teacher.Title</td>
-                        <td>@teacher.DepartmentName</td>
+                        <td>@teacher.GroupCount</td>
                         <td>
                             @if (teacher.IsActive)
                             {
@@ -91,28 +89,4 @@
         </table>
     </div>
 
-    @if (Model.TotalPages > 1)
-    {
-        <div style="padding:16px 20px; display:flex; justify-content:center;">
-            <div class="pagination">
-                @if (Model.HasPrevious)
-                {
-                    <a href="?page=@(Model.Page - 1)&search=@ViewBag.SearchTerm" class="page-btn">
-                        <i class="fas fa-chevron-left"></i>
-                    </a>
-                }
-                @for (int i = 1; i <= Model.TotalPages; i++)
-                {
-                    <a href="?page=@i&search=@ViewBag.SearchTerm"
-                       class="page-btn @(i == Model.Page ? "active" : "")">@i</a>
-                }
-                @if (Model.HasNext)
-                {
-                    <a href="?page=@(Model.Page + 1)&search=@ViewBag.SearchTerm" class="page-btn">
-                        <i class="fas fa-chevron-right"></i>
-                    </a>
-                }
-            </div>
-        </div>
-    }
 </div>

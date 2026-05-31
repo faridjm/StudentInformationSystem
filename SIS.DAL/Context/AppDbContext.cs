@@ -17,15 +17,14 @@ namespace SIS.DAL.Context
 
         public DbSet<Student> Students { get; set; }
         public DbSet<Teacher> Teachers { get; set; }
-        public DbSet<Department> Departments { get; set; }
-        public DbSet<AcademicProgram> AcademicPrograms { get; set; }
-        public DbSet<AcademicYear> AcademicYears { get; set; }
-        public DbSet<AcademicTerm> AcademicTerms { get; set; }
         public DbSet<Course> Courses { get; set; }
-        public DbSet<CourseOffering> CourseOfferings { get; set; }
-        public DbSet<WeeklySchedulePattern> WeeklySchedulePatterns { get; set; }
+        public DbSet<Group> Groups { get; set; }
+        public DbSet<GroupScheduleDay> GroupScheduleDays { get; set; }
+        public DbSet<AcademicYear> AcademicYears { get; set; }
         public DbSet<ClassSession> ClassSessions { get; set; }
         public DbSet<Enrollment> Enrollments { get; set; }
+        public DbSet<AssessmentItem> AssessmentItems { get; set; }
+        public DbSet<AssessmentSubmission> AssessmentSubmissions { get; set; }
         public DbSet<Grade> Grades { get; set; }
         public DbSet<AttendanceRecord> AttendanceRecords { get; set; }
         public DbSet<Announcement> Announcements { get; set; }
@@ -38,14 +37,7 @@ namespace SIS.DAL.Context
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
-
-            modelBuilder.ApplyConfigurationsFromAssembly(
-                typeof(AppDbContext).Assembly);
-
-            modelBuilder.ApplyConfiguration(new AcademicTermConfiguration());
-            modelBuilder.ApplyConfiguration(new CourseConfiguration());
-            modelBuilder.ApplyConfiguration(new DepartmentConfiguration());
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
         }
     }
 

@@ -1,10 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SIS.BLL.Services.DTOs.Announcement;
 using SIS.BLL.Services.DTOs.Attendance;
-using SIS.BLL.Services.DTOs.Grade;
 using SIS.Common.Time;
 using SIS.UI.ApiClients;
-
 
 namespace SIS.UI.Areas.Teacher.Controllers
 {
@@ -12,181 +11,143 @@ namespace SIS.UI.Areas.Teacher.Controllers
     [Authorize(Policy = "TeacherOnly")]
     public class CoursesController : Controller
     {
+        private readonly IGroupApi _groupApi;
         private readonly ITeacherApi _teacherApi;
-        private readonly ICourseOfferingApi _offeringApi;
         private readonly IEnrollmentApi _enrollmentApi;
-        private readonly IGradeApi _gradeApi;
-        private readonly IAttendanceApi _attendanceApi;
         private readonly IClassSessionApi _sessionApi;
+        private readonly IAssessmentApi _assessmentApi;
+        private readonly IAnnouncementApi _announcementApi;
+        private readonly IAssignmentApi _assignmentApi;
+        private readonly IAttendanceApi _attendanceApi;
         private readonly IClock _clock;
+        private readonly ITranscriptApi _transcriptApi;
 
-        public CoursesController(
-            ITeacherApi teacherApi,
-            ICourseOfferingApi offeringApi,
-            IEnrollmentApi enrollmentApi,
-            IGradeApi gradeApi,
-            IAttendanceApi attendanceApi,
-            IClassSessionApi sessionApi,
-            IClock clock)
+        public CoursesController(IGroupApi groupApi, ITeacherApi teacherApi,
+            IEnrollmentApi enrollmentApi, IClassSessionApi sessionApi,
+            IAssessmentApi assessmentApi, IAnnouncementApi announcementApi,
+            IAssignmentApi assignmentApi, IAttendanceApi attendanceApi,
+            IClock clock, ITranscriptApi transcriptApi)
         {
+            _groupApi = groupApi;
             _teacherApi = teacherApi;
-            _offeringApi = offeringApi;
             _enrollmentApi = enrollmentApi;
-            _gradeApi = gradeApi;
-            _attendanceApi = attendanceApi;
             _sessionApi = sessionApi;
+            _assessmentApi = assessmentApi;
+            _announcementApi = announcementApi;
+            _assignmentApi = assignmentApi;
+            _attendanceApi = attendanceApi;
             _clock = clock;
+            _transcriptApi = transcriptApi;
         }
 
         public async Task<IActionResult> Index()
         {
-            var teacher = await _teacherApi.GetMeAsync();
-            var offerings = await _offeringApi.GetByTeacherAsync(teacher.Id);
-            return View(offerings);
+            var groups = await _groupApi.GetMyGroupsAsync();
+            return View(groups);
         }
 
-        public async Task<IActionResult> Detail(int id)
+        public async Task<IActionResult> Detail(int id, string tab = "overview")
         {
-            var offering = await _offeringApi.GetByIdAsync(id);
-            if (offering == null) return NotFound();
+            var group = await _groupApi.GetByIdAsync(id);
+            var enrollments = (await _enrollmentApi.GetByGroupAsync(id)).ToList();
+            var sessions = (await _sessionApi.GetByGroupAsync(id)).OrderBy(s => s.Date).ThenBy(s => s.StartTime).ToList();
+            var assessments = (await _assessmentApi.GetByGroupAsync(id)).OrderBy(a => a.Date).ToList();
 
-            var enrollments = await _enrollmentApi.GetByCourseAsync(id);
+            var announcements = new List<AnnouncementDto>();
+            try { announcements = (await _announcementApi.GetByGroupAsync(id)).ToList(); } catch { }
 
-            ViewBag.Offering = offering;
+            var assignments = new List<SIS.BLL.Services.DTOs.Assignment.AssignmentDto>();
+            try { assignments = (await _assignmentApi.GetByGroupAsync(id)).ToList(); } catch { }
+
+            // Davamiyyət: hər enrollment üçün summary
+            var attendanceSummaries = new Dictionary<int, AttendanceSummaryDto>();
+            foreach (var e in enrollments)
+            {
+                try { attendanceSummaries[e.Id] = await _attendanceApi.GetSummaryAsync(e.Id); }
+                catch { attendanceSummaries[e.Id] = new AttendanceSummaryDto(); }
+            }
+
+            // Hər sessiya üçün mövcud davamiyyət records
+            var attendancePerSession = new Dictionary<int, List<AttendanceDto>>();
+            var pastSessions = sessions.Where(s => s.Date <= _clock.Today).ToList();
+            foreach (var s in pastSessions)
+            {
+                try { attendancePerSession[s.Id] = (await _attendanceApi.GetBySessionAsync(s.Id)).ToList(); }
+                catch { attendancePerSession[s.Id] = new List<AttendanceDto>(); }
+            }
+
             ViewBag.Enrollments = enrollments;
-            return View();
+            ViewBag.Sessions = sessions;
+            ViewBag.Assessments = assessments;
+            ViewBag.Announcements = announcements;
+            ViewBag.Assignments = assignments;
+            ViewBag.AttendanceSummaries = attendanceSummaries;
+            ViewBag.AttendancePerSession = attendancePerSession;
+            ViewBag.Today = _clock.Today;
+            ViewBag.ActiveTab = tab;
+            return View(group);
         }
 
-        public async Task<IActionResult> Grades(int id)
-        {
-            var offering = await _offeringApi.GetByIdAsync(id);
-            if (offering == null) return NotFound();
-
-            var enrollments = await _enrollmentApi.GetByCourseAsync(id);
-            ViewBag.Offering = offering;
-            ViewBag.Enrollments = enrollments;
-            return View();
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> AddGrade(CreateGradeDto dto, int courseOfferingId)
-        {
-            try
-            {
-                await _gradeApi.AddAsync(dto);
-                TempData["Success"] = "Qiymət uğurla əlavə edildi";
-            }
-            catch (Exception ex)
-            {
-                TempData["Error"] = ex.Message;
-            }
-            return RedirectToAction("Grades", new { id = courseOfferingId });
-        }
-
-        public async Task<IActionResult> Attendance(int id, int? sessionId = null)
-        {
-            var offering = await _offeringApi.GetByIdAsync(id);
-            if (offering == null) return NotFound();
-
-            var sessions = (await _sessionApi.GetByCourseAsync(id)).ToList();
-            var enrollments = (await _enrollmentApi.GetByCourseAsync(id)).ToList();
-
-            // Default: ən son keçmiş və ya bu günkü sessiya
-            var today = _clock.Today;
-            SIS.BLL.Services.DTOs.ClassSession.ClassSessionDto? selectedSession = null;
-            if (sessionId.HasValue)
-            {
-                selectedSession = sessions.FirstOrDefault(s => s.Id == sessionId.Value);
-            }
-            else
-            {
-                selectedSession = sessions
-                    .Where(s => s.Date <= today && s.Status != SIS.Entities.Enums.ClassSessionStatus.Cancelled)
-                    .OrderByDescending(s => s.Date)
-                    .ThenByDescending(s => s.StartTime)
-                    .FirstOrDefault();
-            }
-
-            // Seçilmiş sessiya üçün mövcud davamiyyət qeydləri
-            var existingStatuses = new Dictionary<int, SIS.Entities.Enums.AttendanceStatus>();
-            if (selectedSession != null)
-            {
-                foreach (var e in enrollments)
-                {
-                    var records = await _attendanceApi.GetByEnrollmentAsync(e.Id);
-                    var rec = records.FirstOrDefault(r => r.ClassSessionId == selectedSession.Id);
-                    if (rec != null) existingStatuses[e.Id] = rec.Status;
-                }
-            }
-
-            ViewBag.Offering = offering;
-            ViewBag.Enrollments = enrollments;
-            ViewBag.Sessions = sessions.OrderByDescending(s => s.Date).ThenByDescending(s => s.StartTime).ToList();
-            ViewBag.SelectedSession = selectedSession;
-            ViewBag.ExistingStatuses = existingStatuses;
-            return View();
-        }
-
+        // Davamiyyət saxla
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> RecordAttendance(
-            int courseOfferingId,
-            int sessionId,
-            List<int> enrollmentIds,
-            List<int> statuses)
+        public async Task<IActionResult> SaveAttendance(int groupId, int sessionId,
+            List<int> enrollmentIds, List<int> statuses)
         {
-            try
-            {
-                if (enrollmentIds == null || enrollmentIds.Count == 0)
+            var dtos = enrollmentIds.Select((eid, i) =>
+                new CreateAttendanceDto
                 {
-                    TempData["Error"] = "Tələbə siyahısı boşdur";
-                    return RedirectToAction("Attendance", new { id = courseOfferingId, sessionId });
-                }
+                    EnrollmentId = eid,
+                    ClassSessionId = sessionId,
+                    SessionDate = DateTime.UtcNow,
+                    Status = (SIS.Entities.Enums.AttendanceStatus)statuses[i]
+                }).ToList();
 
-                var session = await _sessionApi.GetByIdAsync(sessionId);
-                if (session == null)
-                {
-                    TempData["Error"] = "Sessiya tapılmadı";
-                    return RedirectToAction("Attendance", new { id = courseOfferingId });
-                }
-
-                var dtos = enrollmentIds.Select((enrollmentId, i) =>
-                    new CreateAttendanceDto
-                    {
-                        EnrollmentId = enrollmentId,
-                        SessionDate = session.Date.ToDateTime(TimeOnly.MinValue),
-                        Status = (SIS.Entities.Enums.AttendanceStatus)statuses[i],
-                        ClassSessionId = sessionId
-                    }).ToList();
-
-                await _attendanceApi.RecordBulkAsync(dtos);
-                TempData["Success"] = "Davamiyyət uğurla qeyd edildi";
-            }
-            catch (Refit.ApiException apiEx)
-            {
-                TempData["Error"] = ExtractAttendanceMessage(apiEx) ?? apiEx.Message;
-            }
-            catch (Exception ex)
-            {
-                TempData["Error"] = ex.Message;
-            }
-            return RedirectToAction("Attendance", new { id = courseOfferingId, sessionId });
+            await _attendanceApi.RecordBulkAsync(dtos);
+            TempData["Success"] = "Davamiyyət qeyd edildi";
+            return RedirectToAction("Detail", new { id = groupId, tab = "attendance" });
         }
 
-        private static string? ExtractAttendanceMessage(Refit.ApiException apiEx)
+        // Sessiyanı tamamla
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CompleteSession(int groupId, int sessionId)
         {
-            if (string.IsNullOrEmpty(apiEx.Content)) return null;
-            try
+            await _sessionApi.CompleteSessionAsync(sessionId);
+            TempData["Success"] = "Dərs tamamlandı";
+            return RedirectToAction("Detail", new { id = groupId, tab = "schedule" });
+        }
+
+        // Elan yarat
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateAnnouncement(int groupId, string title, string content)
+        {
+            var dto = new CreateAnnouncementDto
             {
-                var json = System.Text.Json.JsonDocument.Parse(apiEx.Content);
-                var root = json.RootElement;
-                if (root.TryGetProperty("message", out var msg))
-                    return msg.GetString();
-                if (root.TryGetProperty("title", out var title))
-                    return title.GetString();
+                Title = title,
+                Content = content,
+                GroupId = groupId,
+                TargetType = SIS.Entities.Enums.AnnouncementTarget.Course,
+                IsGlobal = false
+            };
+            await _announcementApi.CreateAsync(dto);
+            TempData["Success"] = "Elan yayımlandı";
+            return RedirectToAction("Detail", new { id = groupId, tab = "announcements" });
+        }
+
+        // Tələbə transkriptini yüklə
+        public async Task<IActionResult> Transcript(int enrollmentId)
+        {
+            var response = await _transcriptApi.GetPdfAsync(enrollmentId);
+            if (!response.IsSuccessStatusCode)
+            {
+                TempData["Error"] = "Transkript yüklənə bilmədi";
+                return RedirectToAction("Index");
             }
-            catch { }
-            return null;
+            var bytes = await response.Content.ReadAsByteArrayAsync();
+            var fileName = response.Content.Headers.ContentDisposition?.FileName?.Trim('"') ?? "transcript.pdf";
+            return File(bytes, "application/pdf", fileName);
         }
     }
 }

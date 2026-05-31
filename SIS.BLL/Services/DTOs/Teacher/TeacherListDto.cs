@@ -1,8 +1,3 @@
-﻿using SIS.Entities.Enums;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace SIS.BLL.Services.DTOs.Teacher
 {
     public class TeacherListDto
@@ -12,10 +7,8 @@ namespace SIS.BLL.Services.DTOs.Teacher
         public string? FinCode { get; set; }
         public string Email { get; set; } = null!;
         public string EmployeeNumber { get; set; } = null!;
-        public string Title { get; set; } = null!;
-        public string DepartmentName { get; set; } = null!;
+        public string? Title { get; set; }
         public bool IsActive { get; set; }
+        public int GroupCount { get; set; }
     }
 }
-
-    

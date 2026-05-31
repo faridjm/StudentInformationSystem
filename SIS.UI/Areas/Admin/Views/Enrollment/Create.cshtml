@@ -1,48 +1,48 @@
-﻿@model SIS.BLL.Services.DTOs.Enrollment.CreateEnrollmentDto
-
 @{
-    ViewData["Title"] = "Yeni Qeydiyyat";
+    ViewData["Title"] = "Tələbə Qeydiyyatı";
 }
-
-<div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
-    <a href="/Admin/Enrollment" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i></a>
-    <h2 style="font-size:20px; font-weight:700;">Yeni Qeydiyyat</h2>
-</div>
-
-<div class="card" style="max-width:500px;">
-    <div class="card-body">
-        <form method="post">
-            @Html.AntiForgeryToken()
-            <div asp-validation-summary="ModelOnly" style="color:#f87171; margin-bottom:12px; font-size:13px;"></div>
-
-            <div class="form-group">
-                <label class="form-label">Tələbə</label>
-                <select asp-for="StudentId" class="form-control">
-                    <option value="">Tələbə seçin</option>
-                    @foreach (var s in ViewBag.Students as IEnumerable<SIS.BLL.Services.DTOs.Student.StudentListDto> ?? [])
-                    {
-                        <option value="@s.Id">@s.FullName (@s.StudentNumber)</option>
-                    }
-                </select>
-                <span asp-validation-for="StudentId" style="color:#f87171; font-size:12px;"></span>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Kurs Təklifi</label>
-                <select asp-for="CourseOfferingId" class="form-control">
-                    <option value="">Kurs seçin</option>
-                    @foreach (var o in ViewBag.Offerings as IEnumerable<SIS.BLL.Services.DTOs.CourseOffering.CourseOfferingListDto> ?? [])
-                    {
-                        <option value="@o.Id">@o.CourseName — @o.TeacherName (@o.TermName)</option>
-                    }
-                </select>
-                <span asp-validation-for="CourseOfferingId" style="color:#f87171; font-size:12px;"></span>
-            </div>
-
-            <div style="display:flex; gap:10px; margin-top:8px;">
-                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Qeydiyyat et</button>
-                <a href="/Admin/Enrollment" class="btn btn-secondary">Ləğv et</a>
-            </div>
-        </form>
+<div style="max-width:560px; margin:0 auto;">
+    <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
+        <a href="/Admin/Enrollment" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i></a>
+        <h2 style="font-size:20px; font-weight:700;">Tələbə Qeydiyyatı</h2>
     </div>
+    <form method="post" action="/Admin/Enrollment/Create">
+        @Html.AntiForgeryToken()
+        <div class="card">
+            <div class="card-body">
+                <div class="form-group">
+                    <label class="form-label">Tələbə *</label>
+                    <select name="StudentId" class="form-control" required>
+                        <option value="">Seçin...</option>
+                        @foreach (var s in (IEnumerable<SIS.BLL.Services.DTOs.Student.StudentListDto>)ViewBag.Students)
+                        {
+                            <option value="@s.Id">@s.FullName (@s.StudentNumber)</option>
+                        }
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Qrup *</label>
+                    <select name="GroupId" class="form-control" required>
+                        <option value="">Seçin...</option>
+                        @foreach (var g in (IEnumerable<SIS.BLL.Services.DTOs.Groups.GroupListDto>)ViewBag.Groups)
+                        {
+                            var selected = (int?)ViewBag.SelectedGroupId == g.Id ? "selected" : "";
+                            if ((int?)ViewBag.SelectedGroupId == g.Id)
+                            {
+                                <option value="@g.Id" selected="selected">@g.Name — @g.CourseName (@g.EnrolledCount/@g.Capacity)</option>
+                            }
+                            else
+                            {
+                                <option value="@g.Id">@g.Name — @g.CourseName (@g.EnrolledCount/@g.Capacity)</option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div style="display:flex; gap:12px; margin-top:16px;">
+            <button type="submit" class="btn btn-primary"><i class="fas fa-user-plus"></i> Qeydiyyat et</button>
+            <a href="/Admin/Enrollment" class="btn btn-secondary">Ləğv et</a>
+        </div>
+    </form>
 </div>

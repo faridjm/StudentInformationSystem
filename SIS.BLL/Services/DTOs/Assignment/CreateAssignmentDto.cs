@@ -11,6 +11,8 @@ namespace SIS.BLL.Services.DTOs.Assignment
         public decimal MaxScore { get; set; }
         public bool IsVisible { get; set; } = true;
         public string? AttachmentUrl { get; set; }
-        public int CourseOfferingId { get; set; }
+        public int GroupId { get; set; }
+        /// <summary>Rəsmi assessment-ə bağlamaq üçün. null = sadə ev tapşırığı.</summary>
+        public int? AssessmentItemId { get; set; }
     }
 }

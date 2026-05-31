@@ -1,7 +1,4 @@
-﻿using SIS.DAL.Repositories.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using SIS.DAL.Repositories.Interfaces;
 
 namespace SIS.DAL.UnitOfWork
 {
@@ -10,24 +7,21 @@ namespace SIS.DAL.UnitOfWork
         IStudentRepository Students { get; }
         ITeacherRepository Teachers { get; }
         ICourseRepository Courses { get; }
-        ICourseOfferingRepository CourseOfferings { get; }
-        IWeeklySchedulePatternRepository WeeklySchedulePatterns { get; }
+        IGroupRepository Groups { get; }
         IClassSessionRepository ClassSessions { get; }
         IEnrollmentRepository Enrollments { get; }
+        IAssessmentItemRepository AssessmentItems { get; }
+        IAssessmentSubmissionRepository AssessmentSubmissions { get; }
         IGradeRepository Grades { get; }
         IAttendanceRecordRepository AttendanceRecords { get; }
         IAnnouncementRepository Announcements { get; }
         INotificationRepository Notifications { get; }
         IActivityLogRepository ActivityLogs { get; }
-        IDepartmentRepository Departments { get; }
-        IAcademicProgramRepository AcademicPrograms { get; }
         IAcademicYearRepository AcademicYears { get; }
-        IAcademicTermRepository AcademicTerms { get; }
         IRefreshTokenRepository RefreshTokens { get; }
         IAssignmentRepository Assignments { get; }
         IAssignmentSubmissionRepository AssignmentSubmissions { get; }
 
         Task<int> SaveAsync();
-
     }
 }

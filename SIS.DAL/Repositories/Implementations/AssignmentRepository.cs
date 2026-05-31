@@ -9,10 +9,12 @@ namespace SIS.DAL.Repositories.Implementations
     {
         public AssignmentRepository(AppDbContext context) : base(context) { }
 
-        public async Task<IEnumerable<Assignment>> GetByCourseOfferingAsync(int courseOfferingId)
+        public async Task<IEnumerable<Assignment>> GetByGroupAsync(int groupId)
             => await _dbSet
-                .Where(a => a.CourseOfferingId == courseOfferingId)
-                .OrderByDescending(a => a.DueDate)
+                .Include(a => a.Submissions)
+                .Include(a => a.AssessmentItem)
+                .Where(a => a.GroupId == groupId)
+                .OrderBy(a => a.DueDate)
                 .ToListAsync();
 
         public async Task<Assignment?> GetWithSubmissionsAsync(int assignmentId)

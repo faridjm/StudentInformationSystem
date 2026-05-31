@@ -1,4 +1,4 @@
-﻿namespace SIS.BLL.Services.DTOs.Student
+namespace SIS.BLL.Services.DTOs.Student
 {
     public class StudentListDto
     {
@@ -7,10 +7,8 @@
         public string? FinCode { get; set; }
         public string Email { get; set; } = null!;
         public string StudentNumber { get; set; } = null!;
-        public string ProgramName { get; set; } = null!;
         public int EnrollmentYear { get; set; }
         public decimal CurrentGPA { get; set; }
         public bool IsActive { get; set; }
     }
 }
-

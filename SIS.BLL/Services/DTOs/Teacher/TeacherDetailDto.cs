@@ -1,4 +1,4 @@
-﻿namespace SIS.BLL.Services.DTOs.Teacher
+namespace SIS.BLL.Services.DTOs.Teacher
 {
     public class TeacherDetailDto
     {
@@ -9,10 +9,9 @@
         public string Email { get; set; } = null!;
         public string? PhoneNumber { get; set; }
         public string EmployeeNumber { get; set; } = null!;
-        public string Title { get; set; } = null!;
-        public string DepartmentName { get; set; } = null!;
-        public DateTime HireDate { get; set; }
-        public string? ProfilePhoto { get; set; }
+        public string? Title { get; set; }
+        public DateTime? BirthDate { get; set; }
         public bool IsActive { get; set; }
+        public DateTime CreatedAt { get; set; }
     }
 }

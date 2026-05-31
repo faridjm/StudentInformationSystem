@@ -1,4 +1,4 @@
-﻿namespace SIS.BLL.Services.DTOs.Teacher
+namespace SIS.BLL.Services.DTOs.Teacher
 {
     public class CreateTeacherDto
     {
@@ -7,8 +7,6 @@
         public string Password { get; set; } = null!;
         public string? FinCode { get; set; }
         public string? PhoneNumber { get; set; }
-        public string Title { get; set; } = null!;
-        public int DepartmentId { get; set; }
-        public DateTime HireDate { get; set; }
+        public DateTime? BirthDate { get; set; }
     }
 }

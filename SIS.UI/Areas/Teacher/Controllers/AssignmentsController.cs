@@ -10,133 +10,93 @@ namespace SIS.UI.Areas.Teacher.Controllers
     public class AssignmentsController : Controller
     {
         private readonly IAssignmentApi _assignmentApi;
-        private readonly ICourseOfferingApi _offeringApi;
+        private readonly IGroupApi _groupApi;
         private readonly ITeacherApi _teacherApi;
+        private readonly IAssessmentApi _assessmentApi;
 
-        public AssignmentsController(
-            IAssignmentApi assignmentApi,
-            ICourseOfferingApi offeringApi,
-            ITeacherApi teacherApi)
+        public AssignmentsController(IAssignmentApi assignmentApi, IGroupApi groupApi,
+            ITeacherApi teacherApi, IAssessmentApi assessmentApi)
         {
             _assignmentApi = assignmentApi;
-            _offeringApi = offeringApi;
+            _groupApi = groupApi;
             _teacherApi = teacherApi;
+            _assessmentApi = assessmentApi;
         }
 
-        public async Task<IActionResult> Index(int courseOfferingId)
+        // groupId=0 → qrupları göstər, seçsin
+        public async Task<IActionResult> Index(int groupId = 0)
         {
-            var offering = await _offeringApi.GetByIdAsync(courseOfferingId);
-            if (offering == null) return NotFound();
-
-            var assignments = await _assignmentApi.GetByCourseAsync(courseOfferingId);
-            ViewBag.Offering = offering;
+            if (groupId == 0)
+            {
+                var groups = await _groupApi.GetMyGroupsAsync();
+                return View("SelectGroup", groups);
+            }
+            var assignments = await _assignmentApi.GetByGroupAsync(groupId);
+            ViewBag.GroupId = groupId;
             return View(assignments);
         }
 
-        public async Task<IActionResult> Create(int courseOfferingId)
+        public async Task<IActionResult> Create(int groupId)
         {
-            var offering = await _offeringApi.GetByIdAsync(courseOfferingId);
-            if (offering == null) return NotFound();
-            ViewBag.Offering = offering;
-            return View(new CreateAssignmentDto { CourseOfferingId = courseOfferingId, DueDate = DateTime.Now.AddDays(7) });
+            ViewBag.GroupId = groupId;
+            try { ViewBag.AssessmentItems = (await _assessmentApi.GetByGroupAsync(groupId)).ToList(); }
+            catch { ViewBag.AssessmentItems = new List<SIS.BLL.Services.DTOs.Assessment.AssessmentItemDto>(); }
+            return View();
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateAssignmentDto dto)
         {
-            try
-            {
-                await _assignmentApi.CreateAsync(dto);
-                TempData["Success"] = "Tapşırıq yaradıldı";
-                return RedirectToAction("Index", new { courseOfferingId = dto.CourseOfferingId });
-            }
-            catch (Exception ex)
-            {
-                TempData["Error"] = ex.Message;
-                var offering = await _offeringApi.GetByIdAsync(dto.CourseOfferingId);
-                ViewBag.Offering = offering;
-                return View(dto);
-            }
+            await _assignmentApi.CreateAsync(dto);
+            TempData["Success"] = "Tapşırıq yaradıldı";
+            return RedirectToAction("Index", new { groupId = dto.GroupId });
+        }
+
+        public async Task<IActionResult> Submissions(int id)
+        {
+            var subs = await _assignmentApi.GetSubmissionsAsync(id);
+            var assignment = await _assignmentApi.GetByIdAsync(id);
+            ViewBag.Assignment = assignment;
+            ViewBag.AssignmentId = id;
+            return View(subs);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Grade(GradeSubmissionDto dto, int assignmentId)
+        {
+            await _assignmentApi.GradeAsync(dto);
+            TempData["Success"] = "Qiymət verildi";
+            return RedirectToAction("Submissions", new { id = assignmentId });
         }
 
         public async Task<IActionResult> Edit(int id)
         {
             var assignment = await _assignmentApi.GetByIdAsync(id);
-            if (assignment == null) return NotFound();
-
-            var offering = await _offeringApi.GetByIdAsync(assignment.CourseOfferingId);
-            ViewBag.Offering = offering;
-
-            return View(new UpdateAssignmentDto
+            var model = new UpdateAssignmentDto
             {
                 Id = assignment.Id,
                 Title = assignment.Title,
                 Description = assignment.Description,
-                Type = assignment.Type,
-                DueDate = assignment.DueDate,
                 MaxScore = assignment.MaxScore,
-                IsVisible = assignment.IsVisible
-            });
+                DueDate = assignment.DueDate
+            };
+            return View(model);
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(UpdateAssignmentDto dto, int courseOfferingId)
+        public async Task<IActionResult> Edit(UpdateAssignmentDto dto)
         {
-            try
-            {
-                await _assignmentApi.UpdateAsync(dto);
-                TempData["Success"] = "Tapşırıq yeniləndi";
-                return RedirectToAction("Index", new { courseOfferingId });
-            }
-            catch (Exception ex)
-            {
-                TempData["Error"] = ex.Message;
-                return View(dto);
-            }
+            await _assignmentApi.UpdateAsync(dto);
+            TempData["Success"] = "Tapşırıq yeniləndi";
+            return RedirectToAction("Index", new { groupId = 0 });
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(int id, int courseOfferingId)
+        public async Task<IActionResult> Delete(int id, int groupId)
         {
-            try
-            {
-                await _assignmentApi.DeleteAsync(id);
-                TempData["Success"] = "Tapşırıq silindi";
-            }
-            catch (Exception ex)
-            {
-                TempData["Error"] = ex.Message;
-            }
-            return RedirectToAction("Index", new { courseOfferingId });
-        }
-
-        public async Task<IActionResult> Submissions(int id)
-        {
-            var assignment = await _assignmentApi.GetByIdAsync(id);
-            if (assignment == null) return NotFound();
-
-            var submissions = await _assignmentApi.GetSubmissionsAsync(id);
-            ViewBag.Assignment = assignment;
-            return View(submissions);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Grade(GradeSubmissionDto dto, int courseOfferingId)
-        {
-            try
-            {
-                await _assignmentApi.GradeAsync(dto);
-                TempData["Success"] = "Qiymət verildi";
-            }
-            catch (Exception ex)
-            {
-                TempData["Error"] = ex.Message;
-            }
-            return RedirectToAction("Submissions", new { id = HttpContext.Request.Form["assignmentId"] });
+            await _assignmentApi.DeleteAsync(id);
+            TempData["Success"] = "Tapşırıq silindi";
+            return RedirectToAction("Index", new { groupId });
         }
     }
 }

@@ -1,6 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SIS.Common.Pagination;
 using SIS.UI.ApiClients;
 
 namespace SIS.UI.Areas.Admin.Controllers
@@ -12,32 +11,32 @@ namespace SIS.UI.Areas.Admin.Controllers
         private readonly IStudentApi _studentApi;
         private readonly ITeacherApi _teacherApi;
         private readonly ICourseApi _courseApi;
-        private readonly IEnrollmentApi _enrollmentApi;
+        private readonly IGroupApi _groupApi;
 
-        public DashboardController(
-            IStudentApi studentApi,
-            ITeacherApi teacherApi,
-            ICourseApi courseApi,
-            IEnrollmentApi enrollmentApi)
+        public DashboardController(IStudentApi studentApi, ITeacherApi teacherApi,
+            ICourseApi courseApi, IGroupApi groupApi)
         {
             _studentApi = studentApi;
             _teacherApi = teacherApi;
             _courseApi = courseApi;
-            _enrollmentApi = enrollmentApi;
+            _groupApi = groupApi;
         }
 
         public async Task<IActionResult> Index()
         {
-            var students = await _studentApi.GetAllAsync(new PagedRequest { PageSize = 1 });
-            var teachers = await _teacherApi.GetAllAsync(new PagedRequest { PageSize = 1 });
-            var courses = await _courseApi.GetAllAsync(new PagedRequest { PageSize = 1 });
-            var enrollments = await _enrollmentApi.GetAllAsync();
+            try
+            {
+                var students = await _studentApi.GetAllAsync();
+                var teachers = await _teacherApi.GetAllAsync();
+                var courses = await _courseApi.GetAllAsync();
+                var groups = await _groupApi.GetAllAsync();
 
-            ViewBag.StudentCount = students.TotalCount;
-            ViewBag.TeacherCount = teachers.TotalCount;
-            ViewBag.CourseCount = courses.TotalCount;
-            ViewBag.EnrollmentCount = enrollments.Count();
-
+                ViewBag.StudentCount = students.Count();
+                ViewBag.TeacherCount = teachers.Count();
+                ViewBag.CourseCount = courses.Count();
+                ViewBag.GroupCount = groups.Count();
+            }
+            catch { }
             return View();
         }
     }

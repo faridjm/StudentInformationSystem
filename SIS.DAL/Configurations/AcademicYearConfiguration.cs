@@ -8,17 +8,8 @@ namespace SIS.DAL.Configurations
     {
         public void Configure(EntityTypeBuilder<AcademicYear> builder)
         {
-            builder.Property(y => y.Name)
-                .IsRequired()
-                .HasMaxLength(20);
-
+            builder.Property(y => y.Name).IsRequired().HasMaxLength(100);
             builder.HasIndex(y => y.Name).IsUnique();
-
-            builder.HasMany(y => y.Terms)
-                .WithOne(t => t.AcademicYear!)
-                .HasForeignKey(t => t.AcademicYearId)
-                .OnDelete(DeleteBehavior.Restrict);
-
             builder.HasQueryFilter(y => !y.IsDeleted);
         }
     }

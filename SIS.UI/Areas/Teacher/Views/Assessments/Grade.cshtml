@@ -1,0 +1,123 @@
+@model List<SIS.BLL.Services.DTOs.Assessment.AssessmentSubmissionDto>
+@using SIS.Entities.Enums
+@{
+    var item = (SIS.BLL.Services.DTOs.Assessment.AssessmentItemDto)ViewBag.Item;
+    ViewData["Title"] = item.Title + " — Qiymətləndirmə";
+    var typeLabel = item.Type == AssessmentType.Quiz ? "Quiz" : item.Type == AssessmentType.FinalProject ? "Final Layihəsi" : "Tapşırıq";
+}
+
+<div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
+    <a href="/Teacher/Assessments/GroupAssessments/@item.GroupId" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i></a>
+    <div>
+        <h2 style="font-size:20px; font-weight:700; margin:0;">@item.Title</h2>
+        <div style="font-size:13px; color:var(--text-secondary);">@typeLabel · @item.Date.ToString("dd.MM.yyyy") · Max: @item.MaxScore bal · Çəki: %@item.WeightPercent</div>
+    </div>
+    <div style="margin-left:auto;">
+        <span style="font-size:13px; color:var(--text-secondary);">
+            Qiymətləndirilmiş: <strong style="color:#22c55e;">@Model.Count(s => s.IsGraded)</strong> / @Model.Count
+        </span>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body" style="padding:0;">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Tələbə</th>
+                    <th>Nömrə</th>
+                    <th>Bal (/ @item.MaxScore)</th>
+                    <th>Rəy</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var s in Model.OrderBy(x => x.StudentName))
+                {
+                    <tr>
+                        <td><strong>@s.StudentName</strong></td>
+                        <td style="color:var(--text-secondary); font-size:13px;">@s.StudentNumber</td>
+                        <td>
+                            @if (s.IsGraded)
+                            {
+                                var pct = s.MaxScore > 0 ? (double)(s.Score ?? 0) / (double)s.MaxScore * 100 : 0;
+                                var color = pct >= 70 ? "#22c55e" : pct >= 50 ? "#eab308" : "#ef4444";
+                                <span style="font-weight:700; color:@color;">@s.Score</span>
+                            }
+                            else
+                            {
+                                <span style="color:var(--text-secondary);">—</span>
+                            }
+                        </td>
+                        <td style="font-size:13px; color:var(--text-secondary);">@(s.Feedback ?? "—")</td>
+                        <td>
+                            @if (s.IsGraded)
+                            {
+                                <span class="badge badge-success">Qiymətləndirildi</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-warning">Gözlənilir</span>
+                            }
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-secondary" onclick="openGradeModal(@s.Id, @item.Id, '@s.StudentName', @(s.Score?.ToString() ?? "null"), '@(s.Feedback ?? "")')">
+                                <i class="fas fa-pen"></i>
+                            </button>
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="6" style="text-align:center; color:var(--text-secondary); padding:30px;">Hələ tələbə yoxdur</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Grade modal -->
+<div id="gradeModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:1000; align-items:center; justify-content:center;">
+    <div style="background:var(--bg-card); border-radius:12px; padding:24px; width:420px; border:1px solid var(--border);">
+        <h3 id="modalStudentName" style="margin-bottom:16px; font-size:16px;"></h3>
+        <form method="post" action="/Teacher/Assessments/SubmitGrade">
+            @Html.AntiForgeryToken()
+            <input type="hidden" id="submissionId" name="SubmissionId" />
+            <input type="hidden" name="assessmentItemId" value="@item.Id" />
+            <div class="form-group">
+                <label class="form-label">Bal (0 — @item.MaxScore)</label>
+                <input id="scoreInput" name="Score" type="number" min="0" max="@item.MaxScore" step="0.5" class="form-control" required />
+            </div>
+            <div class="form-group">
+                <label class="form-label">Rəy (ixtiyari)</label>
+                <input id="feedbackInput" name="Feedback" class="form-control" placeholder="..." />
+            </div>
+            <div style="display:flex; gap:8px; margin-top:8px;">
+                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Yadda saxla</button>
+                <button type="button" onclick="closeGradeModal()" class="btn btn-secondary">Ləğv et</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    function openGradeModal(submissionId, itemId, studentName, currentScore, currentFeedback) {
+        document.getElementById('submissionId').value = submissionId;
+        document.getElementById('modalStudentName').textContent = studentName;
+        document.getElementById('scoreInput').value = currentScore !== 'null' ? currentScore : '';
+        document.getElementById('feedbackInput').value = currentFeedback;
+        document.getElementById('gradeModal').style.display = 'flex';
+        document.getElementById('scoreInput').focus();
+    }
+
+    function closeGradeModal() {
+        document.getElementById('gradeModal').style.display = 'none';
+    }
+
+    document.getElementById('gradeModal').addEventListener('click', function(e) {
+        if (e.target === this) closeGradeModal();
+    });
+</script>
+}

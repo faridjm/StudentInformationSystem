@@ -12,7 +12,7 @@ namespace SIS.BLL.Validators
             RuleFor(x => x.MaxScore).GreaterThan(0).LessThanOrEqualTo(1000);
             RuleFor(x => x.DueDate).GreaterThan(DateTime.UtcNow.AddMinutes(-5))
                 .WithMessage("Son tarix keçmiş ola bilməz");
-            RuleFor(x => x.CourseOfferingId).GreaterThan(0);
+            RuleFor(x => x.GroupId).GreaterThan(0);
             RuleFor(x => x.Type).IsInEnum();
         }
     }

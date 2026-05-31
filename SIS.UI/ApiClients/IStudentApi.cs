@@ -1,22 +1,18 @@
-﻿using Refit;
+using Refit;
 using SIS.BLL.Services.DTOs.Student;
-using SIS.Common.Pagination;
 
 namespace SIS.UI.ApiClients
 {
     public interface IStudentApi
     {
         [Get("/api/student")]
-        Task<PagedResult<StudentListDto>> GetAllAsync([Query] PagedRequest request);
+        Task<IEnumerable<StudentListDto>> GetAllAsync();
 
         [Get("/api/student/{id}")]
         Task<StudentDetailDto> GetByIdAsync(int id);
 
         [Get("/api/student/me")]
         Task<StudentDetailDto> GetMeAsync();
-
-        [Get("/api/student/program/{programId}")]
-        Task<IEnumerable<StudentListDto>> GetByProgramAsync(int programId);
 
         [Post("/api/student")]
         Task CreateAsync([Body] CreateStudentDto dto);
@@ -27,6 +23,4 @@ namespace SIS.UI.ApiClients
         [Delete("/api/student/{id}")]
         Task DeleteAsync(int id);
     }
-
-
 }

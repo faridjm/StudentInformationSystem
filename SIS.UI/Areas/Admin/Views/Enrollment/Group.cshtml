@@ -1,0 +1,52 @@
+@model IEnumerable<SIS.BLL.Services.DTOs.Enrollment.EnrollmentListDto>
+@{
+    ViewData["Title"] = "Qrup Tələbələri";
+}
+<div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
+    <a href="/Admin/Enrollment" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i></a>
+    <h2 style="font-size:20px; font-weight:700;">Qrup Tələbələri</h2>
+    <div style="margin-left:auto;">
+        <a href="/Admin/Enrollment/Create?groupId=@ViewBag.GroupId" class="btn btn-primary btn-sm">
+            <i class="fas fa-user-plus"></i> Qeydiyyat et
+        </a>
+    </div>
+</div>
+<div class="card">
+    <div class="card-body" style="padding:0;">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Tələbə</th>
+                    <th>Nömrə</th>
+                    <th>Email</th>
+                    <th>Qeydiyyat tarixi</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var e in Model)
+                {
+                    <tr>
+                        <td><strong>@e.StudentName</strong></td>
+                        <td><code style="background:var(--bg-hover); padding:2px 8px; border-radius:4px; font-size:12px;">@e.StudentNumber</code></td>
+                        <td style="color:var(--text-secondary); font-size:13px;">—</td>
+                        <td style="color:var(--text-secondary); font-size:13px;">@e.EnrolledAt.ToString("dd.MM.yyyy")</td>
+                        <td><span class="badge badge-success">Aktiv</span></td>
+                        <td>
+                            <form method="post" action="/Admin/Enrollment/Drop/@e.Id?groupId=@ViewBag.GroupId"
+                                  onsubmit="return confirm('Tələbəni qrupdan çıxarmaq istəyirsiniz?')">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-sm btn-danger"><i class="fas fa-user-minus"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="6" style="text-align:center; color:var(--text-secondary); padding:30px;">Bu qrupda hələ tələbə yoxdur</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

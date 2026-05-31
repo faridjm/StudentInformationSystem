@@ -1,8 +1,4 @@
-﻿using SIS.Common.Pagination;
 using SIS.Entities.Models;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SIS.DAL.Repositories.Interfaces
 {
@@ -10,8 +6,6 @@ namespace SIS.DAL.Repositories.Interfaces
     {
         Task<Student?> GetStudentWithDetailsAsync(int studentId);
         Task<Student?> GetStudentByUserIdAsync(string userId);
-        Task<IEnumerable<Student>> GetStudentsByProgramAsync(int programId);
-        Task<IEnumerable<Student>> GetStudentsWithGPAAsync();
-        Task<PagedResult<Student>> GetPagedAsync(PagedRequest request);
+        Task<IEnumerable<Student>> GetAllWithUsersAsync();
     }
 }
