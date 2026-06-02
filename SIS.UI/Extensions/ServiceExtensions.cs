@@ -45,6 +45,7 @@ namespace SIS.UI.Extensions
             Add<IAssignmentApi>();
             Add<ISimulationApi>();
             Add<ITranscriptApi>();
+            Add<IChatApi>();
 
             return services;
         }

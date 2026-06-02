@@ -1,11 +1,11 @@
 @model IEnumerable<SIS.BLL.Services.DTOs.Groups.GroupListDto>
 @{
-    ViewData["Title"] = "Qruplar";
+    ViewData["Title"] = L["Groups"].Value;
 }
 
 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-    <h2 style="font-size:20px; font-weight:700;">Qruplar</h2>
-    <a href="/Admin/Group/Create" class="btn btn-primary"><i class="fas fa-plus"></i> Yeni Qrup</a>
+    <h2 style="font-size:20px; font-weight:700;">@L["Groups"]</h2>
+    <a href="/Admin/Group/Create" class="btn btn-primary"><i class="fas fa-plus"></i> @L["NewGroup"]</a>
 </div>
 
 <div class="card">
@@ -13,14 +13,14 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th>Qrup Adı</th>
-                    <th>Tədris Proqramı</th>
-                    <th>Müəllim</th>
-                    <th>Sezon</th>
-                    <th>Başlama</th>
-                    <th>Bitmə</th>
-                    <th>Tələbə</th>
-                    <th>Status</th>
+                    <th>@L["Name"]</th>
+                    <th>@L["Course"]</th>
+                    <th>@L["Teacher"]</th>
+                    <th>@L["Seasons"]</th>
+                    <th>@L["StartDate"]</th>
+                    <th>@L["EndDate"]</th>
+                    <th>@L["Student"]</th>
+                    <th>@L["Status"]</th>
                     <th></th>
                 </tr>
             </thead>
@@ -38,7 +38,7 @@
                         <td>
                             @if (g.IsActive)
                             {
-                                <span class="badge badge-success">Aktiv</span>
+                                <span class="badge badge-success">@L["Active"]</span>
                             }
                             else
                             {
@@ -57,7 +57,7 @@
                 }
                 @if (!Model.Any())
                 {
-                    <tr><td colspan="9" style="text-align:center; color:var(--text-secondary); padding:30px;">Hələ qrup yoxdur</td></tr>
+                    <tr><td colspan="9" style="text-align:center; color:var(--text-secondary); padding:30px;">@L["NoData"]</td></tr>
                 }
             </tbody>
         </table>

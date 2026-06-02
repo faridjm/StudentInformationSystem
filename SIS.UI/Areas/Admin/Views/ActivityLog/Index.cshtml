@@ -1,11 +1,11 @@
 ﻿@model IEnumerable<SIS.Entities.Models.ActivityLog>
 
 @{
-    ViewData["Title"] = "Aktivlik Loqu";
+    ViewData["Title"] = L["ActivityLog"].Value;
 }
 
 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-    <h2 style="font-size:20px; font-weight:700;">Aktivlik Loqu</h2>
+    <h2 style="font-size:20px; font-weight:700;">@L["ActivityLog"]</h2>
     <form method="get" style="display:flex; gap:8px; align-items:center;">
         <label style="color:var(--text-secondary); font-size:13px;">Son</label>
         <select name="count" class="form-control" style="width:80px;" onchange="this.form.submit()">
@@ -33,11 +33,11 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th>Tarix</th>
-                    <th>Əməliyyat</th>
+                    <th>@L["Date"]</th>
+                    <th>@L["Actions"]</th>
                     <th>Entity</th>
                     <th>Entity ID</th>
-                    <th>İstifadəçi</th>
+                    <th>@L["Users"]</th>
                     <th>IP</th>
                 </tr>
             </thead>
@@ -52,13 +52,13 @@
                             @switch (log.Action)
                             {
                                 case "Create":
-                                    <span class="badge badge-success"><i class="fas fa-plus"></i> Yarat</span>
+                                    <span class="badge badge-success"><i class="fas fa-plus"></i> @L["Create"]</span>
                                     break;
                                 case "Update":
-                                    <span class="badge badge-warning"><i class="fas fa-edit"></i> Yenilə</span>
+                                    <span class="badge badge-warning"><i class="fas fa-edit"></i> @L["Edit"]</span>
                                     break;
                                 case "Delete":
-                                    <span class="badge badge-danger"><i class="fas fa-trash"></i> Sil</span>
+                                    <span class="badge badge-danger"><i class="fas fa-trash"></i> @L["Delete"]</span>
                                     break;
                                 default:
                                     <span class="badge badge-info">@log.Action</span>

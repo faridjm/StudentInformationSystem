@@ -1,17 +1,17 @@
 @model IEnumerable<SIS.BLL.Services.DTOs.ClassSession.ClassSessionDto>
 @using SIS.Entities.Enums
 @{
-    ViewData["Title"] = "Dərs Sessiyaları";
+    ViewData["Title"] = L["ClassSessions"].Value;
 }
 <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
     <a href="/Teacher/Courses" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i></a>
-    <h2 style="font-size:20px; font-weight:700;">Dərs Sessiyaları</h2>
+    <h2 style="font-size:20px; font-weight:700;">@L["ClassSessions"]</h2>
 </div>
 <div class="card">
     <div class="card-body" style="padding:0;">
         <table class="table">
             <thead>
-                <tr><th>#</th><th>Tarix</th><th>Saat</th><th>Mövzu</th><th>Status</th></tr>
+                <tr><th>#</th><th>@L["Date"]</th><th>Saat</th><th>@L["TodaysTopic"]</th><th>@L["Status"]</th></tr>
             </thead>
             <tbody>
                 @foreach (var s in Model.OrderBy(x => x.Date))
@@ -24,15 +24,15 @@
                         <td>
                             @if (s.Status == ClassSessionStatus.Scheduled)
                             {
-                                <span class="badge badge-info">Planlaşdırılıb</span>
+                                <span class="badge badge-info">@L["NoData"]</span>
                             }
                             else if (s.Status == ClassSessionStatus.Completed)
                             {
-                                <span class="badge badge-success">Keçirildi</span>
+                                <span class="badge badge-success">@L["Active"]</span>
                             }
                             else
                             {
-                                <span class="badge badge-danger">Ləğv edildi</span>
+                                <span class="badge badge-danger">@L["Cancel"]</span>
                             }
                         </td>
                     </tr>

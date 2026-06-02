@@ -10,9 +10,10 @@ namespace SIS.DAL.Configurations
         {
             builder.HasKey(s => s.Id);
             builder.Property(s => s.StudentNumber).IsRequired().HasMaxLength(20);
+            builder.Property(s => s.CurrentGPA).HasPrecision(5, 2);
 
             builder.HasOne(s => s.AppUser)
-                .WithOne()
+                .WithOne(u => u.Student)
                 .HasForeignKey<Student>(s => s.AppUserId)
                 .OnDelete(DeleteBehavior.Restrict);
 

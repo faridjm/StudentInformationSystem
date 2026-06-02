@@ -522,45 +522,45 @@
     <nav class="sidebar">
         <div class="sidebar-logo">
             <div class="logo-text">Acadex</div>
-            <div class="logo-sub">Student Information System</div>
+            <div class="logo-sub">@L["AdminPanel"]</div>
         </div>
 
-        <div class="sidebar-section">Əsas</div>
+        <div class="sidebar-section">@L["Main"]</div>
         <a href="/Admin/Dashboard" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Dashboard" ? "active" : "")">
-            <i class="fas fa-chart-pie"></i> Dashboard
+            <i class="fas fa-chart-pie"></i> @L["Dashboard"]
         </a>
 
-        <div class="sidebar-section">İstifadəçilər</div>
+        <div class="sidebar-section">@L["Users"]</div>
         <a href="/Admin/Student" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Student" ? "active" : "")">
-            <i class="fas fa-user-graduate"></i> Tələbələr
+            <i class="fas fa-user-graduate"></i> @L["Students"]
         </a>
         <a href="/Admin/Teacher" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Teacher" ? "active" : "")">
-            <i class="fas fa-chalkboard-teacher"></i> Müəllimlər
+            <i class="fas fa-chalkboard-teacher"></i> @L["Teachers"]
         </a>
 
-        <div class="sidebar-section">Akademik</div>
+        <div class="sidebar-section">@L["Academic"]</div>
         <a href="/Admin/Course" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Course" ? "active" : "")">
-            <i class="fas fa-graduation-cap"></i> Tədris Proqramları
+            <i class="fas fa-graduation-cap"></i> @L["AcademicPrograms"]
         </a>
         <a href="/Admin/Group" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Group" ? "active" : "")">
-            <i class="fas fa-users"></i> Qruplar
+            <i class="fas fa-users"></i> @L["Groups"]
         </a>
         <a href="/Admin/Enrollment" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Enrollment" ? "active" : "")">
-            <i class="fas fa-clipboard-list"></i> Qeydiyyatlar
+            <i class="fas fa-clipboard-list"></i> @L["Enrollments"]
         </a>
 
-        <div class="sidebar-section">Sistem</div>
+        <div class="sidebar-section">@L["System"]</div>
         <a href="/Admin/AcademicYear" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "AcademicYear" ? "active" : "")">
-            <i class="fas fa-calendar-alt"></i> Sezonlar
+            <i class="fas fa-calendar-alt"></i> @L["Seasons"]
         </a>
         <a href="/Admin/Announcement" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Announcement" ? "active" : "")">
-            <i class="fas fa-bullhorn"></i> Elanlar
+            <i class="fas fa-bullhorn"></i> @L["Announcements"]
         </a>
 
         <div class="sidebar-footer">
             <form asp-area="" asp-controller="Auth" asp-action="Logout" method="post">
                 <button type="submit" class="sidebar-item w-100" style="border:none; background:none; cursor:pointer; width:100%;">
-                    <i class="fas fa-sign-out-alt"></i> Çıxış
+                    <i class="fas fa-sign-out-alt"></i> @L["Logout"]
                 </button>
             </form>
         </div>
@@ -571,6 +571,7 @@
         <header class="top-navbar">
             <span class="page-title">@(ViewData["Title"] ?? "Dashboard")</span>
             <div class="navbar-right">
+                @await Html.PartialAsync("_LanguageSwitcher")
                 <div class="notif-bell">
                     <i class="fas fa-bell"></i>
                     <span class="notif-badge" id="notifCount" style="display:none">0</span>
@@ -584,7 +585,7 @@
                     <div class="dropdown-menu">
                         <form asp-area="" asp-controller="Auth" asp-action="Logout" method="post">
                             <button class="dropdown-item" type="submit">
-                                <i class="fas fa-sign-out-alt"></i> Çıxış
+                                <i class="fas fa-sign-out-alt"></i> @L["Logout"]
                             </button>
                         </form>
                     </div>
@@ -599,19 +600,19 @@
                 <div style="background:rgba(234,179,8,0.15); border:1px solid rgba(234,179,8,0.3); color:#eab308; padding:10px 16px; border-radius:8px; margin-bottom:12px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
                     <div>
                         <i class="fas fa-clock"></i>
-                        <strong>Simulasiya rejimi:</strong> Bütün istifadəçilər üçün bu gün <strong>@SimState.DateDisplay</strong> olaraq qəbul edilir
+                        <strong>@L["SimulationMode"]:</strong> @L["SimulationAllUsers"] <strong>@SimState.DateDisplay</strong> @L["AcceptedAs"]
                     </div>
                     <div style="display:flex; gap:6px; align-items:center;">
                         <form method="post" action="/Simulation/Set" style="display:flex; gap:6px; align-items:center;">
                             @Html.AntiForgeryToken()
                             <input type="date" name="date" value="@SimState.DateString" style="background:var(--bg-hover); border:1px solid var(--border); color:var(--text-primary); border-radius:6px; padding:4px 8px; font-size:13px;" />
                             <input type="hidden" name="returnUrl" value="@Context.Request.Path@Context.Request.QueryString" />
-                            <button type="submit" class="btn btn-sm btn-primary">Dəyiş</button>
+                            <button type="submit" class="btn btn-sm btn-primary">@L["Change"]</button>
                         </form>
                         <form method="post" action="/Simulation/Clear" style="display:inline;">
                             @Html.AntiForgeryToken()
                             <input type="hidden" name="returnUrl" value="@Context.Request.Path@Context.Request.QueryString" />
-                            <button type="submit" class="btn btn-sm btn-danger">Bağla</button>
+                            <button type="submit" class="btn btn-sm btn-danger">@L["Close"]</button>
                         </form>
                     </div>
                 </div>
@@ -623,7 +624,7 @@
                         @Html.AntiForgeryToken()
                         <input type="date" name="date" style="background:var(--bg-hover); border:1px solid var(--border); color:var(--text-primary); border-radius:6px; padding:4px 8px; font-size:13px;" />
                         <input type="hidden" name="returnUrl" value="@Context.Request.Path@Context.Request.QueryString" />
-                        <button type="submit" class="btn btn-sm btn-secondary"><i class="fas fa-clock"></i> Simulasiya başlat</button>
+                        <button type="submit" class="btn btn-sm btn-secondary"><i class="fas fa-clock"></i> @L["StartSimulation"]</button>
                     </form>
                 </div>
             }

@@ -21,6 +21,7 @@ namespace SIS.DAL.UnitOfWork
         IRefreshTokenRepository RefreshTokens { get; }
         IAssignmentRepository Assignments { get; }
         IAssignmentSubmissionRepository AssignmentSubmissions { get; }
+        IChatRepository Chat { get; }
 
         Task<int> SaveAsync();
     }

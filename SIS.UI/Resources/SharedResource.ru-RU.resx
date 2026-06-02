@@ -1,0 +1,682 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="TeacherPanel" xml:space="preserve">
+    <value>Панель Учителя</value>
+  </data>
+  <data name="StudentPanel" xml:space="preserve">
+    <value>Панель Студента</value>
+  </data>
+  <data name="AdminPanel" xml:space="preserve">
+    <value>Панель Администратора</value>
+  </data>
+  <data name="Main" xml:space="preserve">
+    <value>Главное</value>
+  </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Панель</value>
+  </data>
+  <data name="Teaching" xml:space="preserve">
+    <value>Обучение</value>
+  </data>
+  <data name="MyGroups" xml:space="preserve">
+    <value>Мои Группы</value>
+  </data>
+  <data name="Assessment" xml:space="preserve">
+    <value>Оценивание</value>
+  </data>
+  <data name="Assignments" xml:space="preserve">
+    <value>Задания</value>
+  </data>
+  <data name="Schedule" xml:space="preserve">
+    <value>Расписание</value>
+  </data>
+  <data name="ClassSchedule" xml:space="preserve">
+    <value>Расписание Занятий</value>
+  </data>
+  <data name="Communication" xml:space="preserve">
+    <value>Общение</value>
+  </data>
+  <data name="Messages" xml:space="preserve">
+    <value>Сообщения</value>
+  </data>
+  <data name="ChangePassword" xml:space="preserve">
+    <value>Изменить Пароль</value>
+  </data>
+  <data name="Logout" xml:space="preserve">
+    <value>Выход</value>
+  </data>
+  <data name="Users" xml:space="preserve">
+    <value>Пользователи</value>
+  </data>
+  <data name="Students" xml:space="preserve">
+    <value>Студенты</value>
+  </data>
+  <data name="Teachers" xml:space="preserve">
+    <value>Учителя</value>
+  </data>
+  <data name="Academic" xml:space="preserve">
+    <value>Академия</value>
+  </data>
+  <data name="Courses" xml:space="preserve">
+    <value>Курсы</value>
+  </data>
+  <data name="AcademicPrograms" xml:space="preserve">
+    <value>Учебные Программы</value>
+  </data>
+  <data name="Groups" xml:space="preserve">
+    <value>Группы</value>
+  </data>
+  <data name="Enrollments" xml:space="preserve">
+    <value>Регистрации</value>
+  </data>
+  <data name="System" xml:space="preserve">
+    <value>Система</value>
+  </data>
+  <data name="Seasons" xml:space="preserve">
+    <value>Сезоны</value>
+  </data>
+  <data name="Announcements" xml:space="preserve">
+    <value>Объявления</value>
+  </data>
+  <data name="MyCourses" xml:space="preserve">
+    <value>Мои Курсы</value>
+  </data>
+  <data name="MySchedule" xml:space="preserve">
+    <value>Моё Расписание</value>
+  </data>
+  <data name="MyGrades" xml:space="preserve">
+    <value>Мои Оценки</value>
+  </data>
+  <data name="Today" xml:space="preserve">
+    <value>Сегодня</value>
+  </data>
+  <data name="TodaysLessons" xml:space="preserve">
+    <value>Занятия сегодня</value>
+  </data>
+  <data name="AttendanceTaken" xml:space="preserve">
+    <value>Посещаемость отмечена</value>
+  </data>
+  <data name="TodaysTopic" xml:space="preserve">
+    <value>Тема сегодня</value>
+  </data>
+  <data name="Attendance" xml:space="preserve">
+    <value>Посещаемость</value>
+  </data>
+  <data name="Student" xml:space="preserve">
+    <value>Студент</value>
+  </data>
+  <data name="Present" xml:space="preserve">
+    <value>Присутствует</value>
+  </data>
+  <data name="Late" xml:space="preserve">
+    <value>Опоздал</value>
+  </data>
+  <data name="Absent" xml:space="preserve">
+    <value>Отсутствует</value>
+  </data>
+  <data name="SaveAttendance" xml:space="preserve">
+    <value>Сохранить посещаемость</value>
+  </data>
+  <data name="Grades" xml:space="preserve">
+    <value>Оценки</value>
+  </data>
+  <data name="AllMyGroups" xml:space="preserve">
+    <value>Все Мои Группы</value>
+  </data>
+  <data name="Group" xml:space="preserve">
+    <value>Группа</value>
+  </data>
+  <data name="Program" xml:space="preserve">
+    <value>Программа</value>
+  </data>
+  <data name="StudentCount" xml:space="preserve">
+    <value>Студенты</value>
+  </data>
+  <data name="Date" xml:space="preserve">
+    <value>Дата</value>
+  </data>
+  <data name="Open" xml:space="preserve">
+    <value>Открыть</value>
+  </data>
+  <data name="NoGroups" xml:space="preserve">
+    <value>Нет групп</value>
+  </data>
+  <data name="NoLessonsToday" xml:space="preserve">
+    <value>нет занятий</value>
+  </data>
+  <data name="Quiz" xml:space="preserve">
+    <value>Тест</value>
+  </data>
+  <data name="Final" xml:space="preserve">
+    <value>Финал</value>
+  </data>
+  <data name="Task" xml:space="preserve">
+    <value>Задание</value>
+  </data>
+  <data name="Welcome" xml:space="preserve">
+    <value>Добро пожаловать</value>
+  </data>
+  <data name="ActiveCourse" xml:space="preserve">
+    <value>Активные Курсы</value>
+  </data>
+  <data name="NewNotification" xml:space="preserve">
+    <value>Новые Уведомления</value>
+  </data>
+  <data name="Course" xml:space="preserve">
+    <value>Курс</value>
+  </data>
+  <data name="Teacher" xml:space="preserve">
+    <value>Учитель</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>Статус</value>
+  </data>
+  <data name="Active" xml:space="preserve">
+    <value>Активный</value>
+  </data>
+  <data name="ViewAll" xml:space="preserve">
+    <value>Все</value>
+  </data>
+  <data name="NoAnnouncements" xml:space="preserve">
+    <value>Нет объявлений</value>
+  </data>
+  <data name="RecentActivity" xml:space="preserve">
+    <value>Последняя Активность</value>
+  </data>
+  <data name="NoActivityYet" xml:space="preserve">
+    <value>Нет активности пока</value>
+  </data>
+  <data name="SimulationMode" xml:space="preserve">
+    <value>Режим симуляции</value>
+  </data>
+  <data name="SimulationAllUsers" xml:space="preserve">
+    <value>Для всех пользователей сегодня</value>
+  </data>
+  <data name="SimulationToday" xml:space="preserve">
+    <value>Сегодня считается как</value>
+  </data>
+  <data name="AcceptedAs" xml:space="preserve">
+    <value>принято как</value>
+  </data>
+  <data name="Change" xml:space="preserve">
+    <value>Изменить</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Закрыть</value>
+  </data>
+  <data name="StartSimulation" xml:space="preserve">
+    <value>Начать Симуляцию</value>
+  </data>
+  <data name="Login" xml:space="preserve">
+    <value>Войти</value>
+  </data>
+  <data name="WelcomeBack" xml:space="preserve">
+    <value>Добро пожаловать</value>
+  </data>
+  <data name="LoginSubtitle" xml:space="preserve">
+    <value>Введите данные для входа в систему</value>
+  </data>
+  <data name="EmailOrCode" xml:space="preserve">
+    <value>Email / Код студента / Код учителя</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>Пароль</value>
+  </data>
+  <data name="ForgotPassword" xml:space="preserve">
+    <value>Забыли пароль?</value>
+  </data>
+  <data name="RememberMe" xml:space="preserve">
+    <value>Запомнить меня</value>
+  </data>
+  <data name="ForgotPasswordTitle" xml:space="preserve">
+    <value>Забыл Пароль</value>
+  </data>
+  <data name="ForgotPasswordDesc" xml:space="preserve">
+    <value>Введите email. Мы отправим ссылку для сброса пароля.</value>
+  </data>
+  <data name="SendLink" xml:space="preserve">
+    <value>Отправить Ссылку</value>
+  </data>
+  <data name="GoBack" xml:space="preserve">
+    <value>Вернуться</value>
+  </data>
+  <data name="EmailSent" xml:space="preserve">
+    <value>Email Отправлен!</value>
+  </data>
+  <data name="CheckEmail" xml:space="preserve">
+    <value>Проверьте почту.</value>
+  </data>
+  <data name="ResetLinkSent" xml:space="preserve">
+    <value>Ссылка для сброса пароля</value>
+  </data>
+  <data name="LinkSentSuffix" xml:space="preserve">
+    <value>отправлена.</value>
+  </data>
+  <data name="LinkValid24h" xml:space="preserve">
+    <value>Ссылка действительна 24 часа.</value>
+  </data>
+  <data name="BackToLogin" xml:space="preserve">
+    <value>Вернуться к входу</value>
+  </data>
+  <data name="NewPassword" xml:space="preserve">
+    <value>Новый Пароль</value>
+  </data>
+  <data name="SetNewPassword" xml:space="preserve">
+    <value>Установить Новый Пароль</value>
+  </data>
+  <data name="ConfirmPassword" xml:space="preserve">
+    <value>Подтвердите Пароль</value>
+  </data>
+  <data name="PasswordChanged" xml:space="preserve">
+    <value>Пароль Изменён!</value>
+  </data>
+  <data name="PasswordChangedDesc" xml:space="preserve">
+    <value>Ваш пароль обновлён.
+Теперь вы можете войти с новым паролем.</value>
+  </data>
+  <data name="ChangePasswordBtn" xml:space="preserve">
+    <value>Изменить Пароль</value>
+  </data>
+  <data name="SavePassword" xml:space="preserve">
+    <value>Сохранить Пароль</value>
+  </data>
+  <data name="MinChars" xml:space="preserve">
+    <value>Минимум 6 символов</value>
+  </data>
+  <data name="ReenterPassword" xml:space="preserve">
+    <value>Введите пароль ещё раз</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>Поиск...</value>
+  </data>
+  <data name="NoConversationsYet" xml:space="preserve">
+    <value>Пока нет бесед</value>
+  </data>
+  <data name="NewConversation" xml:space="preserve">
+    <value>Новая беседа</value>
+  </data>
+  <data name="Now" xml:space="preserve">
+    <value>Сейчас</value>
+  </data>
+  <data name="SelectConversation" xml:space="preserve">
+    <value>Выберите беседу</value>
+  </data>
+  <data name="SelectConvDesc" xml:space="preserve">
+    <value>Выберите беседу слева или начните новую</value>
+  </data>
+  <data name="StartConversation" xml:space="preserve">
+    <value>Начните беседу!</value>
+  </data>
+  <data name="SendFirstMessage" xml:space="preserve">
+    <value>Отправьте первое сообщение</value>
+  </data>
+  <data name="TypeMessage" xml:space="preserve">
+    <value>Напишите сообщение...</value>
+  </data>
+  <data name="Yesterday" xml:space="preserve">
+    <value>Вчера</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Сохранить</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Редактировать</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Удалить</value>
+  </data>
+  <data name="Create" xml:space="preserve">
+    <value>Создать</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Отмена</value>
+  </data>
+  <data name="Back" xml:space="preserve">
+    <value>Назад</value>
+  </data>
+  <data name="Details" xml:space="preserve">
+    <value>Детали</value>
+  </data>
+  <data name="Actions" xml:space="preserve">
+    <value>Действия</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Да</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>Нет</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>Загрузка...</value>
+  </data>
+  <data name="NoData" xml:space="preserve">
+    <value>Нет данных</value>
+  </data>
+  <data name="Email" xml:space="preserve">
+    <value>Электронная почта</value>
+  </data>
+  <data name="Phone" xml:space="preserve">
+    <value>Телефон</value>
+  </data>
+  <data name="FullName" xml:space="preserve">
+    <value>ФИО</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Имя</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>Описание</value>
+  </data>
+  <data name="StartDate" xml:space="preserve">
+    <value>Дата Начала</value>
+  </data>
+  <data name="EndDate" xml:space="preserve">
+    <value>Дата Окончания</value>
+  </data>
+  <data name="Capacity" xml:space="preserve">
+    <value>Вместимость</value>
+  </data>
+  <data name="Submit" xml:space="preserve">
+    <value>Отправить</value>
+  </data>
+  <data name="Download" xml:space="preserve">
+    <value>Скачать</value>
+  </data>
+  <data name="Transcript" xml:space="preserve">
+    <value>Транскрипт</value>
+  </data>
+  <data name="DownloadPDF" xml:space="preserve">
+    <value>Скачать PDF</value>
+  </data>
+  <data name="CreatedAt" xml:space="preserve">
+    <value>Дата создания</value>
+  </data>
+  <data name="Title" xml:space="preserve">
+    <value>Заголовок</value>
+  </data>
+  <data name="Content" xml:space="preserve">
+    <value>Содержание</value>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>Тип</value>
+  </data>
+  <data name="MaxScore" xml:space="preserve">
+    <value>Макс. Балл</value>
+  </data>
+  <data name="Score" xml:space="preserve">
+    <value>Балл</value>
+  </data>
+  <data name="Weight" xml:space="preserve">
+    <value>Вес %</value>
+  </data>
+  <data name="WeightedScore" xml:space="preserve">
+    <value>Взвешенный Балл</value>
+  </data>
+  <data name="Percentage" xml:space="preserve">
+    <value>Процент</value>
+  </data>
+  <data name="DueDate" xml:space="preserve">
+    <value>Срок Сдачи</value>
+  </data>
+  <data name="NewStudent" xml:space="preserve">
+    <value>Новый Студент</value>
+  </data>
+  <data name="NewTeacher" xml:space="preserve">
+    <value>Новый Учитель</value>
+  </data>
+  <data name="NewGroup" xml:space="preserve">
+    <value>Новая Группа</value>
+  </data>
+  <data name="NewCourse" xml:space="preserve">
+    <value>Новая Учебная Программа</value>
+  </data>
+  <data name="NewSeason" xml:space="preserve">
+    <value>Новый Учебный Сезон</value>
+  </data>
+  <data name="NewAnnouncement" xml:space="preserve">
+    <value>Новое Объявление</value>
+  </data>
+  <data name="NewEnrollment" xml:space="preserve">
+    <value>Регистрация Студента</value>
+  </data>
+  <data name="EditStudent" xml:space="preserve">
+    <value>Редактировать Студента</value>
+  </data>
+  <data name="EditTeacher" xml:space="preserve">
+    <value>Редактировать Учителя</value>
+  </data>
+  <data name="EditGroup" xml:space="preserve">
+    <value>Редактировать Группу</value>
+  </data>
+  <data name="EditCourse" xml:space="preserve">
+    <value>Редактировать Программу</value>
+  </data>
+  <data name="EditSeason" xml:space="preserve">
+    <value>Редактировать Сезон</value>
+  </data>
+  <data name="StudentDetails" xml:space="preserve">
+    <value>Детали Студента</value>
+  </data>
+  <data name="TeacherDetails" xml:space="preserve">
+    <value>Детали Учителя</value>
+  </data>
+  <data name="GroupStudents" xml:space="preserve">
+    <value>Студенты Группы</value>
+  </data>
+  <data name="ActivityLog" xml:space="preserve">
+    <value>Журнал Активности</value>
+  </data>
+  <data name="AcademicSeasons" xml:space="preserve">
+    <value>Учебные Сезоны</value>
+  </data>
+  <data name="NewAssignment" xml:space="preserve">
+    <value>Новое Задание</value>
+  </data>
+  <data name="EditAssignment" xml:space="preserve">
+    <value>Редактировать Задание</value>
+  </data>
+  <data name="Submissions" xml:space="preserve">
+    <value>Ответы</value>
+  </data>
+  <data name="SelectGroup" xml:space="preserve">
+    <value>Выбрать Группу</value>
+  </data>
+  <data name="AssessmentPlan" xml:space="preserve">
+    <value>План Оценивания</value>
+  </data>
+  <data name="ClassSessions" xml:space="preserve">
+    <value>Учебные Сессии</value>
+  </data>
+  <data name="MyClassSchedule" xml:space="preserve">
+    <value>Моё Расписание</value>
+  </data>
+  <data name="PDF_AcademicTranscript" xml:space="preserve">
+    <value>АКАДЕМИЧЕСКАЯ СПРАВКА</value>
+  </data>
+  <data name="PDF_Date" xml:space="preserve">
+    <value>Дата</value>
+  </data>
+  <data name="PDF_StudentInfo" xml:space="preserve">
+    <value>ИНФОРМАЦИЯ О СТУДЕНТЕ</value>
+  </data>
+  <data name="PDF_FullName" xml:space="preserve">
+    <value>ФИО</value>
+  </data>
+  <data name="PDF_StudentNo" xml:space="preserve">
+    <value>Номер Студента</value>
+  </data>
+  <data name="PDF_Email" xml:space="preserve">
+    <value>Эл. почта</value>
+  </data>
+  <data name="PDF_EnrollmentYear" xml:space="preserve">
+    <value>Год Регистрации</value>
+  </data>
+  <data name="PDF_CourseInfo" xml:space="preserve">
+    <value>ИНФОРМАЦИЯ О КУРСЕ</value>
+  </data>
+  <data name="PDF_Course" xml:space="preserve">
+    <value>Курс</value>
+  </data>
+  <data name="PDF_Group" xml:space="preserve">
+    <value>Группа</value>
+  </data>
+  <data name="PDF_Teacher" xml:space="preserve">
+    <value>Учитель</value>
+  </data>
+  <data name="PDF_AcademicYear" xml:space="preserve">
+    <value>Учебный Год</value>
+  </data>
+  <data name="PDF_DateRange" xml:space="preserve">
+    <value>Дата</value>
+  </data>
+  <data name="PDF_Attendance" xml:space="preserve">
+    <value>ПОСЕЩАЕМОСТЬ</value>
+  </data>
+  <data name="PDF_TotalSessions" xml:space="preserve">
+    <value>Всего Занятий</value>
+  </data>
+  <data name="PDF_Present" xml:space="preserve">
+    <value>Присутствие</value>
+  </data>
+  <data name="PDF_Late" xml:space="preserve">
+    <value>Опоздания</value>
+  </data>
+  <data name="PDF_Absent" xml:space="preserve">
+    <value>Отсутствие</value>
+  </data>
+  <data name="PDF_AttendancePct" xml:space="preserve">
+    <value>Посещаемость</value>
+  </data>
+  <data name="PDF_OfficialAssessments" xml:space="preserve">
+    <value>ОФИЦИАЛЬНЫЕ ОЦЕНКИ</value>
+  </data>
+  <data name="PDF_Title" xml:space="preserve">
+    <value>Заголовок</value>
+  </data>
+  <data name="PDF_Type" xml:space="preserve">
+    <value>Тип</value>
+  </data>
+  <data name="PDF_MaxScore" xml:space="preserve">
+    <value>Макс. Балл</value>
+  </data>
+  <data name="PDF_Score" xml:space="preserve">
+    <value>Балл</value>
+  </data>
+  <data name="PDF_WeightPct" xml:space="preserve">
+    <value>Вес %</value>
+  </data>
+  <data name="PDF_WeightedScore" xml:space="preserve">
+    <value>Взвеш. Балл</value>
+  </data>
+  <data name="PDF_OfficialGrade" xml:space="preserve">
+    <value>ОФИЦИАЛЬНАЯ ОЦЕНКА</value>
+  </data>
+  <data name="PDF_OfficialCourseGrade" xml:space="preserve">
+    <value>Официальная Оценка</value>
+  </data>
+  <data name="PDF_HomeworkAssignments" xml:space="preserve">
+    <value>ДОМАШНИЕ ЗАДАНИЯ</value>
+  </data>
+  <data name="PDF_HomeworkNotInGPA" xml:space="preserve">
+    <value>Этот раздел не входит в расчёт GPA</value>
+  </data>
+  <data name="PDF_DueDate" xml:space="preserve">
+    <value>Срок Сдачи</value>
+  </data>
+  <data name="PDF_Percentage" xml:space="preserve">
+    <value>Процент</value>
+  </data>
+  <data name="PDF_Link" xml:space="preserve">
+    <value>Связь</value>
+  </data>
+  <data name="PDF_Official" xml:space="preserve">
+    <value>Официальное</value>
+  </data>
+  <data name="PDF_Homework" xml:space="preserve">
+    <value>Дом. зад.</value>
+  </data>
+  <data name="PDF_HomeworkAvg" xml:space="preserve">
+    <value>Средний Балл</value>
+  </data>
+  <data name="PDF_PerformanceStatus" xml:space="preserve">
+    <value>СТАТУС УСПЕВАЕМОСТИ</value>
+  </data>
+  <data name="PDF_Certificate" xml:space="preserve">
+    <value>СЕРТИФИКАТ</value>
+  </data>
+  <data name="PDF_CertEligible" xml:space="preserve">
+    <value>Имеет право на сертификат</value>
+  </data>
+  <data name="PDF_CertNotEligible" xml:space="preserve">
+    <value>Условия для сертификата не выполнены</value>
+  </data>
+  <data name="PDF_CertCondition" xml:space="preserve">
+    <value>Условие: Оценка &gt;= 60% и Посещаемость &gt;= 70%</value>
+  </data>
+  <data name="PDF_Page" xml:space="preserve">
+    <value>Страница</value>
+  </data>
+  <data name="Perf_Excellent" xml:space="preserve">
+    <value>Отлично</value>
+  </data>
+  <data name="Perf_Good" xml:space="preserve">
+    <value>Хорошо</value>
+  </data>
+  <data name="Perf_Satisfactory" xml:space="preserve">
+    <value>Удовлетворительно</value>
+  </data>
+  <data name="Perf_Average" xml:space="preserve">
+    <value>Средне</value>
+  </data>
+  <data name="Perf_Failing" xml:space="preserve">
+    <value>Неудовлетворительно</value>
+  </data>
+  <data name="AssessmentType_FinalProject" xml:space="preserve">
+    <value>Финальный Проект</value>
+  </data>
+  <data name="AssessmentType_Assignment" xml:space="preserve">
+    <value>Задание</value>
+  </data>
+  <data name="AssessmentType_Exam" xml:space="preserve">
+    <value>Экзамен</value>
+  </data>
+  <data name="AssessmentType_Homework" xml:space="preserve">
+    <value>Домашнее Задание</value>
+  </data>
+  <data name="AssessmentType_Other" xml:space="preserve">
+    <value>Другое</value>
+  </data>
+  <data name="FieldRequired" xml:space="preserve">
+    <value>Это поле обязательно</value>
+  </data>
+  <data name="InvalidEmail" xml:space="preserve">
+    <value>Введите корректный email</value>
+  </data>
+  <data name="PasswordTooShort" xml:space="preserve">
+    <value>Пароль должен быть не менее 6 символов</value>
+  </data>
+  <data name="PasswordsDoNotMatch" xml:space="preserve">
+    <value>Пароли не совпадают</value>
+  </data>
+  <data name="InvalidCredentials" xml:space="preserve">
+    <value>Неверный email или пароль</value>
+  </data>
+  <data name="EnterEmail" xml:space="preserve">
+    <value>Введите email</value>
+  </data>
+  <data name="ErrorOccurred" xml:space="preserve">
+    <value>Произошла ошибка</value>
+  </data>
+</root>

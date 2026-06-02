@@ -16,7 +16,7 @@
         <div style="font-size:13px; color:var(--text-secondary);">@Model.CourseName — @Model.TeacherName</div>
     </div>
     <div style="margin-left:auto; display:flex; gap:8px;">
-        <a href="/Admin/Group/Edit/@Model.Id" class="btn btn-secondary btn-sm"><i class="fas fa-edit"></i> Düzəlt</a>
+        <a href="/Admin/Group/Edit/@Model.Id" class="btn btn-secondary btn-sm"><i class="fas fa-edit"></i> @L["Edit"]</a>
         <a href="/Admin/Enrollment/Create?groupId=@Model.Id" class="btn btn-primary btn-sm"><i class="fas fa-user-plus"></i> Tələbə qeydiyyat</a>
     </div>
 </div>
@@ -25,11 +25,11 @@
 <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:20px;">
     <div class="stat-card">
         <div class="stat-icon" style="background:rgba(233,69,96,0.15); color:var(--accent);"><i class="fas fa-users"></i></div>
-        <div><div class="stat-value">@Model.EnrolledCount / @Model.Capacity</div><div class="stat-label">Tələbə</div></div>
+        <div><div class="stat-value">@Model.EnrolledCount / @Model.Capacity</div><div class="stat-label">@L["Student"]</div></div>
     </div>
     <div class="stat-card">
         <div class="stat-icon" style="background:rgba(59,130,246,0.15); color:#3b82f6;"><i class="fas fa-chalkboard"></i></div>
-        <div><div class="stat-value">@sessions.Count</div><div class="stat-label">Dərs</div></div>
+        <div><div class="stat-value">@sessions.Count</div><div class="stat-label">@L["ClassSessions"]</div></div>
     </div>
     <div class="stat-card">
         <div class="stat-icon" style="background:rgba(34,197,94,0.15); color:#22c55e;"><i class="fas fa-calendar"></i></div>
@@ -45,11 +45,11 @@
 <div style="display:flex; gap:4px; margin-bottom:16px; border-bottom:1px solid var(--border); padding-bottom:0;">
     <button onclick="showTab('curriculum')" id="tab-curriculum"
             style="padding:10px 18px; border:none; background:none; color:var(--accent); font-weight:600; cursor:pointer; border-bottom:2px solid var(--accent); font-size:14px;">
-        <i class="fas fa-book-open"></i> Tədris Planı
+        <i class="fas fa-book-open"></i> @L["Schedule"]
     </button>
     <button onclick="showTab('assessment')" id="tab-assessment"
             style="padding:10px 18px; border:none; background:none; color:var(--text-secondary); cursor:pointer; border-bottom:2px solid transparent; font-size:14px;">
-        <i class="fas fa-tasks"></i> Qiymətləndirmə
+        <i class="fas fa-tasks"></i> @L["Assessment"]
         @if (assessments.Any())
         {
             <span style="background:var(--accent); color:#fff; border-radius:10px; padding:1px 7px; font-size:11px; margin-left:4px;">@assessments.Count</span>
@@ -61,9 +61,9 @@
 <div id="panel-curriculum">
     <div class="card">
         <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
-            <span>Dərs Cədvəli və Mövzular</span>
+            <span>@L["ClassSchedule"]</span>
             <span style="font-size:12px; color:var(--text-secondary);">
-                @sessions.Count(s => !string.IsNullOrEmpty(s.Topic)) / @sessions.Count mövzu daxil edilib
+                @sessions.Count(s => !string.IsNullOrEmpty(s.Topic)) / @sessions.Count @L["TodaysTopic"]
             </span>
         </div>
         <div style="max-height:600px; overflow-y:auto;">
@@ -71,10 +71,10 @@
                 <thead>
                     <tr>
                         <th style="width:40px;">#</th>
-                        <th style="width:70px;">Tarix</th>
+                        <th style="width:70px;">@L["Date"]</th>
                         <th style="width:130px;">Saat</th>
-                        <th>Mövzu</th>
-                        <th style="width:80px;">Qiymət</th>
+                        <th>@L["TodaysTopic"]</th>
+                        <th style="width:80px;">@L["Score"]</th>
                         <th style="width:40px;"></th>
                     </tr>
                 </thead>
@@ -90,7 +90,7 @@
                                 <span id="topic-display-@s.Id"
                                       style="cursor:pointer; @(string.IsNullOrEmpty(s.Topic) ? "color:var(--text-secondary); font-style:italic;" : "")"
                                       onclick="openTopicEdit(@s.Id, @Model.Id, '@(s.Topic?.Replace("'","\\'")??"")' )">
-                                    @(string.IsNullOrEmpty(s.Topic) ? "Mövzu əlavə et..." : s.Topic)
+                                    @(string.IsNullOrEmpty(s.Topic) ? "..." : s.Topic)
                                 </span>
                             </td>
                             <td>
@@ -122,18 +122,18 @@
     <div style="display:grid; grid-template-columns:1fr 380px; gap:16px;">
         <!-- Timeline -->
         <div class="card">
-            <div class="card-header">Qiymətləndirmə Cədvəli</div>
+            <div class="card-header">@L["AssessmentPlan"]</div>
             <div class="card-body" style="padding:12px;">
                 @if (!assessments.Any())
                 {
-                    <div style="color:var(--text-secondary); text-align:center; padding:30px;">Hələ qiymətləndirmə planı yoxdur</div>
+                    <div style="color:var(--text-secondary); text-align:center; padding:30px;">@L["NoData"]</div>
                 }
                 @foreach (var a in assessments)
                 {
                     var typeColor = a.Type == AssessmentType.Quiz ? "#3b82f6" :
                                    a.Type == AssessmentType.FinalProject ? "#e94560" : "#eab308";
                     var typeLabel = a.Type == AssessmentType.Quiz ? "Quiz" :
-                                   a.Type == AssessmentType.FinalProject ? "Final Layihəsi" : "Tapşırıq";
+                                   a.Type == AssessmentType.FinalProject ? L["AssessmentType_FinalProject"].Value : L["AssessmentType_Assignment"].Value;
                     var matchSession = sessions.FirstOrDefault(s => s.Date.ToDateTime(TimeOnly.MinValue).Date == a.Date.Date);
                     <div style="display:flex; gap:12px; align-items:flex-start; padding:10px; border-radius:8px; background:var(--bg-hover); margin-bottom:8px;">
                         <div style="min-width:48px; height:48px; background:@(typeColor)22; border-radius:8px; display:flex; align-items:center; justify-content:center; color:@typeColor; font-weight:700; font-size:11px; text-align:center; line-height:1.2;">
@@ -144,7 +144,7 @@
                             <div style="font-size:12px; color:var(--text-secondary);">
                                 <span style="background:@(typeColor)22; color:@typeColor; padding:1px 6px; border-radius:4px; font-size:10px; font-weight:600; margin-right:6px;">@typeLabel</span>
                                 Max: @a.MaxScore bal · Çəki: %@a.WeightPercent
-                                @if (matchSession != null) { <span> · Dərs #@matchSession.SessionNumber</span> }
+                                @if (matchSession != null) { <span> · #@matchSession.SessionNumber</span> }
                             </div>
                         </div>
                         <form method="post" action="/Admin/Assessment/Delete/@a.Id?returnGroupId=@Model.Id" onsubmit="return confirm('Silinsin?')">
@@ -159,28 +159,28 @@
         <!-- Add + Summary -->
         <div>
             <div class="card" style="margin-bottom:12px;">
-                <div class="card-header">Yeni Qiymətləndirmə</div>
+                <div class="card-header">@L["Assessment"]</div>
                 <div class="card-body">
                     <form method="post" action="/Admin/Assessment/Create">
                         @Html.AntiForgeryToken()
                         <input type="hidden" name="GroupId" value="@Model.Id" />
                         <div class="form-group">
-                            <label class="form-label">Növ</label>
+                            <label class="form-label">@L["Type"]</label>
                             <select name="Type" class="form-control" onchange="updateTitle(this)">
                                 <option value="0">Quiz</option>
-                                <option value="2">Final Layihəsi</option>
-                                <option value="1">Tapşırıq</option>
-                                <option value="4">Ev Tapşırığı</option>
+                                <option value="2">@L["AssessmentType_FinalProject"]</option>
+                                <option value="1">@L["Task"]</option>
+                                <option value="4">@L["AssessmentType_Homework"]</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label class="form-label">Başlıq</label>
-                            <input name="Title" id="assessTitle" class="form-control" placeholder="məs: Quiz 1" required />
+                            <label class="form-label">@L["Title"]</label>
+                            <input name="Title" id="assessTitle" class="form-control"  required />
                         </div>
                         <div class="form-group">
-                            <label class="form-label">Tarix (dərs günü)</label>
+                            <label class="form-label">@L["Date"]</label>
                             <select name="Date" class="form-control" required>
-                                <option value="">Seçin...</option>
+                                <option value="">...</option>
                                 @foreach (var s in sessions)
                                 {
                                     <option value="@s.Date.ToDateTime(TimeOnly.Parse(s.StartTime)).ToString("yyyy-MM-ddTHH:mm:ss")">
@@ -195,7 +195,7 @@
                                 <input name="MaxScore" type="number" min="1" value="100" class="form-control" required />
                             </div>
                             <div class="form-group">
-                                <label class="form-label">Çəki (%)</label>
+                                <label class="form-label">@L["Weight"]</label>
                                 <input name="WeightPercent" type="number" min="1" max="100" value="10" class="form-control" required />
                             </div>
                         </div>
@@ -213,7 +213,7 @@
                     @if (totalWeight != 100)
                     {
                         <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">
-                            @(totalWeight > 100 ? "⚠ 100%-dən çoxdur!" : $"Qalan: %{100 - totalWeight}")
+                            @(totalWeight > 100 ? "⚠ >100%" : $"{100 - totalWeight}%")
                         </div>
                     }
                 </div>
@@ -231,13 +231,13 @@
             <input type="hidden" id="topicSessionId" name="sessionId" />
             <input type="hidden" name="groupId" value="@Model.Id" />
             <div class="form-group">
-                <label class="form-label">Mövzu başlığı</label>
-                <input id="topicInput" name="topic" class="form-control" placeholder="məs: Dəyişənlər və tiplər, Funksiyalar..." />
+                <label class="form-label">@L["Title"]</label>
+                <input id="topicInput" name="topic" class="form-control"  />
                 <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">Boş buraxsanız mövzu silinir</div>
             </div>
             <div style="display:flex; gap:8px; margin-top:8px;">
-                <button type="submit" class="btn btn-primary">Yadda saxla</button>
-                <button type="button" onclick="closeTopicModal()" class="btn btn-secondary">Ləğv et</button>
+                <button type="submit" class="btn btn-primary">@L["Save"]</button>
+                <button type="button" onclick="closeTopicModal()" class="btn btn-secondary">@L["Cancel"]</button>
             </div>
         </form>
     </div>

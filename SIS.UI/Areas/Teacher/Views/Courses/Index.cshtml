@@ -1,8 +1,8 @@
 @model IEnumerable<SIS.BLL.Services.DTOs.Groups.GroupListDto>
 @{
-    ViewData["Title"] = "Qruplarım";
+    ViewData["Title"] = L["MyGroups"].Value;
 }
-<h2 style="font-size:20px; font-weight:700; margin-bottom:20px;">Qruplarım</h2>
+<h2 style="font-size:20px; font-weight:700; margin-bottom:20px;">@L["MyGroups"]</h2>
 <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); gap:16px;">
     @foreach (var g in Model)
     {
@@ -14,7 +14,7 @@
                     @g.StartDate.ToString("dd.MM.yyyy") — @g.EndDate.ToString("dd.MM.yyyy")
                 </div>
                 <div style="font-size:13px; color:var(--text-secondary);">
-                    <i class="fas fa-users"></i> @g.EnrolledCount / @g.Capacity tələbə
+                    <i class="fas fa-users"></i> @g.EnrolledCount / @g.Capacity @L["Student"]
                 </div>
             </div>
         </a>

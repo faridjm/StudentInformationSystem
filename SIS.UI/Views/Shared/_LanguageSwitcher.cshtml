@@ -1,0 +1,29 @@
+@using Microsoft.AspNetCore.Localization
+@{
+    var requestCulture = Context.Features.Get<IRequestCultureFeature>();
+    var currentCulture = requestCulture?.RequestCulture?.UICulture?.Name ?? "az-Latn-AZ";
+    var cultures = new[] {
+        ("az-Latn-AZ", "AZ"),
+        ("en-US", "EN"),
+        ("ru-RU", "RU")
+    };
+    var currentLabel = currentCulture.StartsWith("az") ? "AZ" : currentCulture.StartsWith("en") ? "EN" : "RU";
+}
+
+<div class="dropdown">
+    <button class="user-btn" onclick="this.nextElementSibling.classList.toggle('show')" style="padding:5px 10px; font-size:12px; gap:4px; min-width:auto;">
+        <i class="fas fa-globe" style="font-size:13px;"></i>
+        <span>@currentLabel</span>
+        <i class="fas fa-chevron-down" style="font-size:9px; color:var(--text-secondary);"></i>
+    </button>
+    <div class="dropdown-menu" style="min-width:80px;">
+        @foreach (var (culture, label) in cultures)
+        {
+            var isActive = currentCulture == culture || (culture == "az-Latn-AZ" && currentCulture.StartsWith("az"));
+            var returnUrl = Uri.EscapeDataString(Context.Request.Path + Context.Request.QueryString);
+            <a href="/Language/Set?culture=@culture&returnUrl=@returnUrl" class="dropdown-item" style="@(isActive ? "color:var(--accent); font-weight:600;" : "")">
+                @label
+            </a>
+        }
+    </div>
+</div>

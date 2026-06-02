@@ -1,9 +1,9 @@
 @model IEnumerable<SIS.BLL.Services.DTOs.Groups.GroupListDto>
 @{
-    ViewData["Title"] = "Tapşırıqlar — Qrup Seç";
+    ViewData["Title"] = L["SelectGroup"].Value;
 }
 
-<h2 style="font-size:20px; font-weight:700; margin-bottom:20px;">Tapşırıqlar — Qrup Seçin</h2>
+<h2 style="font-size:20px; font-weight:700; margin-bottom:20px;">@L["SelectGroup"]</h2>
 
 <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); gap:16px;">
     @foreach (var g in Model)
@@ -13,7 +13,7 @@
                 <div style="font-size:16px; font-weight:700; margin-bottom:4px;">@g.Name</div>
                 <div style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">@g.CourseName</div>
                 <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--text-secondary);">
-                    <span><i class="fas fa-users"></i> @g.EnrolledCount tələbə</span>
+                    <span><i class="fas fa-users"></i> @g.EnrolledCount @L["Student"]</span>
                     <span>@g.StartDate.ToString("dd.MM.yy") — @g.EndDate.ToString("dd.MM.yy")</span>
                 </div>
             </div>

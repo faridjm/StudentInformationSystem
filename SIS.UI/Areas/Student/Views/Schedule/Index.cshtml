@@ -2,7 +2,7 @@
 @using SIS.BLL.Services.DTOs.Assessment
 @using SIS.Entities.Enums
 @{
-    ViewData["Title"] = "Dərs Cədvəlim";
+    ViewData["Title"] = L["MyClassSchedule"].Value;
     var sessions = (List<ClassSessionDto>)ViewBag.Sessions;
     var assessments = (List<AssessmentItemDto>)ViewBag.Assessments;
     var today = (DateOnly)ViewBag.Today;
@@ -11,7 +11,7 @@
 }
 
 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-    <h2 style="font-size:20px; font-weight:700;">Dərs Cədvəlim</h2>
+    <h2 style="font-size:20px; font-weight:700;">@L["MyClassSchedule"]</h2>
     <form method="get" style="display:flex; gap:8px; align-items:center;">
         <input type="date" name="from" value="@from.ToString("yyyy-MM-dd")"
                class="form-control" style="width:145px;" />
@@ -40,7 +40,7 @@
             var icon = a.Type == AssessmentType.Quiz ? "fa-question-circle" :
                        a.Type == AssessmentType.FinalProject ? "fa-trophy" : "fa-file-alt";
             var label = a.Type == AssessmentType.Quiz ? "Quiz" :
-                        a.Type == AssessmentType.FinalProject ? "Final" : "Tapşırıq";
+                        a.Type == AssessmentType.FinalProject ? "Final" : L["AssessmentType_Assignment"].Value;
             var daysLeft = DateOnly.FromDateTime(a.Date).DayNumber - today.DayNumber;
             <div style="min-width:160px; background:@(color)15; border:1px solid @(color)44; border-radius:10px; padding:12px; flex-shrink:0;">
                 <div style="font-size:10px; font-weight:700; color:@color; text-transform:uppercase; margin-bottom:4px;">
@@ -49,7 +49,7 @@
                 <div style="font-size:13px; font-weight:600; margin-bottom:4px;">@a.Title</div>
                 <div style="font-size:11px; color:var(--text-secondary);">@a.Date.ToString("dd.MM.yyyy")</div>
                 <div style="font-size:11px; color:@color; font-weight:600; margin-top:4px;">
-                    @(daysLeft == 0 ? "Bu gün!" : daysLeft == 1 ? "Sabah" : $"{daysLeft} gün qaldı")
+                    @(daysLeft == 0 ? L["Today"].Value + "!" : daysLeft == 1 ? "→" : $"{daysLeft}")
                 </div>
             </div>
         }
@@ -63,11 +63,11 @@
             <thead>
                 <tr>
                     <th style="width:50px;">#</th>
-                    <th style="width:100px;">Tarix</th>
+                    <th style="width:100px;">@L["Date"]</th>
                     <th style="width:80px;">Gün</th>
                     <th style="width:120px;">Saat</th>
-                    <th>Mövzu</th>
-                    <th style="width:100px;">Qiymət</th>
+                    <th>@L["TodaysTopic"]</th>
+                    <th style="width:100px;">@L["Score"]</th>
                 </tr>
             </thead>
             <tbody>
@@ -87,17 +87,17 @@
                             </div>
                             @if (isToday)
                             {
-                                <span style="font-size:10px; background:#3b82f6; color:#fff; padding:1px 6px; border-radius:4px; font-weight:600;">Bu gün</span>
+                                <span style="font-size:10px; background:#3b82f6; color:#fff; padding:1px 6px; border-radius:4px; font-weight:600;">@L["Today"]</span>
                             }
                         </td>
                         @{
                             var dayName = s.Date.DayOfWeek switch {
-                                DayOfWeek.Monday => "B.ertəsi",
-                                DayOfWeek.Tuesday => "Çər.ax.",
-                                DayOfWeek.Wednesday => "Çərşənbə",
+                                DayOfWeek.Monday => "Mon",
+                                DayOfWeek.Tuesday => "Tue",
+                                DayOfWeek.Wednesday => "Wed",
                                 DayOfWeek.Thursday => "C.ax.",
-                                DayOfWeek.Friday => "Cümə",
-                                DayOfWeek.Saturday => "Şənbə",
+                                DayOfWeek.Friday => "Fri",
+                                DayOfWeek.Saturday => "Sat",
                                 _ => "Bazar"
                             };
                         }
@@ -131,7 +131,7 @@
                 {
                     <tr>
                         <td colspan="6" style="text-align:center; color:var(--text-secondary); padding:30px;">
-                            Bu tarix aralığında dərs yoxdur
+                            @L["NoData"]
                         </td>
                     </tr>
                 }

@@ -1,7 +1,7 @@
 ﻿@model SIS.BLL.Services.DTOs.Auth.LoginDto
 
 @{
-    ViewData["Title"] = "Daxil ol";
+    ViewData["Title"] = L["Login"].Value;
     Layout = null;
 }
 
@@ -76,8 +76,8 @@
     <div class="login-card">
         <div class="logo-text">Acadex</div>
         <div class="logo-sub">Student Information System</div>
-        <h2>Xoş gəldiniz</h2>
-        <p class="subtitle">Sisteme daxil olmaq üçün məlumatlarınızı daxil edin</p>
+        <h2>@L["WelcomeBack"]</h2>
+        <p class="subtitle">@L["LoginSubtitle"]</p>
 
         <form asp-action="Login" asp-controller="Auth" method="post">
             @if (!ViewData.ModelState.IsValid)
@@ -93,13 +93,13 @@
             <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
 
             <div class="form-group">
-                <label class="form-label">Email / Tələbə kodu / Müəllim kodu</label>
+                <label class="form-label">@L["EmailOrCode"]</label>
                 <input asp-for="Email" class="form-control" placeholder="email@sis.az və ya STU001" autocomplete="email" />
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
 
             <div class="form-group">
-                <label class="form-label">Şifrə</label>
+                <label class="form-label">@L["Password"]</label>
                 <div class="pwd-wrap">
                     <input asp-for="Password" type="password" id="loginPwd" class="form-control" placeholder="••••••••" autocomplete="current-password" />
                     <button type="button" class="pwd-toggle" onclick="togglePwd('loginPwd', this)" tabindex="-1">
@@ -108,17 +108,17 @@
                 </div>
                 <span asp-validation-for="Password" class="text-danger"></span>
                 <div style="text-align:right; margin-top:6px;">
-                    <a href="/Auth/ForgotPassword" style="font-size:12px; color:#e94560; text-decoration:none;">Şifrəni unutdum?</a>
+                    <a href="/Auth/ForgotPassword" style="font-size:12px; color:#e94560; text-decoration:none;">@L["ForgotPassword"]</a>
                 </div>
             </div>
 
             <div class="form-check">
                 <input asp-for="RememberMe" class="form-check-input" id="RememberMe" />
-                <label class="form-check-label" for="RememberMe">Məni xatırla</label>
+                <label class="form-check-label" for="RememberMe">@L["RememberMe"]</label>
             </div>
 
             <button type="submit" class="btn-login">
-                <i class="fas fa-sign-in-alt" style="margin-right:8px;"></i>Daxil ol
+                <i class="fas fa-sign-in-alt" style="margin-right:8px;"></i>@L["Login"]
             </button>
         </form>
     </div>

@@ -25,6 +25,7 @@ namespace SIS.DAL.UnitOfWork
         private IRefreshTokenRepository? _refreshTokens;
         private IAssignmentRepository? _assignments;
         private IAssignmentSubmissionRepository? _assignmentSubmissionsOld;
+        private IChatRepository? _chat;
 
         public UnitOfWork(AppDbContext context) { _context = context; }
 
@@ -45,6 +46,7 @@ namespace SIS.DAL.UnitOfWork
         public IRefreshTokenRepository RefreshTokens => _refreshTokens ??= new RefreshTokenRepository(_context);
         public IAssignmentRepository Assignments => _assignments ??= new AssignmentRepository(_context);
         public IAssignmentSubmissionRepository AssignmentSubmissions => _assignmentSubmissionsOld ??= new AssignmentSubmissionRepository(_context);
+        public IChatRepository Chat => _chat ??= new ChatRepository(_context);
 
         public async Task<int> SaveAsync() => await _context.SaveChangesAsync();
         public void Dispose() => _context.Dispose();

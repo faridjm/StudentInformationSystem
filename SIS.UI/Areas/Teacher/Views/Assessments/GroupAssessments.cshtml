@@ -1,7 +1,7 @@
 @model List<SIS.BLL.Services.DTOs.Assessment.AssessmentItemDto>
 @using SIS.Entities.Enums
 @{
-    ViewData["Title"] = "Qiymətləndirmə Planı";
+    ViewData["Title"] = L["AssessmentPlan"].Value;
     var group = (SIS.BLL.Services.DTOs.Groups.GroupDetailDto)ViewBag.Group;
 }
 
@@ -18,12 +18,12 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th>Növ</th>
-                    <th>Başlıq</th>
-                    <th>Tarix</th>
+                    <th>@L["Type"]</th>
+                    <th>@L["Title"]</th>
+                    <th>@L["Date"]</th>
                     <th>Max bal</th>
-                    <th>Çəki</th>
-                    <th>Qiymətləndirilmiş</th>
+                    <th>@L["Weight"]</th>
+                    <th>@L["Grades"]</th>
                     <th></th>
                 </tr>
             </thead>
@@ -31,7 +31,7 @@
                 @foreach (var a in Model)
                 {
                     var typeColor = a.Type == AssessmentType.Quiz ? "#3b82f6" : a.Type == AssessmentType.FinalProject ? "#e94560" : "#eab308";
-                    var typeLabel = a.Type == AssessmentType.Quiz ? "Quiz" : a.Type == AssessmentType.FinalProject ? "Final Layihəsi" : "Tapşırıq";
+                    var typeLabel = a.Type == AssessmentType.Quiz ? "Quiz" : a.Type == AssessmentType.FinalProject ? L["AssessmentType_FinalProject"].Value : L["AssessmentType_Assignment"].Value;
                     <tr>
                         <td><span style="font-size:11px; background:@(typeColor)22; color:@typeColor; padding:3px 8px; border-radius:4px; font-weight:600;">@typeLabel</span></td>
                         <td><strong>@a.Title</strong></td>
@@ -45,14 +45,14 @@
                         </td>
                         <td>
                             <a href="/Teacher/Assessments/Grade/@a.Id" class="btn btn-sm btn-primary">
-                                <i class="fas fa-pen"></i> Qiymətləndir
+                                <i class="fas fa-pen"></i> @L["Assessment"]
                             </a>
                         </td>
                     </tr>
                 }
                 @if (!Model.Any())
                 {
-                    <tr><td colspan="7" style="text-align:center; color:var(--text-secondary); padding:30px;">Qiymətləndirmə planı boşdur</td></tr>
+                    <tr><td colspan="7" style="text-align:center; color:var(--text-secondary); padding:30px;">@L["NoData"]</td></tr>
                 }
             </tbody>
         </table>

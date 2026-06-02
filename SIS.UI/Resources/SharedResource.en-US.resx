@@ -1,0 +1,682 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="TeacherPanel" xml:space="preserve">
+    <value>Teacher Panel</value>
+  </data>
+  <data name="StudentPanel" xml:space="preserve">
+    <value>Student Panel</value>
+  </data>
+  <data name="AdminPanel" xml:space="preserve">
+    <value>Admin Panel</value>
+  </data>
+  <data name="Main" xml:space="preserve">
+    <value>Main</value>
+  </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
+  <data name="Teaching" xml:space="preserve">
+    <value>Teaching</value>
+  </data>
+  <data name="MyGroups" xml:space="preserve">
+    <value>My Groups</value>
+  </data>
+  <data name="Assessment" xml:space="preserve">
+    <value>Assessment</value>
+  </data>
+  <data name="Assignments" xml:space="preserve">
+    <value>Assignments</value>
+  </data>
+  <data name="Schedule" xml:space="preserve">
+    <value>Schedule</value>
+  </data>
+  <data name="ClassSchedule" xml:space="preserve">
+    <value>Class Schedule</value>
+  </data>
+  <data name="Communication" xml:space="preserve">
+    <value>Communication</value>
+  </data>
+  <data name="Messages" xml:space="preserve">
+    <value>Messages</value>
+  </data>
+  <data name="ChangePassword" xml:space="preserve">
+    <value>Change Password</value>
+  </data>
+  <data name="Logout" xml:space="preserve">
+    <value>Logout</value>
+  </data>
+  <data name="Users" xml:space="preserve">
+    <value>Users</value>
+  </data>
+  <data name="Students" xml:space="preserve">
+    <value>Students</value>
+  </data>
+  <data name="Teachers" xml:space="preserve">
+    <value>Teachers</value>
+  </data>
+  <data name="Academic" xml:space="preserve">
+    <value>Academic</value>
+  </data>
+  <data name="Courses" xml:space="preserve">
+    <value>Courses</value>
+  </data>
+  <data name="AcademicPrograms" xml:space="preserve">
+    <value>Academic Programs</value>
+  </data>
+  <data name="Groups" xml:space="preserve">
+    <value>Groups</value>
+  </data>
+  <data name="Enrollments" xml:space="preserve">
+    <value>Enrollments</value>
+  </data>
+  <data name="System" xml:space="preserve">
+    <value>System</value>
+  </data>
+  <data name="Seasons" xml:space="preserve">
+    <value>Seasons</value>
+  </data>
+  <data name="Announcements" xml:space="preserve">
+    <value>Announcements</value>
+  </data>
+  <data name="MyCourses" xml:space="preserve">
+    <value>My Courses</value>
+  </data>
+  <data name="MySchedule" xml:space="preserve">
+    <value>My Schedule</value>
+  </data>
+  <data name="MyGrades" xml:space="preserve">
+    <value>My Grades</value>
+  </data>
+  <data name="Today" xml:space="preserve">
+    <value>Today</value>
+  </data>
+  <data name="TodaysLessons" xml:space="preserve">
+    <value>Today's Lessons</value>
+  </data>
+  <data name="AttendanceTaken" xml:space="preserve">
+    <value>Attendance Taken</value>
+  </data>
+  <data name="TodaysTopic" xml:space="preserve">
+    <value>Today's Topic</value>
+  </data>
+  <data name="Attendance" xml:space="preserve">
+    <value>Attendance</value>
+  </data>
+  <data name="Student" xml:space="preserve">
+    <value>Student</value>
+  </data>
+  <data name="Present" xml:space="preserve">
+    <value>Present</value>
+  </data>
+  <data name="Late" xml:space="preserve">
+    <value>Late</value>
+  </data>
+  <data name="Absent" xml:space="preserve">
+    <value>Absent</value>
+  </data>
+  <data name="SaveAttendance" xml:space="preserve">
+    <value>Save Attendance</value>
+  </data>
+  <data name="Grades" xml:space="preserve">
+    <value>Grades</value>
+  </data>
+  <data name="AllMyGroups" xml:space="preserve">
+    <value>All My Groups</value>
+  </data>
+  <data name="Group" xml:space="preserve">
+    <value>Group</value>
+  </data>
+  <data name="Program" xml:space="preserve">
+    <value>Program</value>
+  </data>
+  <data name="StudentCount" xml:space="preserve">
+    <value>Students</value>
+  </data>
+  <data name="Date" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="Open" xml:space="preserve">
+    <value>Open</value>
+  </data>
+  <data name="NoGroups" xml:space="preserve">
+    <value>No groups</value>
+  </data>
+  <data name="NoLessonsToday" xml:space="preserve">
+    <value>no lessons</value>
+  </data>
+  <data name="Quiz" xml:space="preserve">
+    <value>Quiz</value>
+  </data>
+  <data name="Final" xml:space="preserve">
+    <value>Final</value>
+  </data>
+  <data name="Task" xml:space="preserve">
+    <value>Assignment</value>
+  </data>
+  <data name="Welcome" xml:space="preserve">
+    <value>Welcome</value>
+  </data>
+  <data name="ActiveCourse" xml:space="preserve">
+    <value>Active Courses</value>
+  </data>
+  <data name="NewNotification" xml:space="preserve">
+    <value>New Notifications</value>
+  </data>
+  <data name="Course" xml:space="preserve">
+    <value>Course</value>
+  </data>
+  <data name="Teacher" xml:space="preserve">
+    <value>Teacher</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Active" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="ViewAll" xml:space="preserve">
+    <value>View All</value>
+  </data>
+  <data name="NoAnnouncements" xml:space="preserve">
+    <value>No announcements</value>
+  </data>
+  <data name="RecentActivity" xml:space="preserve">
+    <value>Recent Activity</value>
+  </data>
+  <data name="NoActivityYet" xml:space="preserve">
+    <value>No activity yet</value>
+  </data>
+  <data name="SimulationMode" xml:space="preserve">
+    <value>Simulation mode</value>
+  </data>
+  <data name="SimulationAllUsers" xml:space="preserve">
+    <value>For all users, today is</value>
+  </data>
+  <data name="SimulationToday" xml:space="preserve">
+    <value>Today is considered as</value>
+  </data>
+  <data name="AcceptedAs" xml:space="preserve">
+    <value>is accepted as</value>
+  </data>
+  <data name="Change" xml:space="preserve">
+    <value>Change</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="StartSimulation" xml:space="preserve">
+    <value>Start Simulation</value>
+  </data>
+  <data name="Login" xml:space="preserve">
+    <value>Log in</value>
+  </data>
+  <data name="WelcomeBack" xml:space="preserve">
+    <value>Welcome</value>
+  </data>
+  <data name="LoginSubtitle" xml:space="preserve">
+    <value>Enter your credentials to access the system</value>
+  </data>
+  <data name="EmailOrCode" xml:space="preserve">
+    <value>Email / Student ID / Teacher ID</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="ForgotPassword" xml:space="preserve">
+    <value>Forgot password?</value>
+  </data>
+  <data name="RememberMe" xml:space="preserve">
+    <value>Remember me</value>
+  </data>
+  <data name="ForgotPasswordTitle" xml:space="preserve">
+    <value>Forgot Password</value>
+  </data>
+  <data name="ForgotPasswordDesc" xml:space="preserve">
+    <value>Enter your email. We'll send a password reset link.</value>
+  </data>
+  <data name="SendLink" xml:space="preserve">
+    <value>Send Link</value>
+  </data>
+  <data name="GoBack" xml:space="preserve">
+    <value>Go back</value>
+  </data>
+  <data name="EmailSent" xml:space="preserve">
+    <value>Email Sent!</value>
+  </data>
+  <data name="CheckEmail" xml:space="preserve">
+    <value>Check your email.</value>
+  </data>
+  <data name="ResetLinkSent" xml:space="preserve">
+    <value>Password reset link</value>
+  </data>
+  <data name="LinkSentSuffix" xml:space="preserve">
+    <value>has been sent.</value>
+  </data>
+  <data name="LinkValid24h" xml:space="preserve">
+    <value>The link is valid for 24 hours.</value>
+  </data>
+  <data name="BackToLogin" xml:space="preserve">
+    <value>Back to login</value>
+  </data>
+  <data name="NewPassword" xml:space="preserve">
+    <value>New Password</value>
+  </data>
+  <data name="SetNewPassword" xml:space="preserve">
+    <value>Set New Password</value>
+  </data>
+  <data name="ConfirmPassword" xml:space="preserve">
+    <value>Confirm Password</value>
+  </data>
+  <data name="PasswordChanged" xml:space="preserve">
+    <value>Password Changed!</value>
+  </data>
+  <data name="PasswordChangedDesc" xml:space="preserve">
+    <value>Your password has been updated.
+You can now log in with your new password.</value>
+  </data>
+  <data name="ChangePasswordBtn" xml:space="preserve">
+    <value>Change Password</value>
+  </data>
+  <data name="SavePassword" xml:space="preserve">
+    <value>Save Password</value>
+  </data>
+  <data name="MinChars" xml:space="preserve">
+    <value>At least 6 characters</value>
+  </data>
+  <data name="ReenterPassword" xml:space="preserve">
+    <value>Re-enter password</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>Search...</value>
+  </data>
+  <data name="NoConversationsYet" xml:space="preserve">
+    <value>No conversations yet</value>
+  </data>
+  <data name="NewConversation" xml:space="preserve">
+    <value>New conversation</value>
+  </data>
+  <data name="Now" xml:space="preserve">
+    <value>Now</value>
+  </data>
+  <data name="SelectConversation" xml:space="preserve">
+    <value>Select a conversation</value>
+  </data>
+  <data name="SelectConvDesc" xml:space="preserve">
+    <value>Select a conversation from the left or start a new one</value>
+  </data>
+  <data name="StartConversation" xml:space="preserve">
+    <value>Start a conversation!</value>
+  </data>
+  <data name="SendFirstMessage" xml:space="preserve">
+    <value>Send your first message</value>
+  </data>
+  <data name="TypeMessage" xml:space="preserve">
+    <value>Type a message...</value>
+  </data>
+  <data name="Yesterday" xml:space="preserve">
+    <value>Yesterday</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="Create" xml:space="preserve">
+    <value>Create</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Back" xml:space="preserve">
+    <value>Back</value>
+  </data>
+  <data name="Details" xml:space="preserve">
+    <value>Details</value>
+  </data>
+  <data name="Actions" xml:space="preserve">
+    <value>Actions</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Yes</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>Loading...</value>
+  </data>
+  <data name="NoData" xml:space="preserve">
+    <value>No data</value>
+  </data>
+  <data name="Email" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="Phone" xml:space="preserve">
+    <value>Phone</value>
+  </data>
+  <data name="FullName" xml:space="preserve">
+    <value>Full Name</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="StartDate" xml:space="preserve">
+    <value>Start Date</value>
+  </data>
+  <data name="EndDate" xml:space="preserve">
+    <value>End Date</value>
+  </data>
+  <data name="Capacity" xml:space="preserve">
+    <value>Capacity</value>
+  </data>
+  <data name="Submit" xml:space="preserve">
+    <value>Submit</value>
+  </data>
+  <data name="Download" xml:space="preserve">
+    <value>Download</value>
+  </data>
+  <data name="Transcript" xml:space="preserve">
+    <value>Transcript</value>
+  </data>
+  <data name="DownloadPDF" xml:space="preserve">
+    <value>Download PDF</value>
+  </data>
+  <data name="CreatedAt" xml:space="preserve">
+    <value>Created at</value>
+  </data>
+  <data name="Title" xml:space="preserve">
+    <value>Title</value>
+  </data>
+  <data name="Content" xml:space="preserve">
+    <value>Content</value>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="MaxScore" xml:space="preserve">
+    <value>Max Score</value>
+  </data>
+  <data name="Score" xml:space="preserve">
+    <value>Score</value>
+  </data>
+  <data name="Weight" xml:space="preserve">
+    <value>Weight %</value>
+  </data>
+  <data name="WeightedScore" xml:space="preserve">
+    <value>Weighted Score</value>
+  </data>
+  <data name="Percentage" xml:space="preserve">
+    <value>Percentage</value>
+  </data>
+  <data name="DueDate" xml:space="preserve">
+    <value>Due Date</value>
+  </data>
+  <data name="NewStudent" xml:space="preserve">
+    <value>New Student</value>
+  </data>
+  <data name="NewTeacher" xml:space="preserve">
+    <value>New Teacher</value>
+  </data>
+  <data name="NewGroup" xml:space="preserve">
+    <value>New Group</value>
+  </data>
+  <data name="NewCourse" xml:space="preserve">
+    <value>New Academic Program</value>
+  </data>
+  <data name="NewSeason" xml:space="preserve">
+    <value>New Academic Season</value>
+  </data>
+  <data name="NewAnnouncement" xml:space="preserve">
+    <value>New Announcement</value>
+  </data>
+  <data name="NewEnrollment" xml:space="preserve">
+    <value>Student Enrollment</value>
+  </data>
+  <data name="EditStudent" xml:space="preserve">
+    <value>Edit Student</value>
+  </data>
+  <data name="EditTeacher" xml:space="preserve">
+    <value>Edit Teacher</value>
+  </data>
+  <data name="EditGroup" xml:space="preserve">
+    <value>Edit Group</value>
+  </data>
+  <data name="EditCourse" xml:space="preserve">
+    <value>Edit Program</value>
+  </data>
+  <data name="EditSeason" xml:space="preserve">
+    <value>Edit Season</value>
+  </data>
+  <data name="StudentDetails" xml:space="preserve">
+    <value>Student Details</value>
+  </data>
+  <data name="TeacherDetails" xml:space="preserve">
+    <value>Teacher Details</value>
+  </data>
+  <data name="GroupStudents" xml:space="preserve">
+    <value>Group Students</value>
+  </data>
+  <data name="ActivityLog" xml:space="preserve">
+    <value>Activity Log</value>
+  </data>
+  <data name="AcademicSeasons" xml:space="preserve">
+    <value>Academic Seasons</value>
+  </data>
+  <data name="NewAssignment" xml:space="preserve">
+    <value>New Assignment</value>
+  </data>
+  <data name="EditAssignment" xml:space="preserve">
+    <value>Edit Assignment</value>
+  </data>
+  <data name="Submissions" xml:space="preserve">
+    <value>Submissions</value>
+  </data>
+  <data name="SelectGroup" xml:space="preserve">
+    <value>Select Group</value>
+  </data>
+  <data name="AssessmentPlan" xml:space="preserve">
+    <value>Assessment Plan</value>
+  </data>
+  <data name="ClassSessions" xml:space="preserve">
+    <value>Class Sessions</value>
+  </data>
+  <data name="MyClassSchedule" xml:space="preserve">
+    <value>My Class Schedule</value>
+  </data>
+  <data name="PDF_AcademicTranscript" xml:space="preserve">
+    <value>ACADEMIC TRANSCRIPT</value>
+  </data>
+  <data name="PDF_Date" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="PDF_StudentInfo" xml:space="preserve">
+    <value>STUDENT INFORMATION</value>
+  </data>
+  <data name="PDF_FullName" xml:space="preserve">
+    <value>Full Name</value>
+  </data>
+  <data name="PDF_StudentNo" xml:space="preserve">
+    <value>Student No</value>
+  </data>
+  <data name="PDF_Email" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="PDF_EnrollmentYear" xml:space="preserve">
+    <value>Enrollment Year</value>
+  </data>
+  <data name="PDF_CourseInfo" xml:space="preserve">
+    <value>COURSE INFORMATION</value>
+  </data>
+  <data name="PDF_Course" xml:space="preserve">
+    <value>Course</value>
+  </data>
+  <data name="PDF_Group" xml:space="preserve">
+    <value>Group</value>
+  </data>
+  <data name="PDF_Teacher" xml:space="preserve">
+    <value>Teacher</value>
+  </data>
+  <data name="PDF_AcademicYear" xml:space="preserve">
+    <value>Academic Year</value>
+  </data>
+  <data name="PDF_DateRange" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="PDF_Attendance" xml:space="preserve">
+    <value>ATTENDANCE</value>
+  </data>
+  <data name="PDF_TotalSessions" xml:space="preserve">
+    <value>Total Sessions</value>
+  </data>
+  <data name="PDF_Present" xml:space="preserve">
+    <value>Present</value>
+  </data>
+  <data name="PDF_Late" xml:space="preserve">
+    <value>Late</value>
+  </data>
+  <data name="PDF_Absent" xml:space="preserve">
+    <value>Absent</value>
+  </data>
+  <data name="PDF_AttendancePct" xml:space="preserve">
+    <value>Attendance</value>
+  </data>
+  <data name="PDF_OfficialAssessments" xml:space="preserve">
+    <value>OFFICIAL ASSESSMENTS</value>
+  </data>
+  <data name="PDF_Title" xml:space="preserve">
+    <value>Title</value>
+  </data>
+  <data name="PDF_Type" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="PDF_MaxScore" xml:space="preserve">
+    <value>Max Score</value>
+  </data>
+  <data name="PDF_Score" xml:space="preserve">
+    <value>Score</value>
+  </data>
+  <data name="PDF_WeightPct" xml:space="preserve">
+    <value>Weight %</value>
+  </data>
+  <data name="PDF_WeightedScore" xml:space="preserve">
+    <value>Weighted Score</value>
+  </data>
+  <data name="PDF_OfficialGrade" xml:space="preserve">
+    <value>OFFICIAL GRADE</value>
+  </data>
+  <data name="PDF_OfficialCourseGrade" xml:space="preserve">
+    <value>Official Course Grade</value>
+  </data>
+  <data name="PDF_HomeworkAssignments" xml:space="preserve">
+    <value>HOMEWORK ASSIGNMENTS</value>
+  </data>
+  <data name="PDF_HomeworkNotInGPA" xml:space="preserve">
+    <value>This section is not included in GPA calculation</value>
+  </data>
+  <data name="PDF_DueDate" xml:space="preserve">
+    <value>Due Date</value>
+  </data>
+  <data name="PDF_Percentage" xml:space="preserve">
+    <value>Percentage</value>
+  </data>
+  <data name="PDF_Link" xml:space="preserve">
+    <value>Link</value>
+  </data>
+  <data name="PDF_Official" xml:space="preserve">
+    <value>Official</value>
+  </data>
+  <data name="PDF_Homework" xml:space="preserve">
+    <value>Homework</value>
+  </data>
+  <data name="PDF_HomeworkAvg" xml:space="preserve">
+    <value>Homework Average</value>
+  </data>
+  <data name="PDF_PerformanceStatus" xml:space="preserve">
+    <value>PERFORMANCE STATUS</value>
+  </data>
+  <data name="PDF_Certificate" xml:space="preserve">
+    <value>CERTIFICATE</value>
+  </data>
+  <data name="PDF_CertEligible" xml:space="preserve">
+    <value>Eligible for certificate</value>
+  </data>
+  <data name="PDF_CertNotEligible" xml:space="preserve">
+    <value>Requirements for certificate not met</value>
+  </data>
+  <data name="PDF_CertCondition" xml:space="preserve">
+    <value>Condition: Grade &gt;= 60% and Attendance &gt;= 70%</value>
+  </data>
+  <data name="PDF_Page" xml:space="preserve">
+    <value>Page</value>
+  </data>
+  <data name="Perf_Excellent" xml:space="preserve">
+    <value>Excellent</value>
+  </data>
+  <data name="Perf_Good" xml:space="preserve">
+    <value>Good</value>
+  </data>
+  <data name="Perf_Satisfactory" xml:space="preserve">
+    <value>Satisfactory</value>
+  </data>
+  <data name="Perf_Average" xml:space="preserve">
+    <value>Average</value>
+  </data>
+  <data name="Perf_Failing" xml:space="preserve">
+    <value>Failing</value>
+  </data>
+  <data name="AssessmentType_FinalProject" xml:space="preserve">
+    <value>Final Project</value>
+  </data>
+  <data name="AssessmentType_Assignment" xml:space="preserve">
+    <value>Assignment</value>
+  </data>
+  <data name="AssessmentType_Exam" xml:space="preserve">
+    <value>Exam</value>
+  </data>
+  <data name="AssessmentType_Homework" xml:space="preserve">
+    <value>Homework</value>
+  </data>
+  <data name="AssessmentType_Other" xml:space="preserve">
+    <value>Other</value>
+  </data>
+  <data name="FieldRequired" xml:space="preserve">
+    <value>This field is required</value>
+  </data>
+  <data name="InvalidEmail" xml:space="preserve">
+    <value>Enter a valid email</value>
+  </data>
+  <data name="PasswordTooShort" xml:space="preserve">
+    <value>Password must be at least 6 characters</value>
+  </data>
+  <data name="PasswordsDoNotMatch" xml:space="preserve">
+    <value>Passwords do not match</value>
+  </data>
+  <data name="InvalidCredentials" xml:space="preserve">
+    <value>Invalid email or password</value>
+  </data>
+  <data name="EnterEmail" xml:space="preserve">
+    <value>Please enter your email</value>
+  </data>
+  <data name="ErrorOccurred" xml:space="preserve">
+    <value>An error occurred</value>
+  </data>
+</root>

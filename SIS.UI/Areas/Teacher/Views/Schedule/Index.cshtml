@@ -1,6 +1,6 @@
 @model IEnumerable<SIS.BLL.Services.DTOs.Groups.GroupListDto>
 @{
-    ViewData["Title"] = "Dərs Cədvəli";
+    ViewData["Title"] = L["ClassSchedule"].Value;
 }
 
 <h2 style="font-size:20px; font-weight:700; margin-bottom:20px;">Dərs Cədvəli — Qrup Seçin</h2>
@@ -13,7 +13,7 @@
                 <div style="font-size:16px; font-weight:700; margin-bottom:4px;">@g.Name</div>
                 <div style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">@g.CourseName</div>
                 <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--text-secondary);">
-                    <span><i class="fas fa-users"></i> @g.EnrolledCount tələbə</span>
+                    <span><i class="fas fa-users"></i> @g.EnrolledCount @L["Student"]</span>
                     <span><i class="fas fa-calendar"></i> @g.StartDate.ToString("dd.MM.yy") — @g.EndDate.ToString("dd.MM.yy")</span>
                 </div>
             </div>

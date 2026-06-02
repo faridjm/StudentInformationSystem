@@ -1,0 +1,682 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="TeacherPanel" xml:space="preserve">
+    <value>Müəllim Paneli</value>
+  </data>
+  <data name="StudentPanel" xml:space="preserve">
+    <value>Tələbə Paneli</value>
+  </data>
+  <data name="AdminPanel" xml:space="preserve">
+    <value>Admin Panel</value>
+  </data>
+  <data name="Main" xml:space="preserve">
+    <value>Əsas</value>
+  </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
+  <data name="Teaching" xml:space="preserve">
+    <value>Tədris</value>
+  </data>
+  <data name="MyGroups" xml:space="preserve">
+    <value>Qruplarım</value>
+  </data>
+  <data name="Assessment" xml:space="preserve">
+    <value>Qiymətləndirmə</value>
+  </data>
+  <data name="Assignments" xml:space="preserve">
+    <value>Tapşırıqlar</value>
+  </data>
+  <data name="Schedule" xml:space="preserve">
+    <value>Cədvəl</value>
+  </data>
+  <data name="ClassSchedule" xml:space="preserve">
+    <value>Dərs Cədvəli</value>
+  </data>
+  <data name="Communication" xml:space="preserve">
+    <value>Ünsiyyət</value>
+  </data>
+  <data name="Messages" xml:space="preserve">
+    <value>Mesajlar</value>
+  </data>
+  <data name="ChangePassword" xml:space="preserve">
+    <value>Şifrəni Dəyiş</value>
+  </data>
+  <data name="Logout" xml:space="preserve">
+    <value>Çıxış</value>
+  </data>
+  <data name="Users" xml:space="preserve">
+    <value>İstifadəçilər</value>
+  </data>
+  <data name="Students" xml:space="preserve">
+    <value>Tələbələr</value>
+  </data>
+  <data name="Teachers" xml:space="preserve">
+    <value>Müəllimlər</value>
+  </data>
+  <data name="Academic" xml:space="preserve">
+    <value>Akademik</value>
+  </data>
+  <data name="Courses" xml:space="preserve">
+    <value>Kurslar</value>
+  </data>
+  <data name="AcademicPrograms" xml:space="preserve">
+    <value>Tədris Proqramları</value>
+  </data>
+  <data name="Groups" xml:space="preserve">
+    <value>Qruplar</value>
+  </data>
+  <data name="Enrollments" xml:space="preserve">
+    <value>Qeydiyyatlar</value>
+  </data>
+  <data name="System" xml:space="preserve">
+    <value>Sistem</value>
+  </data>
+  <data name="Seasons" xml:space="preserve">
+    <value>Sezonlar</value>
+  </data>
+  <data name="Announcements" xml:space="preserve">
+    <value>Elanlar</value>
+  </data>
+  <data name="MyCourses" xml:space="preserve">
+    <value>Kurslarım</value>
+  </data>
+  <data name="MySchedule" xml:space="preserve">
+    <value>Cədvəlim</value>
+  </data>
+  <data name="MyGrades" xml:space="preserve">
+    <value>Qiymətlərim</value>
+  </data>
+  <data name="Today" xml:space="preserve">
+    <value>Bu gün</value>
+  </data>
+  <data name="TodaysLessons" xml:space="preserve">
+    <value>Bu günün dərsləri</value>
+  </data>
+  <data name="AttendanceTaken" xml:space="preserve">
+    <value>Qayıb alınıb</value>
+  </data>
+  <data name="TodaysTopic" xml:space="preserve">
+    <value>Bu günün mövzusu</value>
+  </data>
+  <data name="Attendance" xml:space="preserve">
+    <value>Davamiyyət</value>
+  </data>
+  <data name="Student" xml:space="preserve">
+    <value>Tələbə</value>
+  </data>
+  <data name="Present" xml:space="preserve">
+    <value>İştirak</value>
+  </data>
+  <data name="Late" xml:space="preserve">
+    <value>Gecikmə</value>
+  </data>
+  <data name="Absent" xml:space="preserve">
+    <value>Qayıb</value>
+  </data>
+  <data name="SaveAttendance" xml:space="preserve">
+    <value>Davamiyyəti saxla</value>
+  </data>
+  <data name="Grades" xml:space="preserve">
+    <value>Qiymətlər</value>
+  </data>
+  <data name="AllMyGroups" xml:space="preserve">
+    <value>Bütün Qruplarım</value>
+  </data>
+  <data name="Group" xml:space="preserve">
+    <value>Qrup</value>
+  </data>
+  <data name="Program" xml:space="preserve">
+    <value>Proqram</value>
+  </data>
+  <data name="StudentCount" xml:space="preserve">
+    <value>Tələbə</value>
+  </data>
+  <data name="Date" xml:space="preserve">
+    <value>Tarix</value>
+  </data>
+  <data name="Open" xml:space="preserve">
+    <value>Aç</value>
+  </data>
+  <data name="NoGroups" xml:space="preserve">
+    <value>Qrup yoxdur</value>
+  </data>
+  <data name="NoLessonsToday" xml:space="preserve">
+    <value>dərs yoxdur</value>
+  </data>
+  <data name="Quiz" xml:space="preserve">
+    <value>Quiz</value>
+  </data>
+  <data name="Final" xml:space="preserve">
+    <value>Final</value>
+  </data>
+  <data name="Task" xml:space="preserve">
+    <value>Tapşırıq</value>
+  </data>
+  <data name="Welcome" xml:space="preserve">
+    <value>Xoş gəldiniz</value>
+  </data>
+  <data name="ActiveCourse" xml:space="preserve">
+    <value>Aktiv Kurs</value>
+  </data>
+  <data name="NewNotification" xml:space="preserve">
+    <value>Yeni Bildiriş</value>
+  </data>
+  <data name="Course" xml:space="preserve">
+    <value>Kurs</value>
+  </data>
+  <data name="Teacher" xml:space="preserve">
+    <value>Müəllim</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Active" xml:space="preserve">
+    <value>Aktiv</value>
+  </data>
+  <data name="ViewAll" xml:space="preserve">
+    <value>Hamısı</value>
+  </data>
+  <data name="NoAnnouncements" xml:space="preserve">
+    <value>Elan yoxdur</value>
+  </data>
+  <data name="RecentActivity" xml:space="preserve">
+    <value>Son Aktivlik</value>
+  </data>
+  <data name="NoActivityYet" xml:space="preserve">
+    <value>Hələ aktivlik yoxdur</value>
+  </data>
+  <data name="SimulationMode" xml:space="preserve">
+    <value>Simulasiya rejimi</value>
+  </data>
+  <data name="SimulationAllUsers" xml:space="preserve">
+    <value>Bütün istifadəçilər üçün bu gün</value>
+  </data>
+  <data name="SimulationToday" xml:space="preserve">
+    <value>Bu gün</value>
+  </data>
+  <data name="AcceptedAs" xml:space="preserve">
+    <value>olaraq qəbul edilir</value>
+  </data>
+  <data name="Change" xml:space="preserve">
+    <value>Dəyiş</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Bağla</value>
+  </data>
+  <data name="StartSimulation" xml:space="preserve">
+    <value>Simulasiya başlat</value>
+  </data>
+  <data name="Login" xml:space="preserve">
+    <value>Daxil ol</value>
+  </data>
+  <data name="WelcomeBack" xml:space="preserve">
+    <value>Xoş gəldiniz</value>
+  </data>
+  <data name="LoginSubtitle" xml:space="preserve">
+    <value>Sisteme daxil olmaq üçün məlumatlarınızı daxil edin</value>
+  </data>
+  <data name="EmailOrCode" xml:space="preserve">
+    <value>Email / Tələbə kodu / Müəllim kodu</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>Şifrə</value>
+  </data>
+  <data name="ForgotPassword" xml:space="preserve">
+    <value>Şifrəni unutdum?</value>
+  </data>
+  <data name="RememberMe" xml:space="preserve">
+    <value>Məni xatırla</value>
+  </data>
+  <data name="ForgotPasswordTitle" xml:space="preserve">
+    <value>Şifrəni Unutdum</value>
+  </data>
+  <data name="ForgotPasswordDesc" xml:space="preserve">
+    <value>Email ünvanınızı daxil edin. Şifrə sıfırlama linki göndərəcəyik.</value>
+  </data>
+  <data name="SendLink" xml:space="preserve">
+    <value>Link Göndər</value>
+  </data>
+  <data name="GoBack" xml:space="preserve">
+    <value>Geri qayıt</value>
+  </data>
+  <data name="EmailSent" xml:space="preserve">
+    <value>Email Göndərildi!</value>
+  </data>
+  <data name="CheckEmail" xml:space="preserve">
+    <value>Emailinizi yoxlayın.</value>
+  </data>
+  <data name="ResetLinkSent" xml:space="preserve">
+    <value>Şifrə sıfırlama linki</value>
+  </data>
+  <data name="LinkSentSuffix" xml:space="preserve">
+    <value>göndərildi.</value>
+  </data>
+  <data name="LinkValid24h" xml:space="preserve">
+    <value>Link 24 saat ərzində etibarlıdır.</value>
+  </data>
+  <data name="BackToLogin" xml:space="preserve">
+    <value>Giriş səhifəsinə qayıt</value>
+  </data>
+  <data name="NewPassword" xml:space="preserve">
+    <value>Yeni Şifrə</value>
+  </data>
+  <data name="SetNewPassword" xml:space="preserve">
+    <value>Yeni Şifrə Təyin Et</value>
+  </data>
+  <data name="ConfirmPassword" xml:space="preserve">
+    <value>Şifrəni Təsdiqlə</value>
+  </data>
+  <data name="PasswordChanged" xml:space="preserve">
+    <value>Şifrə Dəyişdirildi!</value>
+  </data>
+  <data name="PasswordChangedDesc" xml:space="preserve">
+    <value>Şifrəniz uğurla yeniləndi.
+İndi yeni şifrənizlə daxil ola bilərsiniz.</value>
+  </data>
+  <data name="ChangePasswordBtn" xml:space="preserve">
+    <value>Şifrəni Dəyiş</value>
+  </data>
+  <data name="SavePassword" xml:space="preserve">
+    <value>Şifrəni Yadda Saxla</value>
+  </data>
+  <data name="MinChars" xml:space="preserve">
+    <value>Ən az 6 simvol</value>
+  </data>
+  <data name="ReenterPassword" xml:space="preserve">
+    <value>Şifrəni yenidən daxil edin</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>Axtar...</value>
+  </data>
+  <data name="NoConversationsYet" xml:space="preserve">
+    <value>Hələ söhbət yoxdur</value>
+  </data>
+  <data name="NewConversation" xml:space="preserve">
+    <value>Yeni söhbət</value>
+  </data>
+  <data name="Now" xml:space="preserve">
+    <value>İndi</value>
+  </data>
+  <data name="SelectConversation" xml:space="preserve">
+    <value>Söhbət seçin</value>
+  </data>
+  <data name="SelectConvDesc" xml:space="preserve">
+    <value>Soldan söhbət seçin və ya yeni söhbət başladın</value>
+  </data>
+  <data name="StartConversation" xml:space="preserve">
+    <value>Söhbətə başlayın!</value>
+  </data>
+  <data name="SendFirstMessage" xml:space="preserve">
+    <value>İlk mesajınızı göndərin</value>
+  </data>
+  <data name="TypeMessage" xml:space="preserve">
+    <value>Mesaj yazın...</value>
+  </data>
+  <data name="Yesterday" xml:space="preserve">
+    <value>Dünən</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Saxla</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Düzəlt</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Sil</value>
+  </data>
+  <data name="Create" xml:space="preserve">
+    <value>Yarat</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Ləğv et</value>
+  </data>
+  <data name="Back" xml:space="preserve">
+    <value>Geri</value>
+  </data>
+  <data name="Details" xml:space="preserve">
+    <value>Detallar</value>
+  </data>
+  <data name="Actions" xml:space="preserve">
+    <value>Əməliyyatlar</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Bəli</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>Xeyr</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>Yüklənir...</value>
+  </data>
+  <data name="NoData" xml:space="preserve">
+    <value>Məlumat yoxdur</value>
+  </data>
+  <data name="Email" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="Phone" xml:space="preserve">
+    <value>Telefon</value>
+  </data>
+  <data name="FullName" xml:space="preserve">
+    <value>Ad Soyad</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Ad</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>Açıqlama</value>
+  </data>
+  <data name="StartDate" xml:space="preserve">
+    <value>Başlama Tarixi</value>
+  </data>
+  <data name="EndDate" xml:space="preserve">
+    <value>Bitmə Tarixi</value>
+  </data>
+  <data name="Capacity" xml:space="preserve">
+    <value>Tutum</value>
+  </data>
+  <data name="Submit" xml:space="preserve">
+    <value>Göndər</value>
+  </data>
+  <data name="Download" xml:space="preserve">
+    <value>Yüklə</value>
+  </data>
+  <data name="Transcript" xml:space="preserve">
+    <value>Transkript</value>
+  </data>
+  <data name="DownloadPDF" xml:space="preserve">
+    <value>PDF Yüklə</value>
+  </data>
+  <data name="CreatedAt" xml:space="preserve">
+    <value>Yaradılma tarixi</value>
+  </data>
+  <data name="Title" xml:space="preserve">
+    <value>Başlıq</value>
+  </data>
+  <data name="Content" xml:space="preserve">
+    <value>Məzmun</value>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>Növ</value>
+  </data>
+  <data name="MaxScore" xml:space="preserve">
+    <value>Max Bal</value>
+  </data>
+  <data name="Score" xml:space="preserve">
+    <value>Bal</value>
+  </data>
+  <data name="Weight" xml:space="preserve">
+    <value>Çəki %</value>
+  </data>
+  <data name="WeightedScore" xml:space="preserve">
+    <value>Çəkili Bal</value>
+  </data>
+  <data name="Percentage" xml:space="preserve">
+    <value>Faiz</value>
+  </data>
+  <data name="DueDate" xml:space="preserve">
+    <value>Son Tarix</value>
+  </data>
+  <data name="NewStudent" xml:space="preserve">
+    <value>Yeni Tələbə</value>
+  </data>
+  <data name="NewTeacher" xml:space="preserve">
+    <value>Yeni Müəllim</value>
+  </data>
+  <data name="NewGroup" xml:space="preserve">
+    <value>Yeni Qrup</value>
+  </data>
+  <data name="NewCourse" xml:space="preserve">
+    <value>Yeni Tədris Proqramı</value>
+  </data>
+  <data name="NewSeason" xml:space="preserve">
+    <value>Yeni Dərs Sezonu</value>
+  </data>
+  <data name="NewAnnouncement" xml:space="preserve">
+    <value>Yeni Elan</value>
+  </data>
+  <data name="NewEnrollment" xml:space="preserve">
+    <value>Tələbə Qeydiyyatı</value>
+  </data>
+  <data name="EditStudent" xml:space="preserve">
+    <value>Tələbəni Düzəlt</value>
+  </data>
+  <data name="EditTeacher" xml:space="preserve">
+    <value>Müəllimi Düzəlt</value>
+  </data>
+  <data name="EditGroup" xml:space="preserve">
+    <value>Qrupu Düzəlt</value>
+  </data>
+  <data name="EditCourse" xml:space="preserve">
+    <value>Proqramı Düzəlt</value>
+  </data>
+  <data name="EditSeason" xml:space="preserve">
+    <value>Sezonu Düzəlt</value>
+  </data>
+  <data name="StudentDetails" xml:space="preserve">
+    <value>Tələbə Detalları</value>
+  </data>
+  <data name="TeacherDetails" xml:space="preserve">
+    <value>Müəllim Detalları</value>
+  </data>
+  <data name="GroupStudents" xml:space="preserve">
+    <value>Qrup Tələbələri</value>
+  </data>
+  <data name="ActivityLog" xml:space="preserve">
+    <value>Aktivlik Loqu</value>
+  </data>
+  <data name="AcademicSeasons" xml:space="preserve">
+    <value>Dərs Sezonları</value>
+  </data>
+  <data name="NewAssignment" xml:space="preserve">
+    <value>Yeni Tapşırıq</value>
+  </data>
+  <data name="EditAssignment" xml:space="preserve">
+    <value>Tapşırığı Düzəlt</value>
+  </data>
+  <data name="Submissions" xml:space="preserve">
+    <value>Cavablar</value>
+  </data>
+  <data name="SelectGroup" xml:space="preserve">
+    <value>Qrup Seç</value>
+  </data>
+  <data name="AssessmentPlan" xml:space="preserve">
+    <value>Qiymətləndirmə Planı</value>
+  </data>
+  <data name="ClassSessions" xml:space="preserve">
+    <value>Dərs Sessiyaları</value>
+  </data>
+  <data name="MyClassSchedule" xml:space="preserve">
+    <value>Dərs Cədvəlim</value>
+  </data>
+  <data name="PDF_AcademicTranscript" xml:space="preserve">
+    <value>AKADEMİK TRANSKRİPT</value>
+  </data>
+  <data name="PDF_Date" xml:space="preserve">
+    <value>Tarix</value>
+  </data>
+  <data name="PDF_StudentInfo" xml:space="preserve">
+    <value>TƏLƏBƏ MƏLUMATLARI</value>
+  </data>
+  <data name="PDF_FullName" xml:space="preserve">
+    <value>Ad Soyad</value>
+  </data>
+  <data name="PDF_StudentNo" xml:space="preserve">
+    <value>Tələbə №</value>
+  </data>
+  <data name="PDF_Email" xml:space="preserve">
+    <value>E-poçt</value>
+  </data>
+  <data name="PDF_EnrollmentYear" xml:space="preserve">
+    <value>Qeydiyyat ili</value>
+  </data>
+  <data name="PDF_CourseInfo" xml:space="preserve">
+    <value>KURS MƏLUMATLARI</value>
+  </data>
+  <data name="PDF_Course" xml:space="preserve">
+    <value>Kurs</value>
+  </data>
+  <data name="PDF_Group" xml:space="preserve">
+    <value>Qrup</value>
+  </data>
+  <data name="PDF_Teacher" xml:space="preserve">
+    <value>Müəllim</value>
+  </data>
+  <data name="PDF_AcademicYear" xml:space="preserve">
+    <value>Akademik il</value>
+  </data>
+  <data name="PDF_DateRange" xml:space="preserve">
+    <value>Tarix</value>
+  </data>
+  <data name="PDF_Attendance" xml:space="preserve">
+    <value>DAVAMİYYƏT</value>
+  </data>
+  <data name="PDF_TotalSessions" xml:space="preserve">
+    <value>Cəmi Dərs</value>
+  </data>
+  <data name="PDF_Present" xml:space="preserve">
+    <value>İştirak</value>
+  </data>
+  <data name="PDF_Late" xml:space="preserve">
+    <value>Gecikmə</value>
+  </data>
+  <data name="PDF_Absent" xml:space="preserve">
+    <value>Qayıb</value>
+  </data>
+  <data name="PDF_AttendancePct" xml:space="preserve">
+    <value>Davamiyyət</value>
+  </data>
+  <data name="PDF_OfficialAssessments" xml:space="preserve">
+    <value>RƏSMİ QİYMƏTLƏNDİRMƏ (Official Assessments)</value>
+  </data>
+  <data name="PDF_Title" xml:space="preserve">
+    <value>Başlıq</value>
+  </data>
+  <data name="PDF_Type" xml:space="preserve">
+    <value>Növ</value>
+  </data>
+  <data name="PDF_MaxScore" xml:space="preserve">
+    <value>Max Bal</value>
+  </data>
+  <data name="PDF_Score" xml:space="preserve">
+    <value>Bal</value>
+  </data>
+  <data name="PDF_WeightPct" xml:space="preserve">
+    <value>Çəki %</value>
+  </data>
+  <data name="PDF_WeightedScore" xml:space="preserve">
+    <value>Çəkili Bal</value>
+  </data>
+  <data name="PDF_OfficialGrade" xml:space="preserve">
+    <value>RƏSMİ QİYMƏT</value>
+  </data>
+  <data name="PDF_OfficialCourseGrade" xml:space="preserve">
+    <value>Official Course Grade</value>
+  </data>
+  <data name="PDF_HomeworkAssignments" xml:space="preserve">
+    <value>EV TAPŞIRIQLARI (Homework Performance)</value>
+  </data>
+  <data name="PDF_HomeworkNotInGPA" xml:space="preserve">
+    <value>Bu bölmə GPA hesablamasına daxil deyil</value>
+  </data>
+  <data name="PDF_DueDate" xml:space="preserve">
+    <value>Son Tarix</value>
+  </data>
+  <data name="PDF_Percentage" xml:space="preserve">
+    <value>Faiz</value>
+  </data>
+  <data name="PDF_Link" xml:space="preserve">
+    <value>Bağlantı</value>
+  </data>
+  <data name="PDF_Official" xml:space="preserve">
+    <value>Rəsmi</value>
+  </data>
+  <data name="PDF_Homework" xml:space="preserve">
+    <value>Ev tapş.</value>
+  </data>
+  <data name="PDF_HomeworkAvg" xml:space="preserve">
+    <value>Ev Tapşırığı Ortalaması</value>
+  </data>
+  <data name="PDF_PerformanceStatus" xml:space="preserve">
+    <value>PERFORMANS STATUSU</value>
+  </data>
+  <data name="PDF_Certificate" xml:space="preserve">
+    <value>SERTİFİKAT</value>
+  </data>
+  <data name="PDF_CertEligible" xml:space="preserve">
+    <value>Sertifikat almağa hüquqludur</value>
+  </data>
+  <data name="PDF_CertNotEligible" xml:space="preserve">
+    <value>Sertifikat almaq üçün şərtlər ödənmir</value>
+  </data>
+  <data name="PDF_CertCondition" xml:space="preserve">
+    <value>Şərt: Qiymət &gt;= 60% və Davamiyyət &gt;= 70%</value>
+  </data>
+  <data name="PDF_Page" xml:space="preserve">
+    <value>Səhifə</value>
+  </data>
+  <data name="Perf_Excellent" xml:space="preserve">
+    <value>Əla (Excellent)</value>
+  </data>
+  <data name="Perf_Good" xml:space="preserve">
+    <value>Yaxşı (Good)</value>
+  </data>
+  <data name="Perf_Satisfactory" xml:space="preserve">
+    <value>Kafi (Satisfactory)</value>
+  </data>
+  <data name="Perf_Average" xml:space="preserve">
+    <value>Orta (Average)</value>
+  </data>
+  <data name="Perf_Failing" xml:space="preserve">
+    <value>Qeyri-kafi (Failing)</value>
+  </data>
+  <data name="AssessmentType_FinalProject" xml:space="preserve">
+    <value>Final Layihəsi</value>
+  </data>
+  <data name="AssessmentType_Assignment" xml:space="preserve">
+    <value>Tapşırıq</value>
+  </data>
+  <data name="AssessmentType_Exam" xml:space="preserve">
+    <value>İmtahan</value>
+  </data>
+  <data name="AssessmentType_Homework" xml:space="preserve">
+    <value>Ev tapşırığı</value>
+  </data>
+  <data name="AssessmentType_Other" xml:space="preserve">
+    <value>Digər</value>
+  </data>
+  <data name="FieldRequired" xml:space="preserve">
+    <value>Bu sahə tələb olunur</value>
+  </data>
+  <data name="InvalidEmail" xml:space="preserve">
+    <value>Düzgün email daxil edin</value>
+  </data>
+  <data name="PasswordTooShort" xml:space="preserve">
+    <value>Şifrə ən az 6 simvol olmalıdır</value>
+  </data>
+  <data name="PasswordsDoNotMatch" xml:space="preserve">
+    <value>Şifrələr uyğun gəlmir</value>
+  </data>
+  <data name="InvalidCredentials" xml:space="preserve">
+    <value>Email və ya şifrə yanlışdır</value>
+  </data>
+  <data name="EnterEmail" xml:space="preserve">
+    <value>Email daxil edin</value>
+  </data>
+  <data name="ErrorOccurred" xml:space="preserve">
+    <value>Xəta baş verdi</value>
+  </data>
+</root>

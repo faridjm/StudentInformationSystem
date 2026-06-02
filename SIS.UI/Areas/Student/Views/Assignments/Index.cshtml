@@ -1,11 +1,11 @@
 @model List<(SIS.BLL.Services.DTOs.Enrollment.EnrollmentListDto enrollment, SIS.BLL.Services.DTOs.Assignment.AssignmentDto assignment)>
 @{
-    ViewData["Title"] = "Tapşırıqlar";
+    ViewData["Title"] = L["Assignments"].Value;
     var enrollments = ViewBag.Enrollments as IEnumerable<SIS.BLL.Services.DTOs.Enrollment.EnrollmentListDto>;
 }
 
 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-    <h2 style="font-size:20px; font-weight:700;">Tapşırıqlarım</h2>
+    <h2 style="font-size:20px; font-weight:700;">@L["Assignments"]</h2>
 </div>
 
 @if (!Model.Any())
@@ -26,7 +26,7 @@ else
                     <i class="fas fa-book" style="margin-right:6px;"></i>@group.Key
                 </h3>
                 <a href="/Student/Assignments/Course?enrollmentId=@courseEnrollment.Id" class="btn btn-sm btn-secondary">
-                    Hamısına bax
+                    @L["ViewAll"]
                 </a>
             </div>
             <div style="display:flex; flex-direction:column; gap:8px;">
@@ -54,7 +54,7 @@ else
                                     }
                                     else if (daysLeft == 0)
                                     {
-                                        <span style="color:#f59e0b; margin-left:8px; font-weight:600;">Bu gün!</span>
+                                        <span style="color:#f59e0b; margin-left:8px; font-weight:600;">@L["Today"]!</span>
                                     }
                                     else
                                     {

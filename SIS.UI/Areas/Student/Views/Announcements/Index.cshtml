@@ -1,18 +1,18 @@
 @model IEnumerable<SIS.BLL.Services.DTOs.Announcement.AnnouncementDto>
 
 @{
-    ViewData["Title"] = "Elanlar";
+    ViewData["Title"] = L["Announcements"].Value;
 }
 
 <div style="margin-bottom:20px;">
-    <h2 style="font-size:20px; font-weight:700;">Elanlar</h2>
+    <h2 style="font-size:20px; font-weight:700;">@L["Announcements"]</h2>
 </div>
 
 @if (!Model.Any())
 {
     <div style="text-align:center; padding:60px 20px; color:var(--text-secondary);">
         <i class="fas fa-bullhorn" style="font-size:40px; opacity:.3; margin-bottom:12px; display:block;"></i>
-        <p>Hələ heç bir elan yoxdur</p>
+        <p>@L["NoAnnouncements"]</p>
     </div>
 }
 else

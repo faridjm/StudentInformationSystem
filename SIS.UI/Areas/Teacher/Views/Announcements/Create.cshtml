@@ -1,35 +1,35 @@
 @{
-    ViewData["Title"] = "Yeni Elan";
+    ViewData["Title"] = L["NewAnnouncement"].Value;
 }
 <div style="max-width:600px; margin:0 auto;">
     <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
         <a href="/Teacher/Announcements" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i></a>
-        <h2 style="font-size:20px; font-weight:700;">Yeni Elan</h2>
+        <h2 style="font-size:20px; font-weight:700;">@L["NewAnnouncement"]</h2>
     </div>
     <form method="post" action="/Teacher/Announcements/Create">
         @Html.AntiForgeryToken()
         <div class="card">
             <div class="card-body">
                 <div class="form-group">
-                    <label class="form-label">Başlıq *</label>
+                    <label class="form-label">@L["Title"] *</label>
                     <input name="Title" class="form-control" required />
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Məzmun *</label>
+                    <label class="form-label">@L["Content"] *</label>
                     <textarea name="Content" class="form-control" rows="5" required></textarea>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Hədəf</label>
+                    <label class="form-label">@L["Type"]</label>
                     <select name="TargetType" class="form-control">
-                        <option value="1">Tələbələr</option>
-                        <option value="0">Hamı</option>
+                        <option value="1">@L["Students"]</option>
+                        <option value="0">@L["ViewAll"]</option>
                     </select>
                 </div>
             </div>
         </div>
         <div style="display:flex; gap:12px; margin-top:16px;">
-            <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Yayımla</button>
-            <a href="/Teacher/Announcements" class="btn btn-secondary">Ləğv et</a>
+            <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> @L["Submit"]</button>
+            <a href="/Teacher/Announcements" class="btn btn-secondary">@L["Cancel"]</a>
         </div>
     </form>
 </div>

@@ -1,28 +1,28 @@
 @{
-    ViewData["Title"] = "Yeni Qrup";
+    ViewData["Title"] = L["NewGroup"].Value;
 }
 
 <div style="max-width:800px; margin:0 auto;">
     <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
         <a href="/Admin/Group" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i></a>
-        <h2 style="font-size:20px; font-weight:700;">Yeni Qrup Yarat</h2>
+        <h2 style="font-size:20px; font-weight:700;">@L["NewGroup"]</h2>
     </div>
 
     <form method="post" action="/Admin/Group/Create" id="groupForm">
         @Html.AntiForgeryToken()
 
         <div class="card" style="margin-bottom:16px;">
-            <div class="card-header">Ümumi məlumat</div>
+            <div class="card-header">@L["Details"]</div>
             <div class="card-body">
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
                     <div class="form-group" style="grid-column:1/-1;">
-                        <label class="form-label">Qrup adı *</label>
-                        <input name="Name" class="form-control" placeholder="məs: PA101" required />
+                        <label class="form-label">@L["Name"] *</label>
+                        <input name="Name" class="form-control"  required />
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Tədris Proqramı *</label>
+                        <label class="form-label">@L["Course"] *</label>
                         <select name="CourseId" class="form-control" required>
-                            <option value="">Seçin...</option>
+                            <option value="">...</option>
                             @foreach (var c in (IEnumerable<SIS.BLL.Services.DTOs.Course.CourseDto>)ViewBag.Courses)
                             {
                                 <option value="@c.Id">@c.Name</option>
@@ -30,9 +30,9 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Müəllim *</label>
+                        <label class="form-label">@L["Teacher"] *</label>
                         <select name="TeacherId" class="form-control" required>
-                            <option value="">Seçin...</option>
+                            <option value="">...</option>
                             @foreach (var t in (IEnumerable<SIS.BLL.Services.DTOs.Teacher.TeacherListDto>)ViewBag.Teachers)
                             {
                                 <option value="@t.Id">@t.FullName</option>
@@ -40,7 +40,7 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Sezon</label>
+                        <label class="form-label">@L["Seasons"]</label>
                         <select name="AcademicYearId" class="form-control">
                             <option value="">—</option>
                             @foreach (var s in (IEnumerable<SIS.BLL.Services.DTOs.AcademicYear.AcademicYearDto>)ViewBag.Seasons)
@@ -50,15 +50,15 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Tutum (max tələbə) *</label>
+                        <label class="form-label">@L["Capacity"] *</label>
                         <input name="Capacity" type="number" min="1" max="100" value="20" class="form-control" required />
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Başlama tarixi *</label>
+                        <label class="form-label">@L["StartDate"] *</label>
                         <input name="StartDate" type="date" class="form-control" required />
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Bitmə tarixi *</label>
+                        <label class="form-label">@L["EndDate"] *</label>
                         <input name="EndDate" type="date" class="form-control" required />
                     </div>
                 </div>
@@ -67,8 +67,8 @@
 
         <div class="card" style="margin-bottom:16px;">
             <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
-                <span>Həftəlik cədvəl günləri</span>
-                <button type="button" onclick="addDay()" class="btn btn-sm btn-secondary"><i class="fas fa-plus"></i> Gün əlavə et</button>
+                <span>@L["Schedule"]</span>
+                <button type="button" onclick="addDay()" class="btn btn-sm btn-secondary"><i class="fas fa-plus"></i> +</button>
             </div>
             <div class="card-body">
                 <div id="scheduleDays">
@@ -78,8 +78,8 @@
         </div>
 
         <div style="display:flex; gap:12px;">
-            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Qrupu Yarat</button>
-            <a href="/Admin/Group" class="btn btn-secondary">Ləğv et</a>
+            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> @L["Create"]</button>
+            <a href="/Admin/Group" class="btn btn-secondary">@L["Cancel"]</a>
         </div>
     </form>
 </div>

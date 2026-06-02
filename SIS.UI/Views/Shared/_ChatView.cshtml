@@ -1,0 +1,248 @@
+@using SIS.BLL.Services.DTOs.Chat
+@{
+    var conversations = ViewData["Conversations"] as List<ConversationDto> ?? new();
+    var activeId = ViewData["ActiveId"] as int?;
+    var messages = ViewData["Messages"] as List<MessageDto> ?? new();
+    var activeConv = ViewData["ActiveConv"] as ConversationDto;
+    var prefill = ViewData["Prefill"] as string ?? "";
+    var areaPrefix = ViewData["AreaPrefix"] as string ?? "Student";
+    var now = DateTime.Now;
+}
+
+<style>
+    .chat-wrap { display:flex; height:calc(100vh - 140px); border-radius:14px; overflow:hidden; border:1px solid var(--border); background:var(--bg-dark); }
+
+    /* Sidebar */
+    .ch-side { width:320px; background:var(--bg-card); border-right:1px solid var(--border); display:flex; flex-direction:column; flex-shrink:0; }
+    .ch-side-hdr { padding:18px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+    .ch-side-hdr h3 { font-size:16px; font-weight:700; margin:0; }
+    .ch-search { padding:10px 14px; border-bottom:1px solid var(--border); }
+    .ch-search input { width:100%; background:var(--bg-hover); border:1px solid var(--border); color:var(--text-primary); border-radius:20px; padding:8px 14px 8px 36px; font-size:12px; outline:none; }
+    .ch-search input:focus { border-color:var(--accent); }
+    .ch-list { flex:1; overflow-y:auto; }
+
+    .ch-item { display:flex; align-items:center; gap:12px; padding:14px 18px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,.04); transition:all .15s; text-decoration:none; color:inherit; }
+    .ch-item:hover { background:var(--bg-hover); }
+    .ch-item.active { background:rgba(59,130,246,.12); border-left:3px solid var(--accent); }
+    .ch-avatar { width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:16px; color:#fff; flex-shrink:0; }
+    .ch-info { flex:1; min-width:0; }
+    .ch-name { font-weight:600; font-size:13px; display:flex; align-items:center; gap:6px; }
+    .ch-preview { font-size:11px; color:var(--text-secondary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:3px; }
+    .ch-meta { display:flex; flex-direction:column; align-items:flex-end; gap:5px; flex-shrink:0; }
+    .ch-time { font-size:10px; color:var(--text-secondary); }
+    .ch-badge { background:linear-gradient(135deg, #e94560, #c2185b); color:#fff; font-size:10px; font-weight:700; min-width:20px; height:20px; border-radius:10px; display:flex; align-items:center; justify-content:center; padding:0 6px; }
+
+    /* Main */
+    .ch-main { flex:1; display:flex; flex-direction:column; }
+    .ch-hdr { padding:14px 24px; background:var(--bg-card); border-bottom:1px solid var(--border); display:flex; align-items:center; gap:14px; }
+    .ch-hdr-info { flex:1; }
+    .ch-hdr-name { font-weight:700; font-size:15px; }
+    .ch-hdr-sub { font-size:11px; color:var(--text-secondary); margin-top:1px; }
+
+    .ch-msgs { flex:1; overflow-y:auto; padding:20px 24px; display:flex; flex-direction:column; gap:4px; }
+    .ch-date-sep { text-align:center; margin:16px 0 8px; }
+    .ch-date-sep span { background:var(--bg-card); border:1px solid var(--border); padding:4px 14px; border-radius:16px; font-size:10px; color:var(--text-secondary); font-weight:500; }
+
+    .ch-msg { display:flex; flex-direction:column; max-width:65%; margin-bottom:2px; }
+    .ch-msg.mine { align-self:flex-end; }
+    .ch-msg.other { align-self:flex-start; }
+    .ch-bubble { padding:10px 14px; border-radius:16px; font-size:13px; line-height:1.5; word-wrap:break-word; }
+    .ch-msg.mine .ch-bubble { background:linear-gradient(135deg, #3b82f6, #2563eb); color:#fff; border-bottom-right-radius:6px; }
+    .ch-msg.other .ch-bubble { background:var(--bg-card); border:1px solid var(--border); border-bottom-left-radius:6px; }
+    .ch-msg-meta { font-size:9px; color:var(--text-secondary); margin-top:3px; display:flex; align-items:center; gap:4px; }
+    .ch-msg.mine .ch-msg-meta { justify-content:flex-end; }
+    .ch-msg.other .ch-msg-meta .ch-sender { color:var(--accent); font-weight:600; margin-right:4px; }
+
+    .ch-input { padding:14px 20px; background:var(--bg-card); border-top:1px solid var(--border); }
+    .ch-input form { display:flex; gap:10px; align-items:center; }
+    .ch-input input[type=text] { flex:1; background:var(--bg-hover); border:1px solid var(--border); color:var(--text-primary); border-radius:24px; padding:12px 20px; font-size:13px; outline:none; transition:border-color .2s; }
+    .ch-input input[type=text]:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(59,130,246,.15); }
+    .ch-send-btn { background:linear-gradient(135deg, #3b82f6, #2563eb); color:#fff; border:none; border-radius:50%; width:44px; height:44px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:16px; transition:all .15s; box-shadow:0 2px 8px rgba(59,130,246,.3); }
+    .ch-send-btn:hover { transform:scale(1.05); box-shadow:0 4px 12px rgba(59,130,246,.4); }
+
+    .ch-empty { flex:1; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:16px; color:var(--text-secondary); }
+    .ch-empty i { font-size:56px; opacity:.1; }
+</style>
+
+<div class="chat-wrap">
+    <!-- Sol: Söhbətlər -->
+    <div class="ch-side">
+        <div class="ch-side-hdr">
+            <h3><i class="fas fa-comments" style="color:var(--accent); margin-right:8px;"></i>@L["Messages"]</h3>
+        </div>
+        <div class="ch-search">
+            <div style="position:relative;">
+                <i class="fas fa-search" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--text-secondary); font-size:12px;"></i>
+                <input type="text" placeholder="@L["Search"]" id="convSearch" oninput="filterConversations(this.value)" />
+            </div>
+        </div>
+        <div class="ch-list">
+            @if (!conversations.Any())
+            {
+                <div style="padding:40px 20px; text-align:center;">
+                    <i class="fas fa-comment-slash" style="font-size:28px; opacity:.15; display:block; margin-bottom:10px;"></i>
+                    <div style="font-size:13px; color:var(--text-secondary);">@L["NoConversationsYet"]</div>
+                </div>
+            }
+            @{ var avatarColors = new[] { "#3b82f6", "#e94560", "#22c55e", "#a855f7", "#eab308", "#06b6d4" }; }
+            @foreach (var c in conversations)
+            {
+                var isActive = c.Id == activeId;
+                var initial = c.OtherUserName.Length > 0 ? c.OtherUserName[0].ToString().ToUpper() : "?";
+                var color = avatarColors[Math.Abs(c.OtherUserName.GetHashCode()) % avatarColors.Length];
+                var timeStr = "";
+                if (c.LastMessageAt.HasValue)
+                {
+                    var diff = now - c.LastMessageAt.Value;
+                    timeStr = diff.TotalMinutes < 1 ? L["Now"].Value :
+                              diff.TotalHours < 1 ? $"{(int)diff.TotalMinutes}d" :
+                              diff.TotalDays < 1 ? c.LastMessageAt.Value.ToString("HH:mm") :
+                              diff.TotalDays < 7 ? c.LastMessageAt.Value.ToString("ddd") :
+                              c.LastMessageAt.Value.ToString("dd.MM");
+                }
+
+                <a href="/@areaPrefix/Messages?conversationId=@c.Id" class="ch-item @(isActive ? "active" : "")" data-name="@c.OtherUserName.ToLower()">
+                    <div class="ch-avatar" style="background:@color;">@initial</div>
+                    <div class="ch-info">
+                        <div class="ch-name">
+                            @c.OtherUserName
+                            <span style="font-size:10px; font-weight:400; color:var(--text-secondary);">@c.GroupName</span>
+                        </div>
+                        <div class="ch-preview">
+                            @if (c.LastMessage != null)
+                            {
+                                @(c.LastMessage.Length > 40 ? c.LastMessage[..40] + "..." : c.LastMessage)
+                            }
+                            else
+                            {
+                                <em>@L["NewConversation"]</em>
+                            }
+                        </div>
+                    </div>
+                    <div class="ch-meta">
+                        @if (!string.IsNullOrEmpty(timeStr))
+                        {
+                            <span class="ch-time">@timeStr</span>
+                        }
+                        @if (c.UnreadCount > 0)
+                        {
+                            <span class="ch-badge">@c.UnreadCount</span>
+                        }
+                    </div>
+                </a>
+            }
+        </div>
+    </div>
+
+    <!-- Sağ: Mesaj sahəsi -->
+    <div class="ch-main">
+        @if (activeConv != null)
+        {
+            var convColor = avatarColors[Math.Abs(activeConv.OtherUserName.GetHashCode()) % avatarColors.Length];
+            <div class="ch-hdr">
+                <div class="ch-avatar" style="width:38px; height:38px; font-size:14px; background:@convColor;">
+                    @activeConv.OtherUserName[0].ToString().ToUpper()
+                </div>
+                <div class="ch-hdr-info">
+                    <div class="ch-hdr-name">@activeConv.OtherUserName</div>
+                    <div class="ch-hdr-sub">@activeConv.CourseName · @activeConv.GroupName</div>
+                </div>
+            </div>
+
+            <div class="ch-msgs" id="chatMessages">
+                @if (!messages.Any())
+                {
+                    <div style="text-align:center; padding:60px 20px; color:var(--text-secondary);">
+                        <i class="fas fa-hand-peace" style="font-size:40px; opacity:.15; display:block; margin-bottom:12px;"></i>
+                        <div style="font-size:14px; font-weight:500;">@L["StartConversation"]</div>
+                        <div style="font-size:12px; margin-top:4px;">@L["SendFirstMessage"]</div>
+                    </div>
+                }
+
+                @{
+                    string? lastDateLabel = null;
+                }
+                @foreach (var m in messages)
+                {
+                    var dateLabel = m.SentAt.Date == now.Date ? L["Today"].Value :
+                                   m.SentAt.Date == now.Date.AddDays(-1) ? L["Yesterday"].Value :
+                                   m.SentAt.ToString("dd MMMM yyyy");
+                    if (dateLabel != lastDateLabel)
+                    {
+                        lastDateLabel = dateLabel;
+                        <div class="ch-date-sep"><span>@dateLabel</span></div>
+                    }
+
+                    <div class="ch-msg @(m.IsMine ? "mine" : "other")">
+                        <div class="ch-bubble">@m.Content</div>
+                        <div class="ch-msg-meta">
+                            @if (!m.IsMine)
+                            {
+                                <span class="ch-sender">@m.SenderName</span>
+                            }
+                            <span>@m.SentAt.ToString("HH:mm")</span>
+                            @if (m.IsMine)
+                            {
+                                @if (m.IsRead)
+                                {
+                                    <i class="fas fa-check-double" style="color:#3b82f6;"></i>
+                                }
+                                else
+                                {
+                                    <i class="fas fa-check" style="opacity:.5;"></i>
+                                }
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div class="ch-input">
+                <form method="post" action="/@areaPrefix/Messages/Send" id="chatForm">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="conversationId" value="@activeConv.Id" />
+                    <input type="text" name="content" id="msgInput" value="@prefill"
+                           placeholder="@L["TypeMessage"]" autocomplete="off" autofocus />
+                    <button type="submit" class="ch-send-btn"><i class="fas fa-paper-plane"></i></button>
+                </form>
+            </div>
+        }
+        else
+        {
+            <div class="ch-empty">
+                <i class="fas fa-comments"></i>
+                <div style="font-size:16px; font-weight:500;">@L["SelectConversation"]</div>
+                <div style="font-size:12px;">@L["SelectConvDesc"]</div>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    // Auto-scroll
+    var el = document.getElementById('chatMessages');
+    if (el) el.scrollTop = el.scrollHeight;
+
+    // Enter to send
+    var input = document.getElementById('msgInput');
+    if (input) {
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey && this.value.trim()) {
+                document.getElementById('chatForm').submit();
+            }
+        });
+        // Focus at end if prefill
+        if (input.value) { input.setSelectionRange(input.value.length, input.value.length); }
+    }
+
+    // Filter conversations
+    function filterConversations(q) {
+        q = q.toLowerCase();
+        document.querySelectorAll('.ch-item').forEach(function(item) {
+            var name = item.getAttribute('data-name') || '';
+            item.style.display = name.includes(q) ? '' : 'none';
+        });
+    }
+</script>
+}

@@ -1,12 +1,12 @@
 @model IEnumerable<SIS.BLL.Services.DTOs.Course.CourseDto>
 
 @{
-    ViewData["Title"] = "Kurslar";
+    ViewData["Title"] = L["Courses"].Value;
 }
 
 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-    <h2 style="font-size:20px; font-weight:700;">Kurslar</h2>
-    <a href="/Admin/Course/Create" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Yeni Kurs</a>
+    <h2 style="font-size:20px; font-weight:700;">@L["Courses"]</h2>
+    <a href="/Admin/Course/Create" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> @L["NewCourse"]</a>
 </div>
 
 @if (TempData["Success"] != null)
@@ -20,11 +20,11 @@
     <table class="table">
         <thead>
             <tr>
-                <th>Ad</th>
-                <th>Açıqlama</th>
-                <th>Qrup sayı</th>
-                <th>Status</th>
-                <th>Əməliyyat</th>
+                <th>@L["Name"]</th>
+                <th>@L["Description"]</th>
+                <th>@L["Groups"]</th>
+                <th>@L["Status"]</th>
+                <th>@L["Actions"]</th>
             </tr>
         </thead>
         <tbody>
@@ -34,7 +34,7 @@
                     <td style="font-weight:500;">@c.Name</td>
                     <td style="color:var(--text-secondary); font-size:13px;">@(c.Description ?? "—")</td>
                     <td>@c.GroupCount</td>
-                    <td><span class="badge @(c.IsActive ? "badge-success" : "badge-danger")">@(c.IsActive ? "Aktiv" : "Deaktiv")</span></td>
+                    <td><span class="badge @(c.IsActive ? "badge-success" : "badge-danger")">@(c.IsActive ? L["Active"].Value : "Deaktiv")</span></td>
                     <td style="display:flex; gap:6px;">
                         <a href="/Admin/Course/Edit/@c.Id" class="btn btn-sm btn-secondary"><i class="fas fa-edit"></i></a>
                         <form method="post" action="/Admin/Course/Delete/@c.Id" onsubmit="return confirm('Silmək istədiyinizdən əminsinizmi?')" style="margin:0;">

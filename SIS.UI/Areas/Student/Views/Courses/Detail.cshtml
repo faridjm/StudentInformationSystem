@@ -63,6 +63,16 @@
             @enrollment?.GroupName · <i class="fas fa-chalkboard-teacher"></i> @enrollment?.TeacherName
         </div>
     </div>
+    <a href="/Student/Messages/Start?groupId=@enrollment?.GroupId&teacherId=@enrollment?.TeacherId"
+       style="display:inline-flex; align-items:center; gap:8px; padding:10px 18px; border-radius:10px;
+              background:linear-gradient(135deg, #3b82f6, #2563eb); color:#fff; text-decoration:none;
+              font-size:13px; font-weight:600; box-shadow:0 4px 15px rgba(59,130,246,0.4);
+              transition:all .2s; margin-right:8px;"
+       onmouseover="this.style.transform='translateY(-2px)'"
+       onmouseout="this.style.transform=''">
+        <i class="fas fa-comment-dots" style="font-size:15px;"></i>
+        <span>@L["Messages"]</span>
+    </a>
     <a href="/Student/Courses/Transcript/@enrollment?.Id" target="_blank"
        style="display:inline-flex; align-items:center; gap:10px; padding:10px 20px; border-radius:10px;
               background:linear-gradient(135deg, #e94560 0%, #c2185b 100%); color:#fff; text-decoration:none;
@@ -87,28 +97,28 @@
         <div class="stat-icon" style="background:rgba(59,130,246,0.15); color:#3b82f6;"><i class="fas fa-graduation-cap"></i></div>
         <div>
             <div class="stat-value" style="color:@offColor;">@(officialGrade != null ? $"%{officialGrade.Value:F0}" : "—")</div>
-            <div class="stat-label">Rəsmi Qiymət</div>
+            <div class="stat-label">@L["Score"]</div>
         </div>
     </div>
     <div class="stat-card">
         <div class="stat-icon" style="background:rgba(168,85,247,0.15); color:#a855f7;"><i class="fas fa-book"></i></div>
         <div>
             <div class="stat-value">@(hwAvg != null ? $"%{hwAvg.Value:F0}" : "—")</div>
-            <div class="stat-label">Tapşırıq Ort.</div>
+            <div class="stat-label">@L["PDF_HomeworkAvg"]</div>
         </div>
     </div>
     <div class="stat-card">
         <div class="stat-icon" style="background:rgba(34,197,94,0.15); color:#22c55e;"><i class="fas fa-clipboard-check"></i></div>
         <div>
             <div class="stat-value" style="color:@attColor;">@attPct.ToString("F0")%</div>
-            <div class="stat-label">Davamiyyət</div>
+            <div class="stat-label">@L["Attendance"]</div>
         </div>
     </div>
     <div class="stat-card">
         <div class="stat-icon" style="background:rgba(234,179,8,0.15); color:#eab308;"><i class="fas fa-chalkboard"></i></div>
         <div>
             <div class="stat-value">@completedSessions / @sessions.Count</div>
-            <div class="stat-label">Dərs</div>
+            <div class="stat-label">@L["ClassSessions"]</div>
         </div>
     </div>
 </div>
@@ -116,11 +126,11 @@
 <!-- Tabs -->
 <div class="tabs">
     <a class="tab @(activeTab == "overview" ? "active" : "")" onclick="switchTab('overview')"><i class="fas fa-chart-pie" style="margin-right:6px;"></i>Ümumi</a>
-    <a class="tab @(activeTab == "grades" ? "active" : "")" onclick="switchTab('grades')"><i class="fas fa-star" style="margin-right:6px;"></i>Qiymətlər</a>
-    <a class="tab @(activeTab == "attendance" ? "active" : "")" onclick="switchTab('attendance')"><i class="fas fa-user-check" style="margin-right:6px;"></i>Davamiyyət</a>
-    <a class="tab @(activeTab == "schedule" ? "active" : "")" onclick="switchTab('schedule')"><i class="fas fa-calendar-alt" style="margin-right:6px;"></i>Cədvəl</a>
-    <a class="tab @(activeTab == "assignments" ? "active" : "")" onclick="switchTab('assignments')"><i class="fas fa-file-alt" style="margin-right:6px;"></i>Tapşırıqlar</a>
-    <a class="tab @(activeTab == "announcements" ? "active" : "")" onclick="switchTab('announcements')"><i class="fas fa-bullhorn" style="margin-right:6px;"></i>Elanlar</a>
+    <a class="tab @(activeTab == "grades" ? "active" : "")" onclick="switchTab('grades')"><i class="fas fa-star" style="margin-right:6px;"></i>@L["Grades"]</a>
+    <a class="tab @(activeTab == "attendance" ? "active" : "")" onclick="switchTab('attendance')"><i class="fas fa-user-check" style="margin-right:6px;"></i>@L["Attendance"]</a>
+    <a class="tab @(activeTab == "schedule" ? "active" : "")" onclick="switchTab('schedule')"><i class="fas fa-calendar-alt" style="margin-right:6px;"></i>@L["Schedule"]</a>
+    <a class="tab @(activeTab == "assignments" ? "active" : "")" onclick="switchTab('assignments')"><i class="fas fa-file-alt" style="margin-right:6px;"></i>@L["Assignments"]</a>
+    <a class="tab @(activeTab == "announcements" ? "active" : "")" onclick="switchTab('announcements')"><i class="fas fa-bullhorn" style="margin-right:6px;"></i>@L["Announcements"]</a>
 </div>
 
 <!-- ====== TAB: Ümumi ====== -->
@@ -134,9 +144,9 @@
     {
         <div class="card" style="border-left:3px solid var(--accent); padding:16px 20px; margin-bottom:12px;">
             <div style="font-size:12px; font-weight:600; color:var(--accent); margin-bottom:4px;">
-                <i class="fas fa-calendar-day"></i> Bu günün dərsi — #@todaySession.SessionNumber
+                <i class="fas fa-calendar-day"></i> @L["TodaysLessons"] — #@todaySession.SessionNumber
             </div>
-            <div style="font-size:14px; font-weight:500;">@(todaySession.Topic ?? "Mövzu təyin edilməyib")</div>
+            <div style="font-size:14px; font-weight:500;">@(todaySession.Topic ?? L["NoData"].Value)</div>
             <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">@todaySession.StartTime — @todaySession.EndTime</div>
         </div>
     }
@@ -172,7 +182,7 @@
     @if (assessmentSubs.Any())
     {
         <div style="font-size:12px; font-weight:600; color:var(--accent); text-transform:uppercase; letter-spacing:.5px; margin-bottom:8px;">
-            <i class="fas fa-graduation-cap"></i> Rəsmi Qiymətləndirmə
+            <i class="fas fa-graduation-cap"></i> @L["Assessment"]
             @if (officialGrade != null)
             {
                 <span style="margin-left:12px; font-size:16px; font-weight:800; color:@offColor;">%@officialGrade.Value.ToString("F0")</span>
@@ -181,7 +191,7 @@
         <div class="card" style="margin-bottom:20px;">
             <div class="card-body" style="padding:0;">
                 <table class="mini-table">
-                    <thead><tr><th>Başlıq</th><th>Bal</th><th>Faiz</th><th>Status</th></tr></thead>
+                    <thead><tr><th>@L["Title"]</th><th>@L["Score"]</th><th>@L["Percentage"]</th><th>@L["Status"]</th></tr></thead>
                     <tbody>
                         @foreach (var s in assessmentSubs.OrderBy(x => x.AssessmentTitle))
                         {
@@ -195,8 +205,8 @@
                                 </td>
                                 <td>@if (pct != null) { <span style="color:@sc; font-weight:600;">%@pct.Value.ToString("F0")</span> }</td>
                                 <td>
-                                    @if (s.IsGraded) { <span class="badge badge-success">Qiymətləndirildi</span> }
-                                    else { <span class="badge badge-warning">Gözlənilir</span> }
+                                    @if (s.IsGraded) { <span class="badge badge-success">@L["Grades"]</span> }
+                                    else { <span class="badge badge-warning">@L["Loading"]</span> }
                                 </td>
                             </tr>
                         }
@@ -210,7 +220,7 @@
     @if (assignmentSubs.Any())
     {
         <div style="font-size:12px; font-weight:600; color:#a855f7; text-transform:uppercase; letter-spacing:.5px; margin-bottom:8px;">
-            <i class="fas fa-book"></i> Ev Tapşırıqları
+            <i class="fas fa-book"></i> @L["Assignments"]
             @if (hwAvg != null)
             {
                 <span style="margin-left:12px; font-size:14px; font-weight:700;">%@hwAvg.Value.ToString("F0")</span>
@@ -219,7 +229,7 @@
         <div class="card">
             <div class="card-body" style="padding:0;">
                 <table class="mini-table">
-                    <thead><tr><th>Başlıq</th><th>Bal</th><th>Faiz</th><th>Status</th></tr></thead>
+                    <thead><tr><th>@L["Title"]</th><th>@L["Score"]</th><th>@L["Percentage"]</th><th>@L["Status"]</th></tr></thead>
                     <tbody>
                         @foreach (var s in assignmentSubs.OrderBy(x => x.AssignmentTitle))
                         {
@@ -233,8 +243,8 @@
                                 </td>
                                 <td>@if (pct != null) { <span style="color:@sc; font-weight:600;">%@pct.Value.ToString("F0")</span> }</td>
                                 <td>
-                                    @if (s.IsGraded) { <span class="badge badge-success">Qiymətləndirildi</span> }
-                                    else { <span class="badge badge-warning">Gözlənilir</span> }
+                                    @if (s.IsGraded) { <span class="badge badge-success">@L["Grades"]</span> }
+                                    else { <span class="badge badge-warning">@L["Loading"]</span> }
                                 </td>
                             </tr>
                         }
@@ -246,7 +256,18 @@
 
     @if (!assessmentSubs.Any() && !assignmentSubs.Any())
     {
-        <div class="card" style="padding:30px; text-align:center; color:var(--text-secondary);">Hələ qiymət yoxdur</div>
+        <div class="card" style="padding:30px; text-align:center; color:var(--text-secondary);">@L["NoData"]</div>
+    }
+
+    @if (assessmentSubs.Any() || assignmentSubs.Any())
+    {
+        <div style="margin-top:12px; text-align:right;">
+            <a href="/Student/Messages/Start?groupId=@enrollment?.GroupId&teacherId=@enrollment?.TeacherId&prefill=@Uri.EscapeDataString($"Salam, {enrollment?.CourseName} kursunda qiymətlərim haqqında sual vermək istəyirəm: ")"
+               style="display:inline-flex; align-items:center; gap:6px; padding:6px 14px; border-radius:8px; background:var(--accent-soft); color:var(--accent); text-decoration:none; font-size:12px; font-weight:500; transition:all .15s;"
+               onmouseover="this.style.background='var(--accent)'; this.style.color='#fff'" onmouseout="this.style.background='var(--accent-soft)'; this.style.color='var(--accent)'">
+                <i class="fas fa-comment-dots"></i> @L["Messages"]
+            </a>
+        </div>
     }
 </div>
 
@@ -254,19 +275,19 @@
 <div id="tab-attendance" class="tab-content @(activeTab == "attendance" ? "active" : "")">
     <div style="display:flex; gap:16px; margin-bottom:16px;">
         <div class="stat-card" style="flex:1;">
-            <div><div class="stat-value" style="color:#22c55e;">@(summary?.PresentCount ?? 0)</div><div class="stat-label">İştirak</div></div>
+            <div><div class="stat-value" style="color:#22c55e;">@(summary?.PresentCount ?? 0)</div><div class="stat-label">@L["Present"]</div></div>
         </div>
         <div class="stat-card" style="flex:1;">
-            <div><div class="stat-value" style="color:#eab308;">@(summary?.LateCount ?? 0)</div><div class="stat-label">Gecikmə</div></div>
+            <div><div class="stat-value" style="color:#eab308;">@(summary?.LateCount ?? 0)</div><div class="stat-label">@L["Late"]</div></div>
         </div>
         <div class="stat-card" style="flex:1;">
-            <div><div class="stat-value" style="color:#ef4444;">@(summary?.AbsentCount ?? 0)</div><div class="stat-label">Qayıb</div></div>
+            <div><div class="stat-value" style="color:#ef4444;">@(summary?.AbsentCount ?? 0)</div><div class="stat-label">@L["Absent"]</div></div>
         </div>
     </div>
     <div class="card">
         <div class="card-body" style="padding:0;">
             <table class="mini-table">
-                <thead><tr><th>Tarix</th><th>Sessiya</th><th>Status</th></tr></thead>
+                <thead><tr><th>@L["Date"]</th><th>Sessiya</th><th>@L["Status"]</th></tr></thead>
                 <tbody>
                     @foreach (var a in attendance.OrderByDescending(x => x.SessionDate))
                     {
@@ -276,20 +297,28 @@
                             <td>
                                 @switch (a.Status)
                                 {
-                                    case AttendanceStatus.Present: <span class="badge badge-success">İştirak</span> break;
-                                    case AttendanceStatus.Late: <span class="badge badge-warning">Gecikmə</span> break;
-                                    case AttendanceStatus.Absent: <span class="badge badge-danger">Qayıb</span> break;
+                                    case AttendanceStatus.Present: <span class="badge badge-success">@L["Present"]</span> break;
+                                    case AttendanceStatus.Late: <span class="badge badge-warning">@L["Late"]</span> break;
+                                    case AttendanceStatus.Absent: <span class="badge badge-danger">@L["Absent"]</span> break;
                                 }
                             </td>
                         </tr>
                     }
                     @if (!attendance.Any())
                     {
-                        <tr><td colspan="3" style="text-align:center; color:var(--text-secondary); padding:24px;">Hələ davamiyyət qeydi yoxdur</td></tr>
+                        <tr><td colspan="3" style="text-align:center; color:var(--text-secondary); padding:24px;">@L["NoData"]</td></tr>
                     }
                 </tbody>
             </table>
         </div>
+    </div>
+
+    <div style="margin-top:12px; text-align:right;">
+        <a href="/Student/Messages/Start?groupId=@enrollment?.GroupId&teacherId=@enrollment?.TeacherId&prefill=@Uri.EscapeDataString($"Salam, {enrollment?.CourseName} kursunda davamiyyətim haqqında sual vermək istəyirəm: ")"
+           style="display:inline-flex; align-items:center; gap:6px; padding:6px 14px; border-radius:8px; background:var(--accent-soft); color:var(--accent); text-decoration:none; font-size:12px; font-weight:500; transition:all .15s;"
+           onmouseover="this.style.background='var(--accent)'; this.style.color='#fff'" onmouseout="this.style.background='var(--accent-soft)'; this.style.color='var(--accent)'">
+            <i class="fas fa-comment-dots"></i> @L["Messages"]
+        </a>
     </div>
 </div>
 
@@ -298,7 +327,7 @@
     <div class="card">
         <div class="card-body" style="padding:0;">
             <table class="mini-table">
-                <thead><tr><th>#</th><th>Tarix</th><th>Saat</th><th>Mövzu</th><th>Status</th></tr></thead>
+                <thead><tr><th>#</th><th>@L["Date"]</th><th>Saat</th><th>@L["TodaysTopic"]</th><th>@L["Status"]</th></tr></thead>
                 <tbody>
                     @foreach (var s in sessions)
                     {
@@ -309,14 +338,14 @@
                             <td style="color:var(--text-secondary);">@s.SessionNumber</td>
                             <td>
                                 @s.Date.ToString("dd.MM.yy")
-                                @if (isToday) { <span style="font-size:9px; background:#3b82f6; color:#fff; padding:1px 5px; border-radius:3px; margin-left:4px;">Bu gün</span> }
+                                @if (isToday) { <span style="font-size:9px; background:#3b82f6; color:#fff; padding:1px 5px; border-radius:3px; margin-left:4px;">@L["Today"]</span> }
                             </td>
                             <td style="color:var(--text-secondary);">@s.StartTime–@s.EndTime</td>
                             <td>@(string.IsNullOrEmpty(s.Topic) ? "—" : s.Topic)</td>
                             <td>
-                                @if (s.Status == ClassSessionStatus.Completed) { <span class="badge badge-success">Keçdi</span> }
-                                else if (isToday) { <span class="badge badge-info">Bu gün</span> }
-                                else { <span class="badge badge-warning">Gələcək</span> }
+                                @if (s.Status == ClassSessionStatus.Completed) { <span class="badge badge-success">@L["Active"]</span> }
+                                else if (isToday) { <span class="badge badge-info">@L["Today"]</span> }
+                                else { <span class="badge badge-warning">@L["NoData"]</span> }
                             </td>
                         </tr>
                     }
@@ -340,8 +369,8 @@
                         <div style="flex:1;">
                             <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
                                 <strong>@a.Title</strong>
-                                @if (mySub != null && mySub.IsGraded) { <span class="badge badge-success">Qiymətləndirildi</span> }
-                                else if (mySub != null) { <span class="badge badge-warning">Göndərildi</span> }
+                                @if (mySub != null && mySub.IsGraded) { <span class="badge badge-success">@L["Grades"]</span> }
+                                else if (mySub != null) { <span class="badge badge-warning">@L["Submit"]</span> }
                                 else if (isOverdue) { <span class="badge badge-danger">Vaxt bitib</span> }
                                 @if (!string.IsNullOrEmpty(a.AttachmentUrl))
                                 {
@@ -353,12 +382,20 @@
                                 @if (mySub?.IsGraded == true) { <span style="color:#22c55e; margin-left:8px; font-weight:600;">@mySub.Score / @mySub.MaxScore</span> }
                             </div>
                         </div>
-                        @if (mySub == null && !isOverdue)
-                        {
-                            <a href="/Student/Assignments/Course?groupId=@enrollment?.GroupId&enrollmentId=@enrollment?.Id" class="btn btn-sm btn-primary">
-                                <i class="fas fa-paper-plane"></i> Cavab ver
+                        <div style="display:flex; gap:6px; align-items:center;">
+                            @if (mySub == null && !isOverdue)
+                            {
+                                <a href="/Student/Assignments/Course?groupId=@enrollment?.GroupId&enrollmentId=@enrollment?.Id" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-paper-plane"></i> Cavab ver
+                                </a>
+                            }
+                            <a href="/Student/Messages/Start?groupId=@enrollment?.GroupId&teacherId=@enrollment?.TeacherId&prefill=@Uri.EscapeDataString($"Salam, \"{a.Title}\" tapşırığı haqqında sualım var: ")"
+                               style="padding:4px 8px; border-radius:6px; background:var(--accent-soft); color:var(--accent); text-decoration:none; font-size:11px; transition:all .15s;"
+                               onmouseover="this.style.background='var(--accent)'; this.style.color='#fff'" onmouseout="this.style.background='var(--accent-soft)'; this.style.color='var(--accent)'"
+                               title="@L["Messages"]">
+                                <i class="fas fa-comment-dots"></i>
                             </a>
-                        }
+                        </div>
                     </div>
                 </div>
             }
@@ -366,7 +403,7 @@
     }
     else
     {
-        <div class="card" style="padding:30px; text-align:center; color:var(--text-secondary);">Tapşırıq yoxdur</div>
+        <div class="card" style="padding:30px; text-align:center; color:var(--text-secondary);">@L["NoData"]</div>
     }
 </div>
 

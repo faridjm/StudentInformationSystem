@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "Dashboard";
+    ViewData["Title"] = L["Dashboard"].Value;
 }
 
 <div class="row" style="display:grid; grid-template-columns: repeat(4,1fr); gap:16px; margin-bottom:24px;">
@@ -9,7 +9,7 @@
         </div>
         <div>
             <div class="stat-value">@ViewBag.StudentCount</div>
-            <div class="stat-label">Tələbələr</div>
+            <div class="stat-label">@L["Students"]</div>
         </div>
     </div>
     <div class="stat-card">
@@ -18,7 +18,7 @@
         </div>
         <div>
             <div class="stat-value">@ViewBag.TeacherCount</div>
-            <div class="stat-label">Müəllimlər</div>
+            <div class="stat-label">@L["Teachers"]</div>
         </div>
     </div>
     <div class="stat-card">
@@ -27,7 +27,7 @@
         </div>
         <div>
             <div class="stat-value">@ViewBag.CourseCount</div>
-            <div class="stat-label">Kurslar</div>
+            <div class="stat-label">@L["Courses"]</div>
         </div>
     </div>
     <div class="stat-card">
@@ -36,17 +36,17 @@
         </div>
         <div>
             <div class="stat-value">@ViewBag.EnrollmentCount</div>
-            <div class="stat-label">Qeydiyyatlar</div>
+            <div class="stat-label">@L["Enrollments"]</div>
         </div>
     </div>
 </div>
 
 <div class="card">
     <div class="card-header">
-        <span><i class="fas fa-clock" style="margin-right:8px;"></i>Son Aktivlik</span>
+        <span><i class="fas fa-clock" style="margin-right:8px;"></i>@L["RecentActivity"]</span>
     </div>
     <div class="card-body" style="text-align:center; padding:40px; color:var(--text-secondary);">
         <i class="fas fa-inbox" style="font-size:32px; margin-bottom:12px; display:block;"></i>
-        <p>Hələ aktivlik yoxdur</p>
+        <p>@L["NoActivityYet"]</p>
     </div>
 </div>

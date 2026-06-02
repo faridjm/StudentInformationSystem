@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] — Acadex Tələbə</title>
+    <title>@ViewData["Title"] — Acadex @L["StudentPanel"].Value</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <style>
             :root {
@@ -390,38 +390,44 @@
     <nav class="sidebar">
         <div class="sidebar-logo">
             <div class="logo-text">Acadex</div>
-            <div class="logo-sub">Tələbə Paneli</div>
+            <div class="logo-sub">@L["StudentPanel"]</div>
         </div>
 
-        <div class="sidebar-section">Əsas</div>
+        <div class="sidebar-section">@L["Main"]</div>
         <a href="/Student/Dashboard" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Dashboard" ? "active" : "")">
-            <i class="fas fa-chart-pie"></i> Dashboard
+            <i class="fas fa-chart-pie"></i> @L["Dashboard"]
         </a>
 
-        <div class="sidebar-section">Tədris</div>
+        <div class="sidebar-section">@L["Teaching"]</div>
         <a href="/Student/Courses" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Courses" ? "active" : "")">
-            <i class="fas fa-book"></i> Kurslarım
+            <i class="fas fa-book"></i> @L["MyCourses"]
         </a>
         <a href="/Student/Schedule" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Schedule" ? "active" : "")">
-            <i class="fas fa-calendar-week"></i> Cədvəlim
+            <i class="fas fa-calendar-week"></i> @L["MySchedule"]
         </a>
         <a href="/Student/Grades" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Grades" ? "active" : "")">
-            <i class="fas fa-star"></i> Qiymətlərim
+            <i class="fas fa-star"></i> @L["MyGrades"]
         </a>
         <a href="/Student/Announcements" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Announcements" ? "active" : "")">
-            <i class="fas fa-bullhorn"></i> Elanlar
+            <i class="fas fa-bullhorn"></i> @L["Announcements"]
         </a>
         <a href="/Student/Assignments" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Assignments" ? "active" : "")">
-            <i class="fas fa-tasks"></i> Tapşırıqlar
+            <i class="fas fa-tasks"></i> @L["Assignments"]
+        </a>
+
+        <div class="sidebar-section">@L["Communication"]</div>
+        <a href="/Student/Messages" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Messages" ? "active" : "")" style="position:relative;">
+            <i class="fas fa-comments"></i> @L["Messages"]
+            @await Component.InvokeAsync("UnreadChatCount")
         </a>
 
         <div class="sidebar-footer">
             <a href="/Student/Profile/ChangePassword" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Profile" ? "active" : "")">
-                <i class="fas fa-key"></i> Şifrəni Dəyiş
+                <i class="fas fa-key"></i> @L["ChangePassword"]
             </a>
             <form asp-area="" asp-controller="Auth" asp-action="Logout" method="post">
                 <button type="submit" class="sidebar-item w-100" style="border:none; background:none; cursor:pointer; width:100%;">
-                    <i class="fas fa-sign-out-alt"></i> Çıxış
+                    <i class="fas fa-sign-out-alt"></i> @L["Logout"]
                 </button>
             </form>
         </div>
@@ -431,6 +437,7 @@
         <header class="top-navbar">
             <span class="page-title">@(ViewData["Title"] ?? "Dashboard")</span>
             <div class="navbar-right">
+                @await Html.PartialAsync("_LanguageSwitcher")
                 <div class="dropdown">
                     <button class="user-btn" onclick="this.nextElementSibling.classList.toggle('show')">
                         <div class="user-avatar">@(User.Identity?.Name?.FirstOrDefault().ToString().ToUpper() ?? "S")</div>
@@ -440,7 +447,7 @@
                     <div class="dropdown-menu">
                         <form asp-area="" asp-controller="Auth" asp-action="Logout" method="post">
                             <button class="dropdown-item" type="submit">
-                                <i class="fas fa-sign-out-alt"></i> Çıxış
+                                <i class="fas fa-sign-out-alt"></i> @L["Logout"]
                             </button>
                         </form>
                     </div>
@@ -454,7 +461,7 @@
             {
                 <div style="background:rgba(234,179,8,0.15); border:1px solid rgba(234,179,8,0.3); color:#eab308; padding:10px 16px; border-radius:8px; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
                     <i class="fas fa-clock"></i>
-                    <strong>Simulasiya rejimi:</strong> Bu gün <strong>@SimState.DateDisplay</strong> olaraq qəbul edilir
+                    <strong>@L["SimulationMode"]:</strong> @L["SimulationToday"] <strong>@SimState.DateDisplay</strong> @L["AcceptedAs"]
                 </div>
             }
 

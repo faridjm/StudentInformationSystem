@@ -3,20 +3,20 @@
 @using SIS.BLL.Services.DTOs.Assignment
 @using SIS.Entities.Enums
 @{
-    ViewData["Title"] = "Qiymətlərim";
+    ViewData["Title"] = L["MyGrades"].Value;
     var enrollments = (List<EnrollmentListDto>)ViewBag.Enrollments;
     var submissionsMap = (Dictionary<int, IEnumerable<AssessmentSubmissionDto>>)ViewBag.SubmissionsPerEnrollment;
     var assignmentSubsMap = (Dictionary<int, IEnumerable<SubmissionDto>>)ViewBag.AssignmentSubsPerEnrollment;
 }
 
 <div style="margin-bottom:20px;">
-    <h2 style="font-size:20px; font-weight:700;">Qiymətlərim</h2>
+    <h2 style="font-size:20px; font-weight:700;">@L["MyGrades"]</h2>
 </div>
 
 @if (!enrollments.Any())
 {
     <div class="card"><div class="card-body" style="color:var(--text-secondary); text-align:center; padding:40px;">
-        Hələ heç bir qrupa qeydiyyatınız yoxdur
+        @L["NoData"]
     </div></div>
 }
 
@@ -68,14 +68,14 @@
                 {
                     <div style="text-align:center;">
                         <div style="font-size:20px; font-weight:800; color:@officialColor;">%@officialGrade.Value.ToString("F0")</div>
-                        <div style="font-size:10px; color:var(--text-secondary);">Rəsmi Qiymət</div>
+                        <div style="font-size:10px; color:var(--text-secondary);">@L["Score"]</div>
                     </div>
                 }
                 @if (hwAvg != null)
                 {
                     <div style="text-align:center;">
                         <div style="font-size:16px; font-weight:600; color:@hwColor;">%@hwAvg.Value.ToString("F0")</div>
-                        <div style="font-size:10px; color:var(--text-secondary);">Tapşırıq Ort.</div>
+                        <div style="font-size:10px; color:var(--text-secondary);">@L["PDF_HomeworkAvg"]</div>
                     </div>
                 }
                 @if (officialGrade == null && hwAvg == null)
@@ -89,12 +89,12 @@
         @if (subs.Any())
         {
             <div style="padding:12px 20px 4px; font-size:12px; font-weight:600; color:var(--accent); text-transform:uppercase; letter-spacing:.5px;">
-                <i class="fas fa-graduation-cap" style="margin-right:4px;"></i> Rəsmi Qiymətləndirmə
+                <i class="fas fa-graduation-cap" style="margin-right:4px;"></i> @L["Assessment"]
             </div>
             <div style="padding:0;">
                 <table class="table">
                     <thead>
-                        <tr><th>Başlıq</th><th>Bal</th><th>Faiz</th><th>Status</th></tr>
+                        <tr><th>@L["Title"]</th><th>@L["Score"]</th><th>@L["Percentage"]</th><th>@L["Status"]</th></tr>
                     </thead>
                     <tbody>
                         @foreach (var s in subs.OrderBy(x => x.AssessmentTitle))
@@ -114,8 +114,8 @@
                                     @if (pct != null) { <span style="color:@scoreColor; font-weight:600;">%@pct.Value.ToString("F0")</span> }
                                 </td>
                                 <td>
-                                    @if (s.IsGraded) { <span class="badge badge-success">Qiymətləndirildi</span> }
-                                    else { <span class="badge badge-warning">Gözlənilir</span> }
+                                    @if (s.IsGraded) { <span class="badge badge-success">@L["Grades"]</span> }
+                                    else { <span class="badge badge-warning">@L["Loading"]</span> }
                                 </td>
                             </tr>
                         }
@@ -128,12 +128,12 @@
         @if (assignmentSubs.Any())
         {
             <div style="padding:12px 20px 4px; font-size:12px; font-weight:600; color:#a855f7; text-transform:uppercase; letter-spacing:.5px; border-top:1px solid var(--border);">
-                <i class="fas fa-book" style="margin-right:4px;"></i> Ev Tapşırıqları
+                <i class="fas fa-book" style="margin-right:4px;"></i> @L["Assignments"]
             </div>
             <div style="padding:0;">
                 <table class="table">
                     <thead>
-                        <tr><th>Başlıq</th><th>Bal</th><th>Faiz</th><th>Status</th></tr>
+                        <tr><th>@L["Title"]</th><th>@L["Score"]</th><th>@L["Percentage"]</th><th>@L["Status"]</th></tr>
                     </thead>
                     <tbody>
                         @foreach (var s in assignmentSubs.OrderBy(x => x.AssignmentTitle))
@@ -153,8 +153,8 @@
                                     @if (pct != null) { <span style="color:@scoreColor; font-weight:600;">%@pct.Value.ToString("F0")</span> }
                                 </td>
                                 <td>
-                                    @if (s.IsGraded) { <span class="badge badge-success">Qiymətləndirildi</span> }
-                                    else { <span class="badge badge-warning">Gözlənilir</span> }
+                                    @if (s.IsGraded) { <span class="badge badge-success">@L["Grades"]</span> }
+                                    else { <span class="badge badge-warning">@L["Loading"]</span> }
                                 </td>
                             </tr>
                         }

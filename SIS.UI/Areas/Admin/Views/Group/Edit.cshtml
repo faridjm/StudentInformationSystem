@@ -1,6 +1,6 @@
 @model SIS.BLL.Services.DTOs.Groups.GroupDetailDto
 @{
-    ViewData["Title"] = "Qrupu Düzəlt";
+    ViewData["Title"] = L["EditGroup"].Value;
 }
 
 <div style="max-width:700px; margin:0 auto;">
@@ -15,15 +15,15 @@
         <input type="hidden" name="CourseId" value="@Model.CourseId" />
 
         <div class="card" style="margin-bottom:16px;">
-            <div class="card-header">Məlumatlar</div>
+            <div class="card-header">@L["Details"]</div>
             <div class="card-body">
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
                     <div class="form-group" style="grid-column:1/-1;">
-                        <label class="form-label">Qrup adı *</label>
+                        <label class="form-label">@L["Name"] *</label>
                         <input name="Name" value="@Model.Name" class="form-control" required />
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Müəllim *</label>
+                        <label class="form-label">@L["Teacher"] *</label>
                         <select name="TeacherId" class="form-control" required>
                             @foreach (var t in (IEnumerable<SIS.BLL.Services.DTOs.Teacher.TeacherListDto>)ViewBag.Teachers)
                             {
@@ -39,7 +39,7 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Sezon</label>
+                        <label class="form-label">@L["Seasons"]</label>
                         <select name="AcademicYearId" class="form-control">
                             <option value="">—</option>
                             @foreach (var s in (IEnumerable<SIS.BLL.Services.DTOs.AcademicYear.AcademicYearDto>)ViewBag.Seasons)
@@ -56,7 +56,7 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Tutum</label>
+                        <label class="form-label">@L["Capacity"]</label>
                         <input name="Capacity" type="number" value="@Model.Capacity" class="form-control" required />
                     </div>
                     <div class="form-group">
@@ -75,11 +75,11 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Başlama tarixi</label>
+                        <label class="form-label">@L["StartDate"]</label>
                         <input name="StartDate" type="date" value="@Model.StartDate.ToString("yyyy-MM-dd")" class="form-control" required />
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Bitmə tarixi</label>
+                        <label class="form-label">@L["EndDate"]</label>
                         <input name="EndDate" type="date" value="@Model.EndDate.ToString("yyyy-MM-dd")" class="form-control" required />
                     </div>
                 </div>
@@ -88,7 +88,7 @@
 
         <div class="card" style="margin-bottom:16px;">
             <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
-                <span>Cədvəl günləri</span>
+                <span>@L["Schedule"]</span>
                 <button type="button" onclick="addDay()" class="btn btn-sm btn-secondary"><i class="fas fa-plus"></i></button>
             </div>
             <div class="card-body">
@@ -99,7 +99,7 @@
                         <div id="day_@di" style="display:grid; grid-template-columns:2fr 1fr 1fr auto; gap:10px; align-items:center; margin-bottom:10px;">
                             <select name="ScheduleDays[@di].DayOfWeek" class="form-control">
                                 @{
-                                    var dayNames = new[]{"Bazar ertəsi","Çərşənbə axşamı","Çərşənbə","Cümə axşamı","Cümə","Şənbə","Bazar"};
+                                    var dayNames = new[]{"Bazar ertəsi","Çərşənbə axşamı","Wed","Cümə axşamı","Fri","Sat","Bazar"};
                                     for (int wd = 0; wd < 7; wd++)
                                     {
                                         if (d.DayOfWeek == (DayOfWeek)wd)
@@ -125,8 +125,8 @@
         </div>
 
         <div style="display:flex; gap:12px;">
-            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Yadda saxla</button>
-            <a href="/Admin/Group/Detail/@Model.Id" class="btn btn-secondary">Ləğv et</a>
+            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> @L["Save"]</button>
+            <a href="/Admin/Group/Detail/@Model.Id" class="btn btn-secondary">@L["Cancel"]</a>
         </div>
     </form>
 </div>

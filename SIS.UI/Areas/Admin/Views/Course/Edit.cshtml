@@ -1,11 +1,11 @@
 @model SIS.BLL.Services.DTOs.Course.UpdateCourseDto
 @{
-    ViewData["Title"] = "Proqramı Düzəlt";
+    ViewData["Title"] = L["EditCourse"].Value;
 }
 <div style="max-width:560px; margin:0 auto;">
     <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
         <a href="/Admin/Course" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i></a>
-        <h2 style="font-size:20px; font-weight:700;">Proqramı Düzəlt</h2>
+        <h2 style="font-size:20px; font-weight:700;">@L["EditCourse"]</h2>
     </div>
     <form method="post" action="/Admin/Course/Edit">
         @Html.AntiForgeryToken()
@@ -13,24 +13,24 @@
         <div class="card">
             <div class="card-body">
                 <div class="form-group">
-                    <label class="form-label">Proqram adı *</label>
+                    <label class="form-label">@L["Name"] *</label>
                     <input name="Name" value="@Model.Name" class="form-control" required />
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Təsvir</label>
+                    <label class="form-label">@L["Description"]</label>
                     <textarea name="Description" class="form-control" rows="3">@Model.Description</textarea>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Status</label>
+                    <label class="form-label">@L["Status"]</label>
                     <select name="IsActive" class="form-control">
                         @if (Model.IsActive)
                         {
-                            <option value="true" selected="selected">Aktiv</option>
+                            <option value="true" selected="selected">@L["Active"]</option>
                             <option value="false">Deaktiv</option>
                         }
                         else
                         {
-                            <option value="true">Aktiv</option>
+                            <option value="true">@L["Active"]</option>
                             <option value="false" selected="selected">Deaktiv</option>
                         }
                     </select>
@@ -38,8 +38,8 @@
             </div>
         </div>
         <div style="display:flex; gap:12px; margin-top:16px;">
-            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Yadda saxla</button>
-            <a href="/Admin/Course" class="btn btn-secondary">Ləğv et</a>
+            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> @L["Save"]</button>
+            <a href="/Admin/Course" class="btn btn-secondary">@L["Cancel"]</a>
         </div>
     </form>
 </div>

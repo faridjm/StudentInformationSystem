@@ -33,6 +33,8 @@ namespace SIS.DAL.Context
         public DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<Assignment> Assignments { get; set; }
         public DbSet<AssignmentSubmission> AssignmentSubmissions { get; set; }
+        public DbSet<ChatConversation> ChatConversations { get; set; }
+        public DbSet<ChatMessage> ChatMessages { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

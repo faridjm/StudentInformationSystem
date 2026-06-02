@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "Dashboard";
+    ViewData["Title"] = L["Dashboard"].Value;
     var student = ViewBag.Student as SIS.BLL.Services.DTOs.Student.StudentDetailDto;
     var enrollments = ViewBag.Enrollments as IEnumerable<SIS.BLL.Services.DTOs.Enrollment.EnrollmentListDto>;
     var announcements = ViewBag.Announcements as IEnumerable<SIS.BLL.Services.DTOs.Announcement.AnnouncementDto>;
@@ -7,7 +7,7 @@
 
 <div style="margin-bottom:24px;">
     <h2 style="font-size:20px; font-weight:700;">
-        Xoş gəldiniz, @(student?.FullName ?? User.Identity?.Name)!
+        @L["Welcome"], @(student?.FullName ?? User.Identity?.Name)!
     </h2>
     <p style="color:var(--text-secondary); font-size:14px;">@DateTime.Now.ToString("dd MMMM yyyy")</p>
 </div>
@@ -37,7 +37,7 @@
         </div>
         <div>
             <div class="stat-value">@ViewBag.UnreadCount</div>
-            <div class="stat-label">Yeni Bildiriş</div>
+            <div class="stat-label">@L["NewNotification"]</div>
         </div>
     </div>
 </div>
@@ -45,16 +45,16 @@
 <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
     <div class="card">
         <div class="card-header">
-            <span><i class="fas fa-book" style="margin-right:8px;"></i>Kurslarım</span>
-            <a href="/Student/Courses" class="btn btn-primary btn-sm">Hamısı</a>
+            <span><i class="fas fa-book" style="margin-right:8px;"></i>@L["MyCourses"]</span>
+            <a href="/Student/Courses" class="btn btn-primary btn-sm">@L["ViewAll"]</a>
         </div>
         <div style="overflow-x:auto;">
             <table class="table">
                 <thead>
                     <tr>
-                        <th>Kurs</th>
-                        <th>Müəllim</th>
-                        <th>Status</th>
+                        <th>@L["Course"]</th>
+                        <th>@L["Teacher"]</th>
+                        <th>@L["Status"]</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -68,7 +68,7 @@
                                     <div style="font-size:12px; color:var(--text-secondary);">@e.CourseName ?? ""</div>
                                 </td>
                                 <td style="color:var(--text-secondary); font-size:13px;">@e.TeacherName</td>
-                                <td><span class="badge badge-success">Aktiv</span></td>
+                                <td><span class="badge badge-success">@L["Active"]</span></td>
                             </tr>
                         }
                     }
@@ -79,8 +79,8 @@
 
     <div class="card">
         <div class="card-header">
-            <span><i class="fas fa-bullhorn" style="margin-right:8px;"></i>Elanlar</span>
-            <a href="/Student/Announcements" class="btn btn-primary btn-sm">Hamısı</a>
+            <span><i class="fas fa-bullhorn" style="margin-right:8px;"></i>@L["Announcements"]</span>
+            <a href="/Student/Announcements" class="btn btn-primary btn-sm">@L["ViewAll"]</a>
         </div>
         <div class="card-body">
             @if (announcements != null && announcements.Any())
@@ -95,7 +95,7 @@
             }
             else
             {
-                <p style="color:var(--text-secondary); text-align:center;">Elan yoxdur</p>
+                <p style="color:var(--text-secondary); text-align:center;">@L["NoAnnouncements"]</p>
             }
         </div>
     </div>

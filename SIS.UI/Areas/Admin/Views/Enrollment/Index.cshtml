@@ -1,19 +1,19 @@
 @model IEnumerable<SIS.BLL.Services.DTOs.Groups.GroupListDto>
 @{
-    ViewData["Title"] = "Qeydiyyatlar";
+    ViewData["Title"] = L["Enrollments"].Value;
 }
 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-    <h2 style="font-size:20px; font-weight:700;">Qeydiyyatlar</h2>
+    <h2 style="font-size:20px; font-weight:700;">@L["Enrollments"]</h2>
 </div>
 <div class="card">
     <div class="card-body" style="padding:0;">
         <table class="table">
             <thead>
                 <tr>
-                    <th>Qrup</th>
-                    <th>Tədris Proqramı</th>
-                    <th>Müəllim</th>
-                    <th>Tələbə sayı</th>
+                    <th>@L["Group"]</th>
+                    <th>@L["AcademicPrograms"]</th>
+                    <th>@L["Teacher"]</th>
+                    <th>@L["StudentCount"]</th>
                     <th></th>
                 </tr>
             </thead>
@@ -27,7 +27,7 @@
                         <td>@g.EnrolledCount / @g.Capacity</td>
                         <td style="text-align:right;">
                             <a href="/Admin/Enrollment/Group?groupId=@g.Id" class="btn btn-sm btn-secondary">
-                                <i class="fas fa-users"></i> Tələbələr
+                                <i class="fas fa-users"></i> @L["Students"]
                             </a>
                             <a href="/Admin/Enrollment/Create?groupId=@g.Id" class="btn btn-sm btn-primary">
                                 <i class="fas fa-user-plus"></i> Qeydiyyat
@@ -37,7 +37,7 @@
                 }
                 @if (!Model.Any())
                 {
-                    <tr><td colspan="5" style="text-align:center; color:var(--text-secondary); padding:30px;">Hələ qrup yoxdur</td></tr>
+                    <tr><td colspan="5" style="text-align:center; color:var(--text-secondary); padding:30px;">@L["NoGroups"]</td></tr>
                 }
             </tbody>
         </table>

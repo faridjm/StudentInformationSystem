@@ -1,12 +1,12 @@
 @model SIS.BLL.Services.DTOs.Announcement.CreateAnnouncementDto
 
 @{
-    ViewData["Title"] = "Yeni Elan";
+    ViewData["Title"] = L["NewAnnouncement"].Value;
 }
 
 <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
     <a href="/Admin/Announcement" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i></a>
-    <h2 style="font-size:20px; font-weight:700;">Yeni Elan</h2>
+    <h2 style="font-size:20px; font-weight:700;">@L["NewAnnouncement"]</h2>
 </div>
 
 <div class="card" style="max-width:640px;">
@@ -17,23 +17,23 @@
             <div asp-validation-summary="ModelOnly" style="color:#f87171; margin-bottom:12px; font-size:13px;"></div>
 
             <div class="form-group">
-                <label class="form-label">Başlıq</label>
-                <input asp-for="Title" class="form-control" placeholder="Elan başlığı" />
+                <label class="form-label">@L["Title"]</label>
+                <input asp-for="Title" class="form-control" placeholder="@L["Title"]" />
                 <span asp-validation-for="Title" style="color:#f87171; font-size:12px;"></span>
             </div>
 
             <div class="form-group">
-                <label class="form-label">Məzmun</label>
-                <textarea asp-for="Content" class="form-control" rows="5" placeholder="Elan məzmunu..."></textarea>
+                <label class="form-label">@L["Content"]</label>
+                <textarea asp-for="Content" class="form-control" rows="5" placeholder="@L["Content"]"></textarea>
                 <span asp-validation-for="Content" style="color:#f87171; font-size:12px;"></span>
             </div>
 
             <div class="form-group">
-                <label class="form-label">Hədəf Auditoriya</label>
+                <label class="form-label">@L["Type"]</label>
                 <select asp-for="TargetType" class="form-control">
-                    <option value="0">Hamı (Tələbə + Müəllim)</option>
-                    <option value="1">Yalnız Tələbələr</option>
-                    <option value="2">Yalnız Müəllimlər</option>
+                    <option value="0">@L["ViewAll"]</option>
+                    <option value="1">@L["Students"]</option>
+                    <option value="2">@L["Teachers"]</option>
                 </select>
             </div>
 
@@ -53,12 +53,12 @@
                     <span id="attachName" style="font-size:13px; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"></span>
                     <button type="button" onclick="removeAttachment()" style="background:none; border:none; color:var(--text-secondary); cursor:pointer;"><i class="fas fa-times"></i></button>
                 </div>
-                <div id="uploadProgress" style="display:none; margin-top:8px; font-size:12px; color:var(--text-secondary);"><i class="fas fa-spinner fa-spin"></i> Yüklənir...</div>
+                <div id="uploadProgress" style="display:none; margin-top:8px; font-size:12px; color:var(--text-secondary);"><i class="fas fa-spinner fa-spin"></i> @L["Loading"]</div>
             </div>
 
             <div style="display:flex; gap:10px; margin-top:8px;">
-                <button type="submit" class="btn btn-primary"><i class="fas fa-bullhorn"></i> Yayımla</button>
-                <a href="/Admin/Announcement" class="btn btn-secondary">Ləğv et</a>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-bullhorn"></i> @L["Submit"]</button>
+                <a href="/Admin/Announcement" class="btn btn-secondary">@L["Cancel"]</a>
             </div>
         </form>
     </div>

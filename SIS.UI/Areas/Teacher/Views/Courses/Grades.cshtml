@@ -1,12 +1,12 @@
 @{
-    ViewData["Title"] = "Qiymətlər";
+    ViewData["Title"] = L["Grades"].Value;
     var groupId = ViewBag.GroupId as int? ?? 0;
 }
 <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
     <a href="/Teacher/Courses" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i></a>
-    <h2 style="font-size:20px; font-weight:700;">Qiymətlər</h2>
+    <h2 style="font-size:20px; font-weight:700;">@L["Grades"]</h2>
 </div>
-<p style="color:var(--text-secondary); margin-bottom:16px;">Qiymətlər Qiymətləndirmə bölməsindən idarə olunur.</p>
+<p style="color:var(--text-secondary); margin-bottom:16px;">@L["Grades"]</p>
 <a href="/Teacher/Assessments/GroupAssessments/@groupId" class="btn btn-primary">
-    <i class="fas fa-tasks"></i> Qiymətləndirməyə keç
+    <i class="fas fa-tasks"></i> @L["Assessment"]
 </a>

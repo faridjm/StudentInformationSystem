@@ -1,13 +1,13 @@
 @using SIS.BLL.Services.DTOs.Assessment
 @using SIS.Entities.Enums
 @{
-    ViewData["Title"] = "Dashboard";
+    ViewData["Title"] = L["Dashboard"].Value;
     var today = (DateOnly)ViewBag.Today;
     var groups = (IEnumerable<SIS.BLL.Services.DTOs.Groups.GroupListDto>)ViewBag.Groups;
     var todaySessions = (List<SIS.UI.Areas.Teacher.Controllers.TodaySessionVm>)ViewBag.TodaySessions;
 }
 
-<h2 style="font-size:20px; font-weight:700; margin-bottom:4px;">Dashboard</h2>
+<h2 style="font-size:20px; font-weight:700; margin-bottom:4px;">@L["Dashboard"]</h2>
 <div style="color:var(--text-secondary); font-size:13px; margin-bottom:20px;">
     <i class="fas fa-calendar-day"></i> Bu gün: <strong style="color:var(--text-primary);">@today.ToString("dd MMMM yyyy")</strong>
 </div>
@@ -16,7 +16,7 @@
 {
     <div style="margin-bottom:24px;">
         <div style="font-size:15px; font-weight:600; margin-bottom:12px; color:var(--accent);">
-            <i class="fas fa-chalkboard-teacher"></i> Bu günün dərsləri
+            <i class="fas fa-chalkboard-teacher"></i> @L["TodaysLessons"]
         </div>
         @foreach (var vm in todaySessions)
         {
@@ -32,12 +32,12 @@
                     <div style="display:flex; gap:8px; align-items:center;">
                         @if (vm.AttendanceTaken)
                         {
-                            <span class="badge badge-success"><i class="fas fa-check"></i> Qayıb alınıb</span>
+                            <span class="badge badge-success"><i class="fas fa-check"></i> @L["AttendanceTaken"]</span>
                         }
                         @foreach (var a in vm.TodayAssessments)
                         {
                             var color = a.Type == AssessmentType.Quiz ? "#3b82f6" : a.Type == AssessmentType.FinalProject ? "#e94560" : "#eab308";
-                            var label = a.Type == AssessmentType.Quiz ? "Quiz" : a.Type == AssessmentType.FinalProject ? "Final" : "Tapşırıq";
+                            var label = a.Type == AssessmentType.Quiz ? "Quiz" : a.Type == AssessmentType.FinalProject ? "Final" : L["AssessmentType_Assignment"].Value;
                             <span style="font-size:11px; background:@(color)22; color:@color; padding:3px 8px; border-radius:6px; font-weight:600;">
                                 <i class="fas fa-clipboard-check"></i> @label: @a.Title
                             </span>
@@ -49,7 +49,7 @@
                 {
                     <div style="padding:10px 20px; background:rgba(59,130,246,0.08); border-bottom:1px solid var(--border); font-size:13px;">
                         <i class="fas fa-book-open" style="color:#3b82f6; margin-right:6px;"></i>
-                        <strong>Bu günün mövzusu:</strong> @vm.Session.Topic
+                        <strong>@L["TodaysTopic"]:</strong> @vm.Session.Topic
                     </div>
                 }
 
@@ -59,12 +59,12 @@
                         @Html.AntiForgeryToken()
                         <input type="hidden" name="sessionId" value="@vm.Session.Id" />
                         <div style="font-size:13px; font-weight:600; margin-bottom:10px;">
-                            <i class="fas fa-user-check"></i> Davamiyyət
+                            <i class="fas fa-user-check"></i> @L["Attendance"]
                         </div>
                         <table style="width:100%; font-size:13px;">
                             <thead>
                                 <tr style="color:var(--text-secondary); border-bottom:1px solid var(--border);">
-                                    <td style="padding:6px 0; width:40%;">Tələbə</td>
+                                    <td style="padding:6px 0; width:40%;">@L["Student"]</td>
                                     <td style="padding:6px; text-align:center;">İştirak</td>
                                     <td style="padding:6px; text-align:center;">Gecikmə</td>
                                     <td style="padding:6px; text-align:center;">Qayıb</td>
@@ -109,12 +109,12 @@
                         </table>
                         <div style="display:flex; gap:8px; margin-top:12px;">
                             <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save"></i> Davamiyyəti saxla
+                                <i class="fas fa-save"></i> @L["SaveAttendance"]
                             </button>
                             @if (vm.TodayAssessments.Any())
                             {
                                 <a href="/Teacher/Courses/Detail/@vm.GroupId?tab=assessments" class="btn btn-secondary">
-                                    <i class="fas fa-pen"></i> Qiymətlər
+                                    <i class="fas fa-pen"></i> @L["Grades"]
                                 </a>
                             }
                         </div>
@@ -134,11 +134,11 @@ else
 
 <!-- Qruplar xülasəsi -->
 <div class="card">
-    <div class="card-header">Bütün Qruplarım</div>
+    <div class="card-header">@L["AllMyGroups"]</div>
     <div class="card-body" style="padding:0;">
         <table class="table">
             <thead>
-                <tr><th>Qrup</th><th>Proqram</th><th>Tələbə</th><th>Tarix</th><th></th></tr>
+                <tr><th>@L["Group"]</th><th>@L["Program"]</th><th>@L["Student"]</th><th>@L["Date"]</th><th></th></tr>
             </thead>
             <tbody>
                 @foreach (var g in groups)
@@ -148,12 +148,12 @@ else
                         <td>@g.CourseName</td>
                         <td>@g.EnrolledCount / @g.Capacity</td>
                         <td style="font-size:13px; color:var(--text-secondary);">@g.StartDate.ToString("dd.MM.yy") — @g.EndDate.ToString("dd.MM.yy")</td>
-                        <td><a href="/Teacher/Courses/Detail/@g.Id" class="btn btn-sm btn-secondary">Aç</a></td>
+                        <td><a href="/Teacher/Courses/Detail/@g.Id" class="btn btn-sm btn-secondary">@L["Open"]</a></td>
                     </tr>
                 }
                 @if (!groups.Any())
                 {
-                    <tr><td colspan="5" style="text-align:center; color:var(--text-secondary); padding:24px;">Qrup yoxdur</td></tr>
+                    <tr><td colspan="5" style="text-align:center; color:var(--text-secondary); padding:24px;">@L["NoGroups"]</td></tr>
                 }
             </tbody>
         </table>

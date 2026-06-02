@@ -17,7 +17,7 @@ namespace SIS.DAL.Configurations
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(a => a.Enrollment)
-                .WithMany()
+                .WithMany(e => e.AssessmentSubmissions)
                 .HasForeignKey(a => a.EnrollmentId)
                 .OnDelete(DeleteBehavior.Restrict);
 

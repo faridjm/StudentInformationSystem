@@ -1,7 +1,7 @@
 ﻿@model SIS.BLL.Services.DTOs.Teacher.TeacherDetailDto
 
 @{
-    ViewData["Title"] = "Müəllim Detalları";
+    ViewData["Title"] = L["TeacherDetails"].Value;
 }
 
 <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
@@ -13,7 +13,7 @@
 </div>
 
 <div class="card" style="max-width:600px;">
-    <div class="card-header">Müəllim Məlumatları</div>
+    <div class="card-header">@L["TeacherDetails"]</div>
     <div class="card-body">
         <table style="width:100%; font-size:14px;">
             <tr style="border-bottom:1px solid var(--border);">
@@ -46,10 +46,10 @@
 
 <div style="margin-top:16px; display:flex; gap:10px;">
     <a href="/Admin/Teacher/Edit/@Model.Id" class="btn btn-primary">
-        <i class="fas fa-edit"></i> Düzəlt
+        <i class="fas fa-edit"></i> @L["Edit"]
     </a>
     <button type="button" class="btn btn-secondary" onclick="document.getElementById('pwdCard').style.display='block'; this.style.display='none'">
-        <i class="fas fa-key"></i> Şifrəni Dəyiş
+        <i class="fas fa-key"></i> @L["ChangePassword"]
     </button>
 </div>
 
@@ -67,14 +67,14 @@
 }
 
 <div id="pwdCard" class="card" style="max-width:400px; margin-top:16px; display:none;">
-    <div class="card-header"><i class="fas fa-key"></i> Şifrəni Dəyiş</div>
+    <div class="card-header"><i class="fas fa-key"></i> @L["ChangePassword"]</div>
     <div class="card-body" style="padding:20px;">
         <form method="post" action="/Admin/Teacher/SetPassword">
             @Html.AntiForgeryToken()
             <input type="hidden" name="userId" value="@Model.AppUserId" />
             <input type="hidden" name="teacherId" value="@Model.Id" />
             <div class="form-group">
-                <label style="font-size:13px;">Yeni Şifrə</label>
+                <label style="font-size:13px;">@L["NewPassword"]</label>
                 <div style="position:relative;">
                     <input type="password" id="adm_pwd1" name="newPassword" class="form-control" required minlength="6" style="padding-right:40px;" />
                     <button type="button" onclick="togglePwd('adm_pwd1',this)" tabindex="-1"
@@ -84,7 +84,7 @@
                 </div>
             </div>
             <div class="form-group">
-                <label style="font-size:13px;">Şifrəni Təsdiqlə</label>
+                <label style="font-size:13px;">@L["ConfirmPassword"]</label>
                 <div style="position:relative;">
                     <input type="password" id="adm_pwd2" name="confirmPassword" class="form-control" required minlength="6" style="padding-right:40px;" />
                     <button type="button" onclick="togglePwd('adm_pwd2',this)" tabindex="-1"
@@ -94,8 +94,8 @@
                 </div>
             </div>
             <div style="display:flex; gap:8px;">
-                <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-save"></i> Yadda Saxla</button>
-                <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('pwdCard').style.display='none'">Ləğv et</button>
+                <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-save"></i> @L["Save"]</button>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('pwdCard').style.display='none'">@L["Cancel"]</button>
             </div>
         </form>
     </div>

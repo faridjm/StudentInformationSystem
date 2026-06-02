@@ -1,13 +1,13 @@
-﻿@model IEnumerable<SIS.BLL.Services.DTOs.Student.StudentListDto>
+@model IEnumerable<SIS.BLL.Services.DTOs.Student.StudentListDto>
 
 @{
-    ViewData["Title"] = "Tələbələr";
+    ViewData["Title"] = L["Students"].Value;
 }
 
 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-    <h2 style="font-size:20px; font-weight:700;">Tələbələr</h2>
+    <h2 style="font-size:20px; font-weight:700;">@L["Students"]</h2>
     <a href="/Admin/Student/Create" class="btn btn-primary">
-        <i class="fas fa-plus"></i> Yeni Tələbə
+        <i class="fas fa-plus"></i> @L["NewStudent"]
     </a>
 </div>
 
@@ -16,15 +16,15 @@
     <div class="card-body" style="padding:14px 20px;">
         <form method="get" class="search-box">
             <input type="text" name="search" value="@ViewBag.SearchTerm"
-                   class="search-input" placeholder="Ad, email və ya tələbə nömrəsi ilə axtar..."
+                   class="search-input" placeholder="@L["Search"]"
                    style="width:300px;" />
             <button type="submit" class="btn btn-secondary">
-                <i class="fas fa-search"></i> Axtar
+                <i class="fas fa-search"></i> @L["Search"]
             </button>
             @if (!string.IsNullOrEmpty(ViewBag.SearchTerm as string))
             {
                 <a href="/Admin/Student" class="btn btn-secondary">
-                    <i class="fas fa-times"></i> Təmizlə
+                    <i class="fas fa-times"></i>
                 </a>
             }
         </form>
@@ -34,20 +34,20 @@
 <!-- Table -->
 <div class="card">
     <div class="card-header">
-        <span>Cəmi: @Model.Count() tələbə</span>
+        <span>@Model.Count() @L["Students"]</span>
     </div>
     <div style="overflow-x:auto;">
         <table class="table">
             <thead>
                 <tr>
                     <th>#</th>
-                    <th>Ad Soyad</th>
-                    <th>Email</th>
-                    <th>Tələbə №</th>
-                    <th>İl</th>
+                    <th>@L["FullName"]</th>
+                    <th>@L["Email"]</th>
+                    <th>@L["PDF_StudentNo"]</th>
+                    <th>@L["PDF_EnrollmentYear"]</th>
                     <th>GPA</th>
-                    <th>Status</th>
-                    <th>Əməliyyat</th>
+                    <th>@L["Status"]</th>
+                    <th>@L["Actions"]</th>
                 </tr>
             </thead>
             <tbody>
@@ -67,7 +67,7 @@
                         <td>
                             @if (student.IsActive)
                             {
-                                <span class="badge badge-success">Aktiv</span>
+                                <span class="badge badge-success">@L["Active"]</span>
                             }
                             else
                             {
@@ -83,7 +83,7 @@
                                     <i class="fas fa-edit"></i>
                                 </a>
                                 <form method="post" action="/Admin/Student/Delete/@student.Id"
-                                      onsubmit="return confirm('Tələbəni silmək istədiyinizdən əminsinizmi?')">
+                                      onsubmit="return confirm('?')">
                                     @Html.AntiForgeryToken()
                                     <button type="submit" class="btn btn-sm btn-danger">
                                         <i class="fas fa-trash"></i>

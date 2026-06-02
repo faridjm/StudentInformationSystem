@@ -1,7 +1,7 @@
-﻿@model SIS.BLL.Services.DTOs.Student.StudentDetailDto
+@model SIS.BLL.Services.DTOs.Student.StudentDetailDto
 
 @{
-    ViewData["Title"] = "Tələbə Detalları";
+    ViewData["Title"] = L["StudentDetails"].Value;
 }
 
 <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
@@ -10,37 +10,37 @@
     </a>
     <h2 style="font-size:20px; font-weight:700;">@Model.FullName</h2>
     <span class="badge @(Model.IsActive ? "badge-success" : "badge-danger")">
-        @(Model.IsActive ? "Aktiv" : "Deaktiv")
+        @(Model.IsActive ? L["Active"].Value : "Deaktiv")
     </span>
 </div>
 
 <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
     <div class="card">
-        <div class="card-header">Şəxsi Məlumatlar</div>
+        <div class="card-header">@L["Details"]</div>
         <div class="card-body">
             <table style="width:100%; font-size:14px;">
                 <tr style="border-bottom:1px solid var(--border);">
-                    <td style="padding:10px 0; color:var(--text-secondary); width:40%;">Ad Soyad</td>
+                    <td style="padding:10px 0; color:var(--text-secondary); width:40%;">@L["FullName"]</td>
                     <td style="padding:10px 0; font-weight:500;">@Model.FullName</td>
                 </tr>
                 <tr style="border-bottom:1px solid var(--border);">
-                    <td style="padding:10px 0; color:var(--text-secondary);">FIN Kod</td>
+                    <td style="padding:10px 0; color:var(--text-secondary);">FIN</td>
                     <td style="padding:10px 0;">@(Model.FinCode ?? "—")</td>
                 </tr>
                 <tr style="border-bottom:1px solid var(--border);">
-                    <td style="padding:10px 0; color:var(--text-secondary);">Email</td>
+                    <td style="padding:10px 0; color:var(--text-secondary);">@L["Email"]</td>
                     <td style="padding:10px 0;">@Model.Email</td>
                 </tr>
                 <tr style="border-bottom:1px solid var(--border);">
-                    <td style="padding:10px 0; color:var(--text-secondary);">Telefon</td>
+                    <td style="padding:10px 0; color:var(--text-secondary);">@L["Phone"]</td>
                     <td style="padding:10px 0;">@(Model.PhoneNumber ?? "—")</td>
                 </tr>
                 <tr style="border-bottom:1px solid var(--border);">
-                    <td style="padding:10px 0; color:var(--text-secondary);">Tələbə №</td>
+                    <td style="padding:10px 0; color:var(--text-secondary);">@L["PDF_StudentNo"]</td>
                     <td style="padding:10px 0;"><code style="background:var(--bg-hover); padding:2px 8px; border-radius:4px;">@Model.StudentNumber</code></td>
                 </tr>
                 <tr>
-                    <td style="padding:10px 0; color:var(--text-secondary);">Qeydiyyat İli</td>
+                    <td style="padding:10px 0; color:var(--text-secondary);">@L["PDF_EnrollmentYear"]</td>
                     <td style="padding:10px 0;">@Model.EnrollmentYear</td>
                 </tr>
             </table>
@@ -48,11 +48,11 @@
     </div>
 
     <div class="card">
-        <div class="card-header">Akademik Məlumatlar</div>
+        <div class="card-header">@L["Academic"]</div>
         <div class="card-body">
             <table style="width:100%; font-size:14px;">
                 <tr style="border-bottom:1px solid var(--border);">
-                    <td style="padding:10px 0; color:var(--text-secondary); width:40%;">Qeydiyyat ili</td>
+                    <td style="padding:10px 0; color:var(--text-secondary); width:40%;">@L["PDF_EnrollmentYear"]</td>
                     <td style="padding:10px 0; font-weight:500;">@Model.EnrollmentYear</td>
                 </tr>
                 <tr>
@@ -71,10 +71,10 @@
 
 <div style="margin-top:16px; display:flex; gap:10px;">
     <a href="/Admin/Student/Edit/@Model.Id" class="btn btn-primary">
-        <i class="fas fa-edit"></i> Düzəlt
+        <i class="fas fa-edit"></i> @L["Edit"]
     </a>
     <button type="button" class="btn btn-secondary" onclick="document.getElementById('pwdCard').style.display='block'; this.style.display='none'">
-        <i class="fas fa-key"></i> Şifrəni Dəyiş
+        <i class="fas fa-key"></i> @L["ChangePassword"]
     </button>
 </div>
 
@@ -92,14 +92,14 @@
 }
 
 <div id="pwdCard" class="card" style="max-width:400px; margin-top:16px; display:none;">
-    <div class="card-header"><i class="fas fa-key"></i> Şifrəni Dəyiş</div>
+    <div class="card-header"><i class="fas fa-key"></i> @L["ChangePassword"]</div>
     <div class="card-body" style="padding:20px;">
         <form method="post" action="/Admin/Student/SetPassword">
             @Html.AntiForgeryToken()
             <input type="hidden" name="userId" value="@Model.AppUserId" />
             <input type="hidden" name="studentId" value="@Model.Id" />
             <div class="form-group">
-                <label style="font-size:13px;">Yeni Şifrə</label>
+                <label style="font-size:13px;">@L["NewPassword"]</label>
                 <div style="position:relative;">
                     <input type="password" id="adm_pwd1" name="newPassword" class="form-control" required minlength="6" style="padding-right:40px;" />
                     <button type="button" onclick="togglePwd('adm_pwd1',this)" tabindex="-1"
@@ -109,7 +109,7 @@
                 </div>
             </div>
             <div class="form-group">
-                <label style="font-size:13px;">Şifrəni Təsdiqlə</label>
+                <label style="font-size:13px;">@L["ConfirmPassword"]</label>
                 <div style="position:relative;">
                     <input type="password" id="adm_pwd2" name="confirmPassword" class="form-control" required minlength="6" style="padding-right:40px;" />
                     <button type="button" onclick="togglePwd('adm_pwd2',this)" tabindex="-1"
@@ -119,8 +119,8 @@
                 </div>
             </div>
             <div style="display:flex; gap:8px;">
-                <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-save"></i> Yadda Saxla</button>
-                <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('pwdCard').style.display='none'">Ləğv et</button>
+                <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-save"></i> @L["Save"]</button>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('pwdCard').style.display='none'">@L["Cancel"]</button>
             </div>
         </form>
     </div>

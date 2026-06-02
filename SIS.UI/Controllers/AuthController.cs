@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using Refit;
 using SIS.BLL.Services.DTOs.Auth;
 using SIS.UI.ApiClients;
@@ -11,10 +12,12 @@ namespace SIS.UI.Controllers
     public class AuthController : Controller
     {
         private readonly IAuthApi _authApi;
+        private readonly IStringLocalizer<SharedResource> _l;
 
-        public AuthController(IAuthApi authApi)
+        public AuthController(IAuthApi authApi, IStringLocalizer<SharedResource> localizer)
         {
             _authApi = authApi;
+            _l = localizer;
         }
 
         [HttpGet]
@@ -82,7 +85,7 @@ namespace SIS.UI.Controllers
             }
             catch (ApiException ex)
             {
-                var message = "Email və ya şifrə yanlışdır";
+                var message = _l["InvalidCredentials"].Value;
                 try
                 {
                     var errorContent = ex.Content;
@@ -118,7 +121,7 @@ namespace SIS.UI.Controllers
         {
             if (string.IsNullOrEmpty(email))
             {
-                ModelState.AddModelError("", "Email daxil edin");
+                ModelState.AddModelError("", _l["EnterEmail"].Value);
                 return View();
             }
             try { await _authApi.ForgotPasswordAsync(new SIS.BLL.Services.DTOs.Auth.ForgotPasswordDto { Email = email }); } catch { }
@@ -144,7 +147,7 @@ namespace SIS.UI.Controllers
             }
             catch (ApiException ex)
             {
-                var message = "Xəta baş verdi";
+                var message = _l["ErrorOccurred"].Value;
                 try
                 {
                     var err = System.Text.Json.JsonDocument.Parse(ex.Content ?? "");

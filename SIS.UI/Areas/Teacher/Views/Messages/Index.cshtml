@@ -1,0 +1,23 @@
+@using SIS.BLL.Services.DTOs.Chat
+@{
+    ViewData["Title"] = L["Messages"].Value;
+    var conversations = ViewBag.Conversations as List<ConversationDto> ?? new();
+    var activeId = (int?)ViewBag.ActiveConversationId;
+    var messages = ViewBag.Messages as List<MessageDto> ?? new();
+    var activeConv = conversations.FirstOrDefault(c => c.Id == activeId);
+    var prefill = ViewBag.Prefill as string ?? "";
+    var areaPrefix = "Teacher";
+    var totalUnread = conversations.Sum(c => c.UnreadCount);
+}
+
+@{
+    var chatViewData = new ViewDataDictionary(ViewData);
+    chatViewData["Conversations"] = conversations;
+    chatViewData["ActiveId"] = activeId;
+    chatViewData["Messages"] = messages;
+    chatViewData["ActiveConv"] = activeConv;
+    chatViewData["Prefill"] = prefill;
+    chatViewData["AreaPrefix"] = areaPrefix;
+    chatViewData["TotalUnread"] = totalUnread;
+}
+@await Html.PartialAsync("~/Views/Shared/_ChatView.cshtml", chatViewData)

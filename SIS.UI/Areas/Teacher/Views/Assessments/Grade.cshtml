@@ -2,8 +2,8 @@
 @using SIS.Entities.Enums
 @{
     var item = (SIS.BLL.Services.DTOs.Assessment.AssessmentItemDto)ViewBag.Item;
-    ViewData["Title"] = item.Title + " — Qiymətləndirmə";
-    var typeLabel = item.Type == AssessmentType.Quiz ? "Quiz" : item.Type == AssessmentType.FinalProject ? "Final Layihəsi" : "Tapşırıq";
+    ViewData["Title"] = item.Title + " — " + L["Assessment"].Value;
+    var typeLabel = item.Type == AssessmentType.Quiz ? "Quiz" : item.Type == AssessmentType.FinalProject ? L["AssessmentType_FinalProject"].Value : L["AssessmentType_Assignment"].Value;
 }
 
 <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
@@ -24,11 +24,11 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th>Tələbə</th>
-                    <th>Nömrə</th>
+                    <th>@L["Student"]</th>
+                    <th>@L["PDF_StudentNo"]</th>
                     <th>Bal (/ @item.MaxScore)</th>
-                    <th>Rəy</th>
-                    <th>Status</th>
+                    <th>@L["Content"]</th>
+                    <th>@L["Status"]</th>
                     <th></th>
                 </tr>
             </thead>
@@ -54,11 +54,11 @@
                         <td>
                             @if (s.IsGraded)
                             {
-                                <span class="badge badge-success">Qiymətləndirildi</span>
+                                <span class="badge badge-success">@L["Grades"]</span>
                             }
                             else
                             {
-                                <span class="badge badge-warning">Gözlənilir</span>
+                                <span class="badge badge-warning">@L["Loading"]</span>
                             }
                         </td>
                         <td>
@@ -90,12 +90,12 @@
                 <input id="scoreInput" name="Score" type="number" min="0" max="@item.MaxScore" step="0.5" class="form-control" required />
             </div>
             <div class="form-group">
-                <label class="form-label">Rəy (ixtiyari)</label>
+                <label class="form-label">@L["Content"]</label>
                 <input id="feedbackInput" name="Feedback" class="form-control" placeholder="..." />
             </div>
             <div style="display:flex; gap:8px; margin-top:8px;">
-                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Yadda saxla</button>
-                <button type="button" onclick="closeGradeModal()" class="btn btn-secondary">Ləğv et</button>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> @L["Save"]</button>
+                <button type="button" onclick="closeGradeModal()" class="btn btn-secondary">@L["Cancel"]</button>
             </div>
         </form>
     </div>

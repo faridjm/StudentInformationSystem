@@ -72,7 +72,7 @@
     <div style="text-align:right; font-size:12px; color:var(--text-secondary);">
         <div>@Model.StartDate.ToString("dd.MM.yyyy") — @Model.EndDate.ToString("dd.MM.yyyy")</div>
         <div style="margin-top:4px;">
-            <span style="font-weight:600; color:var(--text-primary);">@enrollments.Count(e => e.Status == EnrollmentStatus.Active)</span> / @Model.Capacity tələbə
+            <span style="font-weight:600; color:var(--text-primary);">@enrollments.Count(e => e.Status == EnrollmentStatus.Active)</span> / @Model.Capacity @L["Student"]
         </div>
     </div>
 </div>
@@ -80,7 +80,7 @@
 <!-- Progress -->
 <div class="card" style="padding:14px 20px; margin-bottom:16px; display:flex; align-items:center; gap:16px;">
     <div style="font-size:12px; color:var(--text-secondary); white-space:nowrap;">
-        Kurs irəliləyişi: <strong style="color:var(--text-primary);">@completedSessions / @totalSessions</strong> dərs
+        @L["ClassSessions"]: <strong style="color:var(--text-primary);">@completedSessions / @totalSessions</strong>
     </div>
     <div class="progress-bar" style="flex:1;">
         <div class="progress-fill" style="width:@(progressPct)%; background:var(--accent);"></div>
@@ -90,13 +90,13 @@
 
 <!-- Tabs -->
 <div class="tabs">
-    <a class="tab @(activeTab == "overview" ? "active" : "")" onclick="switchTab('overview')"><i class="fas fa-chart-pie" style="margin-right:6px;"></i>Ümumi</a>
-    <a class="tab @(activeTab == "schedule" ? "active" : "")" onclick="switchTab('schedule')"><i class="fas fa-calendar-alt" style="margin-right:6px;"></i>Cədvəl</a>
-    <a class="tab @(activeTab == "assessments" ? "active" : "")" onclick="switchTab('assessments')"><i class="fas fa-tasks" style="margin-right:6px;"></i>Qiymətləndirmə</a>
-    <a class="tab @(activeTab == "attendance" ? "active" : "")" onclick="switchTab('attendance')"><i class="fas fa-user-check" style="margin-right:6px;"></i>Davamiyyət</a>
-    <a class="tab @(activeTab == "students" ? "active" : "")" onclick="switchTab('students')"><i class="fas fa-users" style="margin-right:6px;"></i>Tələbələr</a>
-    <a class="tab @(activeTab == "assignments" ? "active" : "")" onclick="switchTab('assignments')"><i class="fas fa-file-alt" style="margin-right:6px;"></i>Tapşırıqlar</a>
-    <a class="tab @(activeTab == "announcements" ? "active" : "")" onclick="switchTab('announcements')"><i class="fas fa-bullhorn" style="margin-right:6px;"></i>Elanlar</a>
+    <a class="tab @(activeTab == "overview" ? "active" : "")" onclick="switchTab('overview')"><i class="fas fa-chart-pie" style="margin-right:6px;"></i>@L["Dashboard"]</a>
+    <a class="tab @(activeTab == "schedule" ? "active" : "")" onclick="switchTab('schedule')"><i class="fas fa-calendar-alt" style="margin-right:6px;"></i>@L["Schedule"]</a>
+    <a class="tab @(activeTab == "assessments" ? "active" : "")" onclick="switchTab('assessments')"><i class="fas fa-tasks" style="margin-right:6px;"></i>@L["Assessment"]</a>
+    <a class="tab @(activeTab == "attendance" ? "active" : "")" onclick="switchTab('attendance')"><i class="fas fa-user-check" style="margin-right:6px;"></i>@L["Attendance"]</a>
+    <a class="tab @(activeTab == "students" ? "active" : "")" onclick="switchTab('students')"><i class="fas fa-users" style="margin-right:6px;"></i>@L["Students"]</a>
+    <a class="tab @(activeTab == "assignments" ? "active" : "")" onclick="switchTab('assignments')"><i class="fas fa-file-alt" style="margin-right:6px;"></i>@L["Assignments"]</a>
+    <a class="tab @(activeTab == "announcements" ? "active" : "")" onclick="switchTab('announcements')"><i class="fas fa-bullhorn" style="margin-right:6px;"></i>@L["Announcements"]</a>
 </div>
 
 <!-- ==================== TAB 1: Ümumi Baxış ==================== -->
@@ -104,26 +104,26 @@
     <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:20px;">
         <div class="stat-card">
             <div class="stat-icon" style="background:rgba(59,130,246,0.15); color:#3b82f6;"><i class="fas fa-users"></i></div>
-            <div><div class="stat-value">@enrollments.Count(e => e.Status == EnrollmentStatus.Active)</div><div class="stat-label">Tələbə</div></div>
+            <div><div class="stat-value">@enrollments.Count(e => e.Status == EnrollmentStatus.Active)</div><div class="stat-label">@L["Student"]</div></div>
         </div>
         <div class="stat-card">
             <div class="stat-icon" style="background:rgba(34,197,94,0.15); color:#22c55e;"><i class="fas fa-chalkboard"></i></div>
-            <div><div class="stat-value">@completedSessions / @totalSessions</div><div class="stat-label">Dərs</div></div>
+            <div><div class="stat-value">@completedSessions / @totalSessions</div><div class="stat-label">@L["ClassSessions"]</div></div>
         </div>
         <div class="stat-card">
             <div class="stat-icon" style="background:rgba(234,179,8,0.15); color:#eab308;"><i class="fas fa-clipboard-check"></i></div>
-            <div><div class="stat-value">@assessments.Count</div><div class="stat-label">Qiymətləndirmə</div></div>
+            <div><div class="stat-value">@assessments.Count</div><div class="stat-label">@L["Assessment"]</div></div>
         </div>
         <div class="stat-card">
             <div class="stat-icon" style="background:rgba(168,85,247,0.15); color:#a855f7;"><i class="fas fa-file-alt"></i></div>
-            <div><div class="stat-value">@assignments.Count</div><div class="stat-label">Tapşırıq</div></div>
+            <div><div class="stat-value">@assignments.Count</div><div class="stat-label">@L["Assignments"]</div></div>
         </div>
     </div>
 
     @if (Model.ScheduleDays.Any())
     {
         <div style="margin-bottom:16px;">
-            <div style="font-size:13px; font-weight:600; margin-bottom:8px; color:var(--text-secondary);">Həftəlik Cədvəl</div>
+            <div style="font-size:13px; font-weight:600; margin-bottom:8px; color:var(--text-secondary);">@L["Schedule"]</div>
             <div style="display:flex; gap:8px; flex-wrap:wrap;">
                 @foreach (var d in Model.ScheduleDays.OrderBy(x => x.DayOfWeek))
                 {
@@ -145,10 +145,10 @@
         <div class="card" style="border-left:3px solid var(--accent); padding:16px 20px; display:flex; justify-content:space-between; align-items:center;">
             <div>
                 <div style="font-size:12px; font-weight:600; color:var(--accent); margin-bottom:4px;">
-                    <i class="fas fa-calendar-day"></i> Bu günün dərsi — #@todaySession.SessionNumber
+                    <i class="fas fa-calendar-day"></i> @L["TodaysLessons"] — #@todaySession.SessionNumber
                 </div>
                 <div style="font-size:14px; font-weight:500;">
-                    @(string.IsNullOrEmpty(todaySession.Topic) ? "Mövzu təyin edilməyib" : todaySession.Topic)
+                    @(string.IsNullOrEmpty(todaySession.Topic) ? L["NoData"].Value : todaySession.Topic)
                 </div>
                 <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">@todaySession.StartTime — @todaySession.EndTime</div>
             </div>
@@ -158,12 +158,12 @@
                     @Html.AntiForgeryToken()
                     <input type="hidden" name="groupId" value="@Model.Id" />
                     <input type="hidden" name="sessionId" value="@todaySession.Id" />
-                    <button type="submit" class="btn btn-success btn-sm"><i class="fas fa-check-circle"></i> Tamamla</button>
+                    <button type="submit" class="btn btn-success btn-sm"><i class="fas fa-check-circle"></i> @L["Save"]</button>
                 </form>
             }
             else
             {
-                <span class="badge badge-success"><i class="fas fa-check"></i> Tamamlanıb</span>
+                <span class="badge badge-success"><i class="fas fa-check"></i> @L["Save"]</span>
             }
         </div>
     }
@@ -171,7 +171,7 @@
     @if (announcements.Any())
     {
         <div style="margin-top:16px;">
-            <div style="font-size:13px; font-weight:600; margin-bottom:8px; color:var(--text-secondary);">Son Elanlar</div>
+            <div style="font-size:13px; font-weight:600; margin-bottom:8px; color:var(--text-secondary);">@L["Announcements"]</div>
             @foreach (var a in announcements.Take(3))
             {
                 <div style="padding:10px 14px; background:var(--bg-card); border:1px solid var(--border); border-radius:8px; margin-bottom:6px;">
@@ -191,7 +191,7 @@
         <div class="card-body" style="padding:0;">
             <table class="mini-table">
                 <thead>
-                    <tr><th>#</th><th>Tarix</th><th>Gün</th><th>Saat</th><th>Mövzu</th><th>Status</th><th>Qiymət</th><th></th></tr>
+                    <tr><th>#</th><th>@L["Date"]</th><th></th><th></th><th>@L["TodaysTopic"]</th><th>@L["Status"]</th><th>@L["Score"]</th><th></th></tr>
                 </thead>
                 <tbody>
                     @foreach (var s in sessions)
@@ -199,22 +199,22 @@
                         var isToday = s.Date == today;
                         var isPast = s.Date < today;
                         var rowStyle = isToday ? "background:rgba(59,130,246,0.08);" : isPast && s.Status != ClassSessionStatus.Completed ? "opacity:0.6;" : "";
-                        var dayName = s.Date.DayOfWeek switch { DayOfWeek.Monday => "B.e", DayOfWeek.Tuesday => "Ç.a", DayOfWeek.Wednesday => "Çər", DayOfWeek.Thursday => "C.a", DayOfWeek.Friday => "Cümə", DayOfWeek.Saturday => "Şnb", _ => "Baz" };
+                        var dayName = s.Date.DayOfWeek switch { DayOfWeek.Monday => "B.e", DayOfWeek.Tuesday => "Ç.a", DayOfWeek.Wednesday => "Çər", DayOfWeek.Thursday => "C.a", DayOfWeek.Friday => "Fri", DayOfWeek.Saturday => "Şnb", _ => "Baz" };
                         var aOnDate = assessments.Where(a => DateOnly.FromDateTime(a.Date) == s.Date).ToList();
                         <tr style="@rowStyle">
                             <td style="color:var(--text-secondary);">@s.SessionNumber</td>
                             <td>
                                 @s.Date.ToString("dd.MM.yy")
-                                @if (isToday) { <span style="font-size:9px; background:#3b82f6; color:#fff; padding:1px 5px; border-radius:3px; margin-left:4px;">Bu gün</span> }
+                                @if (isToday) { <span style="font-size:9px; background:#3b82f6; color:#fff; padding:1px 5px; border-radius:3px; margin-left:4px;">@L["Today"]</span> }
                             </td>
                             <td style="color:var(--text-secondary);">@dayName</td>
                             <td style="color:var(--text-secondary);">@s.StartTime–@s.EndTime</td>
                             <td>@(string.IsNullOrEmpty(s.Topic) ? "—" : s.Topic)</td>
                             <td>
-                                @if (s.Status == ClassSessionStatus.Completed) { <span class="badge badge-success">Keçdi</span> }
-                                else if (s.Status == ClassSessionStatus.Cancelled) { <span class="badge badge-danger">Ləğv</span> }
-                                else if (isToday) { <span class="badge badge-info">Bu gün</span> }
-                                else { <span class="badge badge-warning">Gələcək</span> }
+                                @if (s.Status == ClassSessionStatus.Completed) { <span class="badge badge-success">@L["Active"]</span> }
+                                else if (s.Status == ClassSessionStatus.Cancelled) { <span class="badge badge-danger">@L["Cancel"]</span> }
+                                else if (isToday) { <span class="badge badge-info">@L["Today"]</span> }
+                                else { <span class="badge badge-warning">@L["NoData"]</span> }
                             </td>
                             <td>
                                 @foreach (var a in aOnDate)
@@ -232,7 +232,7 @@
                                         <input type="hidden" name="groupId" value="@Model.Id" />
                                         <input type="hidden" name="sessionId" value="@s.Id" />
                                         <button type="submit" class="btn btn-success btn-sm" style="padding:2px 8px; font-size:11px;">
-                                            <i class="fas fa-check"></i> Tamamla
+                                            <i class="fas fa-check"></i> @L["Save"]
                                         </button>
                                     </form>
                                 }
@@ -251,13 +251,13 @@
         <div class="card-body" style="padding:0;">
             <table class="mini-table">
                 <thead>
-                    <tr><th>Növ</th><th>Başlıq</th><th>Tarix</th><th>Max bal</th><th>Çəki</th><th>Qiymətləndirilmiş</th><th></th></tr>
+                    <tr><th>@L["Type"]</th><th>@L["Title"]</th><th>@L["Date"]</th><th>@L["MaxScore"]</th><th>@L["Weight"]</th><th>@L["Grades"]</th><th></th></tr>
                 </thead>
                 <tbody>
                     @foreach (var a in assessments)
                     {
                         var typeColor = a.Type == AssessmentType.Quiz ? "#3b82f6" : a.Type == AssessmentType.FinalProject ? "#e94560" : "#eab308";
-                        var typeLabel = a.Type == AssessmentType.Quiz ? "Quiz" : a.Type == AssessmentType.FinalProject ? "Final" : "Tapşırıq";
+                        var typeLabel = a.Type == AssessmentType.Quiz ? "Quiz" : a.Type == AssessmentType.FinalProject ? "Final" : L["AssessmentType_Assignment"].Value;
                         <tr>
                             <td><span style="font-size:10px; background:@(typeColor)22; color:@typeColor; padding:2px 7px; border-radius:4px; font-weight:600;">@typeLabel</span></td>
                             <td><strong>@a.Title</strong></td>
@@ -271,14 +271,14 @@
                             </td>
                             <td>
                                 <a href="/Teacher/Assessments/Grade/@a.Id" class="btn btn-sm btn-primary" style="padding:4px 10px;">
-                                    <i class="fas fa-pen"></i> Qiymətləndir
+                                    <i class="fas fa-pen"></i> @L["Assessment"]
                                 </a>
                             </td>
                         </tr>
                     }
                     @if (!assessments.Any())
                     {
-                        <tr><td colspan="7" style="text-align:center; color:var(--text-secondary); padding:24px;">Qiymətləndirmə planı boşdur</td></tr>
+                        <tr><td colspan="7" style="text-align:center; color:var(--text-secondary); padding:24px;">@L["NoData"]</td></tr>
                     }
                 </tbody>
             </table>
@@ -295,14 +295,14 @@
     @if (pastSessions.Any())
     {
         <div style="margin-bottom:12px;">
-            <label class="form-label">Sessiya seçin:</label>
+            <label class="form-label">@L["ClassSessions"]:</label>
             <select id="sessionSelect" class="form-control" style="max-width:500px;" onchange="selectSession(this.value)">
                 @foreach (var s in pastSessions)
                 {
                     var hasAtt = attPerSession.ContainsKey(s.Id) && attPerSession[s.Id].Any();
                     var statusIcon = hasAtt ? "✅" : "⚠️";
                     var label = $"{statusIcon} #{s.SessionNumber} — {s.Date:dd.MM.yyyy} ({s.StartTime}–{s.EndTime})";
-                    if (s.Date == today) { label += " ★ Bu gün"; }
+                    if (s.Date == today) { label += " ★ " + L["Today"].Value; }
                     if (!string.IsNullOrEmpty(s.Topic)) { label += $" · {s.Topic}"; }
                     <option value="@s.Id">@label</option>
                 }
@@ -336,13 +336,13 @@
                                 <input type="hidden" name="groupId" value="@Model.Id" />
                                 <input type="hidden" name="sessionId" value="@s.Id" />
                                 <button type="submit" class="btn btn-success btn-sm" style="padding:3px 10px;">
-                                    <i class="fas fa-check-circle"></i> Dərsi Tamamla
+                                    <i class="fas fa-check-circle"></i> @L["Save"]
                                 </button>
                             </form>
                         }
                         else if (s.Status == ClassSessionStatus.Completed)
                         {
-                            <span class="badge badge-success">Tamamlanıb</span>
+                            <span class="badge badge-success">@L["Active"]</span>
                         }
                     </div>
                     <div class="card-body">
@@ -352,12 +352,12 @@
                             <input type="hidden" name="sessionId" value="@s.Id" />
                             <div style="display:flex; gap:8px; margin-bottom:10px;">
                                 <button type="button" class="btn btn-success btn-sm" onclick="setAll(this, 0)">
-                                    <i class="fas fa-check-double"></i> Hamısını İştirak
+                                    <i class="fas fa-check-double"></i> @L["Present"]
                                 </button>
                                 @foreach (var sa in sessionAssessments)
                                 {
                                     var ac = sa.Type == AssessmentType.Quiz ? "#3b82f6" : sa.Type == AssessmentType.FinalProject ? "#e94560" : "#eab308";
-                                    var al = sa.Type == AssessmentType.Quiz ? "Quiz" : sa.Type == AssessmentType.FinalProject ? "Final" : "Tapşırıq";
+                                    var al = sa.Type == AssessmentType.Quiz ? "Quiz" : sa.Type == AssessmentType.FinalProject ? "Final" : L["AssessmentType_Assignment"].Value;
                                     <a href="/Teacher/Assessments/Grade/@sa.Id" class="btn btn-sm" style="background:@(ac)22; color:@ac; padding:3px 10px; font-size:11px;">
                                         <i class="fas fa-pen"></i> @al: @sa.Title
                                     </a>
@@ -366,13 +366,13 @@
                             <table class="mini-table">
                                 <thead>
                                     <tr>
-                                        <th style="width:35%;">Tələbə</th>
-                                        <th style="text-align:center;">İştirak</th>
-                                        <th style="text-align:center;">Gecikmə</th>
-                                        <th style="text-align:center;">Qayıb</th>
+                                        <th style="width:35%;">@L["Student"]</th>
+                                        <th style="text-align:center;">@L["Present"]</th>
+                                        <th style="text-align:center;">@L["Late"]</th>
+                                        <th style="text-align:center;">@L["Absent"]</th>
                                         @if (hasSavedAtt)
                                         {
-                                            <th style="text-align:center;">Qeyd</th>
+                                            <th style="text-align:center;">@L["Status"]</th>
                                         }
                                     </tr>
                                 </thead>
@@ -416,13 +416,13 @@
                                                         @switch (savedRecord.Status)
                                                         {
                                                             case AttendanceStatus.Present:
-                                                                <span style="color:#22c55e; font-size:12px;">✓ İştirak</span>
+                                                                <span style="color:#22c55e; font-size:12px;">✓ @L["Present"]</span>
                                                                 break;
                                                             case AttendanceStatus.Late:
-                                                                <span style="color:#eab308; font-size:12px;">⚠ Gecikdi</span>
+                                                                <span style="color:#eab308; font-size:12px;">⚠ @L["Late"]</span>
                                                                 break;
                                                             case AttendanceStatus.Absent:
-                                                                <span style="color:#ef4444; font-size:12px;">✗ Qayıb</span>
+                                                                <span style="color:#ef4444; font-size:12px;">✗ @L["Absent"]</span>
                                                                 break;
                                                         }
                                                     }
@@ -438,11 +438,11 @@
                                 </tbody>
                             </table>
                             <div style="display:flex; gap:8px; align-items:center; margin-top:12px;">
-                                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Yadda saxla</button>
+                                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> @L["Save"]</button>
                                 @if (hasSavedAtt)
                                 {
                                     <span style="font-size:12px; color:var(--text-secondary);">
-                                        <i class="fas fa-info-circle"></i> Yenidən saxlasanız mövcud davamiyyət yenilənəcək
+                                        <i class="fas fa-info-circle"></i>
                                     </span>
                                 }
                             </div>
@@ -455,7 +455,7 @@
     else
     {
         <div class="card" style="padding:30px; text-align:center; color:var(--text-secondary);">
-            Hələ keçmiş sessiya yoxdur
+            @L["NoData"]
         </div>
     }
 </div>
@@ -466,7 +466,7 @@
         <div class="card-body" style="padding:0;">
             <table class="mini-table">
                 <thead>
-                    <tr><th>Ad</th><th>Nömrə</th><th>Davamiyyət</th><th>Orta bal</th><th>Status</th><th></th></tr>
+                    <tr><th>@L["Name"]</th><th>@L["PDF_StudentNo"]</th><th>@L["Attendance"]</th><th>@L["Score"]</th><th>@L["Status"]</th><th></th></tr>
                 </thead>
                 <tbody>
                     @foreach (var e in enrollments.OrderBy(x => x.StudentName))
@@ -487,11 +487,19 @@
                             </td>
                             <td style="color:var(--text-secondary);">—</td>
                             <td>
-                                @if (e.Status == EnrollmentStatus.Active) { <span class="badge badge-success">Aktiv</span> }
-                                else if (e.Status == EnrollmentStatus.Dropped) { <span class="badge badge-danger">Çıxdı</span> }
-                                else { <span class="badge badge-info">Bitirdi</span> }
+                                @if (e.Status == EnrollmentStatus.Active) { <span class="badge badge-success">@L["Active"]</span> }
+                                else if (e.Status == EnrollmentStatus.Dropped) { <span class="badge badge-danger">@L["Absent"]</span> }
+                                else { <span class="badge badge-info">✓</span> }
                             </td>
                             <td>
+                                <a href="/Teacher/Messages/Start?groupId=@Model.Id&studentId=@e.StudentId" title="@L["Messages"]"
+                                   style="display:inline-flex; align-items:center; gap:4px; padding:4px 8px; border-radius:6px;
+                                          background:var(--accent-soft); color:var(--accent); text-decoration:none;
+                                          font-size:11px; font-weight:600; transition:all .15s; margin-right:4px;"
+                                   onmouseover="this.style.background='var(--accent)'; this.style.color='#fff'"
+                                   onmouseout="this.style.background='var(--accent-soft)'; this.style.color='var(--accent)'">
+                                    <i class="fas fa-comment"></i>
+                                </a>
                                 <a href="/Teacher/Courses/Transcript?enrollmentId=@e.Id" target="_blank" title="Transkript PDF"
                                    style="display:inline-flex; align-items:center; gap:5px; padding:4px 10px; border-radius:6px;
                                           background:linear-gradient(135deg, #e94560, #c2185b); color:#fff; text-decoration:none;
@@ -506,7 +514,7 @@
                     }
                     @if (!enrollments.Any())
                     {
-                        <tr><td colspan="6" style="text-align:center; color:var(--text-secondary); padding:24px;">Tələbə yoxdur</td></tr>
+                        <tr><td colspan="6" style="text-align:center; color:var(--text-secondary); padding:24px;">@L["NoData"]</td></tr>
                     }
                 </tbody>
             </table>
@@ -517,14 +525,14 @@
 <!-- ==================== TAB 6: Tapşırıqlar ==================== -->
 <div id="tab-assignments" class="tab-content @(activeTab == "assignments" ? "active" : "")">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-        <span style="font-size:13px; color:var(--text-secondary);">@assignments.Count tapşırıq</span>
-        <a href="/Teacher/Assignments/Create?groupId=@Model.Id" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Yeni</a>
+        <span style="font-size:13px; color:var(--text-secondary);">@assignments.Count @L["Assignments"]</span>
+        <a href="/Teacher/Assignments/Create?groupId=@Model.Id" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> @L["Create"]</a>
     </div>
     <div class="card">
         <div class="card-body" style="padding:0;">
             <table class="mini-table">
                 <thead>
-                    <tr><th>Başlıq</th><th>Növ</th><th>Son tarix</th><th>Max bal</th><th>Cavablar</th><th></th></tr>
+                    <tr><th>@L["Title"]</th><th>@L["Type"]</th><th>@L["DueDate"]</th><th>@L["MaxScore"]</th><th>@L["Submissions"]</th><th></th></tr>
                 </thead>
                 <tbody>
                     @foreach (var a in assignments.OrderBy(x => x.DueDate))
@@ -543,7 +551,7 @@
                             <td><span class="badge badge-info" style="font-size:10px;">@a.TypeLabel</span></td>
                             <td>
                                 @a.DueDate.ToString("dd.MM.yy HH:mm")
-                                @if (isOverdue) { <span style="color:#ef4444; font-size:10px; margin-left:4px;">Bitib</span> }
+                                @if (isOverdue) { <span style="color:#ef4444; font-size:10px; margin-left:4px;">✗</span> }
                             </td>
                             <td>@a.MaxScore</td>
                             <td>@a.SubmissionCount</td>
@@ -556,7 +564,7 @@
                     }
                     @if (!assignments.Any())
                     {
-                        <tr><td colspan="6" style="text-align:center; color:var(--text-secondary); padding:24px;">Tapşırıq yoxdur</td></tr>
+                        <tr><td colspan="6" style="text-align:center; color:var(--text-secondary); padding:24px;">@L["NoData"]</td></tr>
                     }
                 </tbody>
             </table>
@@ -567,9 +575,9 @@
 <!-- ==================== TAB 7: Elanlar ==================== -->
 <div id="tab-announcements" class="tab-content @(activeTab == "announcements" ? "active" : "")">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-        <span style="font-size:13px; color:var(--text-secondary);">@announcements.Count elan</span>
+        <span style="font-size:13px; color:var(--text-secondary);">@announcements.Count @L["Announcements"]</span>
         <button class="btn btn-primary btn-sm" onclick="document.getElementById('newAnnForm').style.display = document.getElementById('newAnnForm').style.display === 'none' ? 'block' : 'none'">
-            <i class="fas fa-plus"></i> Yeni Elan
+            <i class="fas fa-plus"></i> @L["NewAnnouncement"]
         </button>
     </div>
 
@@ -580,16 +588,16 @@
                     @Html.AntiForgeryToken()
                     <input type="hidden" name="groupId" value="@Model.Id" />
                     <div class="form-group">
-                        <label class="form-label">Başlıq *</label>
-                        <input name="title" class="form-control" required placeholder="Elan başlığı..." />
+                        <label class="form-label">@L["Title"] *</label>
+                        <input name="title" class="form-control" required placeholder="@L["Title"]" />
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Məzmun *</label>
-                        <textarea name="content" class="form-control" rows="3" required placeholder="Elan mətni..."></textarea>
+                        <label class="form-label">@L["Content"] *</label>
+                        <textarea name="content" class="form-control" rows="3" required placeholder="@L["Content"]"></textarea>
                     </div>
                     <div style="display:flex; gap:8px;">
-                        <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-paper-plane"></i> Yayımla</button>
-                        <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('newAnnForm').style.display='none'">Ləğv et</button>
+                        <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-paper-plane"></i> @L["Submit"]</button>
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('newAnnForm').style.display='none'">@L["Cancel"]</button>
                     </div>
                 </form>
             </div>
@@ -617,7 +625,7 @@
     }
     else
     {
-        <div class="card" style="padding:30px; text-align:center; color:var(--text-secondary);">Hələ elan yoxdur</div>
+        <div class="card" style="padding:30px; text-align:center; color:var(--text-secondary);">@L["NoAnnouncements"]</div>
     }
 </div>
 

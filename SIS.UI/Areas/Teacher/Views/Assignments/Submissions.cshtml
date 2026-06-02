@@ -1,7 +1,7 @@
 @model IEnumerable<SIS.BLL.Services.DTOs.Assignment.SubmissionDto>
 @{
     var assignment = ViewBag.Assignment as SIS.BLL.Services.DTOs.Assignment.AssignmentDto;
-    ViewData["Title"] = "Cavablar";
+    ViewData["Title"] = L["Submissions"].Value;
 }
 
 <div style="margin-bottom:20px;">
@@ -23,7 +23,7 @@
 {
     <div class="card" style="padding:40px; text-align:center; color:var(--text-secondary);">
         <i class="fas fa-inbox" style="font-size:48px; margin-bottom:12px; opacity:.3;"></i>
-        <p>Hələ cavab yoxdur</p>
+        <p>@L["NoData"]</p>
     </div>
 }
 else
@@ -39,11 +39,11 @@ else
                             <code style="background:var(--bg-hover); padding:2px 6px; border-radius:4px; font-size:12px;">@s.StudentNumber</code>
                             @if (s.IsGraded)
                             {
-                                <span class="badge badge-success">Qiymətləndirildi</span>
+                                <span class="badge badge-success">@L["Grades"]</span>
                             }
                             else
                             {
-                                <span class="badge badge-warning">Gözləyir</span>
+                                <span class="badge badge-warning">@L["Loading"]</span>
                             }
                         </div>
                         @if (!string.IsNullOrEmpty(s.Comment))
@@ -56,7 +56,7 @@ else
                         {
                             <div style="margin-bottom:6px;">
                                 <a href="@s.FileUrl" target="_blank" style="display:inline-flex; align-items:center; gap:6px; font-size:12px; color:var(--accent); padding:4px 10px; background:var(--accent-soft); border-radius:6px; text-decoration:none;">
-                                    <i class="fas fa-paperclip"></i> Əlavə fayl
+                                    <i class="fas fa-paperclip"></i> @L["Download"]
                                 </a>
                             </div>
                         }
@@ -90,7 +90,7 @@ else
                                            style="height:36px;" />
                                 </div>
                                 <button type="submit" class="btn btn-sm btn-primary" style="height:36px;">
-                                    <i class="fas fa-check"></i> Qiymətləndir
+                                    <i class="fas fa-check"></i> @L["Assessment"]
                                 </button>
                             </div>
                             <input type="text" name="Feedback" class="form-control"

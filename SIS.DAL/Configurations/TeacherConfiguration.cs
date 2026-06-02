@@ -13,7 +13,7 @@ namespace SIS.DAL.Configurations
             builder.Property(t => t.Title).HasMaxLength(100);
 
             builder.HasOne(t => t.AppUser)
-                .WithOne()
+                .WithOne(u => u.Teacher)
                 .HasForeignKey<Teacher>(t => t.AppUserId)
                 .OnDelete(DeleteBehavior.Restrict);
 

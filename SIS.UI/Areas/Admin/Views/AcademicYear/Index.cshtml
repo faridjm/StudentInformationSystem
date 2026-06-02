@@ -1,13 +1,13 @@
 @model IEnumerable<SIS.BLL.Services.DTOs.AcademicYear.AcademicYearDto>
 
 @{
-    ViewData["Title"] = "Dərs Sezonları";
+    ViewData["Title"] = L["AcademicSeasons"].Value;
 }
 
 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-    <h2 style="font-size:20px; font-weight:700;">Dərs Sezonları</h2>
+    <h2 style="font-size:20px; font-weight:700;">@L["AcademicSeasons"]</h2>
     <a href="/Admin/AcademicYear/Create" class="btn btn-primary">
-        <i class="fas fa-plus"></i> Yeni Sezon
+        <i class="fas fa-plus"></i> @L["NewSeason"]
     </a>
 </div>
 
@@ -17,12 +17,12 @@
             <thead>
                 <tr>
                     <th>#</th>
-                    <th>Ad</th>
-                    <th>Başlama</th>
-                    <th>Bitmə</th>
-                    <th>Semestr Sayı</th>
-                    <th>Status</th>
-                    <th>Əməliyyat</th>
+                    <th>@L["Name"]</th>
+                    <th>@L["StartDate"]</th>
+                    <th>@L["EndDate"]</th>
+                    <th>@L["Seasons"]</th>
+                    <th>@L["Status"]</th>
+                    <th>@L["Actions"]</th>
                 </tr>
             </thead>
             <tbody>
@@ -45,7 +45,7 @@
                         <td>
                             @if (year.IsActive)
                             {
-                                <span class="badge badge-success">Aktiv</span>
+                                <span class="badge badge-success">@L["Active"]</span>
                             }
                             else
                             {
@@ -67,7 +67,7 @@
                                     <i class="fas fa-edit"></i>
                                 </a>
                                 <form method="post" action="/Admin/AcademicYear/Delete/@year.Id"
-                                      onsubmit="return confirm('Dərs sezonunu silmək istədiyinizdən əminsinizmi?')">
+                                      onsubmit="return confirm('?')">
                                     @Html.AntiForgeryToken()
                                     <button type="submit" class="btn btn-sm btn-danger">
                                         <i class="fas fa-trash"></i>
@@ -81,7 +81,7 @@
                 {
                     <tr>
                         <td colspan="7" style="text-align:center; color:var(--text-secondary); padding:30px;">
-                            Hələ heç bir dərs sezonu yaradılmayıb
+                            @L["NoData"]
                         </td>
                     </tr>
                 }

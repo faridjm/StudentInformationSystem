@@ -1,13 +1,13 @@
 ﻿@model IEnumerable<SIS.BLL.Services.DTOs.Teacher.TeacherListDto>
 
 @{
-    ViewData["Title"] = "Müəllimlər";
+    ViewData["Title"] = L["Teachers"].Value;
 }
 
 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-    <h2 style="font-size:20px; font-weight:700;">Müəllimlər</h2>
+    <h2 style="font-size:20px; font-weight:700;">@L["Teachers"]</h2>
     <a href="/Admin/Teacher/Create" class="btn btn-primary">
-        <i class="fas fa-plus"></i> Yeni Müəllim
+        <i class="fas fa-plus"></i> @L["NewTeacher"]
     </a>
 </div>
 
@@ -15,15 +15,15 @@
     <div class="card-body" style="padding:14px 20px;">
         <form method="get" class="search-box">
             <input type="text" name="search" value="@ViewBag.SearchTerm"
-                   class="search-input" placeholder="Ad, email və ya işçi nömrəsi ilə axtar..."
+                   class="search-input" placeholder="@L["Search"]"
                    style="width:300px;" />
             <button type="submit" class="btn btn-secondary">
-                <i class="fas fa-search"></i> Axtar
+                <i class="fas fa-search"></i> @L["Search"]
             </button>
             @if (!string.IsNullOrEmpty(ViewBag.SearchTerm as string))
             {
                 <a href="/Admin/Teacher" class="btn btn-secondary">
-                    <i class="fas fa-times"></i> Təmizlə
+                    <i class="fas fa-times"></i> @L["Close"]
                 </a>
             }
         </form>
@@ -39,12 +39,12 @@
             <thead>
                 <tr>
                     <th>#</th>
-                    <th>Ad Soyad</th>
-                    <th>Email</th>
-                    <th>İşçi №</th>
-                    <th>Qrup sayı</th>
-                    <th>Status</th>
-                    <th>Əməliyyat</th>
+                    <th>@L["FullName"]</th>
+                    <th>@L["Email"]</th>
+                    <th>@L["PDF_StudentNo"]</th>
+                    <th>@L["Groups"]</th>
+                    <th>@L["Status"]</th>
+                    <th>@L["Actions"]</th>
                 </tr>
             </thead>
             <tbody>
@@ -59,7 +59,7 @@
                         <td>
                             @if (teacher.IsActive)
                             {
-                                <span class="badge badge-success">Aktiv</span>
+                                <span class="badge badge-success">@L["Active"]</span>
                             }
                             else
                             {

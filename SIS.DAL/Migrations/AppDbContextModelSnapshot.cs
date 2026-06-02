@@ -454,9 +454,6 @@ namespace SIS.DAL.Migrations
                     b.Property<int>("EnrollmentId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("EnrollmentId1")
-                        .HasColumnType("int");
-
                     b.Property<string>("Feedback")
                         .HasColumnType("nvarchar(max)");
 
@@ -486,8 +483,6 @@ namespace SIS.DAL.Migrations
                     b.HasIndex("AssessmentItemId");
 
                     b.HasIndex("EnrollmentId");
-
-                    b.HasIndex("EnrollmentId1");
 
                     b.ToTable("AssessmentSubmissions");
                 });
@@ -643,6 +638,90 @@ namespace SIS.DAL.Migrations
                         .IsUnique();
 
                     b.ToTable("AttendanceRecords");
+                });
+
+            modelBuilder.Entity("SIS.Entities.Models.ChatConversation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("GroupId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("StudentUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("TeacherUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StudentUserId");
+
+                    b.HasIndex("TeacherUserId");
+
+                    b.HasIndex("GroupId", "TeacherUserId", "StudentUserId")
+                        .IsUnique();
+
+                    b.ToTable("ChatConversations");
+                });
+
+            modelBuilder.Entity("SIS.Entities.Models.ChatMessage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<int>("ConversationId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("SenderUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("SentAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConversationId");
+
+                    b.HasIndex("SenderUserId");
+
+                    b.ToTable("ChatMessages");
                 });
 
             modelBuilder.Entity("SIS.Entities.Models.ClassSession", b =>
@@ -1017,14 +1096,12 @@ namespace SIS.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("AppUserId1")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<decimal>("CurrentGPA")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)");
 
                     b.Property<int>("EnrollmentYear")
                         .HasColumnType("int");
@@ -1045,10 +1122,6 @@ namespace SIS.DAL.Migrations
                     b.HasIndex("AppUserId")
                         .IsUnique();
 
-                    b.HasIndex("AppUserId1")
-                        .IsUnique()
-                        .HasFilter("[AppUserId1] IS NOT NULL");
-
                     b.ToTable("Students");
                 });
 
@@ -1062,9 +1135,6 @@ namespace SIS.DAL.Migrations
 
                     b.Property<string>("AppUserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("AppUserId1")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("CreatedAt")
@@ -1092,10 +1162,6 @@ namespace SIS.DAL.Migrations
 
                     b.HasIndex("AppUserId")
                         .IsUnique();
-
-                    b.HasIndex("AppUserId1")
-                        .IsUnique()
-                        .HasFilter("[AppUserId1] IS NOT NULL");
 
                     b.ToTable("Teachers");
                 });
@@ -1200,14 +1266,10 @@ namespace SIS.DAL.Migrations
                         .IsRequired();
 
                     b.HasOne("SIS.Entities.Models.Enrollment", "Enrollment")
-                        .WithMany()
+                        .WithMany("AssessmentSubmissions")
                         .HasForeignKey("EnrollmentId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.HasOne("SIS.Entities.Models.Enrollment", null)
-                        .WithMany("AssessmentSubmissions")
-                        .HasForeignKey("EnrollmentId1");
 
                     b.Navigation("AssessmentItem");
 
@@ -1267,6 +1329,52 @@ namespace SIS.DAL.Migrations
                     b.Navigation("ClassSession");
 
                     b.Navigation("Enrollment");
+                });
+
+            modelBuilder.Entity("SIS.Entities.Models.ChatConversation", b =>
+                {
+                    b.HasOne("SIS.Entities.Models.Group", "Group")
+                        .WithMany()
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("SIS.Entities.Identity.AppUser", "StudentUser")
+                        .WithMany()
+                        .HasForeignKey("StudentUserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("SIS.Entities.Identity.AppUser", "TeacherUser")
+                        .WithMany()
+                        .HasForeignKey("TeacherUserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Group");
+
+                    b.Navigation("StudentUser");
+
+                    b.Navigation("TeacherUser");
+                });
+
+            modelBuilder.Entity("SIS.Entities.Models.ChatMessage", b =>
+                {
+                    b.HasOne("SIS.Entities.Models.ChatConversation", "Conversation")
+                        .WithMany("Messages")
+                        .HasForeignKey("ConversationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SIS.Entities.Identity.AppUser", "SenderUser")
+                        .WithMany()
+                        .HasForeignKey("SenderUserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Conversation");
+
+                    b.Navigation("SenderUser");
                 });
 
             modelBuilder.Entity("SIS.Entities.Models.ClassSession", b =>
@@ -1372,14 +1480,10 @@ namespace SIS.DAL.Migrations
             modelBuilder.Entity("SIS.Entities.Models.Student", b =>
                 {
                     b.HasOne("SIS.Entities.Identity.AppUser", "AppUser")
-                        .WithOne()
+                        .WithOne("Student")
                         .HasForeignKey("SIS.Entities.Models.Student", "AppUserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.HasOne("SIS.Entities.Identity.AppUser", null)
-                        .WithOne("Student")
-                        .HasForeignKey("SIS.Entities.Models.Student", "AppUserId1");
 
                     b.Navigation("AppUser");
                 });
@@ -1387,14 +1491,10 @@ namespace SIS.DAL.Migrations
             modelBuilder.Entity("SIS.Entities.Models.Teacher", b =>
                 {
                     b.HasOne("SIS.Entities.Identity.AppUser", "AppUser")
-                        .WithOne()
+                        .WithOne("Teacher")
                         .HasForeignKey("SIS.Entities.Models.Teacher", "AppUserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.HasOne("SIS.Entities.Identity.AppUser", null)
-                        .WithOne("Teacher")
-                        .HasForeignKey("SIS.Entities.Models.Teacher", "AppUserId1");
 
                     b.Navigation("AppUser");
                 });
@@ -1423,6 +1523,11 @@ namespace SIS.DAL.Migrations
             modelBuilder.Entity("SIS.Entities.Models.Assignment", b =>
                 {
                     b.Navigation("Submissions");
+                });
+
+            modelBuilder.Entity("SIS.Entities.Models.ChatConversation", b =>
+                {
+                    b.Navigation("Messages");
                 });
 
             modelBuilder.Entity("SIS.Entities.Models.ClassSession", b =>

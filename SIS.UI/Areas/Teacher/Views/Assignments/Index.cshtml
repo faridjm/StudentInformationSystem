@@ -1,17 +1,17 @@
 @model IEnumerable<SIS.BLL.Services.DTOs.Assignment.AssignmentDto>
 @{
-    ViewData["Title"] = "Tapşırıqlar";
+    ViewData["Title"] = L["Assignments"].Value;
     var groupId = (int)ViewBag.GroupId;
 }
 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-    <h2 style="font-size:20px; font-weight:700;">Tapşırıqlar</h2>
+    <h2 style="font-size:20px; font-weight:700;">@L["Assignments"]</h2>
     <a href="/Teacher/Assignments/Create?groupId=@groupId" class="btn btn-primary"><i class="fas fa-plus"></i> Yeni</a>
 </div>
 <div class="card">
     <div class="card-body" style="padding:0;">
         <table class="table">
             <thead>
-                <tr><th>Başlıq</th><th>Növ</th><th>Son tarix</th><th>Max bal</th><th>Cavablar</th><th></th></tr>
+                <tr><th>@L["Title"]</th><th>@L["Type"]</th><th>Son tarix</th><th>Max bal</th><th>Cavablar</th><th></th></tr>
             </thead>
             <tbody>
                 @foreach (var a in Model)
@@ -37,7 +37,7 @@
                 }
                 @if (!Model.Any())
                 {
-                    <tr><td colspan="6" style="text-align:center; color:var(--text-secondary); padding:24px;">Tapşırıq yoxdur</td></tr>
+                    <tr><td colspan="6" style="text-align:center; color:var(--text-secondary); padding:24px;">@L["NoData"]</td></tr>
                 }
             </tbody>
         </table>

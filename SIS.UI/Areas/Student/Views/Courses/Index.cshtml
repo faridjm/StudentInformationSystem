@@ -1,18 +1,18 @@
 @model IEnumerable<SIS.BLL.Services.DTOs.Enrollment.EnrollmentListDto>
 @using SIS.Entities.Enums
 @{
-    ViewData["Title"] = "Kurslarım";
+    ViewData["Title"] = L["MyCourses"].Value;
 }
 
 <div style="margin-bottom:20px;">
-    <h2 style="font-size:20px; font-weight:700;">Kurslarım</h2>
+    <h2 style="font-size:20px; font-weight:700;">@L["MyCourses"]</h2>
 </div>
 
 <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(320px,1fr)); gap:16px;">
     @foreach (var e in Model)
     {
         var statusBadge = e.Status == EnrollmentStatus.Active ? "badge-success" : e.Status == EnrollmentStatus.Completed ? "badge-info" : "badge-danger";
-        var statusLabel = e.Status == EnrollmentStatus.Active ? "Aktiv" : e.Status == EnrollmentStatus.Completed ? "Bitib" : "Çıxıb";
+        var statusLabel = e.Status == EnrollmentStatus.Active ? L["Active"].Value : e.Status == EnrollmentStatus.Completed ? "✓" : "—";
         <a href="/Student/Courses/Detail/@e.Id" style="text-decoration:none;">
             <div class="card" style="cursor:pointer; transition:border-color .2s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
                 <div class="card-header">
@@ -34,7 +34,7 @@
     {
         <div class="card" style="padding:40px; text-align:center; color:var(--text-secondary);">
             <i class="fas fa-book" style="font-size:32px; opacity:.3; margin-bottom:12px; display:block;"></i>
-            Hələ heç bir kursa qeydiyyatınız yoxdur
+            @L["NoData"]
         </div>
     }
 </div>
