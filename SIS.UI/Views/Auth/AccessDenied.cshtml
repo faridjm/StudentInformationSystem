@@ -1,0 +1,91 @@
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Acadex — Giriş yoxdur</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f3460 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Inter', system-ui, sans-serif;
+            padding: 20px;
+        }
+        .card {
+            background: rgba(30,41,59,0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 44px 40px;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+            text-align: center;
+        }
+        .icon-wrap {
+            width: 84px; height: 84px; border-radius: 50%;
+            background: rgba(233,69,96,0.12);
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 24px;
+        }
+        .icon-wrap i { font-size: 38px; color: #e94560; }
+        h1 { color: #f1f5f9; font-weight: 800; font-size: 24px; margin-bottom: 12px; }
+        p { color: rgba(255,255,255,0.55); font-size: 15px; line-height: 1.6; margin-bottom: 10px; }
+        .hint {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 10px;
+            padding: 14px 16px;
+            font-size: 13px;
+            color: rgba(255,255,255,0.5);
+            margin: 22px 0 28px;
+            text-align: left;
+            display: flex; gap: 10px; align-items: flex-start;
+        }
+        .hint i { color: #f59e0b; margin-top: 2px; }
+        .actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+        .btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 11px 22px; border-radius: 10px; font-size: 14px; font-weight: 600;
+            text-decoration: none; cursor: pointer; border: none;
+        }
+        .btn-primary { background: #e94560; color: #fff; }
+        .btn-primary:hover { background: #d63651; }
+        .btn-ghost { background: transparent; color: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.15); }
+        .btn-ghost:hover { background: rgba(255,255,255,0.06); }
+        .logo { font-size: 22px; font-weight: 800; color: #e94560; margin-bottom: 28px; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="logo">Acadex</div>
+        <div class="icon-wrap"><i class="fas fa-user-lock"></i></div>
+        <h1>Səlahiyyətiniz deaktivdir</h1>
+        <p>Bu bölməyə girişiniz hazırda aktiv deyil və ya icazəniz yoxdur.</p>
+
+        <div class="hint">
+            <i class="fas fa-circle-info"></i>
+            <span>
+                Zəhmət olmasa SuperAdmin ilə əlaqə saxlayın
+                və ya girişin aktivləşdirilməsini gözləyin.
+            </span>
+        </div>
+
+        <div class="actions">
+            <form method="post" action="/Auth/Logout" style="margin:0;">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-primary"><i class="fas fa-right-from-bracket"></i> Çıxış et</button>
+            </form>
+            <a href="/" class="btn btn-ghost"><i class="fas fa-house"></i> Ana səhifə</a>
+        </div>
+    </div>
+</body>
+</html>

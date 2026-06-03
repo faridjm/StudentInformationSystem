@@ -46,6 +46,10 @@ namespace SIS.UI.Extensions
             Add<ISimulationApi>();
             Add<ITranscriptApi>();
             Add<IChatApi>();
+            Add<IQuizApi>();
+            Add<IAuditLogApi>();
+            Add<IAdminAccessApi>();
+            Add<ICourseMaterialApi>();
 
             return services;
         }

@@ -1,0 +1,100 @@
+@model SIS.BLL.Services.DTOs.Quiz.TakeQuizDto
+@using SIS.Entities.Enums
+@{
+    ViewData["Title"] = Model.Title;
+    int? remainingSeconds = Model.DurationMinutes.HasValue
+        ? Math.Max(0, (int)(Model.StartedAt.AddMinutes(Model.DurationMinutes.Value) - DateTime.UtcNow).TotalSeconds)
+        : (int?)null;
+}
+
+<div style="max-width:720px; margin:0 auto;">
+    <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
+        <a href="/Student/Quizzes/Index" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i></a>
+        <h2 style="font-size:20px; font-weight:700;">@Model.Title</h2>
+    </div>
+    <p style="font-size:12px; color:var(--text-secondary); margin-bottom:16px;"><i class="fas fa-link"></i> @Model.AssessmentItemTitle</p>
+
+    @if (Model.AlreadySubmitted)
+    {
+        <div class="card" style="padding:40px; text-align:center;">
+            <i class="fas fa-check-circle" style="font-size:48px; color:#22c55e; margin-bottom:12px;"></i>
+            <h3 style="font-size:18px; font-weight:700;">Bu quiz artıq cavablandırılıb</h3>
+            <p style="font-size:28px; font-weight:800; color:#22c55e; margin:12px 0;">@Model.MyScore%</p>
+            <a href="/Student/Quizzes/Index" class="btn btn-secondary">Geri</a>
+        </div>
+    }
+    else
+    {
+        @if (remainingSeconds.HasValue)
+        {
+            <div id="timerBar" class="card" style="padding:10px 16px; margin-bottom:16px; display:flex; align-items:center; gap:8px; position:sticky; top:8px; z-index:5;">
+                <i class="fas fa-clock" style="color:var(--accent);"></i>
+                <span>Qalan vaxt: <strong id="timer">--:--</strong></span>
+            </div>
+        }
+        @if (!string.IsNullOrEmpty(Model.Description))
+        {
+            <div class="card" style="padding:14px 18px; margin-bottom:16px; font-size:13px; color:var(--text-secondary);">@Model.Description</div>
+        }
+
+        <form method="post" action="/Student/Quizzes/Submit" id="quizForm">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="quizId" value="@Model.QuizId" />
+            <input type="hidden" name="enrollmentId" value="@Model.EnrollmentId" />
+
+            <div style="display:flex; flex-direction:column; gap:14px;">
+                @foreach (var (q, idx) in Model.Questions.Select((q, i) => (q, i + 1)))
+                {
+                    var isMulti = q.Type == QuestionType.MultipleChoice;
+                    <div class="card" style="padding:16px 20px;">
+                        <div style="font-weight:600; margin-bottom:4px;">@idx. @q.Text</div>
+                        <div style="font-size:11px; color:var(--text-secondary); margin-bottom:10px;">
+                            @(isMulti ? "Bir neçə cavab seçə bilərsiniz" : "Bir cavab seçin") · @q.Points bal
+                        </div>
+                        <div style="display:flex; flex-direction:column; gap:8px;">
+                            @foreach (var o in q.Options)
+                            {
+                                <label style="display:flex; align-items:center; gap:10px; padding:10px 12px; background:var(--bg-hover); border-radius:8px; cursor:pointer;">
+                                    <input type="@(isMulti ? "checkbox" : "radio")" name="q_@q.Id" value="@o.Id" style="width:18px; height:18px;" />
+                                    <span>@o.Text</span>
+                                </label>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div style="display:flex; gap:12px; margin-top:20px;">
+                <button type="submit" class="btn btn-primary" onclick="return confirm('Cavablarınızı təhvil verirsiniz?');">
+                    <i class="fas fa-paper-plane"></i> Təhvil ver
+                </button>
+                <a href="/Student/Quizzes/Index" class="btn btn-secondary">Ləğv et</a>
+            </div>
+        </form>
+    }
+</div>
+
+@if (!Model.AlreadySubmitted && remainingSeconds.HasValue)
+{
+    <script>
+        var remaining = @remainingSeconds.Value;
+        var timerEl = document.getElementById('timer');
+        var submitted = false;
+        function tick() {
+            if (remaining <= 0) {
+                if (!submitted) {
+                    submitted = true;
+                    timerEl.textContent = '00:00';
+                    document.getElementById('quizForm').submit();
+                }
+                return;
+            }
+            var m = Math.floor(remaining / 60), s = remaining % 60;
+            timerEl.textContent = (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+            if (remaining <= 30) { document.getElementById('timerBar').style.borderColor = '#ef4444'; }
+            remaining--;
+            setTimeout(tick, 1000);
+        }
+        tick();
+    </script>
+}

@@ -1,0 +1,53 @@
+@model IEnumerable<SIS.BLL.Services.DTOs.Quiz.QuizResultDto>
+@{
+    var quiz = ViewBag.Quiz as SIS.BLL.Services.DTOs.Quiz.QuizDto;
+    ViewData["Title"] = "Quiz nəticələri";
+    var submitted = Model.Where(r => r.IsSubmitted).ToList();
+    var avg = submitted.Any() ? submitted.Average(r => r.Score ?? 0) : 0;
+}
+
+<div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
+    <a href="/Teacher/Quizzes/Manage/@quiz?.Id" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i></a>
+    <h2 style="font-size:20px; font-weight:700;">@quiz?.Title — Nəticələr</h2>
+</div>
+<p style="font-size:13px; color:var(--text-secondary); margin-bottom:16px;">
+    @quiz?.AssessmentItemTitle · maks @quiz?.MaxScore · %@quiz?.WeightPercent çəki ·
+    Təhvil verən: @submitted.Count · Orta: @avg.ToString("0.0")%
+</p>
+
+@if (!submitted.Any())
+{
+    <div class="card" style="padding:40px; text-align:center; color:var(--text-secondary);">
+        <i class="fas fa-inbox" style="font-size:48px; margin-bottom:12px; opacity:.3;"></i>
+        <p>Hələ heç bir tələbə bu quiz-i cavablandırmayıb</p>
+    </div>
+}
+else
+{
+    <div class="card" style="padding:0; overflow:hidden;">
+        <table style="width:100%; border-collapse:collapse;">
+            <thead>
+                <tr style="background:var(--bg-hover); text-align:left;">
+                    <th style="padding:10px 16px; font-size:12px;">Tələbə</th>
+                    <th style="padding:10px 16px; font-size:12px;">№</th>
+                    <th style="padding:10px 16px; font-size:12px;">Nəticə</th>
+                    <th style="padding:10px 16px; font-size:12px;">Rəsmi qiymət</th>
+                    <th style="padding:10px 16px; font-size:12px;">Tarix</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var r in submitted.OrderByDescending(x => x.Score))
+                {
+                    var official = quiz != null ? Math.Round((r.Score ?? 0) / 100m * quiz.MaxScore, 2) : 0;
+                    <tr style="border-top:1px solid var(--border);">
+                        <td style="padding:10px 16px;">@r.StudentName</td>
+                        <td style="padding:10px 16px;"><code style="font-size:12px;">@r.StudentNumber</code></td>
+                        <td style="padding:10px 16px; font-weight:700; color:@((r.Score ?? 0) >= 50 ? "#22c55e" : "#ef4444");">@r.Score%</td>
+                        <td style="padding:10px 16px;">@official / @quiz?.MaxScore</td>
+                        <td style="padding:10px 16px; font-size:12px; color:var(--text-secondary);">@r.SubmittedAt?.ToString("dd.MM.yyyy HH:mm")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

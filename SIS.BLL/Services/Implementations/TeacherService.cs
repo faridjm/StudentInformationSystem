@@ -18,14 +18,16 @@ namespace SIS.BLL.Services.Implementations
         private readonly UserManager<AppUser> _userManager;
         private readonly IActivityLogger _activityLogger;
         private readonly IEmailService _emailService;
+        private readonly IAuditLogService _audit;
 
         public TeacherService(IUnitOfWork unitOfWork, UserManager<AppUser> userManager,
-            IActivityLogger activityLogger, IEmailService emailService)
+            IActivityLogger activityLogger, IEmailService emailService, IAuditLogService audit)
         {
             _unitOfWork = unitOfWork;
             _userManager = userManager;
             _activityLogger = activityLogger;
             _emailService = emailService;
+            _audit = audit;
         }
 
         public async Task<IEnumerable<TeacherListDto>> GetAllTeachersAsync()
@@ -91,6 +93,8 @@ namespace SIS.BLL.Services.Implementations
 
             _ = _emailService.SendWelcomeAsync(dto.Email, dto.FullName, teacher.EmployeeNumber, dto.Password, "Teacher");
             await _activityLogger.LogAsync("Create", "Teacher", teacher.Id.ToString(), null, new { dto.FullName, dto.Email });
+            await _audit.LogAsync("Create", "Teacher", teacher.Id.ToString(),
+                $"Müəllim yaradıldı: {teacher.AppUser?.FullName} (№ {teacher.EmployeeNumber})");
         }
 
         public async Task UpdateTeacherAsync(UpdateTeacherDto dto)
@@ -106,6 +110,9 @@ namespace SIS.BLL.Services.Implementations
             teacher.UpdatedAt = DateTime.UtcNow;
             _unitOfWork.Teachers.Update(teacher);
             await _unitOfWork.SaveAsync();
+
+            await _audit.LogAsync("Update", "Teacher", teacher.Id.ToString(),
+                $"Müəllim məlumatı yeniləndi: {teacher.AppUser?.FullName} (№ {teacher.EmployeeNumber})");
         }
 
         public async Task DeleteTeacherAsync(int id)

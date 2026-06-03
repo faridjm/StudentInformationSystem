@@ -2,7 +2,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SIS.BLL.Services.DTOs.Announcement;
 using SIS.BLL.Services.DTOs.Attendance;
+using SIS.BLL.Services.DTOs.Material;
 using SIS.Common.Time;
+using SIS.Entities.Enums;
 using SIS.UI.ApiClients;
 
 namespace SIS.UI.Areas.Teacher.Controllers
@@ -21,12 +23,13 @@ namespace SIS.UI.Areas.Teacher.Controllers
         private readonly IAttendanceApi _attendanceApi;
         private readonly IClock _clock;
         private readonly ITranscriptApi _transcriptApi;
+        private readonly ICourseMaterialApi _materialApi;
 
         public CoursesController(IGroupApi groupApi, ITeacherApi teacherApi,
             IEnrollmentApi enrollmentApi, IClassSessionApi sessionApi,
             IAssessmentApi assessmentApi, IAnnouncementApi announcementApi,
             IAssignmentApi assignmentApi, IAttendanceApi attendanceApi,
-            IClock clock, ITranscriptApi transcriptApi)
+            IClock clock, ITranscriptApi transcriptApi, ICourseMaterialApi materialApi)
         {
             _groupApi = groupApi;
             _teacherApi = teacherApi;
@@ -38,6 +41,7 @@ namespace SIS.UI.Areas.Teacher.Controllers
             _attendanceApi = attendanceApi;
             _clock = clock;
             _transcriptApi = transcriptApi;
+            _materialApi = materialApi;
         }
 
         public async Task<IActionResult> Index()
@@ -58,6 +62,9 @@ namespace SIS.UI.Areas.Teacher.Controllers
 
             var assignments = new List<SIS.BLL.Services.DTOs.Assignment.AssignmentDto>();
             try { assignments = (await _assignmentApi.GetByGroupAsync(id)).ToList(); } catch { }
+
+            var materials = new List<SIS.BLL.Services.DTOs.Material.CourseMaterialDto>();
+            try { materials = (await _materialApi.GetByGroupAsync(id)).ToList(); } catch { }
 
             // Davamiyyət: hər enrollment üçün summary
             var attendanceSummaries = new Dictionary<int, AttendanceSummaryDto>();
@@ -81,6 +88,7 @@ namespace SIS.UI.Areas.Teacher.Controllers
             ViewBag.Assessments = assessments;
             ViewBag.Announcements = announcements;
             ViewBag.Assignments = assignments;
+            ViewBag.Materials = materials;
             ViewBag.AttendanceSummaries = attendanceSummaries;
             ViewBag.AttendancePerSession = attendancePerSession;
             ViewBag.Today = _clock.Today;
@@ -134,6 +142,73 @@ namespace SIS.UI.Areas.Teacher.Controllers
             await _announcementApi.CreateAsync(dto);
             TempData["Success"] = "Elan yayımlandı";
             return RedirectToAction("Detail", new { id = groupId, tab = "announcements" });
+        }
+
+        // ── Materiallar ──────────────────────────────────────────────
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateMaterial(int groupId, string Title, string? Description,
+            int MaterialType, string? LinkUrl, string? FilePath, string? FileName, long? FileSize)
+        {
+            try
+            {
+                await _materialApi.CreateAsync(new CreateCourseMaterialDto
+                {
+                    GroupId = groupId,
+                    Title = Title,
+                    Description = Description,
+                    MaterialType = (SIS.Entities.Enums.MaterialType)MaterialType,
+                    LinkUrl = LinkUrl,
+                    FilePath = FilePath,
+                    FileName = FileName,
+                    FileSize = FileSize
+                });
+                TempData["Success"] = "Material əlavə edildi";
+            }
+            catch { TempData["Error"] = "Material əlavə edilə bilmədi (məlumatları yoxlayın)"; }
+            return RedirectToAction("Detail", new { id = groupId, tab = "materials" });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateMaterial(int id, int groupId, string Title, string? Description,
+            int MaterialType, string? LinkUrl, string? FilePath, string? FileName, long? FileSize)
+        {
+            try
+            {
+                await _materialApi.UpdateAsync(new UpdateCourseMaterialDto
+                {
+                    Id = id,
+                    Title = Title,
+                    Description = Description,
+                    MaterialType = (SIS.Entities.Enums.MaterialType)MaterialType,
+                    LinkUrl = LinkUrl,
+                    FilePath = FilePath,
+                    FileName = FileName,
+                    FileSize = FileSize
+                });
+                TempData["Success"] = "Material yeniləndi";
+            }
+            catch { TempData["Error"] = "Material yenilənə bilmədi"; }
+            return RedirectToAction("Detail", new { id = groupId, tab = "materials" });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ToggleMaterial(int id, int groupId, bool active)
+        {
+            try { await _materialApi.SetActiveAsync(id, active); TempData["Success"] = active ? "Material göstərilir" : "Material gizlədildi"; }
+            catch { TempData["Error"] = "Əməliyyat alınmadı"; }
+            return RedirectToAction("Detail", new { id = groupId, tab = "materials" });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteMaterial(int id, int groupId)
+        {
+            try { await _materialApi.DeleteAsync(id); TempData["Success"] = "Material silindi"; }
+            catch { TempData["Error"] = "Material silinə bilmədi"; }
+            return RedirectToAction("Detail", new { id = groupId, tab = "materials" });
         }
 
         // Tələbə transkriptini yüklə

@@ -1,0 +1,143 @@
+@model IEnumerable<SIS.BLL.Services.DTOs.AdminAccess.AdminAccessUserDto>
+@{
+    ViewData["Title"] = "Müvəqqəti Admin Girişi";
+    string StatusBadge(string s) => s switch
+    {
+        "Active" => "background:#dcfce7; color:#16a34a;",
+        "Expired" => "background:#fef9c3; color:#ca8a04;",
+        _ => "background:#f1f5f9; color:#475569;"
+    };
+    string StatusLabel(string s) => s switch
+    {
+        "Active" => "Aktiv",
+        "Expired" => "Vaxtı keçib",
+        _ => "Qeyri-aktiv"
+    };
+}
+
+<div style="margin-bottom:16px;">
+    <h2 style="font-size:20px; font-weight:700;"><i class="fas fa-user-shield"></i> Müvəqqəti Admin Girişi</h2>
+    <p style="font-size:13px; color:var(--text-secondary); margin-top:4px;">
+        SuperAdmin kimi köməkçi Admin-lərə müvəqqəti panel girişi verə və ya ləğv edə bilərsiniz. SuperAdmin həmişə giriş əldə edir.
+    </p>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="card" style="padding:40px; text-align:center; color:var(--text-secondary);">
+        <i class="fas fa-user-slash" style="font-size:48px; margin-bottom:12px; opacity:.3;"></i>
+        <p>Admin roluna malik istifadəçi yoxdur</p>
+    </div>
+}
+else
+{
+    <div class="card" style="padding:0; overflow-x:auto;">
+        <table style="width:100%; border-collapse:collapse; font-size:13px; min-width:760px;">
+            <thead>
+                <tr style="background:var(--bg-hover); text-align:left;">
+                    <th style="padding:10px 14px;">Ad</th>
+                    <th style="padding:10px 14px;">Email</th>
+                    <th style="padding:10px 14px;">Status</th>
+                    <th style="padding:10px 14px;">Bitmə</th>
+                    <th style="padding:10px 14px;">Səbəb</th>
+                    <th style="padding:10px 14px; text-align:right;">Əməliyyat</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var u in Model)
+                {
+                    <tr style="border-top:1px solid var(--border);">
+                        <td style="padding:10px 14px; font-weight:600;">@u.FullName</td>
+                        <td style="padding:10px 14px; color:var(--text-secondary);">@u.Email</td>
+                        <td style="padding:10px 14px;">
+                            <span style="padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; @StatusBadge(u.Status)">@StatusLabel(u.Status)</span>
+                        </td>
+                        <td style="padding:10px 14px; color:var(--text-secondary);">@(u.ExpiresAt?.ToString("dd.MM.yyyy HH:mm") ?? "—")</td>
+                        <td style="padding:10px 14px; max-width:220px; color:var(--text-secondary);">@u.Reason</td>
+                        <td style="padding:10px 14px; text-align:right; white-space:nowrap;">
+                            @if (u.Status == "Active")
+                            {
+                                <button type="button" class="btn btn-sm btn-danger"
+                                        onclick="openDeactivate('@u.UserId', '@u.FullName')">
+                                    <i class="fas fa-ban"></i> Dayandır
+                                </button>
+                            }
+                            else
+                            {
+                                <button type="button" class="btn btn-sm btn-primary"
+                                        onclick="openActivate('@u.UserId', '@u.FullName')">
+                                    <i class="fas fa-check"></i> Aktivləşdir
+                                </button>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+<!-- Activate modal -->
+<div id="activateModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:1000; align-items:center; justify-content:center;">
+    <div class="card" style="max-width:440px; width:90%; padding:0;">
+        <div style="padding:16px 20px; border-bottom:1px solid var(--border); font-weight:700;">
+            <i class="fas fa-user-shield"></i> Girişi aktivləşdir: <span id="actName"></span>
+        </div>
+        <form method="post" action="/Admin/AdminAccess/Activate" style="padding:20px;">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="adminUserId" id="actUserId" />
+            <div class="form-group">
+                <label class="form-label">Bitmə tarixi (boş = limitsiz)</label>
+                <input type="datetime-local" name="expiresAt" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label class="form-label">Səbəb</label>
+                <textarea name="reason" class="form-control" rows="2" placeholder="məs: tətil dövründə əvəzetmə"></textarea>
+            </div>
+            <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:8px;">
+                <button type="button" class="btn btn-secondary" onclick="closeModals()">Ləğv</button>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-check"></i> Aktivləşdir</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Deactivate modal -->
+<div id="deactivateModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:1000; align-items:center; justify-content:center;">
+    <div class="card" style="max-width:440px; width:90%; padding:0;">
+        <div style="padding:16px 20px; border-bottom:1px solid var(--border); font-weight:700;">
+            <i class="fas fa-ban"></i> Girişi dayandır: <span id="deactName"></span>
+        </div>
+        <form method="post" action="/Admin/AdminAccess/Deactivate" style="padding:20px;">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="adminUserId" id="deactUserId" />
+            <div class="form-group">
+                <label class="form-label">Səbəb</label>
+                <textarea name="reason" class="form-control" rows="2" placeholder="məs: müddət bitdi"></textarea>
+            </div>
+            <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:8px;">
+                <button type="button" class="btn btn-secondary" onclick="closeModals()">Ləğv</button>
+                <button type="submit" class="btn btn-danger"><i class="fas fa-ban"></i> Dayandır</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    function openActivate(id, name) {
+        document.getElementById('actUserId').value = id;
+        document.getElementById('actName').textContent = name;
+        document.getElementById('activateModal').style.display = 'flex';
+    }
+    function openDeactivate(id, name) {
+        document.getElementById('deactUserId').value = id;
+        document.getElementById('deactName').textContent = name;
+        document.getElementById('deactivateModal').style.display = 'flex';
+    }
+    function closeModals() {
+        document.getElementById('activateModal').style.display = 'none';
+        document.getElementById('deactivateModal').style.display = 'none';
+    }
+</script>
+}

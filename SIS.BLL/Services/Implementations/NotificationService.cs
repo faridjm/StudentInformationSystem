@@ -1,3 +1,4 @@
+using SIS.BLL.Services.DTOs.Common;
 using SIS.BLL.Services.DTOs.Notification;
 using SIS.BLL.Services.Interfaces;
 using SIS.DAL.UnitOfWork;
@@ -20,15 +21,37 @@ namespace SIS.BLL.Services.Implementations
         public async Task<IEnumerable<NotificationDto>> GetUserNotificationsAsync(string userId)
         {
             var notifications = await _unitOfWork.Notifications.GetUserNotificationsAsync(userId);
-            return notifications.Select(n => new NotificationDto
+            return notifications.Select(MapToDto);
+        }
+
+        public async Task<IEnumerable<NotificationDto>> GetRecentAsync(string userId, int count)
+        {
+            var notifications = await _unitOfWork.Notifications.GetRecentAsync(userId, count);
+            return notifications.Select(MapToDto);
+        }
+
+        public async Task<PagedResult<NotificationDto>> GetPagedAsync(
+            string userId, bool? isRead, NotificationType? type, int page, int pageSize)
+        {
+            var (items, total) = await _unitOfWork.Notifications.GetPagedAsync(userId, isRead, type, page, pageSize);
+            return new PagedResult<NotificationDto>
             {
-                Id = n.Id, Title = n.Title, Message = n.Message,
-                Type = n.Type, IsRead = n.IsRead, CreatedAt = n.CreatedAt
-            });
+                Items = items.Select(MapToDto).ToList(),
+                TotalCount = total,
+                Page = page < 1 ? 1 : page,
+                PageSize = pageSize < 1 ? 20 : pageSize
+            };
         }
 
         public async Task<int> GetUnreadCountAsync(string userId)
             => await _unitOfWork.Notifications.GetUnreadCountAsync(userId);
+
+        public async Task<bool> MarkAsReadAsync(int id, string userId)
+        {
+            var ok = await _unitOfWork.Notifications.MarkAsReadAsync(id, userId);
+            if (ok) await _unitOfWork.SaveAsync();
+            return ok;
+        }
 
         public async Task MarkAllAsReadAsync(string userId)
         {
@@ -36,16 +59,50 @@ namespace SIS.BLL.Services.Implementations
             await _unitOfWork.SaveAsync();
         }
 
-        public async Task SendNotificationAsync(string userId, string title, string message, NotificationType type)
+        public async Task SendNotificationAsync(string userId, string title, string message, NotificationType type, string? relatedUrl = null)
         {
+            if (string.IsNullOrEmpty(userId)) return;
+
             var notification = new Notification
             {
                 UserId = userId, Title = title, Message = message,
-                Type = type, IsRead = false, CreatedAt = DateTime.UtcNow
+                Type = type, RelatedUrl = relatedUrl, IsRead = false, CreatedAt = DateTime.UtcNow
             };
             await _unitOfWork.Notifications.AddAsync(notification);
             await _unitOfWork.SaveAsync();
-            await _realtimeNotifier.NotifyUserAsync(userId, title, message, type.ToString());
+
+            try { await _realtimeNotifier.NotifyUserAsync(userId, title, message, type.ToString()); }
+            catch { /* realtime xətası əsas axını pozmasın */ }
         }
+
+        public async Task SendToManyAsync(IEnumerable<string> userIds, string title, string message, NotificationType type, string? relatedUrl = null)
+        {
+            var ids = userIds.Where(id => !string.IsNullOrEmpty(id)).Distinct().ToList();
+            if (ids.Count == 0) return;
+
+            var now = DateTime.UtcNow;
+            foreach (var id in ids)
+            {
+                await _unitOfWork.Notifications.AddAsync(new Notification
+                {
+                    UserId = id, Title = title, Message = message,
+                    Type = type, RelatedUrl = relatedUrl, IsRead = false, CreatedAt = now
+                });
+            }
+            await _unitOfWork.SaveAsync();
+
+            foreach (var id in ids)
+            {
+                try { await _realtimeNotifier.NotifyUserAsync(id, title, message, type.ToString()); }
+                catch { }
+            }
+        }
+
+        private static NotificationDto MapToDto(Notification n) => new()
+        {
+            Id = n.Id, Title = n.Title, Message = n.Message,
+            Type = n.Type, IsRead = n.IsRead, RelatedUrl = n.RelatedUrl,
+            CreatedAt = n.CreatedAt, ReadAt = n.ReadAt
+        };
     }
 }

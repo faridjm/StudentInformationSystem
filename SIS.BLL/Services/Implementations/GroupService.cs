@@ -9,8 +9,13 @@ namespace SIS.BLL.Services.Implementations
     public class GroupService : IGroupService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IAuditLogService _audit;
 
-        public GroupService(IUnitOfWork unitOfWork) { _unitOfWork = unitOfWork; }
+        public GroupService(IUnitOfWork unitOfWork, IAuditLogService audit)
+        {
+            _unitOfWork = unitOfWork;
+            _audit = audit;
+        }
 
         public async Task<IEnumerable<GroupListDto>> GetAllAsync()
         {
@@ -71,6 +76,8 @@ namespace SIS.BLL.Services.Implementations
 
             await GenerateSessionsAsync(group.Id);
 
+            await _audit.LogAsync("Create", "Group", group.Id.ToString(), $"Qrup yaradıldı: {group.Name}");
+
             var created = await _unitOfWork.Groups.GetGroupWithDetailsAsync(group.Id);
             return MapToDetailDto(created!);
         }
@@ -117,6 +124,8 @@ namespace SIS.BLL.Services.Implementations
 
             _unitOfWork.Groups.Update(group);
             await _unitOfWork.SaveAsync();
+
+            await _audit.LogAsync("Update", "Group", group.Id.ToString(), $"Qrup yeniləndi: {group.Name}");
         }
 
         public async Task DeleteAsync(int id)

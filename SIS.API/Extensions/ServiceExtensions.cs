@@ -34,6 +34,10 @@ namespace SIS.API.Extensions
             services.AddScoped<ITranscriptService, TranscriptService>();
             services.AddScoped<ITranscriptPdfService, TranscriptPdfService>();
             services.AddScoped<IChatService, ChatService>();
+            services.AddScoped<IQuizService, QuizService>();
+            services.AddScoped<IAuditLogService, AuditLogService>();
+            services.AddScoped<IAdminAccessService, AdminAccessService>();
+            services.AddScoped<ICourseMaterialService, CourseMaterialService>();
             services.AddScoped<IRealtimeNotifier, SignalRNotifier>();
             services.AddHttpContextAccessor();
             services.AddScoped<IActivityLogger, ActivityLogger>();

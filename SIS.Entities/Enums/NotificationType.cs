@@ -5,7 +5,14 @@
         GradeAdded,
         AttendanceMarked,
         AnnouncementPosted,
-        EnrollmentConfirmed
+        EnrollmentConfirmed,
+        AssignmentCreated,
+        AssignmentSubmitted,
+        AssignmentReviewed,
+        QuizActivated,
+        QuizSubmitted,
+        ChatMessage,
+        AdminAccessChanged
     }
 
 }

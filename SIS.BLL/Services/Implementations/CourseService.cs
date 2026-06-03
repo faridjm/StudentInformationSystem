@@ -14,7 +14,7 @@ namespace SIS.BLL.Services.Implementations
 
         public async Task<IEnumerable<CourseDto>> GetAllAsync()
         {
-            var courses = await _unitOfWork.Courses.GetAllAsync();
+            var courses = await _unitOfWork.Courses.GetAllWithGroupsAsync();
             return courses.Select(c => new CourseDto
             {
                 Id = c.Id, Name = c.Name, Description = c.Description,

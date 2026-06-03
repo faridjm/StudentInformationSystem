@@ -12,11 +12,13 @@ namespace SIS.BLL.Services.Implementations
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IEmailService _emailService;
+        private readonly IAuditLogService _audit;
 
-        public EnrollmentService(IUnitOfWork unitOfWork, IEmailService emailService)
+        public EnrollmentService(IUnitOfWork unitOfWork, IEmailService emailService, IAuditLogService audit)
         {
             _unitOfWork = unitOfWork;
             _emailService = emailService;
+            _audit = audit;
         }
 
         public async Task<IEnumerable<EnrollmentListDto>> GetByGroupAsync(int groupId)
@@ -68,6 +70,9 @@ namespace SIS.BLL.Services.Implementations
             if (assessmentItems.Any())
                 await _unitOfWork.SaveAsync();
 
+            await _audit.LogAsync("Enroll", "Enrollment", enrollment.Id.ToString(),
+                $"Tələbə qrupa qeydiyyatdan keçdi (Student #{dto.StudentId}, Group #{dto.GroupId})");
+
             // Email göndər
             var student = await _unitOfWork.Students.GetStudentWithDetailsAsync(dto.StudentId);
             if (student?.AppUser?.Email != null)
@@ -94,6 +99,9 @@ namespace SIS.BLL.Services.Implementations
             enrollment.UpdatedAt = DateTime.UtcNow;
             _unitOfWork.Enrollments.Update(enrollment);
             await _unitOfWork.SaveAsync();
+
+            await _audit.LogAsync("Drop", "Enrollment", enrollment.Id.ToString(),
+                $"Qeydiyyat ləğv edildi (Student #{enrollment.StudentId}, Group #{enrollment.GroupId})");
         }
 
         private static EnrollmentListDto MapToDto(Enrollment e) => new()

@@ -22,6 +22,11 @@ namespace SIS.DAL.UnitOfWork
         IAssignmentRepository Assignments { get; }
         IAssignmentSubmissionRepository AssignmentSubmissions { get; }
         IChatRepository Chat { get; }
+        IQuizRepository Quizzes { get; }
+        IQuizAttemptRepository QuizAttempts { get; }
+        IAuditLogRepository AuditLogs { get; }
+        IAdminAccessGrantRepository AdminAccessGrants { get; }
+        ICourseMaterialRepository CourseMaterials { get; }
 
         Task<int> SaveAsync();
     }

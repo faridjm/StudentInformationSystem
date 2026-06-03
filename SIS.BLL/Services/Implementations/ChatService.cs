@@ -1,6 +1,7 @@
 using SIS.BLL.Services.DTOs.Chat;
 using SIS.BLL.Services.Interfaces;
 using SIS.DAL.UnitOfWork;
+using SIS.Entities.Enums;
 using SIS.Entities.Models;
 using static SIS.BLL.Exceptions.AppException;
 
@@ -9,8 +10,13 @@ namespace SIS.BLL.Services.Implementations
     public class ChatService : IChatService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly INotificationService _notifications;
 
-        public ChatService(IUnitOfWork unitOfWork) { _unitOfWork = unitOfWork; }
+        public ChatService(IUnitOfWork unitOfWork, INotificationService notifications)
+        {
+            _unitOfWork = unitOfWork;
+            _notifications = notifications;
+        }
 
         public async Task<IEnumerable<ConversationDto>> GetMyConversationsAsync(string userId)
         {
@@ -132,6 +138,16 @@ namespace SIS.BLL.Services.Implementations
                 SenderUserId = senderUserId,
                 Content = content.Trim()
             });
+
+            // Qəbul edənə bildiriş
+            var isSenderTeacher = conv.TeacherUserId == senderUserId;
+            var receiverUserId = isSenderTeacher ? conv.StudentUserId : conv.TeacherUserId;
+            var senderName = isSenderTeacher ? conv.TeacherUser?.FullName : conv.StudentUser?.FullName;
+            var relatedUrl = isSenderTeacher ? "/Student/Messages" : "/Teacher/Messages";
+            var snippet = content.Trim();
+            if (snippet.Length > 80) snippet = snippet.Substring(0, 80) + "…";
+            await _notifications.SendNotificationAsync(receiverUserId,
+                $"Yeni mesaj: {senderName}", snippet, NotificationType.ChatMessage, relatedUrl);
 
             return new MessageDto
             {

@@ -12,6 +12,7 @@ namespace SIS.BLL.Services.DTOs.Notification
         public string Message { get; set; } = null!;
         public NotificationType Type { get; set; }
         public bool IsRead { get; set; }
+        public string? RelatedUrl { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? ReadAt { get; set; }
     }

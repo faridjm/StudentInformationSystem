@@ -1,0 +1,131 @@
+@using SIS.Entities.Enums
+@model SIS.BLL.Services.DTOs.Common.PagedResult<SIS.BLL.Services.DTOs.Notification.NotificationDto>
+@{
+    ViewData["Title"] = "Bildirişlər";
+    Layout = User.IsInRole("Student") ? "_StudentLayout"
+           : (User.IsInRole("Teacher") ? "_TeacherLayout" : "_AdminLayout");
+
+    var curIsRead = ViewBag.IsRead as bool?;
+    var curType = ViewBag.Type as NotificationType?;
+    var pageSize = (int)(ViewBag.PageSize ?? 20);
+
+    string TypeLabel(NotificationType t) => t switch
+    {
+        NotificationType.GradeAdded => "Qiymət",
+        NotificationType.AttendanceMarked => "Davamiyyət",
+        NotificationType.AnnouncementPosted => "Elan",
+        NotificationType.EnrollmentConfirmed => "Qeydiyyat",
+        NotificationType.AssignmentCreated => "Yeni tapşırıq",
+        NotificationType.AssignmentSubmitted => "Tapşırıq cavabı",
+        NotificationType.AssignmentReviewed => "Tapşırıq qiyməti",
+        NotificationType.QuizActivated => "Quiz aktiv",
+        NotificationType.QuizSubmitted => "Quiz cavabı",
+        NotificationType.ChatMessage => "Mesaj",
+        NotificationType.AdminAccessChanged => "Admin giriş",
+        _ => t.ToString()
+    };
+
+    string QueryWith(int p) =>
+        $"?isRead={(curIsRead.HasValue ? curIsRead.Value.ToString().ToLower() : "")}&type={(curType.HasValue ? curType.Value.ToString() : "")}&pageSize={pageSize}&page={p}";
+}
+
+<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:16px;">
+    <h2 style="font-size:20px; font-weight:700;"><i class="fas fa-bell"></i> Bildirişlər</h2>
+    <form id="markAllForm" style="margin:0;">
+        @Html.AntiForgeryToken()
+        <button type="button" class="btn btn-sm btn-secondary" onclick="markAllNotifs()"><i class="fas fa-check-double"></i> Hamısını oxu</button>
+    </form>
+</div>
+
+<form method="get" action="/Notifications/Index" class="card" style="padding:14px 16px; margin-bottom:16px;">
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(160px,1fr)); gap:12px; align-items:end;">
+        <div class="form-group" style="margin:0;">
+            <label class="form-label" style="font-size:12px;">Status</label>
+            <select name="isRead" class="form-control">
+                <option value="">Hamısı</option>
+                <option value="false" selected="@(curIsRead == false)">Oxunmamış</option>
+                <option value="true" selected="@(curIsRead == true)">Oxunmuş</option>
+            </select>
+        </div>
+        <div class="form-group" style="margin:0;">
+            <label class="form-label" style="font-size:12px;">Növ</label>
+            <select name="type" class="form-control">
+                <option value="">Hamısı</option>
+                @foreach (var t in Enum.GetValues<NotificationType>())
+                {
+                    <option value="@t" selected="@(curType == t)">@TypeLabel(t)</option>
+                }
+            </select>
+        </div>
+        <div style="display:flex; gap:8px;">
+            <button type="submit" class="btn btn-primary"><i class="fas fa-filter"></i> Süz</button>
+            <a href="/Notifications/Index" class="btn btn-secondary">Sıfırla</a>
+        </div>
+    </div>
+</form>
+
+<div style="font-size:13px; color:var(--text-secondary); margin-bottom:8px;">
+    Ümumi: <strong>@Model.TotalCount</strong> · Səhifə @Model.Page / @(Model.TotalPages == 0 ? 1 : Model.TotalPages)
+</div>
+
+@section Scripts {
+<script>
+    function markAllNotifs() {
+        var token = document.querySelector('#markAllForm input[name="__RequestVerificationToken"]').value;
+        fetch('/Notifications/MarkAllRead', { method: 'POST', headers: { 'RequestVerificationToken': token } })
+            .then(function () { location.reload(); })
+            .catch(function () { location.reload(); });
+    }
+</script>
+}
+
+@if (!Model.Items.Any())
+{
+    <div class="card" style="padding:40px; text-align:center; color:var(--text-secondary);">
+        <i class="fas fa-bell-slash" style="font-size:48px; margin-bottom:12px; opacity:.3;"></i>
+        <p>Bildiriş yoxdur</p>
+    </div>
+}
+else
+{
+    <div style="display:flex; flex-direction:column; gap:8px;">
+        @foreach (var n in Model.Items)
+        {
+            var href = $"/Notifications/Open?id={n.Id}" + (string.IsNullOrEmpty(n.RelatedUrl) ? "" : $"&url={Uri.EscapeDataString(n.RelatedUrl)}");
+            <a href="@href" class="card" style="display:block; padding:14px 18px; text-decoration:none; color:inherit; @(n.IsRead ? "" : "border-left:3px solid var(--accent);")">
+                <div style="display:flex; justify-content:space-between; gap:12px; align-items:flex-start;">
+                    <div style="flex:1;">
+                        <div style="display:flex; align-items:center; gap:8px; margin-bottom:3px;">
+                            @if (!n.IsRead)
+                            {
+                                <span style="width:8px; height:8px; border-radius:50%; background:var(--accent); display:inline-block;"></span>
+                            }
+                            <strong style="font-size:14px;">@n.Title</strong>
+                            <span style="font-size:10px; padding:2px 8px; border-radius:12px; background:var(--bg-hover); color:var(--text-secondary);">@TypeLabel(n.Type)</span>
+                        </div>
+                        <div style="font-size:13px; color:var(--text-secondary);">@n.Message</div>
+                    </div>
+                    <div style="font-size:11px; color:var(--text-secondary); white-space:nowrap;">@n.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</div>
+                </div>
+            </a>
+        }
+    </div>
+
+    @if (Model.TotalPages > 1)
+    {
+        <div style="display:flex; gap:6px; justify-content:center; margin-top:16px; flex-wrap:wrap;">
+            @if (Model.Page > 1)
+            {
+                <a href="@QueryWith(Model.Page - 1)" class="btn btn-sm btn-secondary"><i class="fas fa-chevron-left"></i></a>
+            }
+            @for (int p = Math.Max(1, Model.Page - 2); p <= Math.Min(Model.TotalPages, Model.Page + 2); p++)
+            {
+                <a href="@QueryWith(p)" class="btn btn-sm @(p == Model.Page ? "btn-primary" : "btn-secondary")">@p</a>
+            }
+            @if (Model.Page < Model.TotalPages)
+            {
+                <a href="@QueryWith(Model.Page + 1)" class="btn btn-sm btn-secondary"><i class="fas fa-chevron-right"></i></a>
+            }
+        </div>
+    }
+}

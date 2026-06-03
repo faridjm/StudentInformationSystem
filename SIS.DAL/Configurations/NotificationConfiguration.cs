@@ -18,6 +18,9 @@ namespace SIS.DAL.Configurations
                 .IsRequired()
                 .HasMaxLength(500);
 
+            builder.Property(n => n.RelatedUrl)
+                .HasMaxLength(500);
+
             builder.HasOne(n => n.User)
                 .WithMany(u => u.Notifications)
                 .HasForeignKey(n => n.UserId)

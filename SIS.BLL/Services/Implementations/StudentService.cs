@@ -18,14 +18,16 @@ namespace SIS.BLL.Services.Implementations
         private readonly UserManager<AppUser> _userManager;
         private readonly IActivityLogger _activityLogger;
         private readonly IEmailService _emailService;
+        private readonly IAuditLogService _audit;
 
         public StudentService(IUnitOfWork unitOfWork, UserManager<AppUser> userManager,
-            IActivityLogger activityLogger, IEmailService emailService)
+            IActivityLogger activityLogger, IEmailService emailService, IAuditLogService audit)
         {
             _unitOfWork = unitOfWork;
             _userManager = userManager;
             _activityLogger = activityLogger;
             _emailService = emailService;
+            _audit = audit;
         }
 
         public async Task<IEnumerable<StudentListDto>> GetAllStudentsAsync()
@@ -92,6 +94,8 @@ namespace SIS.BLL.Services.Implementations
 
             _ = _emailService.SendWelcomeAsync(dto.Email, dto.FullName, student.StudentNumber, dto.Password, "Student");
             await _activityLogger.LogAsync("Create", "Student", student.Id.ToString(), null, new { dto.FullName, dto.Email });
+            await _audit.LogAsync("Create", "Student", student.Id.ToString(),
+                $"Tələbə yaradıldı: {student.AppUser.FullName} (№ {student.StudentNumber})");
         }
 
         public async Task UpdateStudentAsync(UpdateStudentDto dto)
@@ -107,6 +111,9 @@ namespace SIS.BLL.Services.Implementations
             student.UpdatedAt = DateTime.UtcNow;
             _unitOfWork.Students.Update(student);
             await _unitOfWork.SaveAsync();
+
+            await _audit.LogAsync("Update", "Student", student.Id.ToString(),
+                $"Tələbə məlumatı yeniləndi: {student.AppUser.FullName} (№ {student.StudentNumber})");
         }
 
         public async Task DeleteStudentAsync(int id)

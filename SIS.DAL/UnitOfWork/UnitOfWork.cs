@@ -26,6 +26,11 @@ namespace SIS.DAL.UnitOfWork
         private IAssignmentRepository? _assignments;
         private IAssignmentSubmissionRepository? _assignmentSubmissionsOld;
         private IChatRepository? _chat;
+        private IQuizRepository? _quizzes;
+        private IQuizAttemptRepository? _quizAttempts;
+        private IAuditLogRepository? _auditLogs;
+        private IAdminAccessGrantRepository? _adminAccessGrants;
+        private ICourseMaterialRepository? _courseMaterials;
 
         public UnitOfWork(AppDbContext context) { _context = context; }
 
@@ -47,6 +52,11 @@ namespace SIS.DAL.UnitOfWork
         public IAssignmentRepository Assignments => _assignments ??= new AssignmentRepository(_context);
         public IAssignmentSubmissionRepository AssignmentSubmissions => _assignmentSubmissionsOld ??= new AssignmentSubmissionRepository(_context);
         public IChatRepository Chat => _chat ??= new ChatRepository(_context);
+        public IQuizRepository Quizzes => _quizzes ??= new QuizRepository(_context);
+        public IQuizAttemptRepository QuizAttempts => _quizAttempts ??= new QuizAttemptRepository(_context);
+        public IAuditLogRepository AuditLogs => _auditLogs ??= new AuditLogRepository(_context);
+        public IAdminAccessGrantRepository AdminAccessGrants => _adminAccessGrants ??= new AdminAccessGrantRepository(_context);
+        public ICourseMaterialRepository CourseMaterials => _courseMaterials ??= new CourseMaterialRepository(_context);
 
         public async Task<int> SaveAsync() => await _context.SaveChangesAsync();
         public void Dispose() => _context.Dispose();

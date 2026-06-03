@@ -556,6 +556,15 @@
         <a href="/Admin/Announcement" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Announcement" ? "active" : "")">
             <i class="fas fa-bullhorn"></i> @L["Announcements"]
         </a>
+        @if (User.IsInRole("SuperAdmin"))
+        {
+            <a href="/Admin/AuditLogs" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "AuditLogs" ? "active" : "")">
+                <i class="fas fa-clipboard-list"></i> Audit Log
+            </a>
+            <a href="/Admin/AdminAccess" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "AdminAccess" ? "active" : "")">
+                <i class="fas fa-user-shield"></i> Admin Girişi
+            </a>
+        }
 
         <div class="sidebar-footer">
             <form asp-area="" asp-controller="Auth" asp-action="Logout" method="post">
@@ -572,10 +581,7 @@
             <span class="page-title">@(ViewData["Title"] ?? "Dashboard")</span>
             <div class="navbar-right">
                 @await Html.PartialAsync("_LanguageSwitcher")
-                <div class="notif-bell">
-                    <i class="fas fa-bell"></i>
-                    <span class="notif-badge" id="notifCount" style="display:none">0</span>
-                </div>
+                @await Html.PartialAsync("_NotificationBell")
                 <div class="dropdown">
                     <button class="user-btn" onclick="this.nextElementSibling.classList.toggle('show')">
                         <div class="user-avatar">@(User.Identity?.Name?.FirstOrDefault().ToString().ToUpper() ?? "A")</div>
@@ -636,6 +642,28 @@
             {
                 <div class="alert alert-danger"><i class="fas fa-exclamation-circle me-2"></i>@TempData["Error"]</div>
             }
+            <script>
+                (function () {
+                    var ok = document.querySelector('.alert-success');
+                    var err = document.querySelector('.alert-danger');
+                    if (!ok && !err) return;
+                    try {
+                        var ctx = new (window.AudioContext || window.webkitAudioContext)();
+                        var play = function () {
+                            var o = ctx.createOscillator(), g = ctx.createGain();
+                            o.connect(g); g.connect(ctx.destination);
+                            o.type = 'sine';
+                            o.frequency.value = err ? 330 : 680;
+                            g.gain.setValueAtTime(0.0001, ctx.currentTime);
+                            g.gain.exponentialRampToValueAtTime(0.18, ctx.currentTime + 0.02);
+                            g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.32);
+                            o.start(); o.stop(ctx.currentTime + 0.34);
+                        };
+                        if (ctx.state === 'suspended') ctx.resume().then(play).catch(function () { });
+                        else play();
+                    } catch (e) { }
+                })();
+            </script>
             @RenderBody()
         </main>
     </div>

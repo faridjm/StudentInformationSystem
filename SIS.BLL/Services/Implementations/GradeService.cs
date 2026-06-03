@@ -2,6 +2,7 @@ using SIS.BLL.Services.DTOs.Grade;
 using SIS.BLL.Services.Interfaces;
 using SIS.Common.Time;
 using SIS.DAL.UnitOfWork;
+using SIS.Entities.Enums;
 using SIS.Entities.Models;
 using static SIS.BLL.Exceptions.AppException;
 
@@ -13,14 +14,18 @@ namespace SIS.BLL.Services.Implementations
         private readonly IStudentService _studentService;
         private readonly IActivityLogger _activityLogger;
         private readonly IClock _clock;
+        private readonly IAuditLogService _audit;
+        private readonly INotificationService _notifications;
 
         public GradeService(IUnitOfWork unitOfWork, IStudentService studentService,
-            IActivityLogger activityLogger, IClock clock)
+            IActivityLogger activityLogger, IClock clock, IAuditLogService audit, INotificationService notifications)
         {
             _unitOfWork = unitOfWork;
             _studentService = studentService;
             _activityLogger = activityLogger;
             _clock = clock;
+            _audit = audit;
+            _notifications = notifications;
         }
 
         public async Task<IEnumerable<GradeDto>> GetGradesByEnrollmentAsync(int enrollmentId)
@@ -47,9 +52,17 @@ namespace SIS.BLL.Services.Implementations
             await _unitOfWork.Grades.AddAsync(grade);
             await _unitOfWork.SaveAsync();
 
-            var enrollment = await _unitOfWork.Enrollments.GetByIdAsync(dto.EnrollmentId);
+            await _audit.LogAsync("Create", "Grade", grade.Id.ToString(),
+                $"Qiymət əlavə edildi: {grade.Score}/{grade.MaxScore} (Enrollment #{dto.EnrollmentId})");
+
+            var enrollment = await _unitOfWork.Enrollments.GetEnrollmentWithDetailsAsync(dto.EnrollmentId);
             if (enrollment != null)
+            {
                 await _studentService.UpdateGPAAsync(enrollment.StudentId);
+                await _notifications.SendNotificationAsync(enrollment.Student?.AppUserId,
+                    "Yeni qiymət", $"{grade.Type}: {grade.Score}/{grade.MaxScore}",
+                    NotificationType.GradeAdded, "/Student/Grades");
+            }
         }
 
         public async Task UpdateGradeAsync(UpdateGradeDto dto)
@@ -61,6 +74,9 @@ namespace SIS.BLL.Services.Implementations
             grade.Note = dto.Note; grade.UpdatedAt = _clock.UtcNow;
             _unitOfWork.Grades.Update(grade);
             await _unitOfWork.SaveAsync();
+
+            await _audit.LogAsync("Update", "Grade", grade.Id.ToString(),
+                $"Qiymət yeniləndi: {grade.Score}/{grade.MaxScore} (Enrollment #{grade.EnrollmentId})");
 
             var enrollment = await _unitOfWork.Enrollments.GetByIdAsync(grade.EnrollmentId);
             if (enrollment != null)

@@ -19,12 +19,13 @@ namespace SIS.UI.Areas.Student.Controllers
         private readonly IAnnouncementApi _announcementApi;
         private readonly IClock _clock;
         private readonly ITranscriptApi _transcriptApi;
+        private readonly ICourseMaterialApi _materialApi;
 
         public CoursesController(IEnrollmentApi enrollmentApi, IGradeApi gradeApi,
             IAttendanceApi attendanceApi, IStudentApi studentApi,
             IAssessmentApi assessmentApi, IAssignmentApi assignmentApi,
             IClassSessionApi sessionApi, IAnnouncementApi announcementApi,
-            IClock clock, ITranscriptApi transcriptApi)
+            IClock clock, ITranscriptApi transcriptApi, ICourseMaterialApi materialApi)
         {
             _enrollmentApi = enrollmentApi;
             _gradeApi = gradeApi;
@@ -36,6 +37,16 @@ namespace SIS.UI.Areas.Student.Controllers
             _announcementApi = announcementApi;
             _clock = clock;
             _transcriptApi = transcriptApi;
+            _materialApi = materialApi;
+        }
+
+        // Bildiriş linkindən: groupId-ə görə tələbənin qeydiyyatını tapıb materiallar tabına yönləndir
+        public async Task<IActionResult> MaterialsByGroup(int groupId)
+        {
+            var enrollments = await _enrollmentApi.GetMyEnrollmentsAsync();
+            var match = enrollments.FirstOrDefault(e => e.GroupId == groupId);
+            if (match == null) return RedirectToAction("Index");
+            return RedirectToAction("Detail", new { id = match.Id, tab = "materials" });
         }
 
         public async Task<IActionResult> Index()
@@ -74,6 +85,10 @@ namespace SIS.UI.Areas.Student.Controllers
             var assignments = new List<SIS.BLL.Services.DTOs.Assignment.AssignmentDto>();
             try { assignments = (await _assignmentApi.GetByGroupAsync(enrollment.GroupId)).ToList(); } catch { }
 
+            var materials = new List<SIS.BLL.Services.DTOs.Material.CourseMaterialDto>();
+            try { materials = (await _materialApi.GetVisibleByGroupAsync(enrollment.GroupId)).ToList(); } catch { }
+
+            ViewBag.Materials = materials;
             ViewBag.Enrollment = enrollment;
             ViewBag.Attendance = attendance;
             ViewBag.Summary = summary;

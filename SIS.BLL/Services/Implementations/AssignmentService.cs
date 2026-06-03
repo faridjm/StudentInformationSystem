@@ -12,12 +12,16 @@ namespace SIS.BLL.Services.Implementations
         private readonly IUnitOfWork _unitOfWork;
         private readonly IStudentService _studentService;
         private readonly IEmailService _emailService;
+        private readonly IAuditLogService _audit;
+        private readonly INotificationService _notifications;
 
-        public AssignmentService(IUnitOfWork unitOfWork, IStudentService studentService, IEmailService emailService)
+        public AssignmentService(IUnitOfWork unitOfWork, IStudentService studentService, IEmailService emailService, IAuditLogService audit, INotificationService notifications)
         {
             _unitOfWork = unitOfWork;
             _studentService = studentService;
             _emailService = emailService;
+            _audit = audit;
+            _notifications = notifications;
         }
 
         public async Task<IEnumerable<AssignmentDto>> GetByGroupAsync(int groupId)
@@ -50,6 +54,19 @@ namespace SIS.BLL.Services.Implementations
 
             await _unitOfWork.Assignments.AddAsync(assignment);
             await _unitOfWork.SaveAsync();
+
+            await _audit.LogAsync("Create", "Assignment", assignment.Id.ToString(),
+                $"Tapşırıq yaradıldı: {assignment.Title}");
+
+            // Qrupdakı tələbələrə bildiriş
+            var enrolled = await _unitOfWork.Enrollments.GetByGroupAsync(dto.GroupId);
+            var studentUserIds = enrolled
+                .Where(e => !e.IsDeleted && e.Student != null && e.Student.AppUserId != null)
+                .Select(e => e.Student.AppUserId);
+            await _notifications.SendToManyAsync(studentUserIds,
+                "Yeni tapşırıq", $"\"{assignment.Title}\" tapşırığı əlavə olundu",
+                NotificationType.AssignmentCreated, "/Student/Assignments");
+
             return MapToDto(assignment);
         }
 
@@ -121,6 +138,9 @@ namespace SIS.BLL.Services.Implementations
                 existing.Feedback = null;
                 _unitOfWork.AssignmentSubmissions.Update(existing);
                 await _unitOfWork.SaveAsync();
+                await _audit.LogAsync("Submit", "Assignment", assignment.Id.ToString(),
+                    $"Tapşırıq cavabı yeniləndi (Enrollment #{dto.EnrollmentId})");
+                await NotifyTeacherOnSubmitAsync(assignment);
                 return MapSubmissionToDto(existing, assignment.MaxScore);
             }
 
@@ -136,6 +156,9 @@ namespace SIS.BLL.Services.Implementations
 
             await _unitOfWork.AssignmentSubmissions.AddAsync(submission);
             await _unitOfWork.SaveAsync();
+            await _audit.LogAsync("Submit", "Assignment", assignment.Id.ToString(),
+                $"Tapşırıq cavabı göndərildi (Enrollment #{dto.EnrollmentId})");
+            await NotifyTeacherOnSubmitAsync(assignment);
             return MapSubmissionToDto(submission, assignment.MaxScore);
         }
 
@@ -174,11 +197,18 @@ namespace SIS.BLL.Services.Implementations
 
             await _unitOfWork.SaveAsync();
 
+            await _audit.LogAsync("Review", "Assignment", assignment.Id.ToString(),
+                $"Tapşırıq qiymətləndirildi: {dto.Score}/{assignment.MaxScore} (Submission #{dto.SubmissionId})");
+
             // GPA-nı yenilə + email göndər
             var enrollment = await _unitOfWork.Enrollments.GetEnrollmentWithDetailsAsync(submission.EnrollmentId);
             if (enrollment != null)
             {
                 await _studentService.UpdateGPAAsync(enrollment.StudentId);
+
+                await _notifications.SendNotificationAsync(enrollment.Student?.AppUserId,
+                    "Tapşırıq qiymətləndirildi", $"\"{assignment.Title}\": {dto.Score}/{assignment.MaxScore}",
+                    NotificationType.AssignmentReviewed, "/Student/Assignments");
 
                 var studentEmail = enrollment.Student?.AppUser?.Email;
                 var studentName = enrollment.Student?.AppUser?.FullName ?? "";
@@ -189,6 +219,15 @@ namespace SIS.BLL.Services.Implementations
         }
 
         // ── Helpers ──────────────────────────────────────────────────
+
+        private async Task NotifyTeacherOnSubmitAsync(Assignment assignment)
+        {
+            var group = await _unitOfWork.Groups.GetGroupWithDetailsAsync(assignment.GroupId);
+            var teacherUserId = group?.Teacher?.AppUserId;
+            await _notifications.SendNotificationAsync(teacherUserId,
+                "Tapşırıq cavabı", $"\"{assignment.Title}\" tapşırığına yeni cavab göndərildi",
+                NotificationType.AssignmentSubmitted, $"/Teacher/Assignments/Submissions/{assignment.Id}");
+        }
 
         private static AssignmentDto MapToDto(Assignment a) => new()
         {

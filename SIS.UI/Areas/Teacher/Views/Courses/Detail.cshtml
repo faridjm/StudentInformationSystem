@@ -47,19 +47,6 @@
     @@keyframes slideOut { from { opacity:1; } to { transform:translateX(100%); opacity:0; } }
 </style>
 
-@if (TempData["Success"] != null)
-{
-    <div class="toast-msg toast-success" id="toastMsg">
-        <i class="fas fa-check-circle"></i> @TempData["Success"]
-    </div>
-}
-@if (TempData["Error"] != null)
-{
-    <div class="toast-msg toast-error" id="toastMsg">
-        <i class="fas fa-exclamation-circle"></i> @TempData["Error"]
-    </div>
-}
-
 <!-- Header -->
 <div style="display:flex; align-items:center; gap:14px; margin-bottom:20px;">
     <a href="/Teacher/Courses" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i></a>
@@ -96,6 +83,7 @@
     <a class="tab @(activeTab == "attendance" ? "active" : "")" onclick="switchTab('attendance')"><i class="fas fa-user-check" style="margin-right:6px;"></i>@L["Attendance"]</a>
     <a class="tab @(activeTab == "students" ? "active" : "")" onclick="switchTab('students')"><i class="fas fa-users" style="margin-right:6px;"></i>@L["Students"]</a>
     <a class="tab @(activeTab == "assignments" ? "active" : "")" onclick="switchTab('assignments')"><i class="fas fa-file-alt" style="margin-right:6px;"></i>@L["Assignments"]</a>
+    <a class="tab @(activeTab == "materials" ? "active" : "")" onclick="switchTab('materials')"><i class="fas fa-folder-open" style="margin-right:6px;"></i>Materiallar</a>
     <a class="tab @(activeTab == "announcements" ? "active" : "")" onclick="switchTab('announcements')"><i class="fas fa-bullhorn" style="margin-right:6px;"></i>@L["Announcements"]</a>
 </div>
 
@@ -629,6 +617,147 @@
     }
 </div>
 
+<!-- ==================== TAB: Materiallar ==================== -->
+<div id="tab-materials" class="tab-content @(activeTab == "materials" ? "active" : "")">
+    @{
+        var materials = ViewBag.Materials as List<SIS.BLL.Services.DTOs.Material.CourseMaterialDto> ?? new();
+        Func<MaterialType, string> matIcon = t => t switch
+        {
+            MaterialType.Link => "fa-link",
+            MaterialType.Video => "fa-video",
+            MaterialType.Document => "fa-file-word",
+            MaterialType.Presentation => "fa-file-powerpoint",
+            MaterialType.Code => "fa-file-code",
+            MaterialType.File => "fa-file",
+            _ => "fa-file-alt"
+        };
+        Func<MaterialType, string> matLabel = t => t switch
+        {
+            MaterialType.Link => "Keçid",
+            MaterialType.Video => "Video",
+            MaterialType.Document => "Sənəd",
+            MaterialType.Presentation => "Təqdimat",
+            MaterialType.Code => "Kod",
+            MaterialType.File => "Fayl",
+            _ => "Digər"
+        };
+    }
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
+        <h3 style="font-size:16px; font-weight:700;">Tədris materialları (@materials.Count)</h3>
+        <button class="btn btn-sm btn-primary" onclick="openMaterialModal()"><i class="fas fa-plus"></i> Material əlavə et</button>
+    </div>
+
+    @if (!materials.Any())
+    {
+        <div class="card" style="padding:40px; text-align:center; color:var(--text-secondary);">
+            <i class="fas fa-folder-open" style="font-size:48px; opacity:.3; margin-bottom:12px; display:block;"></i>
+            <p>Hələ material yoxdur. İlk materialı əlavə edin.</p>
+        </div>
+    }
+    else
+    {
+        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(270px,1fr)); gap:14px;">
+            @foreach (var m in materials)
+            {
+                var open = (m.MaterialType == MaterialType.Link || m.MaterialType == MaterialType.Video) ? m.LinkUrl : m.FilePath;
+                <div class="card" style="padding:16px; @(m.IsActive ? "" : "opacity:.55;")">
+                    <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+                        <i class="fas @matIcon(m.MaterialType)" style="font-size:20px; color:var(--accent);"></i>
+                        <span style="font-size:10px; padding:2px 8px; border-radius:12px; background:var(--bg-hover); color:var(--text-secondary);">@matLabel(m.MaterialType)</span>
+                        @if (!m.IsActive)
+                        {
+                            <span style="font-size:10px; padding:2px 8px; border-radius:12px; background:#fee2e2; color:#dc2626;">Gizli</span>
+                        }
+                    </div>
+                    <div style="font-weight:700; font-size:14px; margin-bottom:4px;">@m.Title</div>
+                    @if (!string.IsNullOrEmpty(m.Description))
+                    {
+                        <div style="font-size:12px; color:var(--text-secondary); margin-bottom:8px;">@m.Description</div>
+                    }
+                    @if (!string.IsNullOrEmpty(open))
+                    {
+                        <a href="@open" target="_blank" style="display:inline-flex; align-items:center; gap:6px; font-size:12px; color:var(--accent); text-decoration:none; margin-bottom:10px;">
+                            <i class="fas fa-external-link-alt"></i> @((m.MaterialType == MaterialType.Link || m.MaterialType == MaterialType.Video) ? "Aç" : (m.FileName ?? "Yüklə"))
+                        </a>
+                    }
+                    <div style="display:flex; gap:6px; border-top:1px solid var(--border); padding-top:10px; margin-top:4px;">
+                        <button class="btn btn-sm btn-secondary"
+                                onclick='openEditMaterial(@System.Text.Json.JsonSerializer.Serialize(new { m.Id, m.Title, m.Description, Type = (int)m.MaterialType, m.LinkUrl, m.FilePath, m.FileName, m.FileSize }))'
+                                style="flex:1;"><i class="fas fa-edit"></i></button>
+                        <form method="post" action="/Teacher/Courses/ToggleMaterial" style="flex:1;">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@m.Id" />
+                            <input type="hidden" name="groupId" value="@Model.Id" />
+                            <input type="hidden" name="active" value="@((!m.IsActive).ToString().ToLower())" />
+                            <button type="submit" class="btn btn-sm btn-secondary" style="width:100%;" title="@(m.IsActive ? "Gizlət" : "Göstər")">
+                                <i class="fas @(m.IsActive ? "fa-eye-slash" : "fa-eye")"></i>
+                            </button>
+                        </form>
+                        <form method="post" action="/Teacher/Courses/DeleteMaterial" style="flex:1;" onsubmit="return confirm('Material silinsin?');">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@m.Id" />
+                            <input type="hidden" name="groupId" value="@Model.Id" />
+                            <button type="submit" class="btn btn-sm btn-danger" style="width:100%;"><i class="fas fa-trash"></i></button>
+                        </form>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<!-- Material modal -->
+<div id="materialModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:1000; align-items:center; justify-content:center; padding:20px;">
+    <div class="card" style="max-width:520px; width:100%; padding:0; max-height:90vh; overflow-y:auto;">
+        <div style="padding:16px 20px; border-bottom:1px solid var(--border); font-weight:700;" id="materialModalTitle">Yeni material</div>
+        <form method="post" id="materialForm" action="/Teacher/Courses/CreateMaterial" style="padding:20px;">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="id" id="matId" value="0" />
+            <input type="hidden" name="groupId" value="@Model.Id" />
+            <input type="hidden" name="FilePath" id="matFilePath" />
+            <input type="hidden" name="FileName" id="matFileName" />
+            <input type="hidden" name="FileSize" id="matFileSize" />
+            <div class="form-group">
+                <label class="form-label">Başlıq *</label>
+                <input name="Title" id="matTitle" class="form-control" required />
+            </div>
+            <div class="form-group">
+                <label class="form-label">Təsvir</label>
+                <textarea name="Description" id="matDesc" class="form-control" rows="2"></textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Növ *</label>
+                <select name="MaterialType" id="matType" class="form-control" onchange="onMatTypeChange()">
+                    <option value="0">Fayl</option>
+                    <option value="3">Sənəd</option>
+                    <option value="4">Təqdimat</option>
+                    <option value="5">Kod</option>
+                    <option value="1">Keçid (link)</option>
+                    <option value="2">Video (link)</option>
+                    <option value="6">Digər</option>
+                </select>
+            </div>
+            <div class="form-group" id="matLinkGroup">
+                <label class="form-label">URL</label>
+                <input name="LinkUrl" id="matLinkUrl" class="form-control" placeholder="https://..." />
+            </div>
+            <div class="form-group" id="matFileGroup">
+                <label class="form-label">Fayl (maks 25 MB)</label>
+                <div onclick="document.getElementById('matFileInput').click()" style="border:2px dashed var(--border); border-radius:8px; padding:16px; text-align:center; cursor:pointer;">
+                    <i class="fas fa-cloud-upload-alt" style="font-size:22px; color:var(--text-secondary);"></i>
+                    <div id="matFileLabel" style="font-size:12px; color:var(--text-secondary); margin-top:6px;">Faylı seçin</div>
+                </div>
+                <input type="file" id="matFileInput" style="display:none" onchange="uploadMatFile(this.files[0])" />
+                <div id="matUploadErr" style="color:#ef4444; font-size:12px; margin-top:6px; display:none;"></div>
+            </div>
+            <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:8px;">
+                <button type="button" class="btn btn-secondary" onclick="closeMaterialModal()">Ləğv</button>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Yadda saxla</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 @section Scripts {
 <script>
 function switchTab(name) {
@@ -652,6 +781,62 @@ function setAll(btn, value) {
     var form = btn.closest('form');
     form.querySelectorAll('input[type="radio"][value="' + value + '"]').forEach(r => r.checked = true);
     form.querySelectorAll('.status-value').forEach(h => h.value = value);
+}
+
+// ── Materiallar ──
+function onMatTypeChange() {
+    var t = document.getElementById('matType').value;
+    var isLink = (t === '1' || t === '2');
+    document.getElementById('matLinkGroup').style.display = isLink ? 'block' : 'none';
+    document.getElementById('matFileGroup').style.display = isLink ? 'none' : 'block';
+}
+function openMaterialModal() {
+    var f = document.getElementById('materialForm');
+    f.action = '/Teacher/Courses/CreateMaterial';
+    document.getElementById('materialModalTitle').textContent = 'Yeni material';
+    document.getElementById('matId').value = '0';
+    document.getElementById('matTitle').value = '';
+    document.getElementById('matDesc').value = '';
+    document.getElementById('matType').value = '0';
+    document.getElementById('matLinkUrl').value = '';
+    document.getElementById('matFilePath').value = '';
+    document.getElementById('matFileName').value = '';
+    document.getElementById('matFileSize').value = '';
+    document.getElementById('matFileLabel').textContent = 'Faylı seçin';
+    onMatTypeChange();
+    document.getElementById('materialModal').style.display = 'flex';
+}
+function openEditMaterial(m) {
+    document.getElementById('materialForm').action = '/Teacher/Courses/UpdateMaterial';
+    document.getElementById('materialModalTitle').textContent = 'Materialı redaktə et';
+    document.getElementById('matId').value = m.Id;
+    document.getElementById('matTitle').value = m.Title || '';
+    document.getElementById('matDesc').value = m.Description || '';
+    document.getElementById('matType').value = m.Type;
+    document.getElementById('matLinkUrl').value = m.LinkUrl || '';
+    document.getElementById('matFilePath').value = m.FilePath || '';
+    document.getElementById('matFileName').value = m.FileName || '';
+    document.getElementById('matFileSize').value = m.FileSize || '';
+    document.getElementById('matFileLabel').textContent = m.FileName || 'Faylı seçin';
+    onMatTypeChange();
+    document.getElementById('materialModal').style.display = 'flex';
+}
+function closeMaterialModal() { document.getElementById('materialModal').style.display = 'none'; }
+async function uploadMatFile(file) {
+    if (!file) return;
+    var err = document.getElementById('matUploadErr'); err.style.display = 'none';
+    var token = document.querySelector('#materialForm input[name="__RequestVerificationToken"]').value;
+    var fd = new FormData(); fd.append('file', file);
+    document.getElementById('matFileLabel').textContent = 'Yüklənir…';
+    try {
+        var res = await fetch('/Upload/MaterialFile', { method: 'POST', headers: { 'RequestVerificationToken': token }, body: fd });
+        if (!res.ok) { var e = await res.json(); err.textContent = e.error || 'Yüklənmədi'; err.style.display = 'block'; document.getElementById('matFileLabel').textContent = 'Faylı seçin'; return; }
+        var d = await res.json();
+        document.getElementById('matFilePath').value = d.url;
+        document.getElementById('matFileName').value = d.name;
+        document.getElementById('matFileSize').value = d.size;
+        document.getElementById('matFileLabel').textContent = d.name;
+    } catch { err.textContent = 'Yüklənmədi'; err.style.display = 'block'; document.getElementById('matFileLabel').textContent = 'Faylı seçin'; }
 }
 
 // Toast auto-hide

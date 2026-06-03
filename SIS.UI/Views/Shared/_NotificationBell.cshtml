@@ -1,0 +1,95 @@
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+@{
+    var antiToken = Antiforgery.GetAndStoreTokens(Context).RequestToken;
+}
+<div class="notif-bell-wrap" style="position:relative;">
+    <div class="notif-bell" id="notifBellBtn" style="cursor:pointer; position:relative;" onclick="window.__notif.toggle()">
+        <i class="fas fa-bell"></i>
+        <span class="notif-badge" id="notifCount" style="display:none; position:absolute; top:-4px; right:-4px; background:#e94560; color:#fff; font-size:10px; font-weight:700; min-width:16px; height:16px; border-radius:8px; display:none; align-items:center; justify-content:center; padding:0 4px;">0</span>
+    </div>
+
+    <div id="notifPanel" style="display:none; position:absolute; right:0; top:36px; width:340px; max-height:440px; background:var(--bg-card, #1e293b); border:1px solid var(--border, rgba(255,255,255,0.1)); border-radius:12px; box-shadow:0 12px 32px rgba(0,0,0,0.4); z-index:1200; overflow:hidden;">
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 16px; border-bottom:1px solid var(--border, rgba(255,255,255,0.1));">
+            <strong style="font-size:14px;">Bildirişlər</strong>
+            <a href="javascript:void(0)" onclick="window.__notif.markAll()" style="font-size:12px; color:var(--accent, #e94560); text-decoration:none;">Hamısını oxu</a>
+        </div>
+        <div id="notifList" style="max-height:330px; overflow-y:auto;">
+            <div style="padding:24px; text-align:center; color:var(--text-secondary, #94a3b8); font-size:13px;">Yüklənir…</div>
+        </div>
+        <a href="/Notifications" style="display:block; text-align:center; padding:10px; font-size:13px; color:var(--accent, #e94560); text-decoration:none; border-top:1px solid var(--border, rgba(255,255,255,0.1));">Hamısına bax</a>
+    </div>
+</div>
+
+<script>
+    (function () {
+        if (window.__notif) return;
+        var token = '@antiToken';
+        var panel = document.getElementById('notifPanel');
+        var listEl = document.getElementById('notifList');
+        var badge = document.getElementById('notifCount');
+        var loaded = false;
+
+        function esc(s) { var d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+        function timeAgo(iso) {
+            try {
+                var d = new Date(iso); var diff = (Date.now() - d.getTime()) / 1000;
+                if (diff < 60) return 'indicə';
+                if (diff < 3600) return Math.floor(diff / 60) + ' dəq əvvəl';
+                if (diff < 86400) return Math.floor(diff / 3600) + ' saat əvvəl';
+                return d.toLocaleDateString();
+            } catch (e) { return ''; }
+        }
+
+        function loadCount() {
+            fetch('/Notifications/UnreadCount').then(function (r) { return r.json(); }).then(function (d) {
+                var c = d.count || 0;
+                if (c > 0) { badge.textContent = c > 99 ? '99+' : c; badge.style.display = 'flex'; }
+                else { badge.style.display = 'none'; }
+            }).catch(function () { });
+        }
+
+        function render(items) {
+            if (!items || items.length === 0) {
+                listEl.innerHTML = '<div style="padding:24px; text-align:center; color:var(--text-secondary,#94a3b8); font-size:13px;">Bildiriş yoxdur</div>';
+                return;
+            }
+            listEl.innerHTML = items.map(function (n) {
+                var href = '/Notifications/Open?id=' + n.id + (n.relatedUrl ? '&url=' + encodeURIComponent(n.relatedUrl) : '');
+                var bg = n.isRead ? 'transparent' : 'rgba(233,69,96,0.07)';
+                var dot = n.isRead ? '' : '<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#e94560;margin-right:6px;"></span>';
+                return '<a href="' + href + '" style="display:block; padding:11px 16px; text-decoration:none; color:inherit; border-bottom:1px solid var(--border,rgba(255,255,255,0.06)); background:' + bg + ';">' +
+                    '<div style="font-size:13px; font-weight:600; margin-bottom:2px;">' + dot + esc(n.title) + '</div>' +
+                    '<div style="font-size:12px; color:var(--text-secondary,#94a3b8); line-height:1.4;">' + esc(n.message) + '</div>' +
+                    '<div style="font-size:11px; color:var(--text-secondary,#94a3b8); margin-top:3px; opacity:.7;">' + timeAgo(n.createdAt) + '</div>' +
+                    '</a>';
+            }).join('');
+        }
+
+        function loadRecent() {
+            listEl.innerHTML = '<div style="padding:24px; text-align:center; color:var(--text-secondary,#94a3b8); font-size:13px;">Yüklənir…</div>';
+            fetch('/Notifications/Recent?count=10').then(function (r) { return r.json(); }).then(render).catch(function () {
+                listEl.innerHTML = '<div style="padding:24px; text-align:center; color:#ef4444; font-size:13px;">Yüklənmədi</div>';
+            });
+        }
+
+        window.__notif = {
+            toggle: function () {
+                var open = panel.style.display === 'block';
+                panel.style.display = open ? 'none' : 'block';
+                if (!open) loadRecent();
+            },
+            markAll: function () {
+                fetch('/Notifications/MarkAllRead', { method: 'POST', headers: { 'RequestVerificationToken': token } })
+                    .then(function () { loadCount(); loadRecent(); }).catch(function () { });
+            }
+        };
+
+        document.addEventListener('click', function (e) {
+            var wrap = document.querySelector('.notif-bell-wrap');
+            if (wrap && !wrap.contains(e.target)) panel.style.display = 'none';
+        });
+
+        loadCount();
+        setInterval(loadCount, 30000);
+    })();
+</script>

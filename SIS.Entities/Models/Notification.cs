@@ -11,6 +11,7 @@ namespace SIS.Entities.Models
         public NotificationType Type { get; set; }
         public bool IsRead { get; set; } = false;
         public DateTime? ReadAt { get; set; }
+        public string? RelatedUrl { get; set; }
         public string UserId { get; set; } = null!;
         public AppUser User { get; set; } = null!;
     }

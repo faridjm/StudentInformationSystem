@@ -21,6 +21,9 @@ namespace SIS.API.Extensions
 
                 
                 await SeedSuperAdminAsync(userManager);
+
+
+                await SeedAdminAsync(userManager);
             }
             catch (Exception ex)
             {
@@ -64,6 +67,25 @@ namespace SIS.API.Extensions
             var result = await userManager.CreateAsync(user, "SuperAdmin@123");
             if (result.Succeeded)
                 await userManager.AddToRoleAsync(user, RoleConstants.SuperAdmin);
+        }
+
+        private static async Task SeedAdminAsync(UserManager<AppUser> userManager)
+        {
+            var admin = await userManager.FindByEmailAsync("admin@sis.az");
+            if (admin != null) return;
+
+            var user = new AppUser
+            {
+                FullName = "Köməkçi Admin",
+                Email = "admin@sis.az",
+                UserName = "admin@sis.az",
+                IsActive = true,
+                EmailConfirmed = true
+            };
+
+            var result = await userManager.CreateAsync(user, "Admin@123");
+            if (result.Succeeded)
+                await userManager.AddToRoleAsync(user, RoleConstants.Admin);
         }
     }
 }

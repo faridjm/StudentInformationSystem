@@ -1,0 +1,90 @@
+@model IEnumerable<SIS.BLL.Services.DTOs.Quiz.QuizDto>
+@{
+    ViewData["Title"] = "Quizlər";
+    var groupId = (int)ViewBag.GroupId;
+    var availableItems = ViewBag.AvailableItems as List<SIS.BLL.Services.DTOs.Assessment.AssessmentItemDto> ?? new();
+}
+
+<div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
+    <a href="/Teacher/Quizzes/Index" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i></a>
+    <h2 style="font-size:20px; font-weight:700;">Quizlər</h2>
+</div>
+
+<!-- Yeni quiz: Quiz tipli AssessmentItem seçimi -->
+<div class="card" style="padding:20px; margin-bottom:20px;">
+    <div style="font-weight:700; margin-bottom:6px;"><i class="fas fa-plus-circle"></i> Yeni quiz yarat</div>
+    <p style="font-size:12px; color:var(--text-secondary); margin-bottom:12px;">
+        Quiz mütləq mövcud <strong>Type=Quiz</strong> qiymətləndirmə elementinə bağlanır. Nəticə həmin elementin rəsmi qiymətinə (GPA/Transkript) yazılır.
+    </p>
+    @if (availableItems.Any())
+    {
+        <div style="display:flex; flex-direction:column; gap:8px;">
+            @foreach (var ai in availableItems)
+            {
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:var(--bg-hover); border-radius:8px;">
+                    <div>
+                        <strong>@ai.Title</strong>
+                        <span style="font-size:12px; color:var(--text-secondary);">— @ai.Date.ToString("dd.MM.yyyy") · %@ai.WeightPercent çəki · maks @ai.MaxScore</span>
+                    </div>
+                    <a href="/Teacher/Quizzes/Create?groupId=@groupId&assessmentItemId=@ai.Id" class="btn btn-sm btn-primary">
+                        <i class="fas fa-plus"></i> Quiz yarat
+                    </a>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <p style="font-size:13px; color:var(--text-secondary);">Bu qrupda quiz yaratmaq üçün boş "Quiz" tipli qiymətləndirmə elementi yoxdur. Əvvəlcə qiymətləndirmə planında Quiz elementi yaradın.</p>
+    }
+</div>
+
+<!-- Mövcud quizlər -->
+@if (!Model.Any())
+{
+    <div class="card" style="padding:40px; text-align:center; color:var(--text-secondary);">
+        <i class="fas fa-clipboard-question" style="font-size:48px; margin-bottom:12px; opacity:.3;"></i>
+        <p>Hələ quiz yoxdur</p>
+    </div>
+}
+else
+{
+    <div style="display:flex; flex-direction:column; gap:12px;">
+        @foreach (var q in Model)
+        {
+            <div class="card" style="padding:16px 20px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+                    <div>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <strong style="font-size:15px;">@q.Title</strong>
+                            @if (q.IsActive)
+                            {
+                                <span class="badge badge-success">Aktiv</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-warning">Deaktiv</span>
+                            }
+                        </div>
+                        <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">
+                            <i class="fas fa-link"></i> @q.AssessmentItemTitle · %@q.WeightPercent çəki ·
+                            <i class="fas fa-question"></i> @q.QuestionCount sual ·
+                            <i class="fas fa-users"></i> @q.AttemptCount cəhd
+                            @if (q.DurationMinutes.HasValue) { <text>· <i class="fas fa-clock"></i> @q.DurationMinutes dəq</text> }
+                        </div>
+                    </div>
+                    <div style="display:flex; gap:8px;">
+                        <a href="/Teacher/Quizzes/Manage/@q.Id" class="btn btn-sm btn-secondary"><i class="fas fa-cog"></i> İdarə et</a>
+                        <a href="/Teacher/Quizzes/Results/@q.Id" class="btn btn-sm btn-secondary"><i class="fas fa-chart-bar"></i> Nəticələr</a>
+                        <form method="post" action="/Teacher/Quizzes/Delete" onsubmit="return confirm('Quiz silinsin?');" style="display:inline;">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@q.Id" />
+                            <input type="hidden" name="groupId" value="@groupId" />
+                            <button type="submit" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

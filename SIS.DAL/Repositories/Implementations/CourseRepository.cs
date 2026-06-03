@@ -11,5 +11,8 @@ namespace SIS.DAL.Repositories.Implementations
 
         public async Task<IEnumerable<Course>> GetActiveCoursesAsync()
             => await _dbSet.Include(c => c.Groups).Where(c => c.IsActive).OrderBy(c => c.Name).ToListAsync();
+
+        public async Task<IEnumerable<Course>> GetAllWithGroupsAsync()
+            => await _dbSet.Include(c => c.Groups).OrderBy(c => c.Name).ToListAsync();
     }
 }

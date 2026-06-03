@@ -12,11 +12,13 @@ namespace SIS.BLL.Services.Implementations
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IClock _clock;
+        private readonly IAuditLogService _audit;
 
-        public AttendanceService(IUnitOfWork unitOfWork, IClock clock)
+        public AttendanceService(IUnitOfWork unitOfWork, IClock clock, IAuditLogService audit)
         {
             _unitOfWork = unitOfWork;
             _clock = clock;
+            _audit = audit;
         }
 
         public async Task<IEnumerable<AttendanceDto>> GetAttendanceByEnrollmentAsync(int enrollmentId)
@@ -94,6 +96,9 @@ namespace SIS.BLL.Services.Implementations
                 }
             }
             await _unitOfWork.SaveAsync();
+
+            await _audit.LogAsync("Save", "Attendance", sessionId?.ToString(),
+                $"Davamiyyət qeyd edildi: {dtoList.Count} tələbə" + (sessionId.HasValue ? $" (Session #{sessionId})" : ""));
 
             if (session != null && session.Status == ClassSessionStatus.Scheduled)
             {

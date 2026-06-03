@@ -35,6 +35,14 @@ namespace SIS.DAL.Context
         public DbSet<AssignmentSubmission> AssignmentSubmissions { get; set; }
         public DbSet<ChatConversation> ChatConversations { get; set; }
         public DbSet<ChatMessage> ChatMessages { get; set; }
+        public DbSet<Quiz> Quizzes { get; set; }
+        public DbSet<QuizQuestion> QuizQuestions { get; set; }
+        public DbSet<QuizOption> QuizOptions { get; set; }
+        public DbSet<QuizAttempt> QuizAttempts { get; set; }
+        public DbSet<QuizAnswer> QuizAnswers { get; set; }
+        public DbSet<AuditLog> AuditLogs { get; set; }
+        public DbSet<AdminAccessGrant> AdminAccessGrants { get; set; }
+        public DbSet<CourseMaterial> CourseMaterials { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

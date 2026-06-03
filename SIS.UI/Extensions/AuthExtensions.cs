@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
+using SIS.UI.Authorization;
 
 namespace SIS.UI.Extensions
 {
@@ -18,10 +20,16 @@ namespace SIS.UI.Extensions
                     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
                 });
 
+            // Admin panel girişini idarə edən handler (SuperAdmin həmişə, Admin yalnız aktiv grant ilə)
+            services.AddScoped<IAuthorizationHandler, AdminPanelAuthorizationHandler>();
+
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("AdminOnly", policy =>
-                    policy.RequireRole("SuperAdmin", "Admin", "Moderator"));
+                {
+                    policy.RequireAuthenticatedUser();
+                    policy.Requirements.Add(new AdminPanelRequirement());
+                });
 
                 options.AddPolicy("TeacherOnly", policy =>
                     policy.RequireRole("Teacher"));

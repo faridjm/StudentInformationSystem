@@ -18,11 +18,13 @@ namespace SIS.API.Controllers
         private readonly ICurrentUser _currentUser;
         private readonly IEnrollmentService _enrollmentService;
         private readonly IGroupService _groupService;
+        private readonly IAuditLogService _audit;
 
         public TranscriptController(ITranscriptService transcriptService,
             ITranscriptPdfService pdfService, IStudentService studentService,
             ITeacherService teacherService, ICurrentUser currentUser,
-            IEnrollmentService enrollmentService, IGroupService groupService)
+            IEnrollmentService enrollmentService, IGroupService groupService,
+            IAuditLogService audit)
         {
             _transcriptService = transcriptService;
             _pdfService = pdfService;
@@ -31,6 +33,7 @@ namespace SIS.API.Controllers
             _currentUser = currentUser;
             _enrollmentService = enrollmentService;
             _groupService = groupService;
+            _audit = audit;
         }
 
         [HttpGet("{enrollmentId}")]
@@ -61,6 +64,8 @@ namespace SIS.API.Controllers
                 var data = await _transcriptService.GenerateTranscriptAsync(enrollmentId);
                 var pdf = _pdfService.GeneratePdf(data);
                 var fileName = $"Transcript_{data.StudentNumber}_{data.GroupName}_{DateTime.Now:yyyyMMdd}.pdf";
+                await _audit.LogAsync("Download", "Transcript", enrollmentId.ToString(),
+                    $"Transkript PDF yükləndi: {data.StudentNumber} — {data.GroupName}");
                 return File(pdf, "application/pdf", fileName);
             }
             catch (UnauthorizedAccessException)

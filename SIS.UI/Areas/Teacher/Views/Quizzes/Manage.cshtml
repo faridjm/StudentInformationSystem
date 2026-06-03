@@ -1,0 +1,180 @@
+@model SIS.BLL.Services.DTOs.Quiz.QuizDetailDto
+@using SIS.Entities.Enums
+@{
+    ViewData["Title"] = "Quiz idarəetmə";
+    string TypeLabel(QuestionType t) => t switch
+    {
+        QuestionType.SingleChoice => "Tək seçim",
+        QuestionType.TrueFalse => "Doğru/Yanlış",
+        QuestionType.MultipleChoice => "Çox seçim",
+        _ => t.ToString()
+    };
+}
+
+<div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
+    <a href="/Teacher/Quizzes/Index?groupId=@Model.GroupId" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i></a>
+    <h2 style="font-size:20px; font-weight:700;">@Model.Title</h2>
+    @if (Model.IsActive)
+    {
+        <span class="badge badge-success">Aktiv</span>
+    }
+    else
+    {
+        <span class="badge badge-warning">Deaktiv</span>
+    }
+</div>
+<p style="font-size:12px; color:var(--text-secondary); margin-bottom:16px;">
+    <i class="fas fa-link"></i> @Model.AssessmentItemTitle
+    @if (Model.DurationMinutes.HasValue) { <text>· <i class="fas fa-clock"></i> @Model.DurationMinutes dəq</text> }
+</p>
+
+<div style="display:flex; gap:10px; margin-bottom:20px;">
+    <form method="post" action="/Teacher/Quizzes/ToggleActive">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="id" value="@Model.Id" />
+        <input type="hidden" name="active" value="@((!Model.IsActive).ToString().ToLower())" />
+        <button type="submit" class="btn btn-sm @(Model.IsActive ? "btn-danger" : "btn-primary")">
+            <i class="fas fa-power-off"></i> @(Model.IsActive ? "Dayandır" : "Aktivləşdir")
+        </button>
+    </form>
+    <a href="/Teacher/Quizzes/Results/@Model.Id" class="btn btn-sm btn-secondary"><i class="fas fa-chart-bar"></i> Nəticələr</a>
+</div>
+
+<!-- Mövcud suallar -->
+<h3 style="font-size:16px; font-weight:700; margin-bottom:12px;">Suallar (@Model.Questions.Count)</h3>
+<div style="display:flex; flex-direction:column; gap:10px; margin-bottom:28px;">
+    @if (!Model.Questions.Any())
+    {
+        <p style="color:var(--text-secondary); font-size:13px;">Hələ sual yoxdur. Aşağıdan əlavə edin.</p>
+    }
+    @foreach (var (q, idx) in Model.Questions.Select((q, i) => (q, i + 1)))
+    {
+        <div class="card" style="padding:14px 18px;">
+            <div style="display:flex; justify-content:space-between; gap:12px;">
+                <div style="flex:1;">
+                    <div style="font-weight:600;">@idx. @q.Text</div>
+                    <div style="font-size:11px; color:var(--text-secondary); margin:2px 0 8px;">@TypeLabel(q.Type) · @q.Points bal</div>
+                    <div style="display:flex; flex-direction:column; gap:4px;">
+                        @foreach (var o in q.Options)
+                        {
+                            <div style="font-size:13px; @(o.IsCorrect ? "color:#22c55e; font-weight:600;" : "color:var(--text-secondary);")">
+                                <i class="fas @(o.IsCorrect ? "fa-check-circle" : "fa-circle")" style="font-size:10px;"></i> @o.Text
+                            </div>
+                        }
+                    </div>
+                </div>
+                <form method="post" action="/Teacher/Quizzes/DeleteQuestion" onsubmit="return confirm('Sual silinsin?');">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="quizId" value="@Model.Id" />
+                    <input type="hidden" name="questionId" value="@q.Id" />
+                    <button type="submit" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                </form>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Yeni sual əlavə et -->
+<div class="card" style="padding:20px;">
+    <h3 style="font-size:16px; font-weight:700; margin-bottom:14px;"><i class="fas fa-plus"></i> Yeni sual</h3>
+    <form method="post" action="/Teacher/Quizzes/AddQuestion" id="addQForm">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="quizId" value="@Model.Id" />
+        <div class="form-group">
+            <label class="form-label">Sual mətni *</label>
+            <input name="Text" class="form-control" required />
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+            <div class="form-group">
+                <label class="form-label">Sual tipi</label>
+                <select name="Type" id="qType" class="form-control" onchange="onTypeChange()">
+                    <option value="0">Tək seçim</option>
+                    <option value="1">Doğru/Yanlış</option>
+                    <option value="2">Çox seçim</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Bal</label>
+                <input name="Points" type="number" min="0.5" step="0.5" value="1" class="form-control" />
+            </div>
+        </div>
+
+        <label class="form-label">Variantlar (düz cavab(lar)ı işarələyin)</label>
+        <div id="optionsWrap" style="display:flex; flex-direction:column; gap:8px; margin-bottom:10px;"></div>
+        <button type="button" class="btn btn-sm btn-secondary" onclick="addOption('')"><i class="fas fa-plus"></i> Variant əlavə et</button>
+
+        <div style="margin-top:16px;">
+            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Sualı əlavə et</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+<script>
+function addOption(text) {
+    var div = document.createElement('div');
+    div.className = 'opt-row';
+    div.style = 'display:flex; align-items:center; gap:8px;';
+    div.innerHTML =
+        '<input type="checkbox" class="opt-correct" title="Düz cavab" style="width:18px; height:18px;" />' +
+        '<input type="text" name="OptionTexts" class="form-control opt-text" placeholder="Variant mətni" value="' + (text || '') + '" />' +
+        '<button type="button" class="btn btn-sm btn-danger" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>';
+    document.getElementById('optionsWrap').appendChild(div);
+    bindCorrect();
+}
+
+function bindCorrect() {
+    var type = document.getElementById('qType').value;
+    document.querySelectorAll('.opt-correct').forEach(function (cb) {
+        cb.onclick = function () {
+            if (type !== '2' && cb.checked) {
+                document.querySelectorAll('.opt-correct').forEach(function (other) {
+                    if (other !== cb) other.checked = false;
+                });
+            }
+        };
+    });
+}
+
+function onTypeChange() {
+    var type = document.getElementById('qType').value;
+    if (type === '1') {
+        // Doğru/Yanlış — variantları sabitlə
+        document.getElementById('optionsWrap').innerHTML = '';
+        addOption('Doğru');
+        addOption('Yanlış');
+    }
+    bindCorrect();
+}
+
+// Submit-dən əvvəl: yalnız mətni dolu variantlar üçün CorrectIndexes hazırla (DOM sırası ilə)
+document.getElementById('addQForm').addEventListener('submit', function (e) {
+    var form = document.getElementById('addQForm');
+    var wrap = document.getElementById('optionsWrap');
+    // əvvəlki gizli CorrectIndexes inputlarını təmizlə
+    form.querySelectorAll('input[name="CorrectIndexes"]').forEach(function (n) { n.remove(); });
+    // boş variant sətirlərini sil ki, OptionTexts massivi yığcam olsun və indekslər serverlə uyğun gəlsin
+    wrap.querySelectorAll('.opt-row').forEach(function (row) {
+        if (!row.querySelector('.opt-text').value.trim()) row.remove();
+    });
+    var rows = wrap.querySelectorAll('.opt-row');
+    var correct = 0;
+    rows.forEach(function (row, i) {
+        if (row.querySelector('.opt-correct').checked) {
+            var hidden = document.createElement('input');
+            hidden.type = 'hidden';
+            hidden.name = 'CorrectIndexes';
+            hidden.value = i;
+            form.appendChild(hidden);
+            correct++;
+        }
+    });
+    if (rows.length < 2) { alert('Ən azı 2 variant lazımdır'); e.preventDefault(); return; }
+    if (correct < 1) { alert('Ən azı bir düz variant işarələyin'); e.preventDefault(); return; }
+});
+
+// İlkin 2 variant
+addOption('');
+addOption('');
+</script>
+}
