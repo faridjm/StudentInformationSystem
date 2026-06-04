@@ -40,7 +40,7 @@ namespace SIS.DAL.Repositories.Implementations
                 .Include(g => g.Course)
                 .Include(g => g.Teacher).ThenInclude(t => t.AppUser)
                 .Include(g => g.AcademicYear)
-                .Include(g => g.Enrollments)
+                .Include(g => g.Enrollments).ThenInclude(e => e.Student)
                 .Where(g => g.IsActive)
                 .ToListAsync();
     }

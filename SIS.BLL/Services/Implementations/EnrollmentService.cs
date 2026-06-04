@@ -41,7 +41,7 @@ namespace SIS.BLL.Services.Implementations
             var group = await _unitOfWork.Groups.GetGroupWithDetailsAsync(dto.GroupId)
                 ?? throw new NotFoundException("Qrup tapılmadı");
 
-            if (group.Enrollments.Count(e => !e.IsDeleted) >= group.Capacity)
+            if (group.Enrollments.Count(e => !e.IsDeleted && e.Student != null) >= group.Capacity)
                 throw new BadRequestException("Qrupda boş yer yoxdur");
 
             var enrollment = new Enrollment

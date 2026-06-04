@@ -58,7 +58,7 @@ namespace SIS.BLL.Services.Implementations
         public async Task CreateTeacherAsync(CreateTeacherDto dto)
         {
             if (!string.IsNullOrEmpty(dto.FinCode))
-                if (await _userManager.Users.AnyAsync(u => u.FinCode == dto.FinCode))
+                if (await _userManager.Users.AnyAsync(u => u.FinCode == dto.FinCode && u.IsActive))
                     throw new ConflictException("Bu FIN kod artıq istifadədədir");
 
             var user = new AppUser
@@ -123,6 +123,7 @@ namespace SIS.BLL.Services.Implementations
             teacher.AppUser.Email = $"deleted_{id}_{teacher.AppUser.Email}";
             teacher.AppUser.UserName = teacher.AppUser.Email;
             teacher.AppUser.IsActive = false;
+            teacher.AppUser.FinCode = null; // FIN kodu azad et
             await _userManager.UpdateAsync(teacher.AppUser);
 
             _unitOfWork.Teachers.SoftDelete(teacher);

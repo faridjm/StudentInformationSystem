@@ -50,6 +50,7 @@ namespace SIS.UI.Extensions
             Add<IAuditLogApi>();
             Add<IAdminAccessApi>();
             Add<ICourseMaterialApi>();
+            Add<ITeacherDashboardApi>();
 
             return services;
         }

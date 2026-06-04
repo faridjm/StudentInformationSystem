@@ -184,7 +184,7 @@ namespace SIS.BLL.Services.Implementations
             SeasonName = g.AcademicYear?.Name,
             StartDate = g.StartDate, EndDate = g.EndDate,
             Capacity = g.Capacity,
-            EnrolledCount = g.Enrollments?.Count(e => !e.IsDeleted) ?? 0,
+            EnrolledCount = g.Enrollments?.Count(e => !e.IsDeleted && e.Student != null) ?? 0,
             IsActive = g.IsActive
         };
 
@@ -197,7 +197,7 @@ namespace SIS.BLL.Services.Implementations
             SeasonName = g.AcademicYear?.Name,
             StartDate = g.StartDate, EndDate = g.EndDate,
             Capacity = g.Capacity,
-            EnrolledCount = g.Enrollments?.Count(e => !e.IsDeleted) ?? 0,
+            EnrolledCount = g.Enrollments?.Count(e => !e.IsDeleted && e.Student != null) ?? 0,
             IsActive = g.IsActive,
             ScheduleDays = g.ScheduleDays?.Select(s => new ScheduleDayDto
             {

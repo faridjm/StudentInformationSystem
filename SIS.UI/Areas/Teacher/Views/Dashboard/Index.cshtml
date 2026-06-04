@@ -1,161 +1,195 @@
-@using SIS.BLL.Services.DTOs.Assessment
 @using SIS.Entities.Enums
+@model SIS.BLL.Services.DTOs.Dashboard.TeacherDashboardDto
 @{
     ViewData["Title"] = L["Dashboard"].Value;
-    var today = (DateOnly)ViewBag.Today;
-    var groups = (IEnumerable<SIS.BLL.Services.DTOs.Groups.GroupListDto>)ViewBag.Groups;
-    var todaySessions = (List<SIS.UI.Areas.Teacher.Controllers.TodaySessionVm>)ViewBag.TodaySessions;
 }
 
-<h2 style="font-size:20px; font-weight:700; margin-bottom:4px;">@L["Dashboard"]</h2>
-<div style="color:var(--text-secondary); font-size:13px; margin-bottom:20px;">
-    <i class="fas fa-calendar-day"></i> Bu gün: <strong style="color:var(--text-primary);">@today.ToString("dd MMMM yyyy")</strong>
+<div style="margin-bottom:20px;">
+    <h2 style="font-size:22px; font-weight:700;">Salam, @Model.TeacherName 👋</h2>
+    <p style="color:var(--text-secondary); font-size:13px; margin-top:2px;">Bugünkü iş masanız</p>
 </div>
 
-@if (todaySessions.Any())
-{
-    <div style="margin-bottom:24px;">
-        <div style="font-size:15px; font-weight:600; margin-bottom:12px; color:var(--accent);">
-            <i class="fas fa-chalkboard-teacher"></i> @L["TodaysLessons"]
+@functions {
+    string Card(string icon, string label, int value, string color, string href)
+        => $@"<a href='{href}' style='text-decoration:none;'><div class='card' style='padding:18px; display:flex; align-items:center; gap:14px; transition:border-color .2s;' onmouseover=""this.style.borderColor='var(--accent)'"" onmouseout=""this.style.borderColor='var(--border)'"">
+                <div style='width:46px; height:46px; border-radius:12px; background:{color}22; display:flex; align-items:center; justify-content:center;'>
+                    <i class='fas {icon}' style='color:{color}; font-size:20px;'></i></div>
+                <div><div style='font-size:24px; font-weight:800;'>{value}</div>
+                <div style='font-size:12px; color:var(--text-secondary);'>{label}</div></div></div></a>";
+}
+
+<!-- Statistik kartlar -->
+<div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(220px,1fr)); gap:14px; margin-bottom:22px;">
+    @Html.Raw(Card("fa-layer-group", "Aktiv qruplar", Model.ActiveGroupsCount, "#3b82f6", "/Teacher/Courses"))
+    @Html.Raw(Card("fa-chalkboard", "Bugünkü dərslər", Model.TodayClassesCount, "#8b5cf6", "#todayClasses"))
+    @Html.Raw(Card("fa-clipboard-check", "Yoxlanılacaq tapşırıq", Model.PendingAssignmentReviews, "#f59e0b", "#reviewQueue"))
+    @Html.Raw(Card("fa-clipboard-question", "Aktiv quizlər", Model.ActiveQuizzesCount, "#10b981", "/Teacher/Quizzes"))
+    @Html.Raw(Card("fa-envelope", "Oxunmamış mesaj", Model.UnreadMessages, "#ec4899", "/Teacher/Messages"))
+    @Html.Raw(Card("fa-star-half-stroke", "Gözləyən qiymət", Model.PendingGrades, "#ef4444", "#reviewQueue"))
+</div>
+
+<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(340px,1fr)); gap:18px; align-items:start;">
+
+    <!-- Sol sütun -->
+    <div style="display:flex; flex-direction:column; gap:18px;">
+
+        <!-- Bugünkü dərslər -->
+        <div id="todayClasses">
+            <h3 style="font-size:16px; font-weight:700; margin-bottom:12px;"><i class="fas fa-chalkboard"></i> Bugünkü dərslər</h3>
+            @if (!Model.TodayClasses.Any())
+            {
+                <div class="card" style="padding:28px; text-align:center; color:var(--text-secondary);">
+                    <i class="fas fa-mug-hot" style="font-size:32px; opacity:.3; display:block; margin-bottom:8px;"></i>
+                    Bu gün dərsiniz yoxdur
+                </div>
+            }
+            else
+            {
+                <div style="display:flex; flex-direction:column; gap:10px;">
+                    @foreach (var c in Model.TodayClasses)
+                    {
+                        <div class="card" style="padding:14px 16px;">
+                            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px; flex-wrap:wrap;">
+                                <div>
+                                    <div style="font-weight:700;">@c.GroupName <span style="font-weight:400; color:var(--text-secondary); font-size:13px;">· @c.CourseName</span></div>
+                                    <div style="font-size:12px; color:var(--text-secondary); margin-top:3px;">
+                                        <i class="fas fa-clock"></i> @c.StartTime–@c.EndTime
+                                        @if (!string.IsNullOrEmpty(c.Room)) { <text>· <i class="fas fa-door-open"></i> @c.Room</text> }
+                                        @if (!string.IsNullOrEmpty(c.Topic)) { <text>· @c.Topic</text> }
+                                    </div>
+                                </div>
+                                <div style="text-align:right;">
+                                    @if (c.AttendanceTaken)
+                                    {
+                                        <span class="badge badge-success" style="background:#dcfce7; color:#16a34a; padding:3px 10px; border-radius:12px; font-size:11px; font-weight:600;">Davamiyyət alınıb</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge" style="background:#fef9c3; color:#ca8a04; padding:3px 10px; border-radius:12px; font-size:11px; font-weight:600;">Alınmayıb</span>
+                                    }
+                                    <div style="margin-top:8px;">
+                                        <a href="/Teacher/Courses/Detail/@c.GroupId?tab=attendance" class="btn btn-sm @(c.AttendanceTaken ? "btn-secondary" : "btn-primary")">
+                                            <i class="fas fa-user-check"></i> @(c.AttendanceTaken ? "Bax" : "Davamiyyət al")
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
         </div>
-        @foreach (var vm in todaySessions)
-        {
-            <div class="card" style="margin-bottom:16px;">
-                <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
-                    <div>
-                        <strong>@vm.GroupName</strong>
-                        <span style="color:var(--text-secondary); font-size:13px; margin-left:8px;">@vm.CourseName</span>
-                        <span style="margin-left:8px; font-size:12px; color:var(--text-secondary);">
-                            #@vm.Session.SessionNumber · @vm.Session.StartTime — @vm.Session.EndTime
-                        </span>
-                    </div>
-                    <div style="display:flex; gap:8px; align-items:center;">
-                        @if (vm.AttendanceTaken)
-                        {
-                            <span class="badge badge-success"><i class="fas fa-check"></i> @L["AttendanceTaken"]</span>
-                        }
-                        @foreach (var a in vm.TodayAssessments)
-                        {
-                            var color = a.Type == AssessmentType.Quiz ? "#3b82f6" : a.Type == AssessmentType.FinalProject ? "#e94560" : "#eab308";
-                            var label = a.Type == AssessmentType.Quiz ? "Quiz" : a.Type == AssessmentType.FinalProject ? "Final" : L["AssessmentType_Assignment"].Value;
-                            <span style="font-size:11px; background:@(color)22; color:@color; padding:3px 8px; border-radius:6px; font-weight:600;">
-                                <i class="fas fa-clipboard-check"></i> @label: @a.Title
+
+        <!-- Review Queue -->
+        <div id="reviewQueue">
+            <h3 style="font-size:16px; font-weight:700; margin-bottom:12px;"><i class="fas fa-list-check"></i> Review Queue</h3>
+            <div class="card" style="padding:6px 0;">
+                @{
+                    void QueueRow(string icon, string label, int count, string href, string btn)
+                    {
+                        <a href="@href" style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px; text-decoration:none; color:inherit; border-bottom:1px solid var(--border);">
+                            <span style="display:flex; align-items:center; gap:10px;"><i class="fas @icon" style="color:var(--accent); width:18px;"></i> @label</span>
+                            <span style="display:flex; align-items:center; gap:10px;">
+                                <span style="background:@(count > 0 ? "var(--accent)" : "var(--bg-hover)"); color:@(count > 0 ? "#fff" : "var(--text-secondary)"); min-width:24px; text-align:center; padding:2px 8px; border-radius:12px; font-size:12px; font-weight:700;">@count</span>
+                                <span style="font-size:12px; color:var(--text-secondary);">@btn <i class="fas fa-chevron-right" style="font-size:10px;"></i></span>
                             </span>
-                        }
-                    </div>
-                </div>
-
-                @if (!string.IsNullOrEmpty(vm.Session.Topic))
-                {
-                    <div style="padding:10px 20px; background:rgba(59,130,246,0.08); border-bottom:1px solid var(--border); font-size:13px;">
-                        <i class="fas fa-book-open" style="color:#3b82f6; margin-right:6px;"></i>
-                        <strong>@L["TodaysTopic"]:</strong> @vm.Session.Topic
-                    </div>
+                        </a>
+                    }
                 }
-
-                <div class="card-body">
-                    <!-- Qayıb alma formu -->
-                    <form method="post" action="/Teacher/Dashboard/SaveAttendance">
-                        @Html.AntiForgeryToken()
-                        <input type="hidden" name="sessionId" value="@vm.Session.Id" />
-                        <div style="font-size:13px; font-weight:600; margin-bottom:10px;">
-                            <i class="fas fa-user-check"></i> @L["Attendance"]
-                        </div>
-                        <table style="width:100%; font-size:13px;">
-                            <thead>
-                                <tr style="color:var(--text-secondary); border-bottom:1px solid var(--border);">
-                                    <td style="padding:6px 0; width:40%;">@L["Student"]</td>
-                                    <td style="padding:6px; text-align:center;">İştirak</td>
-                                    <td style="padding:6px; text-align:center;">Gecikmə</td>
-                                    <td style="padding:6px; text-align:center;">Qayıb</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @{ int si = 0; }
-                                @foreach (var e in vm.Enrollments)
-                                {
-                                    var existing = vm.ExistingAttendance.FirstOrDefault(a => a.EnrollmentId == e.Id);
-                                    var curStatus = existing?.Status ?? AttendanceStatus.Present;
-                                    var rName = $"att_{vm.Session.Id}_{si}";
-                                    <tr style="border-bottom:1px solid var(--border);">
-                                        <td style="padding:8px 0;">
-                                            <input type="hidden" name="enrollmentIds" value="@e.Id" />
-                                            <input type="hidden" class="status-value" name="statuses" value="@((int)curStatus)" />
-                                            <strong>@e.StudentName</strong>
-                                            <div style="font-size:11px; color:var(--text-secondary);">@e.StudentNumber</div>
-                                        </td>
-                                        <td style="text-align:center; padding:8px;">
-                                            <input type="radio" name="@rName" value="0"
-                                                   @(curStatus == AttendanceStatus.Present ? "checked" : "")
-                                                   onchange="this.closest('tr').querySelector('.status-value').value=this.value"
-                                                   style="accent-color:#22c55e; width:18px; height:18px;" />
-                                        </td>
-                                        <td style="text-align:center; padding:8px;">
-                                            <input type="radio" name="@rName" value="2"
-                                                   @(curStatus == AttendanceStatus.Late ? "checked" : "")
-                                                   onchange="this.closest('tr').querySelector('.status-value').value=this.value"
-                                                   style="accent-color:#eab308; width:18px; height:18px;" />
-                                        </td>
-                                        <td style="text-align:center; padding:8px;">
-                                            <input type="radio" name="@rName" value="1"
-                                                   @(curStatus == AttendanceStatus.Absent ? "checked" : "")
-                                                   onchange="this.closest('tr').querySelector('.status-value').value=this.value"
-                                                   style="accent-color:#ef4444; width:18px; height:18px;" />
-                                        </td>
-                                    </tr>
-                                    si++;
-                                }
-                            </tbody>
-                        </table>
-                        <div style="display:flex; gap:8px; margin-top:12px;">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save"></i> @L["SaveAttendance"]
-                            </button>
-                            @if (vm.TodayAssessments.Any())
-                            {
-                                <a href="/Teacher/Courses/Detail/@vm.GroupId?tab=assessments" class="btn btn-secondary">
-                                    <i class="fas fa-pen"></i> @L["Grades"]
-                                </a>
-                            }
-                        </div>
-                    </form>
-                </div>
+                @{ QueueRow("fa-user-clock", "Davamiyyət götürülməmiş dərslər", Model.AttendanceNotTakenCount, "#todayClasses", "Bax"); }
+                @{ QueueRow("fa-file-circle-check", "Yoxlanılmamış tapşırıq cavabları", Model.PendingAssignmentReviews, "#pendingAssignments", "Yoxla"); }
+                @{ QueueRow("fa-clipboard-question", "Təhvil verilmiş quiz nəticələri", Model.SubmittedQuizResults, "/Teacher/Quizzes", "Bax"); }
+                @{ QueueRow("fa-star-half-stroke", "Gözləyən qiymətləndirmələr", Model.PendingGrades, "/Teacher/Courses", "Qiymətləndir"); }
+                <a href="/Teacher/Messages" style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px; text-decoration:none; color:inherit;">
+                    <span style="display:flex; align-items:center; gap:10px;"><i class="fas fa-envelope" style="color:var(--accent); width:18px;"></i> Oxunmamış mesajlar</span>
+                    <span style="display:flex; align-items:center; gap:10px;">
+                        <span style="background:@(Model.UnreadMessages > 0 ? "var(--accent)" : "var(--bg-hover)"); color:@(Model.UnreadMessages > 0 ? "#fff" : "var(--text-secondary)"); min-width:24px; text-align:center; padding:2px 8px; border-radius:12px; font-size:12px; font-weight:700;">@Model.UnreadMessages</span>
+                        <span style="font-size:12px; color:var(--text-secondary);">Aç <i class="fas fa-chevron-right" style="font-size:10px;"></i></span>
+                    </span>
+                </a>
             </div>
-        }
-    </div>
-}
-else
-{
-    <div class="card" style="margin-bottom:20px; padding:24px; text-align:center; color:var(--text-secondary);">
-        <i class="fas fa-coffee" style="font-size:32px; margin-bottom:12px; display:block;"></i>
-        Bu gün (@today.ToString("dd.MM.yyyy")) dərs yoxdur
-    </div>
-}
+        </div>
 
-<!-- Qruplar xülasəsi -->
-<div class="card">
-    <div class="card-header">@L["AllMyGroups"]</div>
-    <div class="card-body" style="padding:0;">
-        <table class="table">
-            <thead>
-                <tr><th>@L["Group"]</th><th>@L["Program"]</th><th>@L["Student"]</th><th>@L["Date"]</th><th></th></tr>
-            </thead>
-            <tbody>
-                @foreach (var g in groups)
-                {
-                    <tr>
-                        <td><strong>@g.Name</strong></td>
-                        <td>@g.CourseName</td>
-                        <td>@g.EnrolledCount / @g.Capacity</td>
-                        <td style="font-size:13px; color:var(--text-secondary);">@g.StartDate.ToString("dd.MM.yy") — @g.EndDate.ToString("dd.MM.yy")</td>
-                        <td><a href="/Teacher/Courses/Detail/@g.Id" class="btn btn-sm btn-secondary">@L["Open"]</a></td>
-                    </tr>
-                }
-                @if (!groups.Any())
-                {
-                    <tr><td colspan="5" style="text-align:center; color:var(--text-secondary); padding:24px;">@L["NoGroups"]</td></tr>
-                }
-            </tbody>
-        </table>
+        <!-- Yoxlanılacaq tapşırıqlar -->
+        <div id="pendingAssignments">
+            <h3 style="font-size:16px; font-weight:700; margin-bottom:12px;"><i class="fas fa-file-pen"></i> Yoxlanılacaq tapşırıqlar</h3>
+            @if (!Model.PendingAssignments.Any())
+            {
+                <div class="card" style="padding:24px; text-align:center; color:var(--text-secondary);">Yoxlanılacaq tapşırıq yoxdur</div>
+            }
+            else
+            {
+                <div style="display:flex; flex-direction:column; gap:8px;">
+                    @foreach (var p in Model.PendingAssignments)
+                    {
+                        <div class="card" style="padding:12px 16px; display:flex; justify-content:space-between; align-items:center; gap:10px;">
+                            <div>
+                                <div style="font-weight:600; font-size:14px;">@p.AssignmentTitle</div>
+                                <div style="font-size:12px; color:var(--text-secondary);">@p.GroupName · @p.PendingCount cavab gözləyir</div>
+                            </div>
+                            <a href="/Teacher/Assignments/Submissions/@p.AssignmentId" class="btn btn-sm btn-primary"><i class="fas fa-eye"></i> Yoxla</a>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Sağ sütun -->
+    <div style="display:flex; flex-direction:column; gap:18px;">
+
+        <!-- Aktiv quizlər -->
+        <div>
+            <h3 style="font-size:16px; font-weight:700; margin-bottom:12px;"><i class="fas fa-clipboard-question"></i> Aktiv quizlər</h3>
+            @if (!Model.ActiveQuizzes.Any())
+            {
+                <div class="card" style="padding:24px; text-align:center; color:var(--text-secondary);">Aktiv quiz yoxdur</div>
+            }
+            else
+            {
+                <div style="display:flex; flex-direction:column; gap:8px;">
+                    @foreach (var q in Model.ActiveQuizzes)
+                    {
+                        <div class="card" style="padding:12px 16px; display:flex; justify-content:space-between; align-items:center; gap:10px;">
+                            <div>
+                                <div style="font-weight:600; font-size:14px;">@q.Title</div>
+                                <div style="font-size:12px; color:var(--text-secondary);">@q.GroupName · @q.AttemptCount cavab</div>
+                            </div>
+                            <a href="/Teacher/Quizzes/Results/@q.QuizId" class="btn btn-sm btn-secondary"><i class="fas fa-chart-bar"></i></a>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+
+        <!-- Son bildirişlər -->
+        <div>
+            <h3 style="font-size:16px; font-weight:700; margin-bottom:12px;"><i class="fas fa-bell"></i> Son bildirişlər</h3>
+            @if (!Model.RecentNotifications.Any())
+            {
+                <div class="card" style="padding:24px; text-align:center; color:var(--text-secondary);">Bildiriş yoxdur</div>
+            }
+            else
+            {
+                <div class="card" style="padding:6px 0;">
+                    @foreach (var n in Model.RecentNotifications)
+                    {
+                        var href = $"/Notifications/Open?id={n.Id}" + (string.IsNullOrEmpty(n.RelatedUrl) ? "" : $"&url={Uri.EscapeDataString(n.RelatedUrl)}");
+                        <a href="@href" style="display:block; padding:11px 16px; text-decoration:none; color:inherit; border-bottom:1px solid var(--border); @(n.IsRead ? "" : "background:rgba(233,69,96,0.06);")">
+                            <div style="font-size:13px; font-weight:600; display:flex; align-items:center; gap:6px;">
+                                @if (!n.IsRead)
+                                {
+                                    <span style="width:7px; height:7px; border-radius:50%; background:var(--accent); display:inline-block;"></span>
+                                }
+                                @n.Title
+                            </div>
+                            <div style="font-size:12px; color:var(--text-secondary); margin-top:2px;">@n.Message</div>
+                            <div style="font-size:11px; color:var(--text-secondary); opacity:.7; margin-top:3px;">@n.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</div>
+                        </a>
+                    }
+                    <a href="/Notifications" style="display:block; text-align:center; padding:10px; font-size:13px; color:var(--accent); text-decoration:none;">Hamısına bax</a>
+                </div>
+            }
+        </div>
     </div>
 </div>

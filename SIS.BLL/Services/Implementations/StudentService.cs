@@ -59,7 +59,7 @@ namespace SIS.BLL.Services.Implementations
         public async Task CreateStudentAsync(CreateStudentDto dto)
         {
             if (!string.IsNullOrEmpty(dto.FinCode))
-                if (await _userManager.Users.AnyAsync(u => u.FinCode == dto.FinCode))
+                if (await _userManager.Users.AnyAsync(u => u.FinCode == dto.FinCode && u.IsActive))
                     throw new ConflictException("Bu FIN kod artıq istifadədədir");
 
             var user = new AppUser
@@ -124,7 +124,13 @@ namespace SIS.BLL.Services.Implementations
             student.AppUser.Email = $"deleted_{id}_{student.AppUser.Email}";
             student.AppUser.UserName = student.AppUser.Email;
             student.AppUser.IsActive = false;
+            student.AppUser.FinCode = null; // FIN kodu azad et ki, eyni şəxs yenidən qeydiyyatdan keçə bilsin
             await _userManager.UpdateAsync(student.AppUser);
+
+            // Tələbənin qeydiyyatlarını da soft-delete et (qrup tələbə sayı düzgün olsun)
+            var enrollments = await _unitOfWork.Enrollments.GetByStudentAsync(id);
+            foreach (var enrollment in enrollments.Where(e => !e.IsDeleted))
+                _unitOfWork.Enrollments.SoftDelete(enrollment);
 
             _unitOfWork.Students.SoftDelete(student);
             await _unitOfWork.SaveAsync();
