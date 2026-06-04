@@ -99,7 +99,8 @@
                         <div id="day_@di" style="display:grid; grid-template-columns:2fr 1fr 1fr auto; gap:10px; align-items:center; margin-bottom:10px;">
                             <select name="ScheduleDays[@di].DayOfWeek" class="form-control">
                                 @{
-                                    var dayNames = new[]{"Bazar ertəsi","Çərşənbə axşamı","Wed","Cümə axşamı","Fri","Sat","Bazar"};
+                                    // DayOfWeek enum sırası ilə: 0=Bazar(Sun) ... 6=Şənbə(Sat)
+                                    var dayNames = new[]{"Bazar","Bazar ertəsi","Çərşənbə axşamı","Çərşənbə","Cümə axşamı","Cümə","Şənbə"};
                                     for (int wd = 0; wd < 7; wd++)
                                     {
                                         if (d.DayOfWeek == (DayOfWeek)wd)
@@ -133,7 +134,16 @@
 
 @section Scripts {
 <script>
-    const days = ['Bazar ertəsi','Çərşənbə axşamı','Çərşənbə','Cümə axşamı','Cümə','Şənbə','Bazar'];
+    // DayOfWeek enum sırası ilə (1=Bazar ertəsi/Monday ... 0=Bazar/Sunday)
+    const days = [
+        { v: 1, t: 'Bazar ertəsi' },
+        { v: 2, t: 'Çərşənbə axşamı' },
+        { v: 3, t: 'Çərşənbə' },
+        { v: 4, t: 'Cümə axşamı' },
+        { v: 5, t: 'Cümə' },
+        { v: 6, t: 'Şənbə' },
+        { v: 0, t: 'Bazar' }
+    ];
     let dayCount = parseInt(document.getElementById('dayCounterHolder').dataset.count);
 
     function addDay() {
@@ -143,7 +153,7 @@
         div.style.cssText = 'display:grid; grid-template-columns:2fr 1fr 1fr auto; gap:10px; align-items:center; margin-bottom:10px;';
         div.innerHTML = `
             <select name="ScheduleDays[${i}].DayOfWeek" class="form-control">
-                ${days.map((d,idx) => `<option value="${idx}">${d}</option>`).join('')}
+                ${days.map(d => `<option value="${d.v}">${d.t}</option>`).join('')}
             </select>
             <input name="ScheduleDays[${i}].StartTime" type="time" class="form-control" value="09:00" />
             <input name="ScheduleDays[${i}].EndTime" type="time" class="form-control" value="11:00" />

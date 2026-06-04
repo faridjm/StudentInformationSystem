@@ -12,11 +12,31 @@
             <div class="card-body">
                 <div class="form-group">
                     <label class="form-label">@L["FullName"] *</label>
-                    <input name="FullName" class="form-control"  required />
+                    <input name="FullName" id="fullNameInput" class="form-control"
+                           autocomplete="off" required />
                 </div>
                 <div class="form-group">
-                    <label class="form-label">@L["Email"] *</label>
-                    <input name="Email" type="email" class="form-control" placeholder="anar@example.com" required />
+                    <label class="form-label">
+                        @L["Email"]
+                        <span id="emailHint"
+                              style="font-size:12px; color:var(--text-secondary); margin-left:6px; display:none;">
+                            (institutional email təklif edildi)
+                        </span>
+                    </label>
+                    <div style="position:relative;">
+                        <input name="Email" id="emailInput" type="email" class="form-control"
+                               placeholder="ad@@sis.az və ya ad@@gmail.com"
+                               autocomplete="off" />
+                        <span id="emailSpinner"
+                              style="display:none; position:absolute; right:12px; top:50%;
+                                     transform:translateY(-50%); color:var(--text-secondary);">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </span>
+                    </div>
+                    <small style="color:var(--text-secondary);">
+                        Boş buraxsanız sistem avtomatik @@sis.az email yaradacaq.
+                        İstənilən valid email qəbul edilir.
+                    </small>
                 </div>
                 <div class="form-group">
                     <label class="form-label">@L["Password"] *</label>
@@ -55,11 +75,63 @@
 
 @section Scripts {
 <script>
-function togglePass() {
-    const input = document.getElementById('passwordInput');
-    const icon = document.getElementById('passIcon');
-    if (input.type === 'password') { input.type = 'text'; icon.className = 'fas fa-eye-slash'; }
-    else { input.type = 'password'; icon.className = 'fas fa-eye'; }
-}
+(function () {
+    var fullNameInput = document.getElementById('fullNameInput');
+    var emailInput    = document.getElementById('emailInput');
+    var emailHint     = document.getElementById('emailHint');
+    var emailSpinner  = document.getElementById('emailSpinner');
+
+    var debounceTimer   = null;
+    var userEditedEmail = false;
+
+    emailInput.addEventListener('input', function () {
+        userEditedEmail = true;
+        emailHint.style.display = 'none';
+    });
+
+    emailInput.addEventListener('blur', function () {
+        if (emailInput.value.trim() === '') {
+            userEditedEmail = false;
+            triggerGenerate();
+        }
+    });
+
+    fullNameInput.addEventListener('input', function () {
+        clearTimeout(debounceTimer);
+        if (userEditedEmail) return;
+        debounceTimer = setTimeout(triggerGenerate, 600);
+    });
+
+    function triggerGenerate() {
+        var raw   = fullNameInput.value.trim();
+        var parts = raw.split(/\s+/);
+        if (parts.length < 2 || parts[1].length === 0) return;
+
+        var firstName = parts[0];
+        var lastName  = parts.slice(1).join(' ');
+
+        emailSpinner.style.display = 'inline';
+
+        fetch('/Admin/Teacher/GenerateEmail?firstName=' +
+              encodeURIComponent(firstName) + '&lastName=' + encodeURIComponent(lastName))
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (data) {
+                emailSpinner.style.display = 'none';
+                if (data && data.email) {
+                    emailInput.value        = data.email;
+                    emailHint.style.display = 'inline';
+                    userEditedEmail         = false;
+                }
+            })
+            .catch(function () { emailSpinner.style.display = 'none'; });
+    }
+
+    window.togglePass = function () {
+        var input = document.getElementById('passwordInput');
+        var icon  = document.getElementById('passIcon');
+        if (input.type === 'password') { input.type = 'text';     icon.className = 'fas fa-eye-slash'; }
+        else                           { input.type = 'password'; icon.className = 'fas fa-eye';       }
+    };
+})();
 </script>
 }

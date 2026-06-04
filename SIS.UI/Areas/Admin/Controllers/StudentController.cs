@@ -12,11 +12,14 @@ namespace SIS.UI.Areas.Admin.Controllers
     {
         private readonly IStudentApi _studentApi;
         private readonly IAuthApi _authApi;
+        private readonly IInstitutionalEmailApi _emailApi;
 
-        public StudentController(IStudentApi studentApi, IAuthApi authApi)
+        public StudentController(IStudentApi studentApi, IAuthApi authApi,
+            IInstitutionalEmailApi emailApi)
         {
             _studentApi = studentApi;
-            _authApi = authApi;
+            _authApi    = authApi;
+            _emailApi   = emailApi;
         }
 
         public async Task<IActionResult> Index()
@@ -29,6 +32,26 @@ namespace SIS.UI.Areas.Admin.Controllers
         }
 
         public IActionResult Create() => View();
+
+        /// <summary>
+        /// AJAX: /Admin/Student/GenerateEmail?firstName=Farid&amp;lastName=Mammadov
+        /// → { "email": "faridm1@sis.az" }
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> GenerateEmail(string firstName, string lastName)
+        {
+            if (string.IsNullOrWhiteSpace(firstName) || string.IsNullOrWhiteSpace(lastName))
+                return BadRequest(new { error = "Ad və soyad tələb olunur" });
+            try
+            {
+                var result = await _emailApi.GenerateAsync(firstName, lastName);
+                return Json(new { email = result.Email });
+            }
+            catch
+            {
+                return StatusCode(500, new { error = "Email generate edilmədi" });
+            }
+        }
 
         [HttpPost]
         public async Task<IActionResult> Create(CreateStudentDto dto)

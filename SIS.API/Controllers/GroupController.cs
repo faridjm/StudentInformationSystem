@@ -14,10 +14,13 @@ namespace SIS.API.Controllers
     {
         private readonly IGroupService _service;
         private readonly ITeacherService _teacherService;
-        public GroupController(IGroupService service, ITeacherService teacherService)
+        private readonly ICurriculumScheduleCalculatorService _scheduleCalculator;
+        public GroupController(IGroupService service, ITeacherService teacherService,
+            ICurriculumScheduleCalculatorService scheduleCalculator)
         {
             _service = service;
             _teacherService = teacherService;
+            _scheduleCalculator = scheduleCalculator;
         }
 
         [HttpGet]
@@ -44,6 +47,15 @@ namespace SIS.API.Controllers
         [Authorize(Roles = $"{RoleConstants.Admin},{RoleConstants.SuperAdmin}")]
         public async Task<IActionResult> Create([FromBody] CreateGroupDto dto)
             => Ok(await _service.CreateAsync(dto));
+
+        /// <summary>
+        /// Calculated EndDate preview: StartDate, dərs günləri və curriculum şablonuna (dərs sayı) görə
+        /// qrupun bitmə tarixini hesablayır. Qrup yaradılmadan, yalnız önizləmə üçün.
+        /// </summary>
+        [HttpPost("preview-enddate")]
+        [Authorize(Roles = $"{RoleConstants.Admin},{RoleConstants.SuperAdmin}")]
+        public async Task<IActionResult> PreviewEndDate([FromBody] CurriculumScheduleRequest request)
+            => Ok(await _scheduleCalculator.CalculateAsync(request));
 
         [HttpPut]
         [Authorize(Roles = $"{RoleConstants.Admin},{RoleConstants.SuperAdmin}")]

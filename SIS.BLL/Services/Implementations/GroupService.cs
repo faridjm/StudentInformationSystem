@@ -11,12 +11,15 @@ namespace SIS.BLL.Services.Implementations
         private readonly IUnitOfWork _unitOfWork;
         private readonly IAuditLogService _audit;
         private readonly ICurriculumTemplateService _curriculum;
+        private readonly ICurriculumScheduleCalculatorService _scheduleCalculator;
 
-        public GroupService(IUnitOfWork unitOfWork, IAuditLogService audit, ICurriculumTemplateService curriculum)
+        public GroupService(IUnitOfWork unitOfWork, IAuditLogService audit, ICurriculumTemplateService curriculum,
+            ICurriculumScheduleCalculatorService scheduleCalculator)
         {
             _unitOfWork = unitOfWork;
             _audit = audit;
             _curriculum = curriculum;
+            _scheduleCalculator = scheduleCalculator;
         }
 
         public async Task<IEnumerable<GroupListDto>> GetAllAsync()
@@ -39,6 +42,21 @@ namespace SIS.BLL.Services.Implementations
 
         public async Task<GroupDetailDto> CreateAsync(CreateGroupDto dto)
         {
+            // EndDate-i server tərəfdə yenidən hesabla — frontend-ə güvənmə.
+            // Tədris şablonu və dərs günləri varsa, bitmə tarixi şablondakı dərs sayına görə təyin edilir.
+            if (dto.CurriculumTemplateId.HasValue && dto.ScheduleDays.Any())
+            {
+                var calc = await _scheduleCalculator.CalculateAsync(new CurriculumScheduleRequest
+                {
+                    StartDate = dto.StartDate,
+                    ScheduleDays = dto.ScheduleDays.Select(s => s.DayOfWeek).ToList(),
+                    CurriculumTemplateId = dto.CurriculumTemplateId
+                });
+
+                if (calc.Success && calc.EndDate.HasValue)
+                    dto.EndDate = calc.EndDate.Value;
+            }
+
             if (dto.StartDate >= dto.EndDate)
                 throw new BadRequestException("Başlama tarixi bitmə tarixindən əvvəl olmalıdır");
 

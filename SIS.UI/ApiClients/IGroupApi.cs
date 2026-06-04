@@ -17,6 +17,9 @@ namespace SIS.UI.ApiClients
         [Post("/api/group")]
         Task<GroupDetailDto> CreateAsync([Body] CreateGroupDto dto);
 
+        [Post("/api/group/preview-enddate")]
+        Task<CurriculumScheduleResult> PreviewEndDateAsync([Body] CurriculumScheduleRequest request);
+
         [Put("/api/group")]
         Task UpdateAsync([Body] UpdateGroupDto dto);
 

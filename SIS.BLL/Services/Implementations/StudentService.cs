@@ -19,15 +19,18 @@ namespace SIS.BLL.Services.Implementations
         private readonly IActivityLogger _activityLogger;
         private readonly IEmailService _emailService;
         private readonly IAuditLogService _audit;
+        private readonly IInstitutionalEmailService _institutionalEmail;
 
         public StudentService(IUnitOfWork unitOfWork, UserManager<AppUser> userManager,
-            IActivityLogger activityLogger, IEmailService emailService, IAuditLogService audit)
+            IActivityLogger activityLogger, IEmailService emailService, IAuditLogService audit,
+            IInstitutionalEmailService institutionalEmail)
         {
             _unitOfWork = unitOfWork;
             _userManager = userManager;
             _activityLogger = activityLogger;
             _emailService = emailService;
             _audit = audit;
+            _institutionalEmail = institutionalEmail;
         }
 
         public async Task<IEnumerable<StudentListDto>> GetAllStudentsAsync()
@@ -62,11 +65,28 @@ namespace SIS.BLL.Services.Implementations
                 if (await _userManager.Users.AnyAsync(u => u.FinCode == dto.FinCode && u.IsActive))
                     throw new ConflictException("Bu FIN kod artıq istifadədədir");
 
+            // Email boşdursa backend institutional email generate edir
+            string resolvedEmail;
+            if (string.IsNullOrWhiteSpace(dto.Email))
+            {
+                var parts = dto.FullName.Trim().Split(' ', 2, StringSplitOptions.RemoveEmptyEntries);
+                var firstName = parts[0];
+                var lastName  = parts.Length > 1 ? parts[1] : parts[0];
+                resolvedEmail = await _institutionalEmail.GenerateEmailAsync(firstName, lastName);
+            }
+            else
+            {
+                resolvedEmail = dto.Email.Trim().ToLowerInvariant();
+                // Manual email — bütün AppUser table-da unique check
+                if (await _userManager.Users.AnyAsync(u => u.Email == resolvedEmail))
+                    throw new ConflictException("Bu email artıq istifadədədir");
+            }
+
             var user = new AppUser
             {
                 FullName = dto.FullName.ToTitleCase(), FinCode = dto.FinCode,
                 BirthDate = dto.BirthDate,
-                Email = dto.Email, UserName = dto.Email,
+                Email = resolvedEmail, UserName = resolvedEmail,
                 PhoneNumber = dto.PhoneNumber, IsActive = true
             };
 
@@ -92,8 +112,8 @@ namespace SIS.BLL.Services.Implementations
             user.NormalizedUserName = student.StudentNumber.ToUpper();
             await _userManager.UpdateAsync(user);
 
-            _ = _emailService.SendWelcomeAsync(dto.Email, dto.FullName, student.StudentNumber, dto.Password, "Student");
-            await _activityLogger.LogAsync("Create", "Student", student.Id.ToString(), null, new { dto.FullName, dto.Email });
+            _ = _emailService.SendWelcomeAsync(resolvedEmail, dto.FullName, student.StudentNumber, dto.Password, "Student");
+            await _activityLogger.LogAsync("Create", "Student", student.Id.ToString(), null, new { dto.FullName, Email = resolvedEmail });
             await _audit.LogAsync("Create", "Student", student.Id.ToString(),
                 $"Tələbə yaradıldı: {student.AppUser.FullName} (№ {student.StudentNumber})");
         }

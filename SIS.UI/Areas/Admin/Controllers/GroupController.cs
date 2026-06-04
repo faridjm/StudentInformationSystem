@@ -67,6 +67,25 @@ namespace SIS.UI.Areas.Admin.Controllers
             }
         }
 
+        /// <summary>
+        /// AJAX: Calculated EndDate preview. StartDate + dərs günləri + şablon (dərs sayı) → bitmə tarixi.
+        /// Frontend bu nəticəni yalnız göstərmək üçün istifadə edir; submit zamanı backend yenidən hesablayır.
+        /// </summary>
+        [HttpPost]
+        [IgnoreAntiforgeryToken]
+        public async Task<IActionResult> CalculateEndDate([FromBody] CurriculumScheduleRequest request)
+        {
+            try
+            {
+                var result = await _groupApi.PreviewEndDateAsync(request);
+                return Json(result);
+            }
+            catch (Exception ex)
+            {
+                return Json(new CurriculumScheduleResult { Success = false, Message = ex.Message });
+            }
+        }
+
         public async Task<IActionResult> Detail(int id)
         {
             var group = await _groupApi.GetByIdAsync(id);

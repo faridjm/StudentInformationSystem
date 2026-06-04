@@ -66,11 +66,17 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">@L["StartDate"] *</label>
-                        <input name="StartDate" type="date" class="form-control" required />
+                        <input name="StartDate" id="startDate" type="date" class="form-control" required onchange="recalcEndDate()" />
                     </div>
                     <div class="form-group">
-                        <label class="form-label">@L["EndDate"] *</label>
-                        <input name="EndDate" type="date" class="form-control" required />
+                        <label class="form-label">
+                            <i class="fas fa-calculator" style="font-size:11px;"></i> Calculated EndDate
+                        </label>
+                        <input name="EndDate" id="endDate" type="date" class="form-control" required readonly
+                               style="background:var(--bg-hover); cursor:not-allowed;" />
+                        <div id="endDateInfo" style="font-size:11px; color:var(--text-secondary); margin-top:4px;">
+                            Şablon, başlama tarixi və dərs günləri seçildikdə avtomatik hesablanır.
+                        </div>
                     </div>
                 </div>
             </div>
@@ -112,9 +118,19 @@
         });
         // aktiv şablonu avtomatik seç
         if (firstMatch) sel.value = firstMatch;
+        recalcEndDate();
     }
 
-    const days = ['Bazar ertəsi','Çərşənbə axşamı','Çərşənbə','Cümə axşamı','Cümə','Şənbə','Bazar'];
+    // DayOfWeek dəyərləri .NET enum sırası ilə (0=Bazar/Sunday ... 6=Şənbə/Saturday).
+    const days = [
+        { v: 1, t: 'Bazar ertəsi' },
+        { v: 2, t: 'Çərşənbə axşamı' },
+        { v: 3, t: 'Çərşənbə' },
+        { v: 4, t: 'Cümə axşamı' },
+        { v: 5, t: 'Cümə' },
+        { v: 6, t: 'Şənbə' },
+        { v: 0, t: 'Bazar' }
+    ];
     let dayCount = 0;
 
     function addDay() {
@@ -124,14 +140,80 @@
         div.id = 'day_' + i;
         div.style.cssText = 'display:grid; grid-template-columns:2fr 1fr 1fr auto; gap:10px; align-items:center; margin-bottom:10px;';
         div.innerHTML = `
-            <select name="ScheduleDays[${i}].DayOfWeek" class="form-control" required>
-                ${days.map((d,idx) => `<option value="${idx}">${d}</option>`).join('')}
+            <select name="ScheduleDays[${i}].DayOfWeek" class="form-control schedule-day" required onchange="recalcEndDate()">
+                ${days.map(d => `<option value="${d.v}">${d.t}</option>`).join('')}
             </select>
             <input name="ScheduleDays[${i}].StartTime" type="time" class="form-control" value="09:00" required />
             <input name="ScheduleDays[${i}].EndTime" type="time" class="form-control" value="11:00" required />
-            <button type="button" onclick="document.getElementById('day_${i}').remove()" class="btn btn-sm btn-danger"><i class="fas fa-times"></i></button>
+            <button type="button" onclick="document.getElementById('day_${i}').remove(); recalcEndDate();" class="btn btn-sm btn-danger"><i class="fas fa-times"></i></button>
         `;
         document.getElementById('scheduleDays').appendChild(div);
+        recalcEndDate();
+    }
+
+    // ---- Calculated EndDate (AJAX) ----
+    let recalcTimer = null;
+    function recalcEndDate() {
+        // debounce — sürətli dəyişikliklərdə tək sorğu
+        clearTimeout(recalcTimer);
+        recalcTimer = setTimeout(doRecalcEndDate, 250);
+    }
+
+    function selectedDayValues() {
+        return Array.from(document.querySelectorAll('.schedule-day'))
+            .map(s => parseInt(s.value, 10))
+            .filter(v => !isNaN(v));
+    }
+
+    function doRecalcEndDate() {
+        const endInput = document.getElementById('endDate');
+        const info = document.getElementById('endDateInfo');
+        const startDate = document.getElementById('startDate').value;
+        const templateId = document.getElementById('templateSelect').value;
+        const dayValues = selectedDayValues();
+
+        // Şablon seçilməyibsə, EndDate-i admin əl ilə təyin edə bilsin (geriyə uyğunluq).
+        if (!templateId) {
+            endInput.readOnly = false;
+            endInput.style.background = '';
+            endInput.style.cursor = '';
+            info.textContent = 'Şablon seçilməyib — bitmə tarixini əl ilə daxil edin.';
+            return;
+        }
+
+        // Şablon seçilib — sahə readonly, sistem hesablayır.
+        endInput.readOnly = true;
+        endInput.style.background = 'var(--bg-hover)';
+        endInput.style.cursor = 'not-allowed';
+
+        if (!startDate || dayValues.length === 0) {
+            info.textContent = 'Başlama tarixi və ən azı bir dərs günü seçin.';
+            return;
+        }
+
+        info.textContent = 'Hesablanır…';
+
+        fetch('/Admin/Group/CalculateEndDate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                startDate: startDate,
+                scheduleDays: dayValues,
+                curriculumTemplateId: parseInt(templateId, 10)
+            })
+        })
+        .then(r => r.json())
+        .then(res => {
+            if (res && res.success && res.endDate) {
+                endInput.value = res.endDate.substring(0, 10);
+                info.innerHTML = `<span style="color:var(--success, #16a34a);"><i class="fas fa-check"></i> `
+                    + `${res.totalSessions} dərs · həftədə ${res.daysPerWeek} gün · bitmə: <strong>${endInput.value}</strong></span>`;
+            } else {
+                endInput.value = '';
+                info.innerHTML = `<span style="color:var(--danger, #dc2626);">${(res && res.message) ? res.message : 'Hesablanmadı'}</span>`;
+            }
+        })
+        .catch(() => { info.innerHTML = '<span style="color:var(--danger,#dc2626);">Şəbəkə xətası</span>'; });
     }
 </script>
 }

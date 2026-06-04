@@ -40,10 +40,12 @@ namespace SIS.API.Extensions
             services.AddScoped<ICourseMaterialService, CourseMaterialService>();
             services.AddScoped<ITeacherDashboardService, TeacherDashboardService>();
             services.AddScoped<ICurriculumTemplateService, CurriculumTemplateService>();
+            services.AddScoped<ICurriculumScheduleCalculatorService, CurriculumScheduleCalculatorService>();
             services.AddScoped<IRealtimeNotifier, SignalRNotifier>();
             services.AddHttpContextAccessor();
             services.AddScoped<IActivityLogger, ActivityLogger>();
             services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<IInstitutionalEmailService, InstitutionalEmailService>();
 
             services.AddFluentValidationAutoValidation();
             services.AddValidatorsFromAssembly(typeof(AssessmentService).Assembly);
