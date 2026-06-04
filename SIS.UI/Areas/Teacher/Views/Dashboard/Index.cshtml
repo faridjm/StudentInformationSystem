@@ -1,12 +1,23 @@
 @using SIS.Entities.Enums
 @model SIS.BLL.Services.DTOs.Dashboard.TeacherDashboardDto
+@inject SIS.UI.Time.GlobalSimulationState SimState
 @{
     ViewData["Title"] = L["Dashboard"].Value;
+    var effectiveDate = SimState.IsActive ? SimState.DateDisplay : DateTime.Now.ToString("dd MMMM yyyy, dddd");
 }
 
-<div style="margin-bottom:20px;">
-    <h2 style="font-size:22px; font-weight:700;">Salam, @Model.TeacherName 👋</h2>
-    <p style="color:var(--text-secondary); font-size:13px; margin-top:2px;">Bugünkü iş masanız</p>
+<div style="margin-bottom:20px; display:flex; justify-content:space-between; align-items:flex-start; gap:12px; flex-wrap:wrap;">
+    <div>
+        <h2 style="font-size:22px; font-weight:700;">Salam, @Model.TeacherName 👋</h2>
+        <p style="color:var(--text-secondary); font-size:13px; margin-top:2px;">Bugünkü iş masanız · bu gün <strong>@Model.TodayClassesCount</strong> dərs</p>
+    </div>
+    <div style="display:flex; align-items:center; gap:8px;">
+        <span class="badge badge-primary"><i class="fas fa-calendar-day"></i> @effectiveDate</span>
+        @if (SimState.IsActive)
+        {
+            <span class="badge badge-warning"><i class="fas fa-clock"></i> Simulyasiya</span>
+        }
+    </div>
 </div>
 
 @functions {
@@ -175,7 +186,7 @@
                     @foreach (var n in Model.RecentNotifications)
                     {
                         var href = $"/Notifications/Open?id={n.Id}" + (string.IsNullOrEmpty(n.RelatedUrl) ? "" : $"&url={Uri.EscapeDataString(n.RelatedUrl)}");
-                        <a href="@href" style="display:block; padding:11px 16px; text-decoration:none; color:inherit; border-bottom:1px solid var(--border); @(n.IsRead ? "" : "background:rgba(233,69,96,0.06);")">
+                        <a href="@href" style="display:block; padding:11px 16px; text-decoration:none; color:inherit; border-bottom:1px solid var(--border); @(n.IsRead ? "" : "background:var(--accent-soft);")">
                             <div style="font-size:13px; font-weight:600; display:flex; align-items:center; gap:6px;">
                                 @if (!n.IsRead)
                                 {

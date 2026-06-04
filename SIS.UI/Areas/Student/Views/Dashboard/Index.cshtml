@@ -5,36 +5,33 @@
     var announcements = ViewBag.Announcements as IEnumerable<SIS.BLL.Services.DTOs.Announcement.AnnouncementDto>;
 }
 
-<div style="margin-bottom:24px;">
-    <h2 style="font-size:20px; font-weight:700;">
-        @L["Welcome"], @(student?.FullName ?? User.Identity?.Name)!
-    </h2>
-    <p style="color:var(--text-secondary); font-size:14px;">@DateTime.Now.ToString("dd MMMM yyyy")</p>
+<div style="margin-bottom:24px; display:flex; justify-content:space-between; align-items:flex-start; gap:12px; flex-wrap:wrap;">
+    <div>
+        <h2 style="font-size:20px; font-weight:700;">
+            @L["Welcome"], @(student?.FullName ?? User.Identity?.Name)! 🎓
+        </h2>
+        <p style="color:var(--text-muted); font-size:14px; margin-top:2px;">Keep learning, keep growing!</p>
+    </div>
+    <span class="badge badge-primary" style="font-size:12px;"><i class="fas fa-calendar-day"></i> @DateTime.Now.ToString("dd MMMM yyyy")</span>
 </div>
 
-<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:24px;">
-    <div class="stat-card">
-        <div class="stat-icon" style="background:rgba(34,197,94,0.15); color:#22c55e;">
-            <i class="fas fa-book"></i>
-        </div>
+<div class="workspace-grid" style="margin-bottom:24px;">
+    <div class="stat-card card-accent">
+        <div class="stat-icon"><i class="fas fa-book"></i></div>
         <div>
             <div class="stat-value">@ViewBag.ActiveCourses</div>
             <div class="stat-label">Aktiv Kurs</div>
         </div>
     </div>
-    <div class="stat-card">
-        <div class="stat-icon" style="background:rgba(59,130,246,0.15); color:#3b82f6;">
-            <i class="fas fa-star"></i>
-        </div>
+    <div class="stat-card card-accent">
+        <div class="stat-icon"><i class="fas fa-graduation-cap"></i></div>
         <div>
             <div class="stat-value">@(student?.CurrentGPA.ToString("F2") ?? "0.00")</div>
             <div class="stat-label">GPA</div>
         </div>
     </div>
-    <div class="stat-card">
-        <div class="stat-icon" style="background:rgba(168,85,247,0.15); color:#a855f7;">
-            <i class="fas fa-bell"></i>
-        </div>
+    <div class="stat-card card-accent">
+        <div class="stat-icon"><i class="fas fa-bell"></i></div>
         <div>
             <div class="stat-value">@ViewBag.UnreadCount</div>
             <div class="stat-label">@L["NewNotification"]</div>
@@ -58,14 +55,17 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @if (enrollments != null)
+                    @if (enrollments == null || !enrollments.Any())
+                    {
+                        <tr><td colspan="3"><div class="empty-state" style="padding:24px;"><i class="fas fa-book-open"></i><p>Hələ aktiv kursunuz yoxdur</p></div></td></tr>
+                    }
+                    else
                     {
                         @foreach (var e in enrollments)
                         {
                             <tr>
                                 <td>
-                                    <div style="font-weight:500;">@e.CourseName</div>
-                                    <div style="font-size:12px; color:var(--text-secondary);">@e.CourseName ?? ""</div>
+                                    <div style="font-weight:600;">@e.CourseName</div>
                                 </td>
                                 <td style="color:var(--text-secondary); font-size:13px;">@e.TeacherName</td>
                                 <td><span class="badge badge-success">@L["Active"]</span></td>

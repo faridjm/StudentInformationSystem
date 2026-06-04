@@ -5,18 +5,18 @@
 <div class="notif-bell-wrap" style="position:relative;">
     <div class="notif-bell" id="notifBellBtn" style="cursor:pointer; position:relative;" onclick="window.__notif.toggle()">
         <i class="fas fa-bell"></i>
-        <span class="notif-badge" id="notifCount" style="display:none; position:absolute; top:-4px; right:-4px; background:#e94560; color:#fff; font-size:10px; font-weight:700; min-width:16px; height:16px; border-radius:8px; display:none; align-items:center; justify-content:center; padding:0 4px;">0</span>
+        <span class="notif-badge" id="notifCount" style="display:none; position:absolute; top:-4px; right:-4px; background:var(--accent); color:#fff; font-size:10px; font-weight:700; min-width:16px; height:16px; border-radius:8px; display:none; align-items:center; justify-content:center; padding:0 4px;">0</span>
     </div>
 
     <div id="notifPanel" style="display:none; position:absolute; right:0; top:36px; width:340px; max-height:440px; background:var(--bg-card, #1e293b); border:1px solid var(--border, rgba(255,255,255,0.1)); border-radius:12px; box-shadow:0 12px 32px rgba(0,0,0,0.4); z-index:1200; overflow:hidden;">
         <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 16px; border-bottom:1px solid var(--border, rgba(255,255,255,0.1));">
             <strong style="font-size:14px;">Bildirişlər</strong>
-            <a href="javascript:void(0)" onclick="window.__notif.markAll()" style="font-size:12px; color:var(--accent, #e94560); text-decoration:none;">Hamısını oxu</a>
+            <a href="javascript:void(0)" onclick="window.__notif.markAll()" style="font-size:12px; color:var(--accent, var(--accent)); text-decoration:none;">Hamısını oxu</a>
         </div>
         <div id="notifList" style="max-height:330px; overflow-y:auto;">
             <div style="padding:24px; text-align:center; color:var(--text-secondary, #94a3b8); font-size:13px;">Yüklənir…</div>
         </div>
-        <a href="/Notifications" style="display:block; text-align:center; padding:10px; font-size:13px; color:var(--accent, #e94560); text-decoration:none; border-top:1px solid var(--border, rgba(255,255,255,0.1));">Hamısına bax</a>
+        <a href="/Notifications" style="display:block; text-align:center; padding:10px; font-size:13px; color:var(--accent, var(--accent)); text-decoration:none; border-top:1px solid var(--border, rgba(255,255,255,0.1));">Hamısına bax</a>
     </div>
 </div>
 
@@ -55,8 +55,8 @@
             }
             listEl.innerHTML = items.map(function (n) {
                 var href = '/Notifications/Open?id=' + n.id + (n.relatedUrl ? '&url=' + encodeURIComponent(n.relatedUrl) : '');
-                var bg = n.isRead ? 'transparent' : 'rgba(233,69,96,0.07)';
-                var dot = n.isRead ? '' : '<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#e94560;margin-right:6px;"></span>';
+                var bg = n.isRead ? 'transparent' : 'var(--accent-soft)';
+                var dot = n.isRead ? '' : '<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--accent);margin-right:6px;"></span>';
                 return '<a href="' + href + '" style="display:block; padding:11px 16px; text-decoration:none; color:inherit; border-bottom:1px solid var(--border,rgba(255,255,255,0.06)); background:' + bg + ';">' +
                     '<div style="font-size:13px; font-weight:600; margin-bottom:2px;">' + dot + esc(n.title) + '</div>' +
                     '<div style="font-size:12px; color:var(--text-secondary,#94a3b8); line-height:1.4;">' + esc(n.message) + '</div>' +
