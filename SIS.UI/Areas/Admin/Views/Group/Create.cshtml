@@ -21,13 +21,24 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">@L["Course"] *</label>
-                        <select name="CourseId" class="form-control" required>
+                        <select name="CourseId" id="courseSelect" class="form-control" required onchange="filterTemplates()">
                             <option value="">...</option>
                             @foreach (var c in (IEnumerable<SIS.BLL.Services.DTOs.Course.CourseDto>)ViewBag.Courses)
                             {
                                 <option value="@c.Id">@c.Name</option>
                             }
                         </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Tədris şablonu (istəyə bağlı)</label>
+                        <select name="CurriculumTemplateId" id="templateSelect" class="form-control">
+                            <option value="">— Şablonsuz —</option>
+                            @foreach (var t in (ViewBag.Templates as List<SIS.BLL.Services.DTOs.Curriculum.CurriculumTemplateDto> ?? new()))
+                            {
+                                <option value="@t.Id" data-course="@t.CourseId" data-active="@t.IsActive.ToString().ToLower()" style="display:none;">@t.Name (@t.ItemCount dərs)@(t.IsActive ? " ✓" : "")</option>
+                            }
+                        </select>
+                        <div style="font-size:11px; color:var(--text-secondary); margin-top:4px;">Mövzular və qiymətləndirmələr avtomatik yaranır.</div>
                     </div>
                     <div class="form-group">
                         <label class="form-label">@L["Teacher"] *</label>
@@ -86,6 +97,23 @@
 
 @section Scripts {
 <script>
+    // Seçilmiş kursa görə tədris şablonlarını filtrlə
+    function filterTemplates() {
+        var courseId = document.getElementById('courseSelect').value;
+        var sel = document.getElementById('templateSelect');
+        if (!sel) return;
+        sel.value = '';
+        var firstMatch = '';
+        Array.from(sel.options).forEach(function (o) {
+            if (!o.value) { o.style.display = ''; return; }
+            var match = o.getAttribute('data-course') === courseId;
+            o.style.display = match ? '' : 'none';
+            if (match && o.getAttribute('data-active') === 'true' && !firstMatch) firstMatch = o.value;
+        });
+        // aktiv şablonu avtomatik seç
+        if (firstMatch) sel.value = firstMatch;
+    }
+
     const days = ['Bazar ertəsi','Çərşənbə axşamı','Çərşənbə','Cümə axşamı','Cümə','Şənbə','Bazar'];
     let dayCount = 0;
 

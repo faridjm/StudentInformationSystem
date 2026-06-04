@@ -43,6 +43,8 @@ namespace SIS.DAL.Context
         public DbSet<AuditLog> AuditLogs { get; set; }
         public DbSet<AdminAccessGrant> AdminAccessGrants { get; set; }
         public DbSet<CourseMaterial> CourseMaterials { get; set; }
+        public DbSet<CurriculumTemplate> CurriculumTemplates { get; set; }
+        public DbSet<CurriculumTemplateItem> CurriculumTemplateItems { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

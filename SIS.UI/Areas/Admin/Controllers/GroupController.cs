@@ -15,9 +15,11 @@ namespace SIS.UI.Areas.Admin.Controllers
         private readonly IAcademicYearApi _yearApi;
         private readonly IClassSessionApi _sessionApi;
         private readonly IAssessmentApi _assessmentApi;
+        private readonly ICurriculumTemplateApi _templateApi;
 
         public GroupController(IGroupApi groupApi, ICourseApi courseApi, ITeacherApi teacherApi,
-            IAcademicYearApi yearApi, IClassSessionApi sessionApi, IAssessmentApi assessmentApi)
+            IAcademicYearApi yearApi, IClassSessionApi sessionApi, IAssessmentApi assessmentApi,
+            ICurriculumTemplateApi templateApi)
         {
             _groupApi = groupApi;
             _courseApi = courseApi;
@@ -25,6 +27,7 @@ namespace SIS.UI.Areas.Admin.Controllers
             _yearApi = yearApi;
             _sessionApi = sessionApi;
             _assessmentApi = assessmentApi;
+            _templateApi = templateApi;
         }
 
         public async Task<IActionResult> Index()
@@ -38,6 +41,8 @@ namespace SIS.UI.Areas.Admin.Controllers
             ViewBag.Courses = await _courseApi.GetAllAsync();
             ViewBag.Teachers = await _teacherApi.GetAllAsync();
             ViewBag.Seasons = await _yearApi.GetAllAsync();
+            try { ViewBag.Templates = (await _templateApi.GetAllAsync()).ToList(); }
+            catch { ViewBag.Templates = new List<SIS.BLL.Services.DTOs.Curriculum.CurriculumTemplateDto>(); }
             return View();
         }
 
@@ -56,6 +61,8 @@ namespace SIS.UI.Areas.Admin.Controllers
                 ViewBag.Courses = await _courseApi.GetAllAsync();
                 ViewBag.Teachers = await _teacherApi.GetAllAsync();
                 ViewBag.Seasons = await _yearApi.GetAllAsync();
+                try { ViewBag.Templates = (await _templateApi.GetAllAsync()).ToList(); }
+                catch { ViewBag.Templates = new List<SIS.BLL.Services.DTOs.Curriculum.CurriculumTemplateDto>(); }
                 return View(dto);
             }
         }

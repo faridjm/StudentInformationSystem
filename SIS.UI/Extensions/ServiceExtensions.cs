@@ -51,6 +51,7 @@ namespace SIS.UI.Extensions
             Add<IAdminAccessApi>();
             Add<ICourseMaterialApi>();
             Add<ITeacherDashboardApi>();
+            Add<ICurriculumTemplateApi>();
 
             return services;
         }

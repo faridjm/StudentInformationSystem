@@ -545,6 +545,9 @@
         <a href="/Admin/Group" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Group" ? "active" : "")">
             <i class="fas fa-users"></i> @L["Groups"]
         </a>
+        <a href="/Admin/Curriculum" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Curriculum" ? "active" : "")">
+            <i class="fas fa-stream"></i> Tədris Şablonları
+        </a>
         <a href="/Admin/Enrollment" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Enrollment" ? "active" : "")">
             <i class="fas fa-clipboard-list"></i> @L["Enrollments"]
         </a>

@@ -16,8 +16,10 @@ namespace SIS.Entities.Models
         public decimal WeightPercent { get; set; }
         public string? Description { get; set; }
         public bool IsVisible { get; set; } = true;
+        public int? ClassSessionId { get; set; }
 
         public Group Group { get; set; } = null!;
+        public ClassSession? ClassSession { get; set; }
         public ICollection<AssessmentSubmission> Submissions { get; set; } = new List<AssessmentSubmission>();
     }
 }

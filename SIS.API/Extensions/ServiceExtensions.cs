@@ -39,6 +39,7 @@ namespace SIS.API.Extensions
             services.AddScoped<IAdminAccessService, AdminAccessService>();
             services.AddScoped<ICourseMaterialService, CourseMaterialService>();
             services.AddScoped<ITeacherDashboardService, TeacherDashboardService>();
+            services.AddScoped<ICurriculumTemplateService, CurriculumTemplateService>();
             services.AddScoped<IRealtimeNotifier, SignalRNotifier>();
             services.AddHttpContextAccessor();
             services.AddScoped<IActivityLogger, ActivityLogger>();

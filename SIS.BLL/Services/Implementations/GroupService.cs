@@ -10,11 +10,13 @@ namespace SIS.BLL.Services.Implementations
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IAuditLogService _audit;
+        private readonly ICurriculumTemplateService _curriculum;
 
-        public GroupService(IUnitOfWork unitOfWork, IAuditLogService audit)
+        public GroupService(IUnitOfWork unitOfWork, IAuditLogService audit, ICurriculumTemplateService curriculum)
         {
             _unitOfWork = unitOfWork;
             _audit = audit;
+            _curriculum = curriculum;
         }
 
         public async Task<IEnumerable<GroupListDto>> GetAllAsync()
@@ -75,6 +77,10 @@ namespace SIS.BLL.Services.Implementations
             await _unitOfWork.SaveAsync();
 
             await GenerateSessionsAsync(group.Id);
+
+            // Seçilmiş curriculum şablonunu tətbiq et (mövzular + qiymətləndirmələr)
+            if (dto.CurriculumTemplateId.HasValue)
+                await _curriculum.ApplyToGroupAsync(group.Id, dto.CurriculumTemplateId.Value);
 
             await _audit.LogAsync("Create", "Group", group.Id.ToString(), $"Qrup yaradıldı: {group.Name}");
 

@@ -31,6 +31,8 @@ namespace SIS.DAL.UnitOfWork
         private IAuditLogRepository? _auditLogs;
         private IAdminAccessGrantRepository? _adminAccessGrants;
         private ICourseMaterialRepository? _courseMaterials;
+        private ICurriculumTemplateRepository? _curriculumTemplates;
+        private ICurriculumTemplateItemRepository? _curriculumTemplateItems;
 
         public UnitOfWork(AppDbContext context) { _context = context; }
 
@@ -57,6 +59,8 @@ namespace SIS.DAL.UnitOfWork
         public IAuditLogRepository AuditLogs => _auditLogs ??= new AuditLogRepository(_context);
         public IAdminAccessGrantRepository AdminAccessGrants => _adminAccessGrants ??= new AdminAccessGrantRepository(_context);
         public ICourseMaterialRepository CourseMaterials => _courseMaterials ??= new CourseMaterialRepository(_context);
+        public ICurriculumTemplateRepository CurriculumTemplates => _curriculumTemplates ??= new CurriculumTemplateRepository(_context);
+        public ICurriculumTemplateItemRepository CurriculumTemplateItems => _curriculumTemplateItems ??= new CurriculumTemplateItemRepository(_context);
 
         public async Task<int> SaveAsync() => await _context.SaveChangesAsync();
         public void Dispose() => _context.Dispose();

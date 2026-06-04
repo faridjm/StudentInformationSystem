@@ -1,0 +1,131 @@
+@using SIS.Entities.Enums
+@model SIS.BLL.Services.DTOs.Curriculum.CurriculumTemplateDetailDto
+@{
+    ViewData["Title"] = "Şablon sıraları";
+    string TypeLabel(AssessmentType t) => t switch
+    {
+        AssessmentType.Quiz => "Quiz",
+        AssessmentType.Assignment => "Tapşırıq",
+        AssessmentType.FinalProject => "Final Layihə",
+        AssessmentType.Exam => "İmtahan",
+        AssessmentType.Homework => "Ev tapşırığı",
+        _ => t.ToString()
+    };
+}
+
+@if (Model == null)
+{
+    <div class="card" style="padding:40px; text-align:center; color:var(--text-secondary);">Şablon tapılmadı</div>
+}
+else
+{
+    <div style="display:flex; align-items:center; gap:12px; margin-bottom:6px;">
+        <a href="/Admin/Curriculum" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i></a>
+        <h2 style="font-size:20px; font-weight:700;">@Model.Name</h2>
+        @if (Model.IsActive)
+        {
+            <span style="padding:3px 10px; border-radius:12px; font-size:11px; font-weight:600; background:#dcfce7; color:#16a34a;">Aktiv</span>
+        }
+    </div>
+    <p style="font-size:12px; color:var(--text-secondary); margin-bottom:16px;">@Model.CourseName · @Model.Items.Count sıra</p>
+
+    <!-- Yeni sıra -->
+    <div class="card" style="padding:18px; margin-bottom:18px;">
+        <div style="font-weight:700; margin-bottom:10px;"><i class="fas fa-plus"></i> Sıra əlavə et</div>
+        <form method="post" action="/Admin/Curriculum/AddItem">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="templateId" value="@Model.Id" />
+            <div style="display:grid; grid-template-columns:100px 1fr; gap:12px; margin-bottom:10px;">
+                <div class="form-group" style="margin:0;">
+                    <label class="form-label" style="font-size:12px;">Dərs № *</label>
+                    <input name="sessionNumber" type="number" min="1" class="form-control" required />
+                </div>
+                <div class="form-group" style="margin:0;">
+                    <label class="form-label" style="font-size:12px;">Mövzu *</label>
+                    <input name="topic" class="form-control" required />
+                </div>
+            </div>
+            <label style="display:flex; align-items:center; gap:8px; font-size:13px; margin-bottom:10px; cursor:pointer;">
+                <input type="checkbox" name="hasAssessment" value="true" id="hasAssess" onchange="document.getElementById('assessFields').style.display=this.checked?'grid':'none'" style="width:16px; height:16px;" />
+                Bu sırada qiymətləndirmə var
+            </label>
+            <div id="assessFields" style="display:none; grid-template-columns:1fr 1fr 1fr 1fr; gap:12px;">
+                <div class="form-group" style="margin:0;">
+                    <label class="form-label" style="font-size:12px;">Başlıq</label>
+                    <input name="assessmentTitle" class="form-control" placeholder="Quiz 1" />
+                </div>
+                <div class="form-group" style="margin:0;">
+                    <label class="form-label" style="font-size:12px;">Növ</label>
+                    <select name="assessmentType" class="form-control">
+                        <option value="0">Quiz</option>
+                        <option value="1">Tapşırıq</option>
+                        <option value="2">Final Layihə</option>
+                        <option value="3">İmtahan</option>
+                        <option value="4">Ev tapşırığı</option>
+                    </select>
+                </div>
+                <div class="form-group" style="margin:0;">
+                    <label class="form-label" style="font-size:12px;">Çəki %</label>
+                    <input name="weightPercent" type="number" step="0.5" min="0" class="form-control" placeholder="10" />
+                </div>
+                <div class="form-group" style="margin:0;">
+                    <label class="form-label" style="font-size:12px;">Maks bal</label>
+                    <input name="maxScore" type="number" step="0.5" min="0" class="form-control" placeholder="100" />
+                </div>
+            </div>
+            <div style="margin-top:12px;">
+                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Əlavə et</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Sıralar -->
+    @if (!Model.Items.Any())
+    {
+        <div class="card" style="padding:30px; text-align:center; color:var(--text-secondary);">Hələ sıra yoxdur</div>
+    }
+    else
+    {
+        <div class="card" style="padding:0; overflow-x:auto;">
+            <table style="width:100%; border-collapse:collapse; font-size:13px;">
+                <thead>
+                    <tr style="background:var(--bg-hover); text-align:left;">
+                        <th style="padding:10px 14px; width:70px;">Dərs №</th>
+                        <th style="padding:10px 14px;">Mövzu</th>
+                        <th style="padding:10px 14px;">Qiymətləndirmə</th>
+                        <th style="padding:10px 14px; text-align:right;"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var i in Model.Items)
+                    {
+                        <tr style="border-top:1px solid var(--border);">
+                            <td style="padding:10px 14px; font-weight:700;">@i.SessionNumber</td>
+                            <td style="padding:10px 14px;">@i.Topic</td>
+                            <td style="padding:10px 14px;">
+                                @if (i.HasAssessment && i.AssessmentType.HasValue)
+                                {
+                                    <span style="padding:2px 8px; border-radius:10px; font-size:11px; background:var(--accent-soft, rgba(233,69,96,.12)); color:var(--accent);">
+                                        @i.AssessmentTitle · @TypeLabel(i.AssessmentType.Value) · %@i.WeightPercent · @i.MaxScore bal
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span style="color:var(--text-secondary);">—</span>
+                                }
+                            </td>
+                            <td style="padding:10px 14px; text-align:right;">
+                                <form method="post" action="/Admin/Curriculum/DeleteItem" style="display:inline;" onsubmit="return confirm('Sıra silinsin?');">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="itemId" value="@i.Id" />
+                                    <input type="hidden" name="templateId" value="@Model.Id" />
+                                    <button type="submit" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+}

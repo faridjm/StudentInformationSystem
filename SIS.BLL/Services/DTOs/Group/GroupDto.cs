@@ -39,6 +39,7 @@ namespace SIS.BLL.Services.DTOs.Groups
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public int Capacity { get; set; }
+        public int? CurriculumTemplateId { get; set; }
         public List<CreateScheduleDayDto> ScheduleDays { get; set; } = new();
     }
 

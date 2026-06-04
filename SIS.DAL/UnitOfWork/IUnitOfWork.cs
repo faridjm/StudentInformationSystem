@@ -27,6 +27,8 @@ namespace SIS.DAL.UnitOfWork
         IAuditLogRepository AuditLogs { get; }
         IAdminAccessGrantRepository AdminAccessGrants { get; }
         ICourseMaterialRepository CourseMaterials { get; }
+        ICurriculumTemplateRepository CurriculumTemplates { get; }
+        ICurriculumTemplateItemRepository CurriculumTemplateItems { get; }
 
         Task<int> SaveAsync();
     }
