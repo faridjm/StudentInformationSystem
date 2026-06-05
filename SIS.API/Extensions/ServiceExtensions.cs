@@ -44,11 +44,13 @@ namespace SIS.API.Extensions
             services.AddScoped<ICurriculumScheduleCalculatorService, CurriculumScheduleCalculatorService>();
             services.AddScoped<IRealtimeNotifier, SignalRNotifier>();
             services.AddScoped<IChatRealtimeNotifier, ChatRealtimeNotifier>();
+            services.AddScoped<IOnlineClassNotifier, OnlineClassNotifier>();
             services.AddHttpContextAccessor();
             services.AddScoped<IActivityLogger, ActivityLogger>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IInstitutionalEmailService, InstitutionalEmailService>();
             services.AddScoped<IArchiveService, ArchiveService>();
+            services.AddScoped<IOnlineLessonService, OnlineLessonService>();
 
             services.AddFluentValidationAutoValidation();
             services.AddValidatorsFromAssembly(typeof(AssessmentService).Assembly);

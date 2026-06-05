@@ -1,4 +1,5 @@
 using SIS.Entities.Base;
+using SIS.Entities.Enums;
 
 namespace SIS.Entities.Models
 {
@@ -13,6 +14,11 @@ namespace SIS.Entities.Models
         public int Capacity { get; set; }
         public bool IsActive { get; set; } = true;
 
+        // Tədris formatı
+        public DeliveryMode DeliveryMode { get; set; } = DeliveryMode.InPerson;
+        public OnlinePlatform? DefaultOnlinePlatform { get; set; }
+        public string? DefaultMeetingUrl { get; set; }
+
         public Course Course { get; set; } = null!;
         public Teacher Teacher { get; set; } = null!;
         public AcademicYear? AcademicYear { get; set; }
@@ -22,5 +28,6 @@ namespace SIS.Entities.Models
         public ICollection<ClassSession> ClassSessions { get; set; } = new List<ClassSession>();
         public ICollection<AssessmentItem> AssessmentItems { get; set; } = new List<AssessmentItem>();
         public ICollection<Assignment> Assignments { get; set; } = new List<Assignment>();
+        public ICollection<OnlineLesson> OnlineLessons { get; set; } = new List<OnlineLesson>();
     }
 }

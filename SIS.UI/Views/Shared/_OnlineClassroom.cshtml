@@ -1,0 +1,121 @@
+@model SIS.BLL.Services.DTOs.OnlineLesson.OnlineLessonDto
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Config
+@{
+    Layout = ViewBag.IsTeacher == true ? "_TeacherLayout" : "_StudentLayout";
+    ViewData["Title"] = Model.Title;
+    var isTeacher = ViewBag.IsTeacher == true;
+    var accessToken = User.FindFirst("AccessToken")?.Value ?? "";
+    var apiBase = Config["ApiSettings:BaseUrl"]?.TrimEnd('/') ?? "";
+    var currentUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "";
+    var currentUserName = User.Identity?.Name ?? "";
+}
+
+<style>
+    .classroom-grid { display:grid; grid-template-columns: 1fr 320px; gap:14px; height: calc(100vh - 180px); }
+    .video-area { display:flex; flex-direction:column; background:#0f172a; border-radius:12px; overflow:hidden; }
+    .video-grid { flex:1; display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:8px; padding:10px; overflow:auto; }
+    .video-tile { position:relative; background:#1e293b; border-radius:8px; aspect-ratio:16/9; overflow:hidden; }
+    .video-tile video { width:100%; height:100%; object-fit:cover; }
+    .video-tile .name { position:absolute; bottom:6px; left:8px; background:rgba(0,0,0,.6); color:#fff; font-size:11px; padding:2px 8px; border-radius:4px; }
+    .video-tile.local .name { background:rgba(147,51,234,.85); }
+    .toolbar { display:flex; gap:8px; padding:10px 14px; background:#1e293b; align-items:center; }
+    .tb-btn { background:rgba(255,255,255,.1); color:#fff; border:none; border-radius:50%; width:42px; height:42px; cursor:pointer; transition:all .15s; }
+    .tb-btn:hover { background:rgba(255,255,255,.2); }
+    .tb-btn.off { background:#dc2626; }
+    .tb-btn.leave { background:#dc2626; }
+    .tb-btn.end { background:#9333ea; }
+    .side-panel { display:flex; flex-direction:column; background:var(--bg-card); border:1px solid var(--border); border-radius:12px; overflow:hidden; }
+    .side-tabs { display:flex; border-bottom:1px solid var(--border); }
+    .side-tabs button { flex:1; padding:10px; border:none; background:none; color:var(--text-secondary); font-size:13px; font-weight:600; cursor:pointer; border-bottom:2px solid transparent; }
+    .side-tabs button.active { color:var(--accent); border-bottom-color:var(--accent); }
+    .side-content { flex:1; overflow:auto; padding:10px; }
+    .participant-row { display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:6px; }
+    .participant-row:hover { background:var(--bg-hover); }
+    .participant-dot { width:8px; height:8px; border-radius:50%; background:#22c55e; }
+    .chat-msgs { flex:1; overflow:auto; padding:10px; display:flex; flex-direction:column; gap:6px; }
+    .chat-msg { padding:6px 10px; border-radius:8px; background:var(--bg-hover); font-size:13px; }
+    .chat-msg .meta { font-size:10px; color:var(--text-secondary); margin-bottom:2px; display:flex; justify-content:space-between; }
+    .chat-input { display:flex; gap:6px; padding:8px; border-top:1px solid var(--border); }
+    .chat-input input { flex:1; padding:8px 10px; border:1px solid var(--border); border-radius:6px; background:var(--bg-card); color:var(--text-primary); }
+    .chat-input button { padding:8px 14px; background:var(--accent); color:#fff; border:none; border-radius:6px; cursor:pointer; }
+    .ended-overlay { position:fixed; inset:0; background:rgba(0,0,0,.85); z-index:10000; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:14px; color:#fff; }
+    .live-badge { display:inline-flex; align-items:center; gap:5px; background:#22c55e; color:#fff; padding:3px 10px; border-radius:6px; font-size:11px; font-weight:700; }
+    .live-badge::before { content:''; width:7px; height:7px; background:#fff; border-radius:50%; animation: pulse 1.5s infinite; }
+    @@keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:.3; } }
+</style>
+
+<!-- Header -->
+<div style="display:flex; align-items:center; gap:14px; margin-bottom:14px;">
+    <div style="flex:1;">
+        <h2 style="font-size:18px; font-weight:700; margin:0; display:flex; align-items:center; gap:10px;">
+            <i class="fas fa-video" style="color:var(--accent);"></i>
+            @Model.Title
+            <span class="live-badge">LIVE</span>
+        </h2>
+        <div style="font-size:12px; color:var(--text-secondary); margin-top:3px;">
+            @Model.GroupName · @Model.CourseName
+            @if (!string.IsNullOrEmpty(Model.Description)) { <span> · @Model.Description</span> }
+        </div>
+    </div>
+    <span style="font-size:11px; color:var(--text-secondary);">Sessiya #@Model.SessionNumber · @Model.SessionDate.ToString("dd.MM.yyyy")</span>
+</div>
+
+<div class="classroom-grid" id="classroomRoot"
+     data-lesson-id="@Model.Id"
+     data-is-teacher="@(isTeacher ? "true" : "false")"
+     data-api-base="@apiBase"
+     data-token="@accessToken"
+     data-user-id="@currentUserId"
+     data-user-name="@currentUserName">
+    <!-- Video area -->
+    <div class="video-area">
+        <div class="video-grid" id="videoGrid">
+            <div class="video-tile local" id="localTile">
+                <video id="localVideo" autoplay muted playsinline></video>
+                <div class="name">Siz (@currentUserName)</div>
+            </div>
+        </div>
+        <div class="toolbar">
+            <button class="tb-btn" id="btnMic" title="Mikrofon"><i class="fas fa-microphone"></i></button>
+            <button class="tb-btn" id="btnCam" title="Kamera"><i class="fas fa-video"></i></button>
+            <div style="flex:1;"></div>
+            <button class="tb-btn leave" id="btnLeave" title="Tərk et"><i class="fas fa-sign-out-alt"></i></button>
+            @if (isTeacher)
+            {
+                <button class="tb-btn end" id="btnEnd" title="Dərsi bitir"><i class="fas fa-stop"></i></button>
+            }
+        </div>
+    </div>
+
+    <!-- Side panel -->
+    <div class="side-panel">
+        <div class="side-tabs">
+            <button class="active" data-tab="participants"><i class="fas fa-users"></i> İştirakçı (<span id="partCount">1</span>)</button>
+            <button data-tab="chat"><i class="fas fa-comment"></i> Söhbət</button>
+        </div>
+        <div class="side-content" id="sideParticipants">
+            <div id="participantList">
+                <div class="participant-row"><div class="participant-dot"></div><span>@currentUserName (siz)</span></div>
+            </div>
+        </div>
+        <div class="side-content" id="sideChat" style="display:none; padding:0; flex-direction:column;">
+            <div class="chat-msgs" id="chatMsgs"></div>
+            <div class="chat-input">
+                <input id="chatInput" type="text" maxlength="2000" placeholder="Mesaj yaz..." />
+                <button id="chatSend"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="endedOverlay" class="ended-overlay" style="display:none;">
+    <i class="fas fa-stop-circle" style="font-size:48px;"></i>
+    <div style="font-size:18px; font-weight:600;">Online dərs bitdi</div>
+    <a href="javascript:history.back()" class="btn btn-primary">Geri qayıt</a>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
+    <script src="~/js/online-classroom.js"></script>
+}

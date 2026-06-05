@@ -55,6 +55,7 @@ namespace SIS.UI.Extensions
             Add<ICurriculumTemplateApi>();
             Add<IInstitutionalEmailApi>();
             Add<IArchiveApi>();
+            Add<IOnlineLessonApi>();
             Add<IPublicApi>();
 
             return services;

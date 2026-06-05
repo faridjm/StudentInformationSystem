@@ -20,12 +20,14 @@ namespace SIS.UI.Areas.Student.Controllers
         private readonly IClock _clock;
         private readonly ITranscriptApi _transcriptApi;
         private readonly ICourseMaterialApi _materialApi;
+        private readonly IOnlineLessonApi _onlineLessonApi;
 
         public CoursesController(IEnrollmentApi enrollmentApi, IGradeApi gradeApi,
             IAttendanceApi attendanceApi, IStudentApi studentApi,
             IAssessmentApi assessmentApi, IAssignmentApi assignmentApi,
             IClassSessionApi sessionApi, IAnnouncementApi announcementApi,
-            IClock clock, ITranscriptApi transcriptApi, ICourseMaterialApi materialApi)
+            IClock clock, ITranscriptApi transcriptApi, ICourseMaterialApi materialApi,
+            IOnlineLessonApi onlineLessonApi)
         {
             _enrollmentApi = enrollmentApi;
             _gradeApi = gradeApi;
@@ -38,6 +40,7 @@ namespace SIS.UI.Areas.Student.Controllers
             _clock = clock;
             _transcriptApi = transcriptApi;
             _materialApi = materialApi;
+            _onlineLessonApi = onlineLessonApi;
         }
 
         // Bildiriş linkindən: groupId-ə görə tələbənin qeydiyyatını tapıb materiallar tabına yönləndir
@@ -88,6 +91,20 @@ namespace SIS.UI.Areas.Student.Controllers
             var materials = new List<SIS.BLL.Services.DTOs.Material.CourseMaterialDto>();
             try { materials = (await _materialApi.GetVisibleByGroupAsync(enrollment.GroupId)).ToList(); } catch { }
 
+            // Online dərslər — sessiya ID-sinə görə map (tələbənin qruplarından)
+            var onlineLessonsBySession = new Dictionary<int, SIS.BLL.Services.DTOs.OnlineLesson.OnlineLessonDto>();
+            try
+            {
+                var lessons = await _onlineLessonApi.GetForStudentAsync();
+                foreach (var l in lessons.Where(x => x.GroupId == enrollment.GroupId))
+                {
+                    if (!onlineLessonsBySession.TryGetValue(l.ClassSessionId, out var existing) || l.Id > existing.Id)
+                        onlineLessonsBySession[l.ClassSessionId] = l;
+                }
+            }
+            catch { }
+            ViewBag.OnlineLessons = onlineLessonsBySession;
+
             // F12 — akademik header üçün xülasə (season, tarixlər, official grade, GPA, certificate).
             SIS.BLL.Services.DTOs.Transcript.TranscriptDto? transcript = null;
             try { transcript = await _transcriptApi.GetAsync(id); } catch { }
@@ -105,6 +122,32 @@ namespace SIS.UI.Areas.Student.Controllers
             ViewBag.Today = _clock.Today;
             ViewBag.ActiveTab = tab;
             return View();
+        }
+
+        // Online dərsə qoşulma — JSON qaytarır (AJAX)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> JoinOnlineLesson(int lessonId)
+        {
+            try
+            {
+                var result = await _onlineLessonApi.JoinAsync(lessonId);
+                return Json(new
+                {
+                    canJoin = result.CanJoin,
+                    classroomUrl = result.ClassroomUrl,
+                    meetingUrl = result.MeetingUrl,
+                    message = result.Message
+                });
+            }
+            catch (Refit.ApiException ex)
+            {
+                return Json(new { canJoin = false, message = string.IsNullOrWhiteSpace(ex.Content) ? ex.Message : ex.Content });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { canJoin = false, message = ex.Message });
+            }
         }
 
         public async Task<IActionResult> Transcript(int id)

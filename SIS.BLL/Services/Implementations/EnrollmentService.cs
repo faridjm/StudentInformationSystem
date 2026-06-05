@@ -116,7 +116,8 @@ namespace SIS.BLL.Services.Implementations
             TeacherId = e.Group?.TeacherId ?? 0,
             TeacherName = e.Group?.Teacher?.AppUser?.FullName ?? "",
             Status = e.Status,
-            EnrolledAt = e.EnrolledAt
+            EnrolledAt = e.EnrolledAt,
+            DeliveryMode = e.Group?.DeliveryMode ?? DeliveryMode.InPerson
         };
     }
 }

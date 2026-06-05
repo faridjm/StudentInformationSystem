@@ -47,6 +47,9 @@ namespace SIS.DAL.Context
         public DbSet<CourseMaterial> CourseMaterials { get; set; }
         public DbSet<CurriculumTemplate> CurriculumTemplates { get; set; }
         public DbSet<CurriculumTemplateItem> CurriculumTemplateItems { get; set; }
+        public DbSet<OnlineLesson> OnlineLessons { get; set; }
+        public DbSet<OnlineLessonParticipant> OnlineLessonParticipants { get; set; }
+        public DbSet<OnlineLessonChatMessage> OnlineLessonChatMessages { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -20,5 +20,6 @@ namespace SIS.Entities.Models
         public string? CancellationReason { get; set; }
 
         public ICollection<AttendanceRecord> AttendanceRecords { get; set; } = new List<AttendanceRecord>();
+        public ICollection<OnlineLesson> OnlineLessons { get; set; } = new List<OnlineLesson>();
     }
 }

@@ -24,12 +24,14 @@ namespace SIS.UI.Areas.Teacher.Controllers
         private readonly IClock _clock;
         private readonly ITranscriptApi _transcriptApi;
         private readonly ICourseMaterialApi _materialApi;
+        private readonly IOnlineLessonApi _onlineLessonApi;
 
         public CoursesController(IGroupApi groupApi, ITeacherApi teacherApi,
             IEnrollmentApi enrollmentApi, IClassSessionApi sessionApi,
             IAssessmentApi assessmentApi, IAnnouncementApi announcementApi,
             IAssignmentApi assignmentApi, IAttendanceApi attendanceApi,
-            IClock clock, ITranscriptApi transcriptApi, ICourseMaterialApi materialApi)
+            IClock clock, ITranscriptApi transcriptApi, ICourseMaterialApi materialApi,
+            IOnlineLessonApi onlineLessonApi)
         {
             _groupApi = groupApi;
             _teacherApi = teacherApi;
@@ -42,6 +44,7 @@ namespace SIS.UI.Areas.Teacher.Controllers
             _clock = clock;
             _transcriptApi = transcriptApi;
             _materialApi = materialApi;
+            _onlineLessonApi = onlineLessonApi;
         }
 
         public async Task<IActionResult> Index()
@@ -93,6 +96,34 @@ namespace SIS.UI.Areas.Teacher.Controllers
                 catch { attendancePerSession[s.Id] = new List<AttendanceDto>(); }
             }
 
+            // Online dərslər — sessiya ID-sinə görə map
+            var onlineLessonsBySession = new Dictionary<int, SIS.BLL.Services.DTOs.OnlineLesson.OnlineLessonDto>();
+            try
+            {
+                var lessons = await _onlineLessonApi.GetByGroupAsync(id);
+                foreach (var l in lessons)
+                {
+                    // Sessiya başına yalnız ən aktual dərsi saxla (ən böyük Id)
+                    if (!onlineLessonsBySession.TryGetValue(l.ClassSessionId, out var existing) || l.Id > existing.Id)
+                        onlineLessonsBySession[l.ClassSessionId] = l;
+                }
+            }
+            catch { }
+            ViewBag.OnlineLessons = onlineLessonsBySession;
+
+            // Davamiyyət tab-ı üçün: hər online dərsə qoşulan tələbə ID-ləri
+            var joinedStudentsByLesson = new Dictionary<int, HashSet<int>>();
+            foreach (var ol in onlineLessonsBySession.Values)
+            {
+                try
+                {
+                    var parts = await _onlineLessonApi.GetParticipantsAsync(ol.Id);
+                    joinedStudentsByLesson[ol.ClassSessionId] = parts.Select(p => p.StudentId).ToHashSet();
+                }
+                catch { joinedStudentsByLesson[ol.ClassSessionId] = new HashSet<int>(); }
+            }
+            ViewBag.JoinedStudentsByLesson = joinedStudentsByLesson;
+
             ViewBag.Enrollments = enrollments;
             ViewBag.Sessions = sessions;
             ViewBag.Assessments = assessments;
@@ -135,6 +166,109 @@ namespace SIS.UI.Areas.Teacher.Controllers
             TempData["Success"] = "Dərs tamamlandı";
             return RedirectToAction("Detail", new { id = groupId, tab = "schedule" });
         }
+
+        // ── Online dərslər ──────────────────────────────────────────
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateOnlineLesson(int groupId, int sessionId,
+            string? title, string? description)
+        {
+            try
+            {
+                await _onlineLessonApi.CreateAsync(new SIS.BLL.Services.DTOs.OnlineLesson.CreateOnlineLessonDto
+                {
+                    ClassSessionId = sessionId,
+                    Title = title,
+                    Description = description
+                });
+                TempData["Success"] = "Online dərs yaradıldı";
+            }
+            catch (Refit.ApiException ex) { TempData["Error"] = ExtractError(ex); }
+            catch (Exception ex) { TempData["Error"] = ex.Message; }
+            return RedirectToAction("Detail", new { id = groupId, tab = "schedule" });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateOnlineLesson(int groupId, int id,
+            string title, string? description)
+        {
+            try
+            {
+                await _onlineLessonApi.UpdateAsync(id, new SIS.BLL.Services.DTOs.OnlineLesson.UpdateOnlineLessonDto
+                {
+                    Id = id,
+                    Title = title,
+                    Description = description
+                });
+                TempData["Success"] = "Online dərs yeniləndi";
+            }
+            catch (Refit.ApiException ex) { TempData["Error"] = ExtractError(ex); }
+            catch (Exception ex) { TempData["Error"] = ex.Message; }
+            return RedirectToAction("Detail", new { id = groupId, tab = "schedule" });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> StartOnlineLesson(int groupId, int sessionId)
+        {
+            try
+            {
+                var result = await _onlineLessonApi.StartAsync(sessionId);
+                // Müəllim dərsi başladandan sonra birbaşa daxili classroom-a keçsin
+                if (!string.IsNullOrEmpty(result?.ClassroomUrl))
+                    return Redirect(result.ClassroomUrl);
+                TempData["Success"] = "Online dərs başladıldı";
+            }
+            catch (Refit.ApiException ex) { TempData["Error"] = ExtractError(ex); }
+            catch (Exception ex) { TempData["Error"] = ex.Message; }
+            return RedirectToAction("Detail", new { id = groupId, tab = "schedule" });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EndOnlineLesson(int groupId, int id)
+        {
+            try
+            {
+                await _onlineLessonApi.EndAsync(id);
+                TempData["Success"] = "Online dərs bitirildi";
+            }
+            catch (Refit.ApiException ex) { TempData["Error"] = ExtractError(ex); }
+            catch (Exception ex) { TempData["Error"] = ex.Message; }
+            return RedirectToAction("Detail", new { id = groupId, tab = "schedule" });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CancelOnlineLesson(int groupId, int id)
+        {
+            try
+            {
+                await _onlineLessonApi.CancelAsync(id);
+                TempData["Success"] = "Online dərs ləğv edildi";
+            }
+            catch (Refit.ApiException ex) { TempData["Error"] = ExtractError(ex); }
+            catch (Exception ex) { TempData["Error"] = ex.Message; }
+            return RedirectToAction("Detail", new { id = groupId, tab = "schedule" });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> MarkOnlinePresent(int groupId, int id)
+        {
+            try
+            {
+                var result = await _onlineLessonApi.MarkPresentAsync(id);
+                TempData["Success"] = result.Message;
+            }
+            catch (Refit.ApiException ex) { TempData["Error"] = ExtractError(ex); }
+            catch (Exception ex) { TempData["Error"] = ex.Message; }
+            return RedirectToAction("Detail", new { id = groupId, tab = "attendance" });
+        }
+
+        private static string ExtractError(Refit.ApiException ex)
+            => string.IsNullOrWhiteSpace(ex.Content) ? ex.Message : ex.Content;
 
         // Elan yarat
         [HttpPost]

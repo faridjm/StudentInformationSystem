@@ -10,6 +10,7 @@ namespace SIS.DAL.Configurations
         {
             builder.HasKey(g => g.Id);
             builder.Property(g => g.Name).IsRequired().HasMaxLength(50);
+            builder.Property(g => g.DefaultMeetingUrl).HasMaxLength(2048);
 
             builder.HasOne(g => g.Course)
                 .WithMany(c => c.Groups)

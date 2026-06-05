@@ -14,6 +14,11 @@ namespace SIS.BLL.Services.DTOs.Groups
         public int Capacity { get; set; }
         public int EnrolledCount { get; set; }
         public bool IsActive { get; set; }
+
+        // Tədris formatı
+        public DeliveryMode DeliveryMode { get; set; } = DeliveryMode.InPerson;
+        public OnlinePlatform? DefaultOnlinePlatform { get; set; }
+        public string? DefaultMeetingUrl { get; set; }
     }
 
     public class GroupDetailDto : GroupListDto
@@ -41,6 +46,11 @@ namespace SIS.BLL.Services.DTOs.Groups
         public int Capacity { get; set; }
         public int? CurriculumTemplateId { get; set; }
         public List<CreateScheduleDayDto> ScheduleDays { get; set; } = new();
+
+        // Tədris formatı
+        public DeliveryMode DeliveryMode { get; set; } = DeliveryMode.InPerson;
+        public OnlinePlatform? DefaultOnlinePlatform { get; set; }
+        public string? DefaultMeetingUrl { get; set; }
     }
 
     public class CreateScheduleDayDto
@@ -61,5 +71,10 @@ namespace SIS.BLL.Services.DTOs.Groups
         public int Capacity { get; set; }
         public bool IsActive { get; set; }
         public List<CreateScheduleDayDto> ScheduleDays { get; set; } = new();
+
+        // Tədris formatı
+        public DeliveryMode DeliveryMode { get; set; } = DeliveryMode.InPerson;
+        public OnlinePlatform? DefaultOnlinePlatform { get; set; }
+        public string? DefaultMeetingUrl { get; set; }
     }
 }

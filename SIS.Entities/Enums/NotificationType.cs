@@ -12,7 +12,9 @@
         QuizActivated,
         QuizSubmitted,
         ChatMessage,
-        AdminAccessChanged
+        AdminAccessChanged,
+        OnlineLessonStarted,
+        OnlineLessonCancelled
     }
 
 }

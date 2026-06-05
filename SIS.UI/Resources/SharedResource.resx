@@ -832,6 +832,24 @@
   <data name="Archive" xml:space="preserve">
     <value>Arxiv</value>
   </data>
+  <data name="OnlineLessons" xml:space="preserve">
+    <value>Online dərslər</value>
+  </data>
+  <data name="DeliveryMode" xml:space="preserve">
+    <value>Tədris formatı</value>
+  </data>
+  <data name="DeliveryInPerson" xml:space="preserve">
+    <value>Əyani</value>
+  </data>
+  <data name="DeliveryOnline" xml:space="preserve">
+    <value>Online</value>
+  </data>
+  <data name="DeliveryHybrid" xml:space="preserve">
+    <value>Hibrid</value>
+  </data>
+  <data name="JoinLesson" xml:space="preserve">
+    <value>Qoşul</value>
+  </data>
   <data name="Archived" xml:space="preserve">
     <value>Arxivləşdirilmiş</value>
   </data>

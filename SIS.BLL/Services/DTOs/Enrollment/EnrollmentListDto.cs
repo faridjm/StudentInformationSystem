@@ -15,5 +15,6 @@ namespace SIS.BLL.Services.DTOs.Enrollment
         public string TeacherName { get; set; } = null!;
         public EnrollmentStatus Status { get; set; }
         public DateTime EnrolledAt { get; set; }
+        public DeliveryMode DeliveryMode { get; set; } = DeliveryMode.InPerson;
     }
 }

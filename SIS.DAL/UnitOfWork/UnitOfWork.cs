@@ -36,6 +36,7 @@ namespace SIS.DAL.UnitOfWork
         private ICurriculumTemplateRepository? _curriculumTemplates;
         private ICurriculumTemplateItemRepository? _curriculumTemplateItems;
         private IArchiveRepository? _archive;
+        private IOnlineLessonRepository? _onlineLessons;
 
         public UnitOfWork(AppDbContext context) { _context = context; }
 
@@ -67,6 +68,7 @@ namespace SIS.DAL.UnitOfWork
         public ICurriculumTemplateRepository CurriculumTemplates => _curriculumTemplates ??= new CurriculumTemplateRepository(_context);
         public ICurriculumTemplateItemRepository CurriculumTemplateItems => _curriculumTemplateItems ??= new CurriculumTemplateItemRepository(_context);
         public IArchiveRepository Archive => _archive ??= new ArchiveRepository(_context);
+        public IOnlineLessonRepository OnlineLessons => _onlineLessons ??= new OnlineLessonRepository(_context);
 
         public async Task<int> SaveAsync() => await _context.SaveChangesAsync();
         public void Dispose() => _context.Dispose();

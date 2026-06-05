@@ -1,6 +1,7 @@
 using SIS.BLL.Services.DTOs.Groups;
 using SIS.BLL.Services.Interfaces;
 using SIS.DAL.UnitOfWork;
+using SIS.Entities.Enums;
 using SIS.Entities.Models;
 using static SIS.BLL.Exceptions.AppException;
 
@@ -60,6 +61,10 @@ namespace SIS.BLL.Services.Implementations
             if (dto.StartDate >= dto.EndDate)
                 throw new BadRequestException("Başlama tarixi bitmə tarixindən əvvəl olmalıdır");
 
+            // Tədris formatı yoxlaması
+            if (!Enum.IsDefined(typeof(DeliveryMode), dto.DeliveryMode))
+                throw new BadRequestException("Tədris formatı (DeliveryMode) düzgün deyil");
+
             if (dto.AcademicYearId.HasValue)
             {
                 var season = await _unitOfWork.AcademicYears.GetByIdAsync(dto.AcademicYearId.Value);
@@ -81,6 +86,9 @@ namespace SIS.BLL.Services.Implementations
                 StartDate = dto.StartDate,
                 EndDate = dto.EndDate,
                 Capacity = dto.Capacity,
+                DeliveryMode = dto.DeliveryMode,
+                DefaultOnlinePlatform = dto.DeliveryMode == DeliveryMode.InPerson ? null : dto.DefaultOnlinePlatform,
+                DefaultMeetingUrl = dto.DeliveryMode == DeliveryMode.InPerson ? null : dto.DefaultMeetingUrl,
                 CreatedAt = DateTime.UtcNow,
                 ScheduleDays = dto.ScheduleDays.Select(s => new GroupScheduleDay
                 {
@@ -100,7 +108,7 @@ namespace SIS.BLL.Services.Implementations
             if (dto.CurriculumTemplateId.HasValue)
                 await _curriculum.ApplyToGroupAsync(group.Id, dto.CurriculumTemplateId.Value);
 
-            await _audit.LogAsync("Create", "Group", group.Id.ToString(), $"Qrup yaradıldı: {group.Name}");
+            await _audit.LogAsync("Create", "Group", group.Id.ToString(), $"Qrup yaradıldı: {group.Name} (Tədris formatı: {group.DeliveryMode})");
 
             var created = await _unitOfWork.Groups.GetGroupWithDetailsAsync(group.Id);
             return MapToDetailDto(created!);
@@ -113,6 +121,10 @@ namespace SIS.BLL.Services.Implementations
 
             if (dto.StartDate >= dto.EndDate)
                 throw new BadRequestException("Başlama tarixi bitmə tarixindən əvvəl olmalıdır");
+
+            // Tədris formatı yoxlaması
+            if (!Enum.IsDefined(typeof(DeliveryMode), dto.DeliveryMode))
+                throw new BadRequestException("Tədris formatı (DeliveryMode) düzgün deyil");
 
             if (dto.AcademicYearId.HasValue)
             {
@@ -133,6 +145,9 @@ namespace SIS.BLL.Services.Implementations
             group.EndDate = dto.EndDate;
             group.Capacity = dto.Capacity;
             group.IsActive = dto.IsActive;
+            group.DeliveryMode = dto.DeliveryMode;
+            group.DefaultOnlinePlatform = dto.DeliveryMode == DeliveryMode.InPerson ? null : dto.DefaultOnlinePlatform;
+            group.DefaultMeetingUrl = dto.DeliveryMode == DeliveryMode.InPerson ? null : dto.DefaultMeetingUrl;
 
             // Cədvəl günlərini yenilə
             group.ScheduleDays.Clear();
@@ -209,7 +224,10 @@ namespace SIS.BLL.Services.Implementations
             StartDate = g.StartDate, EndDate = g.EndDate,
             Capacity = g.Capacity,
             EnrolledCount = g.Enrollments?.Count(e => !e.IsDeleted && e.Student != null) ?? 0,
-            IsActive = g.IsActive
+            IsActive = g.IsActive,
+            DeliveryMode = g.DeliveryMode,
+            DefaultOnlinePlatform = g.DefaultOnlinePlatform,
+            DefaultMeetingUrl = g.DefaultMeetingUrl
         };
 
         private static GroupDetailDto MapToDetailDto(Group g) => new()
@@ -223,6 +241,9 @@ namespace SIS.BLL.Services.Implementations
             Capacity = g.Capacity,
             EnrolledCount = g.Enrollments?.Count(e => !e.IsDeleted && e.Student != null) ?? 0,
             IsActive = g.IsActive,
+            DeliveryMode = g.DeliveryMode,
+            DefaultOnlinePlatform = g.DefaultOnlinePlatform,
+            DefaultMeetingUrl = g.DefaultMeetingUrl,
             ScheduleDays = g.ScheduleDays?.Select(s => new ScheduleDayDto
             {
                 DayOfWeek = s.DayOfWeek,

@@ -1,0 +1,50 @@
+@model List<SIS.BLL.Services.DTOs.OnlineLesson.OnlineLessonDto>
+@using SIS.UI.Helpers
+@{
+    ViewData["Title"] = "Online dərslər";
+}
+
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+    <h2 style="font-size:20px; font-weight:700;"><i class="fas fa-video"></i> Online dərslər</h2>
+    <span style="font-size:13px; color:var(--text-secondary);">Cəmi: @Model.Count</span>
+</div>
+
+<div class="card">
+    <div class="card-body" style="padding:0;">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Qrup</th>
+                    <th>Kurs</th>
+                    <th>Müəllim</th>
+                    <th>Dərs</th>
+                    <th>Platforma</th>
+                    <th>Status</th>
+                    <th>Başladı</th>
+                    <th>Bitdi</th>
+                    <th>İştirakçı</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var l in Model)
+                {
+                    <tr>
+                        <td><strong>@l.GroupName</strong></td>
+                        <td>@l.CourseName</td>
+                        <td>@l.TeacherName</td>
+                        <td>#@l.SessionNumber — @l.SessionDate.ToString("dd.MM.yyyy")</td>
+                        <td>@OnlineLessonBadges.PlatformName(l.Platform)</td>
+                        <td>@OnlineLessonBadges.StatusBadge(l.Status)</td>
+                        <td>@(l.StartedAt?.ToString("dd.MM HH:mm") ?? "—")</td>
+                        <td>@(l.EndedAt?.ToString("dd.MM HH:mm") ?? "—")</td>
+                        <td>@l.ParticipantCount</td>
+                    </tr>
+                }
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="9" style="text-align:center; color:var(--text-secondary); padding:30px;">@L["NoData"]</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

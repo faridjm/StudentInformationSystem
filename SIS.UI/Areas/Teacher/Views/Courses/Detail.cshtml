@@ -6,6 +6,8 @@
 @using SIS.BLL.Services.DTOs.Assignment
 @using SIS.BLL.Services.DTOs.Announcement
 @using SIS.BLL.Services.DTOs.Attendance
+@using SIS.BLL.Services.DTOs.OnlineLesson
+@using SIS.UI.Helpers
 @{
     ViewData["Title"] = Model.Name;
     var enrollments = ViewBag.Enrollments as List<EnrollmentListDto> ?? new();
@@ -16,6 +18,8 @@
     var summaries = ViewBag.AttendanceSummaries as Dictionary<int, AttendanceSummaryDto> ?? new();
     var transcripts = ViewBag.Transcripts as Dictionary<int, SIS.BLL.Services.DTOs.Transcript.TranscriptDto> ?? new();
     var attPerSession = ViewBag.AttendancePerSession as Dictionary<int, List<AttendanceDto>> ?? new();
+    var onlineLessons = ViewBag.OnlineLessons as Dictionary<int, OnlineLessonDto> ?? new();
+    var joinedByLesson = ViewBag.JoinedStudentsByLesson as Dictionary<int, HashSet<int>> ?? new();
     var today = (DateOnly)ViewBag.Today;
     var activeTab = (string)ViewBag.ActiveTab ?? "overview";
 
@@ -180,7 +184,7 @@
         <div class="card-body" style="padding:0;">
             <table class="mini-table">
                 <thead>
-                    <tr><th>#</th><th>@L["Date"]</th><th></th><th></th><th>@L["TodaysTopic"]</th><th>@L["Status"]</th><th>@L["Score"]</th><th></th></tr>
+                    <tr><th>#</th><th>@L["Date"]</th><th></th><th></th><th>@L["TodaysTopic"]</th><th>@L["Status"]</th><th>Online dərs</th><th>@L["Score"]</th><th></th></tr>
                 </thead>
                 <tbody>
                     @foreach (var s in sessions)
@@ -204,6 +208,67 @@
                                 else if (s.Status == ClassSessionStatus.Cancelled) { <span class="badge badge-danger">@L["Cancel"]</span> }
                                 else if (isToday) { <span class="badge badge-info">@L["Today"]</span> }
                                 else { <span class="badge badge-warning">@L["NoData"]</span> }
+                            </td>
+                            <td>
+                                @{ onlineLessons.TryGetValue(s.Id, out var ol); }
+                                @if (Model.DeliveryMode != DeliveryMode.InPerson)
+                                {
+                                    @OnlineLessonBadges.DeliveryBadge(Model.DeliveryMode)
+                                }
+                                @if (ol != null)
+                                {
+                                    <div style="margin:4px 0;">@OnlineLessonBadges.StatusBadge(ol.Status)</div>
+                                    @if (ol.Status == OnlineLessonStatus.Live)
+                                    {
+                                        <div style="font-size:10px; color:var(--text-secondary); margin-bottom:4px;">
+                                            <i class="fas fa-user-check"></i> @ol.ParticipantCount qoşuldu
+                                        </div>
+                                        <div style="display:flex; gap:4px; flex-wrap:wrap;">
+                                            <a href="/Teacher/OnlineLessons/Classroom/@ol.Id" class="btn btn-sm btn-primary" style="padding:2px 8px; font-size:11px;"><i class="fas fa-video"></i> Classroom</a>
+                                            <form method="post" action="/Teacher/Courses/EndOnlineLesson" style="margin:0;">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="groupId" value="@Model.Id" />
+                                                <input type="hidden" name="id" value="@ol.Id" />
+                                                <button type="submit" class="btn btn-sm btn-secondary" style="padding:2px 8px; font-size:11px;"><i class="fas fa-stop"></i> Bitir</button>
+                                            </form>
+                                        </div>
+                                    }
+                                    else if (ol.Status == OnlineLessonStatus.Scheduled)
+                                    {
+                                        <div style="display:flex; gap:4px; flex-wrap:wrap;">
+                                            <form method="post" action="/Teacher/Courses/StartOnlineLesson" style="margin:0;">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="groupId" value="@Model.Id" />
+                                                <input type="hidden" name="sessionId" value="@s.Id" />
+                                                <button type="submit" class="btn btn-sm btn-success" style="padding:2px 8px; font-size:11px;"><i class="fas fa-play"></i> Başlat</button>
+                                            </form>
+                                            <button type="button" class="btn btn-sm btn-secondary" style="padding:2px 8px; font-size:11px;"
+                                                    onclick="openEditOL(@ol.Id, '@Html.Raw(ol.Title?.Replace("'","\\'"))', '@Html.Raw(ol.Description?.Replace("'","\\'"))')"><i class="fas fa-pen"></i></button>
+                                            <form method="post" action="/Teacher/Courses/CancelOnlineLesson" style="margin:0;" onsubmit="return confirm('Online dərsi ləğv et?')">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="groupId" value="@Model.Id" />
+                                                <input type="hidden" name="id" value="@ol.Id" />
+                                                <button type="submit" class="btn btn-sm btn-danger" style="padding:2px 8px; font-size:11px;"><i class="fas fa-times"></i></button>
+                                            </form>
+                                        </div>
+                                    }
+                                }
+                                else if (s.Status != ClassSessionStatus.Cancelled)
+                                {
+                                    <div style="display:flex; gap:4px;">
+                                        @if (Model.DeliveryMode != DeliveryMode.InPerson)
+                                        {
+                                            <form method="post" action="/Teacher/Courses/StartOnlineLesson" style="margin:0;">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="groupId" value="@Model.Id" />
+                                                <input type="hidden" name="sessionId" value="@s.Id" />
+                                                <button type="submit" class="btn btn-sm btn-success" style="padding:2px 8px; font-size:11px;"><i class="fas fa-play"></i> Başlat</button>
+                                            </form>
+                                        }
+                                        <button type="button" class="btn btn-sm btn-secondary" style="padding:2px 8px; font-size:11px;"
+                                                onclick="openCreateOL(@s.Id, @s.SessionNumber)"><i class="fas fa-plus"></i> Online</button>
+                                    </div>
+                                }
                             </td>
                             <td>
                                 @foreach (var a in aOnDate)
@@ -303,6 +368,8 @@
             var existingAtt = attPerSession.ContainsKey(s.Id) ? attPerSession[s.Id] : new List<AttendanceDto>();
             var hasSavedAtt = existingAtt.Any();
             var sessionAssessments = assessments.Where(a => DateOnly.FromDateTime(a.Date) == s.Date).ToList();
+            onlineLessons.TryGetValue(s.Id, out var attOl);
+            var joinedSet = joinedByLesson.ContainsKey(s.Id) ? joinedByLesson[s.Id] : new HashSet<int>();
 
             <div class="attendance-panel" id="att-@s.Id" style="display:@(s.Id == pastSessions.First().Id ? "block" : "none");">
                 <div class="card">
@@ -335,6 +402,14 @@
                         }
                     </div>
                     <div class="card-body">
+                        @if (attOl != null)
+                        {
+                            <form method="post" action="/Teacher/Courses/MarkOnlinePresent" id="markPresentForm-@s.Id" style="margin:0;">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="groupId" value="@Model.Id" />
+                                <input type="hidden" name="id" value="@attOl.Id" />
+                            </form>
+                        }
                         <form method="post" action="/Teacher/Courses/SaveAttendance" id="attForm-@s.Id">
                             @Html.AntiForgeryToken()
                             <input type="hidden" name="groupId" value="@Model.Id" />
@@ -343,6 +418,12 @@
                                 <button type="button" class="btn btn-success btn-sm" onclick="setAll(this, 0)">
                                     <i class="fas fa-check-double"></i> @L["Present"]
                                 </button>
+                                @if (attOl != null && joinedSet.Any())
+                                {
+                                    <button type="submit" form="markPresentForm-@s.Id" class="btn btn-sm" style="background:rgba(147,51,234,0.15); color:#9333ea; padding:3px 10px; font-size:11px;">
+                                        <i class="fas fa-video"></i> Qoşulanları Present (@joinedSet.Count)
+                                    </button>
+                                }
                                 @foreach (var sa in sessionAssessments)
                                 {
                                     var ac = sa.Type == AssessmentType.Quiz ? "#3b82f6" : sa.Type == AssessmentType.FinalProject ? "#e94560" : "#eab308";
@@ -377,6 +458,10 @@
                                                 <input type="hidden" name="enrollmentIds" value="@e.Id" />
                                                 <input type="hidden" class="status-value" name="statuses" value="@((int)curStatus)" />
                                                 <strong>@e.StudentName</strong>
+                                                @if (attOl != null && joinedSet.Contains(e.StudentId))
+                                                {
+                                                    <span style="display:inline-flex; align-items:center; gap:3px; background:rgba(147,51,234,0.15); color:#9333ea; padding:1px 6px; border-radius:5px; font-size:10px; font-weight:600; margin-left:6px;"><i class="fas fa-video" style="font-size:8px;"></i> Qoşuldu</span>
+                                                }
                                                 <div style="font-size:11px; color:var(--text-secondary);">@e.StudentNumber</div>
                                             </td>
                                             <td style="text-align:center;">
@@ -772,8 +857,72 @@
     </div>
 </div>
 
+<!-- Online dərs yarat modal -->
+<div id="createOLModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:1000; align-items:center; justify-content:center;">
+    <div style="background:var(--bg-card); border-radius:12px; padding:24px; width:480px; border:1px solid var(--border);">
+        <h3 style="margin-bottom:16px; font-size:16px;"><i class="fas fa-video"></i> Online dərs yarat</h3>
+        <form method="post" action="/Teacher/Courses/CreateOnlineLesson">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="groupId" value="@Model.Id" />
+            <input type="hidden" name="sessionId" id="createOLSession" />
+            <div class="form-group">
+                <label class="form-label">Başlıq</label>
+                <input name="title" id="createOLTitle" class="form-control" placeholder="Avtomatik qurulur (boş buraxa bilərsiniz)" />
+            </div>
+            <div class="form-group">
+                <label class="form-label">Təsvir</label>
+                <textarea name="description" class="form-control" rows="2"></textarea>
+            </div>
+            <div style="font-size:11px; color:var(--text-secondary); margin-bottom:8px; padding:8px; background:rgba(147,51,234,0.08); border-radius:6px;">
+                <i class="fas fa-info-circle"></i> Dərs Acadex-in öz daxili classroom-unda açılacaq — xarici link tələb olunmur.
+            </div>
+            <div style="display:flex; gap:8px; margin-top:8px;">
+                <button type="submit" class="btn btn-primary">Yarat</button>
+                <button type="button" onclick="document.getElementById('createOLModal').style.display='none'" class="btn btn-secondary">@L["Cancel"]</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Online dərs başlıq redaktə modal -->
+<div id="editOLModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:1000; align-items:center; justify-content:center;">
+    <div style="background:var(--bg-card); border-radius:12px; padding:24px; width:480px; border:1px solid var(--border);">
+        <h3 style="margin-bottom:16px; font-size:16px;"><i class="fas fa-pen"></i> Online dərs başlığını redaktə et</h3>
+        <form method="post" action="/Teacher/Courses/UpdateOnlineLesson">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="groupId" value="@Model.Id" />
+            <input type="hidden" name="id" id="editOLId" />
+            <div class="form-group">
+                <label class="form-label">Başlıq</label>
+                <input name="title" id="editOLTitle" class="form-control" required />
+            </div>
+            <div class="form-group">
+                <label class="form-label">Təsvir</label>
+                <textarea name="description" id="editOLDesc" class="form-control" rows="2"></textarea>
+            </div>
+            <div style="display:flex; gap:8px; margin-top:8px;">
+                <button type="submit" class="btn btn-primary">@L["Save"]</button>
+                <button type="button" onclick="document.getElementById('editOLModal').style.display='none'" class="btn btn-secondary">@L["Cancel"]</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 @section Scripts {
 <script>
+// ── Online dərs modalları ──
+function openCreateOL(sessionId, sessionNumber) {
+    document.getElementById('createOLSession').value = sessionId;
+    document.getElementById('createOLTitle').value = '';
+    document.getElementById('createOLModal').style.display = 'flex';
+}
+function openEditOL(id, title, desc) {
+    document.getElementById('editOLId').value = id;
+    document.getElementById('editOLTitle').value = title;
+    document.getElementById('editOLDesc').value = desc || '';
+    document.getElementById('editOLModal').style.display = 'flex';
+}
+
 function switchTab(name) {
     document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
     document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));

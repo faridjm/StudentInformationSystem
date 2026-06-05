@@ -83,6 +83,38 @@
         </div>
 
         <div class="card" style="margin-bottom:16px;">
+            <div class="card-header">Tədris formatı</div>
+            <div class="card-body">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                    <div class="form-group">
+                        <label class="form-label">Tədris formatı *</label>
+                        <select name="DeliveryMode" id="deliveryMode" class="form-control" onchange="toggleOnlineFields()">
+                            <option value="InPerson" selected>Əyani (InPerson)</option>
+                            <option value="Online">Online</option>
+                            <option value="Hybrid">Hibrid (Hybrid)</option>
+                        </select>
+                    </div>
+                    <div class="form-group online-field" id="platformField" style="display:none;">
+                        <label class="form-label">Platforma</label>
+                        <select name="DefaultOnlinePlatform" class="form-control">
+                            <option value="GoogleMeet">Google Meet</option>
+                            <option value="Zoom">Zoom</option>
+                            <option value="MicrosoftTeams">Microsoft Teams</option>
+                            <option value="Custom">Digər (Custom)</option>
+                        </select>
+                    </div>
+                    <div class="form-group online-field" id="meetingUrlField" style="display:none; grid-column:1/-1;">
+                        <label class="form-label">Default görüş linki (Meeting URL)</label>
+                        <input name="DefaultMeetingUrl" type="url" class="form-control" placeholder="https://meet.google.com/..." />
+                        <div style="font-size:11px; color:var(--text-secondary); margin-top:4px;">
+                            Online/Hibrid qruplarda online dərslər bu linkdən default götürür.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" style="margin-bottom:16px;">
             <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
                 <span>@L["Schedule"]</span>
                 <button type="button" onclick="addDay()" class="btn btn-sm btn-secondary"><i class="fas fa-plus"></i> +</button>
@@ -103,6 +135,15 @@
 
 @section Scripts {
 <script>
+    // Tədris formatına görə online sahələri göstər/gizlət
+    function toggleOnlineFields() {
+        var mode = document.getElementById('deliveryMode').value;
+        var show = (mode === 'Online' || mode === 'Hybrid');
+        document.querySelectorAll('.online-field').forEach(function (el) {
+            el.style.display = show ? '' : 'none';
+        });
+    }
+
     // Seçilmiş kursa görə tədris şablonlarını filtrlə
     function filterTemplates() {
         var courseId = document.getElementById('courseSelect').value;

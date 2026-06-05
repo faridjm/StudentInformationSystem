@@ -1334,6 +1334,16 @@ namespace SIS.DAL.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("DefaultMeetingUrl")
+                        .HasMaxLength(2048)
+                        .HasColumnType("nvarchar(2048)");
+
+                    b.Property<int?>("DefaultOnlinePlatform")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DeliveryMode")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
@@ -1453,6 +1463,159 @@ namespace SIS.DAL.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Notifications");
+                });
+
+            modelBuilder.Entity("SIS.Entities.Models.OnlineLesson", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ClassSessionId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<DateTime?>("EndedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("GroupId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("MeetingUrl")
+                        .HasMaxLength(2048)
+                        .HasColumnType("nvarchar(2048)");
+
+                    b.Property<int?>("Platform")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("StartedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TeacherId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClassSessionId");
+
+                    b.HasIndex("GroupId");
+
+                    b.HasIndex("Status");
+
+                    b.HasIndex("TeacherId");
+
+                    b.ToTable("OnlineLessons");
+                });
+
+            modelBuilder.Entity("SIS.Entities.Models.OnlineLessonChatMessage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("MessageText")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<int>("OnlineLessonId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SenderUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("SentAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SenderUserId");
+
+                    b.HasIndex("OnlineLessonId", "SentAt");
+
+                    b.ToTable("OnlineLessonChatMessages");
+                });
+
+            modelBuilder.Entity("SIS.Entities.Models.OnlineLessonParticipant", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("DurationMinutes")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsAttendanceMarked")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("JoinedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("LeftAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("OnlineLessonId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StudentId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StudentId");
+
+                    b.HasIndex("OnlineLessonId", "StudentId")
+                        .IsUnique();
+
+                    b.ToTable("OnlineLessonParticipants");
                 });
 
             modelBuilder.Entity("SIS.Entities.Models.Quiz", b =>
@@ -2173,6 +2336,71 @@ namespace SIS.DAL.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("SIS.Entities.Models.OnlineLesson", b =>
+                {
+                    b.HasOne("SIS.Entities.Models.ClassSession", "ClassSession")
+                        .WithMany("OnlineLessons")
+                        .HasForeignKey("ClassSessionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SIS.Entities.Models.Group", "Group")
+                        .WithMany("OnlineLessons")
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SIS.Entities.Models.Teacher", "Teacher")
+                        .WithMany()
+                        .HasForeignKey("TeacherId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ClassSession");
+
+                    b.Navigation("Group");
+
+                    b.Navigation("Teacher");
+                });
+
+            modelBuilder.Entity("SIS.Entities.Models.OnlineLessonChatMessage", b =>
+                {
+                    b.HasOne("SIS.Entities.Models.OnlineLesson", "OnlineLesson")
+                        .WithMany("ChatMessages")
+                        .HasForeignKey("OnlineLessonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SIS.Entities.Identity.AppUser", "Sender")
+                        .WithMany()
+                        .HasForeignKey("SenderUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("OnlineLesson");
+
+                    b.Navigation("Sender");
+                });
+
+            modelBuilder.Entity("SIS.Entities.Models.OnlineLessonParticipant", b =>
+                {
+                    b.HasOne("SIS.Entities.Models.OnlineLesson", "OnlineLesson")
+                        .WithMany("Participants")
+                        .HasForeignKey("OnlineLessonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SIS.Entities.Models.Student", "Student")
+                        .WithMany()
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("OnlineLesson");
+
+                    b.Navigation("Student");
+                });
+
             modelBuilder.Entity("SIS.Entities.Models.Quiz", b =>
                 {
                     b.HasOne("SIS.Entities.Models.AssessmentItem", "AssessmentItem")
@@ -2316,6 +2544,8 @@ namespace SIS.DAL.Migrations
             modelBuilder.Entity("SIS.Entities.Models.ClassSession", b =>
                 {
                     b.Navigation("AttendanceRecords");
+
+                    b.Navigation("OnlineLessons");
                 });
 
             modelBuilder.Entity("SIS.Entities.Models.Course", b =>
@@ -2354,7 +2584,16 @@ namespace SIS.DAL.Migrations
 
                     b.Navigation("Enrollments");
 
+                    b.Navigation("OnlineLessons");
+
                     b.Navigation("ScheduleDays");
+                });
+
+            modelBuilder.Entity("SIS.Entities.Models.OnlineLesson", b =>
+                {
+                    b.Navigation("ChatMessages");
+
+                    b.Navigation("Participants");
                 });
 
             modelBuilder.Entity("SIS.Entities.Models.Quiz", b =>

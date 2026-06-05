@@ -5,6 +5,8 @@
 @using SIS.BLL.Services.DTOs.Attendance
 @using SIS.BLL.Services.DTOs.ClassSession
 @using SIS.BLL.Services.DTOs.Announcement
+@using SIS.BLL.Services.DTOs.OnlineLesson
+@using SIS.UI.Helpers
 @{
     var enrollment = ViewBag.Enrollment as EnrollmentListDto;
     ViewData["Title"] = enrollment?.CourseName ?? "Kurs";
@@ -18,6 +20,8 @@
     var today = (DateOnly)ViewBag.Today;
     var activeTab = (string)ViewBag.ActiveTab ?? "overview";
     var transcript = ViewBag.Transcript as SIS.BLL.Services.DTOs.Transcript.TranscriptDto;
+    var onlineLessons = ViewBag.OnlineLessons as Dictionary<int, OnlineLessonDto> ?? new();
+    var isOnlineGroup = enrollment != null && enrollment.DeliveryMode != DeliveryMode.InPerson;
 
     // Rəsmi qiymət
     var gradedOfficial = assessmentSubs.Where(s => s.IsGraded && s.MaxScore > 0).ToList();
@@ -157,19 +161,39 @@
     }
     @if (todaySession != null)
     {
+        onlineLessons.TryGetValue(todaySession.Id, out var todayOl);
         <div class="card" style="border-left:3px solid var(--accent); padding:16px 20px; margin-bottom:12px;">
             <div style="font-size:12px; font-weight:600; color:var(--accent); margin-bottom:4px;">
                 <i class="fas fa-calendar-day"></i> @L["TodaysLessons"] — #@todaySession.SessionNumber
+                @if (isOnlineGroup) { @OnlineLessonBadges.DeliveryBadge(enrollment!.DeliveryMode) }
+                @if (todayOl != null) { @OnlineLessonBadges.StatusBadge(todayOl.Status) }
             </div>
             <div style="font-size:14px; font-weight:500;">@(todaySession.Topic ?? L["NoData"].Value)</div>
             <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">@todaySession.StartTime — @todaySession.EndTime</div>
+            @if (todayOl != null && todayOl.Status == OnlineLessonStatus.Live)
+            {
+                <button type="button" class="btn btn-success btn-sm" style="margin-top:8px;" onclick="joinOnlineLesson(@todayOl.Id)">
+                    <i class="fas fa-video"></i> Online dərsə qoşul
+                </button>
+            }
         </div>
     }
     else if (nextSession != null)
     {
+        onlineLessons.TryGetValue(nextSession.Id, out var nextOl);
         <div class="card" style="padding:16px 20px; margin-bottom:12px;">
-            <div style="font-size:12px; color:var(--text-secondary);">Növbəti dərs:</div>
+            <div style="font-size:12px; color:var(--text-secondary);">
+                Növbəti dərs:
+                @if (isOnlineGroup) { @OnlineLessonBadges.DeliveryBadge(enrollment!.DeliveryMode) }
+                @if (nextOl != null) { @OnlineLessonBadges.StatusBadge(nextOl.Status) }
+            </div>
             <div style="font-size:14px; font-weight:500;">@nextSession.Date.ToString("dd.MM.yyyy") · #@nextSession.SessionNumber</div>
+            @if (nextOl != null && nextOl.Status == OnlineLessonStatus.Live)
+            {
+                <button type="button" class="btn btn-success btn-sm" style="margin-top:8px;" onclick="joinOnlineLesson(@nextOl.Id)">
+                    <i class="fas fa-video"></i> Online dərsə qoşul
+                </button>
+            }
         </div>
     }
 
@@ -342,13 +366,14 @@
     <div class="card">
         <div class="card-body" style="padding:0;">
             <table class="mini-table">
-                <thead><tr><th>#</th><th>@L["Date"]</th><th>Saat</th><th>@L["TodaysTopic"]</th><th>@L["Status"]</th></tr></thead>
+                <thead><tr><th>#</th><th>@L["Date"]</th><th>Saat</th><th>@L["TodaysTopic"]</th><th>@L["Status"]</th><th>Online dərs</th></tr></thead>
                 <tbody>
                     @foreach (var s in sessions)
                     {
                         var isToday = s.Date == today;
                         var isPast = s.Date < today;
                         var rowStyle = isToday ? "background:rgba(59,130,246,0.08);" : isPast ? "opacity:0.6;" : "";
+                        onlineLessons.TryGetValue(s.Id, out var ol);
                         <tr style="@rowStyle">
                             <td style="color:var(--text-secondary);">@s.SessionNumber</td>
                             <td>
@@ -361,6 +386,26 @@
                                 @if (s.Status == ClassSessionStatus.Completed) { <span class="badge badge-success">@L["Active"]</span> }
                                 else if (isToday) { <span class="badge badge-info">@L["Today"]</span> }
                                 else { <span class="badge badge-warning">@L["NoData"]</span> }
+                            </td>
+                            <td>
+                                @if (isOnlineGroup)
+                                {
+                                    @OnlineLessonBadges.DeliveryBadge(enrollment!.DeliveryMode)
+                                }
+                                @if (ol != null)
+                                {
+                                    <span style="margin-left:4px;">@OnlineLessonBadges.StatusBadge(ol.Status)</span>
+                                    @if (ol.Status == OnlineLessonStatus.Live)
+                                    {
+                                        <button type="button" class="btn btn-sm btn-success" style="padding:2px 10px; font-size:11px; margin-left:6px;"
+                                                onclick="joinOnlineLesson(@ol.Id)"><i class="fas fa-video"></i> Qoşul</button>
+                                    }
+                                    else if (ol.Status == OnlineLessonStatus.Scheduled)
+                                    {
+                                        <button type="button" class="btn btn-sm btn-secondary" style="padding:2px 10px; font-size:11px; margin-left:6px; opacity:.6; cursor:not-allowed;"
+                                                disabled title="Hələ başlamayıb"><i class="fas fa-clock"></i> Gözləyir</button>
+                                    }
+                                }
                             </td>
                         </tr>
                     }
@@ -508,6 +553,9 @@
     }
 </div>
 
+<!-- Online dərs join üçün antiforgery token -->
+<form id="olTokenForm" style="display:none;">@Html.AntiForgeryToken()</form>
+
 @section Scripts {
 <script>
 function switchTab(name) {
@@ -518,6 +566,24 @@ function switchTab(name) {
     var url = new URL(window.location);
     url.searchParams.set('tab', name);
     history.replaceState(null, '', url);
+}
+
+// Online dərsə qoşul — backend yoxlayır, icazə varsa daxili classroom səhifəsi açılır
+function joinOnlineLesson(lessonId) {
+    var token = document.querySelector('#olTokenForm input[name="__RequestVerificationToken"]').value;
+    var fd = new FormData();
+    fd.append('lessonId', lessonId);
+    fd.append('__RequestVerificationToken', token);
+    fetch('/Student/Courses/JoinOnlineLesson', { method: 'POST', body: fd })
+        .then(r => r.json())
+        .then(res => {
+            if (res.canJoin && res.classroomUrl) {
+                window.location.href = res.classroomUrl;
+            } else {
+                alert(res.message || 'Dərsə qoşulmaq mümkün olmadı');
+            }
+        })
+        .catch(() => alert('Şəbəkə xətası'));
 }
 </script>
 }

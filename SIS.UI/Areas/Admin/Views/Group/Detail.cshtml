@@ -2,6 +2,7 @@
 @using SIS.BLL.Services.DTOs.ClassSession
 @using SIS.BLL.Services.DTOs.Assessment
 @using SIS.Entities.Enums
+@using SIS.UI.Helpers
 @{
     ViewData["Title"] = Model.Name;
     var sessions = (List<ClassSessionDto>)ViewBag.Sessions;
@@ -13,7 +14,17 @@
     <a href="/Admin/Group" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i></a>
     <div>
         <h2 style="font-size:20px; font-weight:700; margin:0;">@Model.Name</h2>
-        <div style="font-size:13px; color:var(--text-secondary);">@Model.CourseName — @Model.TeacherName</div>
+        <div style="font-size:13px; color:var(--text-secondary); display:flex; align-items:center; gap:8px;">
+            <span>@Model.CourseName — @Model.TeacherName</span>
+            @OnlineLessonBadges.DeliveryBadge(Model.DeliveryMode)
+        </div>
+        @if (Model.DeliveryMode != DeliveryMode.InPerson && !string.IsNullOrEmpty(Model.DefaultMeetingUrl))
+        {
+            <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">
+                <i class="fas fa-link" style="font-size:10px;"></i>
+                @OnlineLessonBadges.PlatformName(Model.DefaultOnlinePlatform) · @OnlineLessonBadges.MaskUrl(Model.DefaultMeetingUrl)
+            </div>
+        }
     </div>
     <div style="margin-left:auto; display:flex; gap:8px;">
         <a href="/Admin/Group/Edit/@Model.Id" class="btn btn-secondary btn-sm"><i class="fas fa-edit"></i> @L["Edit"]</a>

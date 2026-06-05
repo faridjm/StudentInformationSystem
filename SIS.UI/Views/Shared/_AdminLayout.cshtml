@@ -60,6 +60,9 @@
         <a href="/Admin/Announcement" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Announcement" ? "active" : "")">
             <i class="fas fa-bullhorn"></i> @L["Announcements"]
         </a>
+        <a href="/Admin/OnlineLessons" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "OnlineLessons" ? "active" : "")">
+            <i class="fas fa-video"></i> @L["OnlineLessons"]
+        </a>
         <a href="/Notifications" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Notifications" ? "active" : "")">
             <i class="fas fa-bell"></i> @L["Notifications"]
         </a>

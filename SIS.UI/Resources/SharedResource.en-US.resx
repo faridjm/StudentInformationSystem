@@ -832,6 +832,24 @@ You can now log in with your new password.</value>
   <data name="Archive" xml:space="preserve">
     <value>Archive</value>
   </data>
+  <data name="OnlineLessons" xml:space="preserve">
+    <value>Online Lessons</value>
+  </data>
+  <data name="DeliveryMode" xml:space="preserve">
+    <value>Delivery Mode</value>
+  </data>
+  <data name="DeliveryInPerson" xml:space="preserve">
+    <value>In Person</value>
+  </data>
+  <data name="DeliveryOnline" xml:space="preserve">
+    <value>Online</value>
+  </data>
+  <data name="DeliveryHybrid" xml:space="preserve">
+    <value>Hybrid</value>
+  </data>
+  <data name="JoinLesson" xml:space="preserve">
+    <value>Join</value>
+  </data>
   <data name="Archived" xml:space="preserve">
     <value>Archived</value>
   </data>
