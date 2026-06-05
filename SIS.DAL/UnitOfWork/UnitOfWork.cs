@@ -10,6 +10,7 @@ namespace SIS.DAL.UnitOfWork
 
         private IStudentRepository? _students;
         private ITeacherRepository? _teachers;
+        private IDepartmentRepository? _departments;
         private ICourseRepository? _courses;
         private IGroupRepository? _groups;
         private IClassSessionRepository? _classSessions;
@@ -19,6 +20,7 @@ namespace SIS.DAL.UnitOfWork
         private IGradeRepository? _grades;
         private IAttendanceRecordRepository? _attendanceRecords;
         private IAnnouncementRepository? _announcements;
+        private IAnnouncementRecipientRepository? _announcementRecipients;
         private INotificationRepository? _notifications;
         private IActivityLogRepository? _activityLogs;
         private IAcademicYearRepository? _academicYears;
@@ -33,11 +35,13 @@ namespace SIS.DAL.UnitOfWork
         private ICourseMaterialRepository? _courseMaterials;
         private ICurriculumTemplateRepository? _curriculumTemplates;
         private ICurriculumTemplateItemRepository? _curriculumTemplateItems;
+        private IArchiveRepository? _archive;
 
         public UnitOfWork(AppDbContext context) { _context = context; }
 
         public IStudentRepository Students => _students ??= new StudentRepository(_context);
         public ITeacherRepository Teachers => _teachers ??= new TeacherRepository(_context);
+        public IDepartmentRepository Departments => _departments ??= new DepartmentRepository(_context);
         public ICourseRepository Courses => _courses ??= new CourseRepository(_context);
         public IGroupRepository Groups => _groups ??= new GroupRepository(_context);
         public IClassSessionRepository ClassSessions => _classSessions ??= new ClassSessionRepository(_context);
@@ -47,6 +51,7 @@ namespace SIS.DAL.UnitOfWork
         public IGradeRepository Grades => _grades ??= new GradeRepository(_context);
         public IAttendanceRecordRepository AttendanceRecords => _attendanceRecords ??= new AttendanceRecordRepository(_context);
         public IAnnouncementRepository Announcements => _announcements ??= new AnnouncementRepository(_context);
+        public IAnnouncementRecipientRepository AnnouncementRecipients => _announcementRecipients ??= new AnnouncementRecipientRepository(_context);
         public INotificationRepository Notifications => _notifications ??= new NotificationRepository(_context);
         public IActivityLogRepository ActivityLogs => _activityLogs ??= new ActivityLogRepository(_context);
         public IAcademicYearRepository AcademicYears => _academicYears ??= new AcademicYearRepository(_context);
@@ -61,6 +66,7 @@ namespace SIS.DAL.UnitOfWork
         public ICourseMaterialRepository CourseMaterials => _courseMaterials ??= new CourseMaterialRepository(_context);
         public ICurriculumTemplateRepository CurriculumTemplates => _curriculumTemplates ??= new CurriculumTemplateRepository(_context);
         public ICurriculumTemplateItemRepository CurriculumTemplateItems => _curriculumTemplateItems ??= new CurriculumTemplateItemRepository(_context);
+        public IArchiveRepository Archive => _archive ??= new ArchiveRepository(_context);
 
         public async Task<int> SaveAsync() => await _context.SaveChangesAsync();
         public void Dispose() => _context.Dispose();

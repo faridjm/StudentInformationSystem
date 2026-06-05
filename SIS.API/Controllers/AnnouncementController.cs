@@ -25,59 +25,67 @@ namespace SIS.API.Controllers
             _teacherService = teacherService;
         }
 
+        /// <summary>Admin görüşü — bütün elanlar (recipient/read/email statları ilə).</summary>
+        [HttpGet]
+        [Authorize(Roles = $"{RoleConstants.Admin},{RoleConstants.Moderator},{RoleConstants.SuperAdmin}")]
+        public async Task<IActionResult> GetAll()
+            => Ok(await _announcementService.GetAllAsync());
+
         [HttpGet("global")]
         [Authorize(Roles = $"{RoleConstants.Admin},{RoleConstants.Moderator},{RoleConstants.SuperAdmin},{RoleConstants.Teacher},{RoleConstants.Student}")]
         public async Task<IActionResult> GetGlobal()
-        {
-            var announcements = await _announcementService.GetGlobalAnnouncementsAsync();
-            return Ok(announcements);
-        }
-
-        [HttpGet("course/{courseOfferingId}")]
-        [Authorize(Roles = $"{RoleConstants.Admin},{RoleConstants.Moderator},{RoleConstants.SuperAdmin},{RoleConstants.Teacher},{RoleConstants.Student}")]
-        public async Task<IActionResult> GetByCourse(int courseOfferingId)
-        {
-            var announcements = await _announcementService.GetGlobalAnnouncementsAsync();
-            return Ok(announcements);
-        }
+            => Ok(await _announcementService.GetAllAsync());
 
         [HttpGet("group/{groupId}")]
         [Authorize(Roles = $"{RoleConstants.Admin},{RoleConstants.Moderator},{RoleConstants.SuperAdmin},{RoleConstants.Teacher}")]
         public async Task<IActionResult> GetByGroup(int groupId)
-        {
-            var announcements = await _announcementService.GetByGroupAsync(groupId);
-            return Ok(announcements);
-        }
+            => Ok(await _announcementService.GetByGroupAsync(groupId));
 
-        [HttpGet("student/{studentId}")]
+        [HttpGet("{id}")]
         [Authorize(Roles = $"{RoleConstants.Admin},{RoleConstants.Moderator},{RoleConstants.SuperAdmin}")]
-        public async Task<IActionResult> GetByStudent(int studentId)
+        public async Task<IActionResult> GetDetail(int id)
         {
-            var announcements = await _announcementService.GetAnnouncementsForStudentAsync(studentId);
-            return Ok(announcements);
+            var d = await _announcementService.GetDetailAsync(id);
+            return d == null ? NotFound() : Ok(d);
         }
 
+        /// <summary>Cari istifadəçi (Student/Teacher) öz aldığı elanlar.</summary>
+        [HttpGet("my")]
+        [Authorize(Roles = $"{RoleConstants.Student},{RoleConstants.Teacher}")]
+        public async Task<IActionResult> GetMy()
+        {
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            return Ok(await _announcementService.GetForUserAsync(userId!));
+        }
+
+        // Geriyə uyğun metodlar (köhnə UI çağırışları üçün) — recipient əsasında işləyir.
         [HttpGet("my-announcements")]
         [Authorize(Roles = RoleConstants.Student)]
         public async Task<IActionResult> GetMyAnnouncements()
         {
             var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-            var student = await _studentService.GetStudentByUserIdAsync(userId!);
-            if (student == null) return NotFound();
-            var announcements = await _announcementService.GetAnnouncementsForStudentAsync(student.Id);
-            return Ok(announcements);
+            return Ok(await _announcementService.GetForUserAsync(userId!));
         }
 
         [HttpGet("my-teacher-announcements")]
         [Authorize(Roles = RoleConstants.Teacher)]
         public async Task<IActionResult> GetMyTeacherAnnouncements()
         {
-            var announcements = await _announcementService.GetGlobalAnnouncementsAsync();
-            return Ok(announcements);
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            return Ok(await _announcementService.GetForUserAsync(userId!));
+        }
+
+        [HttpPost("{id}/read")]
+        [Authorize(Roles = $"{RoleConstants.Student},{RoleConstants.Teacher}")]
+        public async Task<IActionResult> MarkAsRead(int id)
+        {
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            await _announcementService.MarkAsReadAsync(id, userId!);
+            return Ok();
         }
 
         [HttpPost]
-        [Authorize(Roles = $"{RoleConstants.Admin},{RoleConstants.Moderator},{RoleConstants.SuperAdmin},{RoleConstants.Teacher}")]
+        [Authorize(Roles = $"{RoleConstants.Admin},{RoleConstants.Moderator},{RoleConstants.SuperAdmin}")]
         public async Task<IActionResult> Create([FromBody] CreateAnnouncementDto dto)
         {
             var authorId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
@@ -92,5 +100,11 @@ namespace SIS.API.Controllers
             await _announcementService.DeleteAnnouncementAsync(id);
             return Ok(new { Message = "Elan uğurla silindi" });
         }
+
+        /// <summary>SelectedUsers üçün admin axtarışı.</summary>
+        [HttpGet("search-users")]
+        [Authorize(Roles = $"{RoleConstants.Admin},{RoleConstants.Moderator},{RoleConstants.SuperAdmin}")]
+        public async Task<IActionResult> SearchUsers([FromQuery] string query)
+            => Ok(await _announcementService.SearchUsersAsync(query));
     }
 }

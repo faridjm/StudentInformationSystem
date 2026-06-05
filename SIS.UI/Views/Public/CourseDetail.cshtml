@@ -1,0 +1,211 @@
+@using SIS.UI.ViewModels
+@model PublicCourseDetailViewModel
+@{
+    ViewData["Title"] = Model.Course.Name;
+    var c = Model.Course;
+    var learn = c.Curriculum.Take(8).ToList();
+}
+
+<header class="pub-detail-hero">
+    <div class="pub-container">
+        <a href="/Public/Courses" style="color:#c7d2fe; font-size:14px;">
+            <i class="fas fa-arrow-left"></i> Bütün kurslar
+        </a>
+        <h1 style="margin-top:10px;">@c.Name</h1>
+        <div class="pub-pill-row">
+            @if (!string.IsNullOrEmpty(c.DepartmentName)) { <span class="pub-pill"><i class="fas fa-building"></i> @c.DepartmentName</span> }
+            @if (!string.IsNullOrEmpty(c.Level))          { <span class="pub-pill"><i class="fas fa-signal"></i> @c.Level</span> }
+            @if (c.TotalSessions > 0)                     { <span class="pub-pill"><i class="fas fa-list-ol"></i> @c.TotalSessions dərs</span> }
+            @if (c.TotalHours > 0)                        { <span class="pub-pill"><i class="fas fa-clock"></i> @c.TotalHours saat</span> }
+            @if (c.Credit > 0)                            { <span class="pub-pill"><i class="fas fa-star"></i> @c.Credit kredit</span> }
+        </div>
+    </div>
+</header>
+
+<section class="pub-section">
+    <div class="pub-container pub-grid-2">
+        <!-- SOL: təsvir, learn, kurikulum, qiymətləndirmə -->
+        <div>
+            <div class="pub-panel">
+                <h3><i class="fas fa-circle-info"></i> Proqram haqqında</h3>
+                <p style="color:var(--pub-muted);">
+                    @(string.IsNullOrEmpty(c.Description)
+                        ? "Bu proqram üçün ətraflı təsvir tezliklə əlavə olunacaq."
+                        : c.Description)
+                </p>
+            </div>
+
+            @if (learn.Any())
+            {
+                <div class="pub-panel">
+                    <h3><i class="fas fa-lightbulb"></i> Nə öyrənəcəksən</h3>
+                    <ul class="pub-list">
+                        @foreach (var i in learn)
+                        {
+                            <li><i class="fas fa-check"></i> @i.Topic</li>
+                        }
+                    </ul>
+                    @if (c.Curriculum.Count > learn.Count)
+                    {
+                        <div style="margin-top:14px; text-align:center;">
+                            <button type="button" onclick="document.getElementById('fullCurriculum').scrollIntoView({behavior:'smooth'})"
+                                    class="pub-btn pub-btn-ghost">
+                                Tam kurikuluma bax <i class="fas fa-arrow-down"></i>
+                            </button>
+                        </div>
+                    }
+                </div>
+            }
+
+            @if (c.Curriculum.Any())
+            {
+                <div class="pub-panel" id="fullCurriculum">
+                    <h3><i class="fas fa-list-check"></i> Kurikulum (@c.Curriculum.Count dərs)</h3>
+                    <table class="pub-table">
+                        <thead>
+                            <tr>
+                                <th style="width:60px;">Dərs</th>
+                                <th>Mövzu</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var i in c.Curriculum)
+                            {
+                                <tr>
+                                    <td><strong>#@i.SessionNumber</strong></td>
+                                    <td>@i.Topic</td>
+                                    <td>
+                                        @if (i.HasAssessment)
+                                        {
+                                            <span class="pub-chip" style="margin:0;">
+                                                <i class="fas fa-clipboard-check"></i>
+                                                @(string.IsNullOrEmpty(i.AssessmentTitle) ? "Qiymətləndirmə" : i.AssessmentTitle)
+                                            </span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+
+            @if (c.Assessments.Any())
+            {
+                <div class="pub-panel">
+                    <h3><i class="fas fa-clipboard-list"></i> Qiymətləndirmə planı</h3>
+                    <table class="pub-table">
+                        <thead>
+                            <tr><th>Başlıq</th><th>Növ</th><th>Çəki</th><th>Maks bal</th></tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var a in c.Assessments)
+                            {
+                                <tr>
+                                    <td><strong>@a.Title</strong></td>
+                                    <td>@(a.Type ?? "—")</td>
+                                    <td>@(a.WeightPercent.HasValue ? a.WeightPercent.Value.ToString("0.#") + "%" : "—")</td>
+                                    <td>@(a.MaxScore.HasValue ? a.MaxScore.Value.ToString("0.#") : "—")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+
+            @if (Model.Facilities.Any())
+            {
+                <div class="pub-panel">
+                    <h3><i class="fas fa-school"></i> Tədris şəraiti</h3>
+                    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:14px;">
+                        @foreach (var f in Model.Facilities)
+                        {
+                            <div style="padding:14px; border:1px solid var(--pub-border); border-radius:12px;">
+                                <div style="width:42px; height:42px; border-radius:10px; display:flex; align-items:center; justify-content:center; color:#fff; margin-bottom:10px;"
+                                     class="pub-grad-@f.Grad">
+                                    <i class="fas @f.Icon"></i>
+                                </div>
+                                <div style="font-weight:700; font-size:15px;">@f.Name</div>
+                                <div style="font-size:12px; color:var(--pub-muted); margin-top:4px;">@f.Description</div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- SAĞ: açıq qruplar, müəllimlər, apply -->
+        <div>
+            <div class="pub-panel">
+                <h3><i class="fas fa-users"></i> Açıq qruplar</h3>
+                @if (!c.Groups.Any())
+                {
+                    <p style="color:var(--pub-muted); font-size:14px;">
+                        Hazırda bu proqram üçün açıq qrup yoxdur. Müraciət edin — yeni qrup açılanda sizinlə əlaqə saxlayaq.
+                    </p>
+                }
+                else
+                {
+                    foreach (var g in c.Groups)
+                    {
+                        <div class="pub-group-card">
+                            <div class="g-head">
+                                <div>
+                                    <div style="font-weight:700;">@g.Name</div>
+                                    <div style="font-size:13px; color:var(--pub-muted);">
+                                        <i class="fas fa-chalkboard-teacher"></i> @g.TeacherName
+                                    </div>
+                                </div>
+                                @if (!string.IsNullOrEmpty(g.SeasonName))
+                                {
+                                    <span class="pub-chip" style="margin:0;">@g.SeasonName</span>
+                                }
+                            </div>
+                            <div style="font-size:13px; color:var(--pub-muted); margin-top:10px; display:flex; flex-direction:column; gap:4px;">
+                                <span><i class="fas fa-calendar-day" style="color:var(--pub-primary)"></i>
+                                    @g.StartDate.ToString("dd.MM.yyyy") – @g.EndDate.ToString("dd.MM.yyyy")</span>
+                                @if (!string.IsNullOrEmpty(g.ScheduleSummary))
+                                {
+                                    <span><i class="fas fa-clock" style="color:var(--pub-primary)"></i> @g.ScheduleSummary</span>
+                                }
+                                @if (g.AvailableSeats > 0)
+                                {
+                                    <span><i class="fas fa-chair" style="color:var(--pub-primary)"></i> @g.AvailableSeats boş yer</span>
+                                }
+                            </div>
+                            <a href="/Public/Contact" class="pub-btn pub-btn-primary"
+                               style="width:100%; justify-content:center; margin-top:14px;">
+                                Müraciət et
+                            </a>
+                        </div>
+                    }
+                }
+            </div>
+
+            @if (c.Teachers.Any())
+            {
+                <div class="pub-panel">
+                    <h3><i class="fas fa-user-tie"></i> Müəllimlər</h3>
+                    <ul class="pub-list">
+                        @foreach (var t in c.Teachers)
+                        {
+                            <li><i class="fas fa-user"></i> @t</li>
+                        }
+                    </ul>
+                </div>
+            }
+
+            <div class="pub-panel" style="text-align:center;">
+                <h3 style="justify-content:center;"><i class="fas fa-paper-plane"></i> Maraqlanırsan?</h3>
+                <p style="color:var(--pub-muted); font-size:14px; margin-bottom:14px;">
+                    Bu proqrama müraciət et, komandamız səninlə əlaqə saxlasın.
+                </p>
+                <a href="/Public/Contact" class="pub-btn pub-btn-primary"
+                   style="width:100%; justify-content:center;">
+                    İndi müraciət et
+                </a>
+            </div>
+        </div>
+    </div>
+</section>

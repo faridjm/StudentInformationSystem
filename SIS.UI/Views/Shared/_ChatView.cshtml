@@ -1,4 +1,7 @@
 @using SIS.BLL.Services.DTOs.Chat
+@using SIS.Entities.Enums
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Config
 @{
     var conversations = ViewData["Conversations"] as List<ConversationDto> ?? new();
     var activeId = ViewData["ActiveId"] as int?;
@@ -7,6 +10,20 @@
     var prefill = ViewData["Prefill"] as string ?? "";
     var areaPrefix = ViewData["AreaPrefix"] as string ?? "Student";
     var now = DateTime.Now;
+
+    // SignalR üçün JWT access token (cookie claim-dən) və API base URL
+    var accessToken = User.FindFirst("AccessToken")?.Value ?? "";
+    var apiBase = Config["ApiSettings:BaseUrl"]?.TrimEnd('/') ?? "";
+    var currentUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "";
+
+    string FmtSize(long? b)
+    {
+        if (!b.HasValue) return "";
+        double v = b.Value;
+        if (v < 1024) return v + " B";
+        if (v < 1024 * 1024) return (v / 1024).ToString("0.#") + " KB";
+        return (v / 1024 / 1024).ToString("0.#") + " MB";
+    }
 }
 
 <style>
@@ -20,8 +37,7 @@
     .ch-search input { width:100%; background:var(--bg-hover); border:1px solid var(--border); color:var(--text-primary); border-radius:20px; padding:8px 14px 8px 36px; font-size:12px; outline:none; }
     .ch-search input:focus { border-color:var(--accent); }
     .ch-list { flex:1; overflow-y:auto; }
-
-    .ch-item { display:flex; align-items:center; gap:12px; padding:14px 18px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,.04); transition:all .15s; text-decoration:none; color:inherit; }
+    .ch-item { display:flex; align-items:center; gap:12px; padding:14px 18px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,.04); text-decoration:none; color:inherit; transition:all .15s; }
     .ch-item:hover { background:var(--bg-hover); }
     .ch-item.active { background:rgba(59,130,246,.12); border-left:3px solid var(--accent); }
     .ch-avatar { width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:16px; color:#fff; flex-shrink:0; }
@@ -38,6 +54,9 @@
     .ch-hdr-info { flex:1; }
     .ch-hdr-name { font-weight:700; font-size:15px; }
     .ch-hdr-sub { font-size:11px; color:var(--text-secondary); margin-top:1px; }
+    .ch-conn-status { font-size:11px; color:var(--text-secondary); display:flex; align-items:center; gap:5px; }
+    .ch-conn-dot { width:8px; height:8px; border-radius:50%; background:#9ca3af; }
+    .ch-conn-status.online .ch-conn-dot { background:#22c55e; box-shadow:0 0 0 3px rgba(34,197,94,.2); }
 
     .ch-msgs { flex:1; overflow-y:auto; padding:20px 24px; display:flex; flex-direction:column; gap:4px; }
     .ch-date-sep { text-align:center; margin:16px 0 8px; }
@@ -53,18 +72,57 @@
     .ch-msg.mine .ch-msg-meta { justify-content:flex-end; }
     .ch-msg.other .ch-msg-meta .ch-sender { color:var(--accent); font-weight:600; margin-right:4px; }
 
+    /* Attachment styles */
+    .ch-img { max-width:280px; max-height:300px; border-radius:12px; cursor:pointer; display:block; }
+    .ch-file-card { display:flex; align-items:center; gap:10px; padding:10px 12px; background:rgba(255,255,255,.06); border:1px solid var(--border); border-radius:10px; min-width:240px; }
+    .ch-msg.mine .ch-file-card { background:rgba(255,255,255,.18); border-color:rgba(255,255,255,.25); }
+    .ch-file-icon { width:36px; height:36px; border-radius:8px; background:rgba(59,130,246,.18); color:#3b82f6; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+    .ch-msg.mine .ch-file-icon { background:rgba(255,255,255,.25); color:#fff; }
+    .ch-file-info { flex:1; min-width:0; }
+    .ch-file-name { font-size:12px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .ch-file-meta { font-size:10px; opacity:.75; margin-top:2px; }
+    .ch-file-dl { color:inherit; padding:6px 8px; }
+    .ch-audio { width:260px; }
+
     .ch-input { padding:14px 20px; background:var(--bg-card); border-top:1px solid var(--border); }
-    .ch-input form { display:flex; gap:10px; align-items:center; }
+    .ch-input-row { display:flex; gap:10px; align-items:center; }
     .ch-input input[type=text] { flex:1; background:var(--bg-hover); border:1px solid var(--border); color:var(--text-primary); border-radius:24px; padding:12px 20px; font-size:13px; outline:none; transition:border-color .2s; }
     .ch-input input[type=text]:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(59,130,246,.15); }
-    .ch-send-btn { background:linear-gradient(135deg, #3b82f6, #2563eb); color:#fff; border:none; border-radius:50%; width:44px; height:44px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:16px; transition:all .15s; box-shadow:0 2px 8px rgba(59,130,246,.3); }
-    .ch-send-btn:hover { transform:scale(1.05); box-shadow:0 4px 12px rgba(59,130,246,.4); }
+    .ch-icon-btn { background:var(--bg-hover); color:var(--text-primary); border:1px solid var(--border); border-radius:50%; width:42px; height:42px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:14px; transition:all .15s; flex-shrink:0; }
+    .ch-icon-btn:hover { background:var(--accent); color:#fff; border-color:var(--accent); }
+    .ch-send-btn { background:linear-gradient(135deg, #3b82f6, #2563eb); color:#fff; border:none; border-radius:50%; width:44px; height:44px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:16px; transition:all .15s; box-shadow:0 2px 8px rgba(59,130,246,.3); flex-shrink:0; }
+    .ch-send-btn:hover:not(:disabled) { transform:scale(1.05); box-shadow:0 4px 12px rgba(59,130,246,.4); }
+    .ch-send-btn:disabled { opacity:.5; cursor:not-allowed; }
+
+    /* Voice recording bar */
+    .ch-rec-bar { display:none; align-items:center; gap:12px; padding:8px 14px; background:rgba(239,68,68,.1); border:1px solid rgba(239,68,68,.3); border-radius:24px; }
+    .ch-rec-bar.active { display:flex; }
+    .ch-rec-pulse { width:10px; height:10px; border-radius:50%; background:#ef4444; animation:chPulse 1s infinite; }
+    @@keyframes chPulse { 0%, 100% { opacity:1; } 50% { opacity:.3; } }
+    .ch-rec-time { color:#ef4444; font-weight:600; font-size:13px; font-variant-numeric:tabular-nums; }
+
+    /* Attachment preview */
+    .ch-attach-preview { display:none; align-items:center; gap:10px; padding:10px 14px; background:var(--bg-hover); border-radius:10px; margin-bottom:10px; }
+    .ch-attach-preview.active { display:flex; }
+    .ch-attach-preview img { width:48px; height:48px; border-radius:8px; object-fit:cover; }
+    .ch-attach-info { flex:1; min-width:0; }
+    .ch-attach-info .n { font-weight:600; font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .ch-attach-info .s { font-size:10px; color:var(--text-secondary); }
 
     .ch-empty { flex:1; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:16px; color:var(--text-secondary); }
     .ch-empty i { font-size:56px; opacity:.1; }
+
+    .ch-toast { position:fixed; bottom:30px; right:30px; padding:12px 18px; background:#ef4444; color:#fff; border-radius:10px; box-shadow:0 8px 24px rgba(239,68,68,.4); font-size:13px; z-index:1000; display:none; }
+    .ch-toast.active { display:block; animation:chSlideIn .25s ease; }
+    @@keyframes chSlideIn { from { transform:translateY(20px); opacity:0; } to { transform:translateY(0); opacity:1; } }
 </style>
 
-<div class="chat-wrap">
+<div class="chat-wrap"
+     data-conversation-id="@(activeId?.ToString() ?? "")"
+     data-area-prefix="@areaPrefix"
+     data-current-user-id="@currentUserId"
+     data-api-base="@apiBase"
+     data-token="@accessToken">
     <!-- Sol: Söhbətlər -->
     <div class="ch-side">
         <div class="ch-side-hdr">
@@ -90,17 +148,6 @@
                 var isActive = c.Id == activeId;
                 var initial = c.OtherUserName.Length > 0 ? c.OtherUserName[0].ToString().ToUpper() : "?";
                 var color = avatarColors[Math.Abs(c.OtherUserName.GetHashCode()) % avatarColors.Length];
-                var timeStr = "";
-                if (c.LastMessageAt.HasValue)
-                {
-                    var diff = now - c.LastMessageAt.Value;
-                    timeStr = diff.TotalMinutes < 1 ? L["Now"].Value :
-                              diff.TotalHours < 1 ? $"{(int)diff.TotalMinutes}d" :
-                              diff.TotalDays < 1 ? c.LastMessageAt.Value.ToString("HH:mm") :
-                              diff.TotalDays < 7 ? c.LastMessageAt.Value.ToString("ddd") :
-                              c.LastMessageAt.Value.ToString("dd.MM");
-                }
-
                 <a href="/@areaPrefix/Messages?conversationId=@c.Id" class="ch-item @(isActive ? "active" : "")" data-name="@c.OtherUserName.ToLower()">
                     <div class="ch-avatar" style="background:@color;">@initial</div>
                     <div class="ch-info">
@@ -109,20 +156,13 @@
                             <span style="font-size:10px; font-weight:400; color:var(--text-secondary);">@c.GroupName</span>
                         </div>
                         <div class="ch-preview">
-                            @if (c.LastMessage != null)
-                            {
-                                @(c.LastMessage.Length > 40 ? c.LastMessage[..40] + "..." : c.LastMessage)
-                            }
-                            else
-                            {
-                                <em>@L["NewConversation"]</em>
-                            }
+                            @(string.IsNullOrEmpty(c.LastMessage) ? "—" : (c.LastMessage.Length > 40 ? c.LastMessage.Substring(0, 40) + "..." : c.LastMessage))
                         </div>
                     </div>
                     <div class="ch-meta">
-                        @if (!string.IsNullOrEmpty(timeStr))
+                        @if (c.LastMessageAt.HasValue)
                         {
-                            <span class="ch-time">@timeStr</span>
+                            <span class="ch-time">@c.LastMessageAt.Value.ToString("HH:mm")</span>
                         }
                         @if (c.UnreadCount > 0)
                         {
@@ -147,21 +187,14 @@
                     <div class="ch-hdr-name">@activeConv.OtherUserName</div>
                     <div class="ch-hdr-sub">@activeConv.CourseName · @activeConv.GroupName</div>
                 </div>
+                <div class="ch-conn-status" id="chConnStatus">
+                    <span class="ch-conn-dot"></span>
+                    <span>Qoşulur...</span>
+                </div>
             </div>
 
             <div class="ch-msgs" id="chatMessages">
-                @if (!messages.Any())
-                {
-                    <div style="text-align:center; padding:60px 20px; color:var(--text-secondary);">
-                        <i class="fas fa-hand-peace" style="font-size:40px; opacity:.15; display:block; margin-bottom:12px;"></i>
-                        <div style="font-size:14px; font-weight:500;">@L["StartConversation"]</div>
-                        <div style="font-size:12px; margin-top:4px;">@L["SendFirstMessage"]</div>
-                    </div>
-                }
-
-                @{
-                    string? lastDateLabel = null;
-                }
+                @{ string? lastDateLabel = null; }
                 @foreach (var m in messages)
                 {
                     var dateLabel = m.SentAt.Date == now.Date ? L["Today"].Value :
@@ -173,8 +206,45 @@
                         <div class="ch-date-sep"><span>@dateLabel</span></div>
                     }
 
-                    <div class="ch-msg @(m.IsMine ? "mine" : "other")">
-                        <div class="ch-bubble">@m.Content</div>
+                    <div class="ch-msg @(m.IsMine ? "mine" : "other")" data-msg-id="@m.Id">
+                        <div class="ch-bubble">
+                            @switch (m.AttachmentType)
+                            {
+                                case ChatAttachmentType.Image:
+                                    <a href="@m.AttachmentUrl" target="_blank">
+                                        <img src="@m.AttachmentUrl" class="ch-img" alt="image" />
+                                    </a>
+                                    if (!string.IsNullOrEmpty(m.Content))
+                                    {
+                                        <div style="margin-top:6px;">@m.Content</div>
+                                    }
+                                    break;
+                                case ChatAttachmentType.File:
+                                    <div class="ch-file-card">
+                                        <div class="ch-file-icon"><i class="fas fa-file"></i></div>
+                                        <div class="ch-file-info">
+                                            <div class="ch-file-name">@m.AttachmentFileName</div>
+                                            <div class="ch-file-meta">@FmtSize(m.AttachmentSize)</div>
+                                        </div>
+                                        <a href="@m.AttachmentUrl" download="@m.AttachmentFileName" class="ch-file-dl"><i class="fas fa-download"></i></a>
+                                    </div>
+                                    if (!string.IsNullOrEmpty(m.Content))
+                                    {
+                                        <div style="margin-top:6px;">@m.Content</div>
+                                    }
+                                    break;
+                                case ChatAttachmentType.Voice:
+                                    <audio controls preload="none" class="ch-audio" src="@m.AttachmentUrl"></audio>
+                                    if (m.DurationSeconds.HasValue)
+                                    {
+                                        <div style="font-size:10px; opacity:.7; margin-top:4px;">@(m.DurationSeconds)s</div>
+                                    }
+                                    break;
+                                default:
+                                    @m.Content
+                                    break;
+                            }
+                        </div>
                         <div class="ch-msg-meta">
                             @if (!m.IsMine)
                             {
@@ -198,13 +268,51 @@
             </div>
 
             <div class="ch-input">
-                <form method="post" action="/@areaPrefix/Messages/Send" id="chatForm">
-                    @Html.AntiForgeryToken()
-                    <input type="hidden" name="conversationId" value="@activeConv.Id" />
-                    <input type="text" name="content" id="msgInput" value="@prefill"
-                           placeholder="@L["TypeMessage"]" autocomplete="off" autofocus />
-                    <button type="submit" class="ch-send-btn"><i class="fas fa-paper-plane"></i></button>
-                </form>
+                <!-- Attachment preview (image/file) -->
+                <div class="ch-attach-preview" id="chAttachPreview">
+                    <img id="chPreviewImg" src="" style="display:none;" />
+                    <div class="ch-file-icon" id="chPreviewIcon" style="display:none;"><i class="fas fa-file"></i></div>
+                    <div class="ch-attach-info">
+                        <div class="n" id="chPreviewName"></div>
+                        <div class="s" id="chPreviewSize"></div>
+                    </div>
+                    <button type="button" class="ch-icon-btn" onclick="cancelAttachment()" style="width:32px; height:32px; font-size:11px;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <!-- Voice recording bar -->
+                <div class="ch-rec-bar" id="chRecBar">
+                    <span class="ch-rec-pulse"></span>
+                    <span class="ch-rec-time" id="chRecTime">00:00</span>
+                    <span style="flex:1; font-size:11px; color:var(--text-secondary);">Səs yazılır...</span>
+                    <button type="button" class="ch-icon-btn" onclick="cancelRecording()" title="Ləğv et">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <button type="button" class="ch-send-btn" onclick="stopAndSendRecording()" title="Göndər">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+
+                <div class="ch-input-row" id="chInputRow">
+                    <button type="button" class="ch-icon-btn" title="Şəkil" onclick="document.getElementById('chImgFile').click()">
+                        <i class="fas fa-image"></i>
+                    </button>
+                    <button type="button" class="ch-icon-btn" title="Fayl" onclick="document.getElementById('chDocFile').click()">
+                        <i class="fas fa-paperclip"></i>
+                    </button>
+                    <input type="file" id="chImgFile" accept="image/*" style="display:none;" onchange="onImageSelected(this)" />
+                    <input type="file" id="chDocFile" style="display:none;" onchange="onFileSelected(this)" />
+
+                    <input type="text" id="msgInput" value="@prefill" placeholder="@L["TypeMessage"]" autocomplete="off" />
+
+                    <button type="button" class="ch-icon-btn" id="chMicBtn" title="Səsli mesaj" onclick="startRecording()">
+                        <i class="fas fa-microphone"></i>
+                    </button>
+                    <button type="button" class="ch-send-btn" id="chSendBtn" onclick="sendMessage()">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
             </div>
         }
         else
@@ -218,31 +326,373 @@
     </div>
 </div>
 
-@section Scripts {
-<script>
-    // Auto-scroll
-    var el = document.getElementById('chatMessages');
-    if (el) el.scrollTop = el.scrollHeight;
+<div id="chToast" class="ch-toast"></div>
 
-    // Enter to send
-    var input = document.getElementById('msgInput');
-    if (input) {
-        input.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter' && !e.shiftKey && this.value.trim()) {
-                document.getElementById('chatForm').submit();
+@if (activeConv != null)
+{
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.7/signalr.min.js"></script>
+    <script>
+    (function () {
+        const wrap        = document.querySelector('.chat-wrap');
+        const conversationId = parseInt(wrap.dataset.conversationId, 10);
+        const areaPrefix  = wrap.dataset.areaPrefix;
+        const currentUid  = wrap.dataset.currentUserId;
+        const apiBase     = wrap.dataset.apiBase;
+        const token       = wrap.dataset.token;
+
+        const msgsEl      = document.getElementById('chatMessages');
+        const input       = document.getElementById('msgInput');
+        const sendBtn     = document.getElementById('chSendBtn');
+        const connStatus  = document.getElementById('chConnStatus');
+
+        // ── Toast ──
+        function toast(msg, type) {
+            const t = document.getElementById('chToast');
+            t.textContent = msg;
+            t.style.background = type === 'success' ? '#22c55e' : '#ef4444';
+            t.classList.add('active');
+            setTimeout(() => t.classList.remove('active'), 3500);
+        }
+
+        // ── SignalR ──
+        const conn = new signalR.HubConnectionBuilder()
+            .withUrl(apiBase + '/hubs/chat?access_token=' + encodeURIComponent(token))
+            .withAutomaticReconnect()
+            .build();
+
+        conn.on('ReceiveMessage', function (m) {
+            if (!m || m.conversationId !== conversationId) return;
+            // dublikat yoxlaması
+            if (msgsEl.querySelector('[data-msg-id="' + m.id + '"]')) return;
+            appendMessage(m);
+            scrollBottom();
+        });
+
+        conn.on('MessagesRead', function (cid, readerUid) {
+            if (cid !== conversationId) return;
+            // Mənim göndərdiyim mesajların check icon-larını double-check et
+            msgsEl.querySelectorAll('.ch-msg.mine').forEach(el => {
+                const meta = el.querySelector('.ch-msg-meta');
+                if (meta) {
+                    const last = meta.querySelector('i');
+                    if (last) last.outerHTML = '<i class="fas fa-check-double" style="color:#3b82f6;"></i>';
+                }
+            });
+        });
+
+        conn.onreconnecting(() => { connStatus.classList.remove('online'); connStatus.querySelector('span:last-child').textContent = 'Bərpa olunur...'; });
+        conn.onreconnected(()  => { connStatus.classList.add('online');    connStatus.querySelector('span:last-child').textContent = 'Online'; joinConv(); });
+        conn.onclose(()         => { connStatus.classList.remove('online'); connStatus.querySelector('span:last-child').textContent = 'Bağlı'; });
+
+        function joinConv() { conn.invoke('JoinConversation', conversationId).catch(() => {}); }
+
+        conn.start()
+            .then(() => {
+                console.log('[Chat] SignalR connected');
+                connStatus.classList.add('online');
+                connStatus.querySelector('span:last-child').textContent = 'Online';
+                joinConv();
+            })
+            .catch(err => {
+                console.error('[Chat] SignalR connect failed:', err);
+                connStatus.querySelector('span:last-child').textContent = 'Offline';
+                toast('Real-time bağlantı qurula bilmədi. Mesajlar göndəriləcək, amma yenisi gələndə səhifəni yeniləyin.');
+            });
+
+        // ── Helpers ──
+        function escapeHtml(s) {
+            return (s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+        }
+        function fmtTime(iso) {
+            const d = new Date(iso);
+            const hh = d.getHours().toString().padStart(2, '0');
+            const mm = d.getMinutes().toString().padStart(2, '0');
+            return hh + ':' + mm;
+        }
+        function fmtSize(b) {
+            if (!b) return '';
+            if (b < 1024) return b + ' B';
+            if (b < 1024 * 1024) return (b / 1024).toFixed(1) + ' KB';
+            return (b / 1024 / 1024).toFixed(1) + ' MB';
+        }
+        function scrollBottom() { msgsEl.scrollTop = msgsEl.scrollHeight; }
+
+        function appendMessage(m) {
+            const isMine = m.senderUserId === currentUid;
+            let body = '';
+            // Backend SignalR-də enum rəqəm (1/2/3) qaytarır,
+            // REST-də isə string ("Image"/"File"/"Voice") qaytara bilər.
+            const at = m.attachmentType;
+            const isImage = at === 1 || at === 'Image';
+            const isFile  = at === 2 || at === 'File';
+            const isVoice = at === 3 || at === 'Voice';
+
+            if (isImage) {
+                body = '<a href="' + m.attachmentUrl + '" target="_blank"><img src="' + m.attachmentUrl + '" class="ch-img" /></a>';
+                if (m.content) body += '<div style="margin-top:6px;">' + escapeHtml(m.content) + '</div>';
+            } else if (isFile) {
+                body = '<div class="ch-file-card">' +
+                       '  <div class="ch-file-icon"><i class="fas fa-file"></i></div>' +
+                       '  <div class="ch-file-info">' +
+                       '    <div class="ch-file-name">' + escapeHtml(m.attachmentFileName || 'file') + '</div>' +
+                       '    <div class="ch-file-meta">' + fmtSize(m.attachmentSize) + '</div>' +
+                       '  </div>' +
+                       '  <a href="' + m.attachmentUrl + '" download="' + escapeHtml(m.attachmentFileName || '') + '" class="ch-file-dl"><i class="fas fa-download"></i></a>' +
+                       '</div>';
+                if (m.content) body += '<div style="margin-top:6px;">' + escapeHtml(m.content) + '</div>';
+            } else if (isVoice) {
+                body = '<audio controls preload="none" class="ch-audio" src="' + m.attachmentUrl + '"></audio>';
+                if (m.durationSeconds) body += '<div style="font-size:10px; opacity:.7; margin-top:4px;">' + m.durationSeconds + 's</div>';
+            } else {
+                body = escapeHtml(m.content || '');
             }
-        });
-        // Focus at end if prefill
-        if (input.value) { input.setSelectionRange(input.value.length, input.value.length); }
-    }
 
-    // Filter conversations
-    function filterConversations(q) {
-        q = q.toLowerCase();
-        document.querySelectorAll('.ch-item').forEach(function(item) {
-            var name = item.getAttribute('data-name') || '';
-            item.style.display = name.includes(q) ? '' : 'none';
+            const meta = isMine
+                ? '<span>' + fmtTime(m.sentAt) + '</span><i class="fas fa-check" style="opacity:.5;"></i>'
+                : '<span class="ch-sender">' + escapeHtml(m.senderName) + '</span><span>' + fmtTime(m.sentAt) + '</span>';
+
+            const div = document.createElement('div');
+            div.className = 'ch-msg ' + (isMine ? 'mine' : 'other');
+            div.setAttribute('data-msg-id', m.id);
+            div.innerHTML = '<div class="ch-bubble">' + body + '</div><div class="ch-msg-meta">' + meta + '</div>';
+            msgsEl.appendChild(div);
+        }
+
+        // ── Send text ──
+        async function sendMessage() {
+            const text = input.value.trim();
+            if (!text) return;
+            sendBtn.disabled = true;
+            try {
+                const res = await fetch('/' + areaPrefix + '/Messages/SendAjax?conversationId=' + conversationId
+                                       + '&content=' + encodeURIComponent(text), { method: 'POST' });
+                if (res.ok) {
+                    input.value = '';
+                    const data = await res.json();
+                    // Göndərənin öz ekranında dərhal append (SignalR push gəlsə də duplicate guard işləyir)
+                    if (!msgsEl.querySelector('[data-msg-id="' + data.id + '"]')) {
+                        appendMessage(data);
+                        scrollBottom();
+                    }
+                } else {
+                    toast('Mesaj göndərilmədi');
+                }
+            } catch (e) {
+                toast('Şəbəkə xətası');
+            } finally {
+                sendBtn.disabled = false;
+                input.focus();
+            }
+        }
+        window.sendMessage = sendMessage;
+
+        input.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
         });
-    }
-</script>
+
+        // ── Attachment (image/file) ──
+        let pendingFile = null;
+        let pendingType = null;
+        const previewBox  = document.getElementById('chAttachPreview');
+        const previewImg  = document.getElementById('chPreviewImg');
+        const previewIcon = document.getElementById('chPreviewIcon');
+        const previewName = document.getElementById('chPreviewName');
+        const previewSize = document.getElementById('chPreviewSize');
+
+        window.onImageSelected = function (inputEl) {
+            const f = inputEl.files[0]; if (!f) return;
+            pendingFile = f; pendingType = 'Image';
+            previewImg.src = URL.createObjectURL(f);
+            previewImg.style.display = 'block'; previewIcon.style.display = 'none';
+            previewName.textContent = f.name; previewSize.textContent = fmtSize(f.size);
+            previewBox.classList.add('active');
+            inputEl.value = '';
+            uploadAttachment();
+        };
+        window.onFileSelected = function (inputEl) {
+            const f = inputEl.files[0]; if (!f) return;
+            pendingFile = f; pendingType = 'File';
+            previewImg.style.display = 'none'; previewIcon.style.display = 'flex';
+            previewName.textContent = f.name; previewSize.textContent = fmtSize(f.size);
+            previewBox.classList.add('active');
+            inputEl.value = '';
+            uploadAttachment();
+        };
+        window.cancelAttachment = function () {
+            pendingFile = null; pendingType = null;
+            previewBox.classList.remove('active');
+            if (previewImg.src) URL.revokeObjectURL(previewImg.src);
+        };
+
+        async function uploadAttachment() {
+            if (!pendingFile) return;
+            sendBtn.disabled = true;
+            const fd = new FormData();
+            fd.append('conversationId', conversationId);
+            fd.append('type', pendingType);
+            fd.append('content', input.value.trim());
+            fd.append('file', pendingFile, pendingFile.name);
+            try {
+                const res = await fetch('/' + areaPrefix + '/Messages/Upload', { method: 'POST', body: fd });
+                if (res.ok) {
+                    const data = await res.json();
+                    input.value = '';
+                    cancelAttachment();
+                    if (!msgsEl.querySelector('[data-msg-id="' + data.id + '"]')) {
+                        appendMessage(data); scrollBottom();
+                    }
+                } else {
+                    const txt = await res.text().catch(() => '');
+                    console.error('[Chat] Upload failed', res.status, txt);
+                    let errMsg = 'Yükləmə baş tutmadı';
+                    try { errMsg = JSON.parse(txt).error || errMsg; } catch (_) {}
+                    toast(errMsg + ' (' + res.status + ')');
+                    cancelAttachment();
+                }
+            } catch (e) {
+                toast('Şəbəkə xətası'); cancelAttachment();
+            } finally {
+                sendBtn.disabled = false;
+            }
+        }
+
+        // ── Voice recording ──
+        let mediaRecorder = null;
+        let recChunks = [];
+        let recStart = 0;
+        let recTimer = null;
+        let recStream = null;
+        const recBar    = document.getElementById('chRecBar');
+        const recTime   = document.getElementById('chRecTime');
+        const inputRow  = document.getElementById('chInputRow');
+        const MAX_DURATION = 120; // saniyə
+
+        window.startRecording = async function () {
+            if (!navigator.mediaDevices || !window.MediaRecorder) {
+                toast('Bu brauzer səs yazmağı dəstəkləmir'); return;
+            }
+            try {
+                recStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            } catch (e) {
+                toast('Mikrofon icazəsi rədd edildi'); return;
+            }
+            try {
+                mediaRecorder = new MediaRecorder(recStream);
+            } catch (e) {
+                toast('Səs yazılmadı'); cleanupStream(); return;
+            }
+            recChunks = [];
+            mediaRecorder.ondataavailable = e => { if (e.data.size > 0) recChunks.push(e.data); };
+            mediaRecorder.onstop = onRecordingStopped;
+            mediaRecorder.start();
+            recStart = Date.now();
+            inputRow.style.display = 'none';
+            recBar.classList.add('active');
+            recTimer = setInterval(updateRecTimer, 250);
+        };
+
+        function updateRecTimer() {
+            const sec = Math.floor((Date.now() - recStart) / 1000);
+            const mm = Math.floor(sec / 60).toString().padStart(2, '0');
+            const ss = (sec % 60).toString().padStart(2, '0');
+            recTime.textContent = mm + ':' + ss;
+            if (sec >= MAX_DURATION) stopAndSendRecording();
+        }
+
+        window.stopAndSendRecording = function () {
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
+        };
+
+        window.cancelRecording = function () {
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.onstop = null;
+                mediaRecorder.stop();
+            }
+            cleanupStream();
+            recBar.classList.remove('active');
+            inputRow.style.display = 'flex';
+            clearInterval(recTimer);
+            recTime.textContent = '00:00';
+            recChunks = [];
+        };
+
+        function cleanupStream() {
+            if (recStream) { recStream.getTracks().forEach(t => t.stop()); recStream = null; }
+        }
+
+        async function onRecordingStopped() {
+            const duration = Math.floor((Date.now() - recStart) / 1000);
+            cleanupStream();
+            recBar.classList.remove('active');
+            inputRow.style.display = 'flex';
+            clearInterval(recTimer);
+            recTime.textContent = '00:00';
+
+            const mime = mediaRecorder.mimeType || 'audio/webm';
+            const blob = new Blob(recChunks, { type: mime });
+            recChunks = [];
+            if (blob.size === 0) { toast('Səs boşdur'); return; }
+            if (blob.size > 5 * 1024 * 1024) { toast('Səs faylı çox böyükdür'); return; }
+
+            const ext = mime.includes('webm') ? '.webm' : (mime.includes('ogg') ? '.ogg' : '.webm');
+            const fd = new FormData();
+            fd.append('conversationId', conversationId);
+            fd.append('type', 'Voice');
+            fd.append('durationSeconds', duration.toString());
+            fd.append('file', blob, 'voice' + ext);
+
+            sendBtn.disabled = true;
+            try {
+                const res = await fetch('/' + areaPrefix + '/Messages/Upload', { method: 'POST', body: fd });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (!msgsEl.querySelector('[data-msg-id="' + data.id + '"]')) {
+                        appendMessage(data); scrollBottom();
+                    }
+                } else {
+                    const txt = await res.text().catch(() => '');
+                    console.error('[Chat] Voice upload failed', res.status, txt);
+                    let errMsg = 'Səs göndərilmədi';
+                    try { errMsg = JSON.parse(txt).error || errMsg; } catch (_) {}
+                    toast(errMsg + ' (' + res.status + ')');
+                }
+            } catch (e) {
+                toast('Şəbəkə xətası');
+            } finally {
+                sendBtn.disabled = false;
+            }
+        }
+
+        // initial scroll
+        scrollBottom();
+        if (input.value) input.setSelectionRange(input.value.length, input.value.length);
+
+        // Conversation search
+        window.filterConversations = function (q) {
+            q = (q || '').toLowerCase();
+            document.querySelectorAll('.ch-item').forEach(item => {
+                const name = item.getAttribute('data-name') || '';
+                item.style.display = name.includes(q) ? '' : 'none';
+            });
+        };
+
+        // Cleanup
+        window.addEventListener('beforeunload', () => {
+            try { conn.invoke('LeaveConversation', conversationId); } catch (e) {}
+            try { conn.stop(); } catch (e) {}
+        });
+    })();
+    </script>
+}
+else
+{
+    <script>
+        window.filterConversations = function (q) {
+            q = (q || '').toLowerCase();
+            document.querySelectorAll('.ch-item').forEach(item => {
+                const name = item.getAttribute('data-name') || '';
+                item.style.display = name.includes(q) ? '' : 'none';
+            });
+        };
+    </script>
 }

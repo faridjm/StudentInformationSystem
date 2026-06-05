@@ -1,7 +1,19 @@
+@using SIS.Entities.Enums
 @model IEnumerable<SIS.BLL.Services.DTOs.Announcement.AnnouncementDto>
 
 @{
     ViewData["Title"] = L["Announcements"].Value;
+
+    string TargetLabel(AnnouncementTarget t) => t switch
+    {
+        AnnouncementTarget.All           => L["TargetAll"].Value,
+        AnnouncementTarget.Students      => L["TargetStudents"].Value,
+        AnnouncementTarget.Teachers      => L["TargetTeachers"].Value,
+        AnnouncementTarget.GroupStudents => L["TargetGroupStudents"].Value,
+        AnnouncementTarget.SelectedUsers => L["TargetSelectedUsers"].Value,
+        AnnouncementTarget.Course        => L["GroupAnnouncement"].Value,
+        _ => t.ToString()
+    };
 }
 
 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
@@ -20,80 +32,75 @@
 }
 else
 {
-    <div style="display:flex; flex-direction:column; gap:10px;">
-        @foreach (var a in Model.OrderByDescending(x => x.CreatedAt))
-        {
-            <div class="card">
-                <div class="card-body" style="display:flex; align-items:center; gap:16px; padding:14px 20px;">
-                    <div style="width:40px; height:40px; border-radius:50%; background:rgba(233,69,96,.12); display:flex; align-items:center; justify-content:center; flex-shrink:0; cursor:pointer;" onclick="openAnnouncement(@a.Id)">
-                        <i class="fas fa-bullhorn" style="color:#e94560; font-size:15px;"></i>
-                    </div>
-                    <div style="flex:1; min-width:0; cursor:pointer;" onclick="openAnnouncement(@a.Id)">
-                        <div style="font-weight:600; font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">@a.Title</div>
-                        <div style="font-size:12px; color:var(--text-secondary); margin-top:2px;">
-                            <i class="fas fa-user" style="margin-right:4px;"></i>@a.AuthorName
-                            @{
-                                var targetLabel = a.TargetType.ToString() switch {
-                                    "All" => L["ViewAll"].Value,
-                                    "Students" => L["Students"].Value,
-                                    "Teachers" => L["Teachers"].Value,
-                                    "Course" => "Kurs",
-                                    _ => a.TargetType.ToString()
-                                };
-                            }
-                            <span style="margin-left:8px; padding:1px 6px; background:var(--bg-hover); border-radius:4px;">@targetLabel</span>
+    <div class="card" style="padding:0; overflow-x:auto;">
+        <table style="width:100%; border-collapse:collapse; font-size:13px;">
+            <thead>
+                <tr style="background:var(--bg-hover); text-align:left;">
+                    <th style="padding:10px 14px;">@L["Title"]</th>
+                    <th style="padding:10px 14px;">@L["AnnouncementTarget"]</th>
+                    <th style="padding:10px 14px; text-align:center;">@L["Recipients"]</th>
+                    <th style="padding:10px 14px; text-align:center;">@L["Read"]</th>
+                    <th style="padding:10px 14px; text-align:center;">Email</th>
+                    <th style="padding:10px 14px;">@L["CreatedAt"]</th>
+                    <th style="padding:10px 14px;">@L["FullName"]</th>
+                    <th style="padding:10px 14px; text-align:right;">@L["Actions"]</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var a in Model.OrderByDescending(x => x.CreatedAt))
+                {
+                    <tr style="border-top:1px solid var(--border);">
+                        <td style="padding:10px 14px; font-weight:500;">
+                            <a href="/Admin/Announcement/Detail/@a.Id" style="color:inherit; text-decoration:none;">
+                                @a.Title
+                            </a>
                             @if (!string.IsNullOrEmpty(a.AttachmentUrl))
                             {
-                                <span style="margin-left:8px;"><i class="fas fa-paperclip"></i></span>
+                                <i class="fas fa-paperclip" style="color:var(--text-secondary); margin-left:6px; font-size:11px;"></i>
                             }
-                        </div>
-                    </div>
-                    <div style="font-size:12px; color:var(--text-secondary); flex-shrink:0;">@a.CreatedAt.ToString("dd.MM.yyyy HH:mm")</div>
-                    <form method="post" action="/Admin/Announcement/Delete/@a.Id"
-                          onsubmit="return confirm('Elanı silmək istədiyinizdən əminsinizmi?')" style="margin:0;">
-                        @Html.AntiForgeryToken()
-                        <button type="submit" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Modal -->
-            <div id="modal-@a.Id" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:1000; align-items:center; justify-content:center; padding:20px;">
-                <div style="background:var(--bg-card); border-radius:12px; max-width:600px; width:100%; max-height:80vh; overflow-y:auto; box-shadow:0 20px 60px rgba(0,0,0,.3);">
-                    <div style="padding:20px 24px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
-                        <h3 style="font-size:17px; font-weight:700; margin:0;">@a.Title</h3>
-                        <button onclick="closeAnnouncement(@a.Id)" style="background:none; border:none; color:var(--text-secondary); cursor:pointer; font-size:18px;"><i class="fas fa-times"></i></button>
-                    </div>
-                    <div style="padding:24px;">
-                        <p style="line-height:1.7; color:var(--text-primary); white-space:pre-wrap; margin:0;">@a.Content</p>
-                        @if (!string.IsNullOrEmpty(a.AttachmentUrl))
-                        {
-                            <div style="margin-top:20px; padding:12px 16px; background:var(--bg-hover); border-radius:8px;">
-                                <a href="@a.AttachmentUrl" target="_blank" style="color:#e94560; text-decoration:none; font-size:14px;">
-                                    <i class="fas fa-paperclip" style="margin-right:6px;"></i>Əlavə faylı yüklə
-                                </a>
+                        </td>
+                        <td style="padding:10px 14px;">
+                            <span class="badge badge-info">@TargetLabel(a.TargetType)</span>
+                        </td>
+                        <td style="padding:10px 14px; text-align:center;">@a.RecipientCount</td>
+                        <td style="padding:10px 14px; text-align:center;">
+                            @{
+                                var readPct = a.RecipientCount > 0 ? (int)Math.Round(100.0 * a.ReadCount / a.RecipientCount) : 0;
+                            }
+                            <div style="display:flex; flex-direction:column; align-items:center; gap:4px;">
+                                <span style="font-weight:600;">@a.ReadCount<span style="color:var(--text-secondary); font-weight:400;"> / @a.RecipientCount</span></span>
+                                <div style="width:60px; height:4px; background:var(--bg-hover); border-radius:2px; overflow:hidden;">
+                                    <div style="width:@(readPct)%; height:100%; background:#16a34a;"></div>
+                                </div>
                             </div>
-                        }
-                        <div style="margin-top:16px; padding-top:16px; border-top:1px solid var(--border); font-size:12px; color:var(--text-secondary);">
-                            <i class="fas fa-user" style="margin-right:4px;"></i>@a.AuthorName &nbsp;·&nbsp;
-                            <i class="fas fa-clock" style="margin-right:4px;"></i>@a.CreatedAt.ToString("dd.MM.yyyy HH:mm") &nbsp;·&nbsp;
-                            <strong>@targetLabel</strong>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        }
+                        </td>
+                        <td style="padding:10px 14px; text-align:center;">
+                            @if (a.SendEmail)
+                            {
+                                var allSent = a.EmailSentCount >= a.RecipientCount && a.RecipientCount > 0;
+                                var color   = allSent ? "#16a34a" : (a.EmailSentCount > 0 ? "#f59e0b" : "#dc2626");
+                                <span style="color:@color; font-weight:600;">
+                                    @a.EmailSentCount<span style="color:var(--text-secondary); font-weight:400;"> / @a.RecipientCount</span>
+                                </span>
+                            }
+                            else
+                            {
+                                <span style="color:var(--text-secondary);">—</span>
+                            }
+                        </td>
+                        <td style="padding:10px 14px; color:var(--text-secondary);">@a.CreatedAt.ToString("dd.MM.yyyy HH:mm")</td>
+                        <td style="padding:10px 14px; color:var(--text-secondary);">@a.AuthorName</td>
+                        <td style="padding:10px 14px; text-align:right; white-space:nowrap;">
+                            <a href="/Admin/Announcement/Detail/@a.Id" class="btn btn-sm btn-secondary"><i class="fas fa-eye"></i></a>
+                            <form method="post" action="/Admin/Announcement/Delete/@a.Id" style="display:inline;"
+                                  onsubmit="return confirm('Elanı silmək istədiyinizdən əminsinizmi?')">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     </div>
 }
-
-<script>
-function openAnnouncement(id) {
-    document.getElementById('modal-' + id).style.display = 'flex';
-    document.body.style.overflow = 'hidden';
-}
-function closeAnnouncement(id) {
-    document.getElementById('modal-' + id).style.display = 'none';
-    document.body.style.overflow = '';
-}
-document.addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('[id^="modal-"]').forEach(m => { m.style.display='none'; document.body.style.overflow=''; }); });
-</script>

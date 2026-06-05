@@ -17,6 +17,10 @@ namespace SIS.UI.ApiClients
         [Post("/api/chat/conversations/{id}/messages")]
         Task<MessageDto> SendMessageAsync(int id, [Body] SendMessageDto dto);
 
+        /// <summary>JSON metadata — fayl UI tərəfində artıq saxlanılıb.</summary>
+        [Post("/api/chat/conversations/{id}/messages/attachment-meta")]
+        Task<MessageDto> SendAttachmentMetaAsync(int id, [Body] SendAttachmentMessageDto dto);
+
         [Put("/api/chat/conversations/{id}/read")]
         Task MarkAsReadAsync(int id);
 

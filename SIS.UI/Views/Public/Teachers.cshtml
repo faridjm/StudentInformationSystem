@@ -1,0 +1,50 @@
+@using SIS.BLL.Services.DTOs.Public
+@using SIS.UI.Services
+@model List<PublicTeacherDto>
+@{
+    ViewData["Title"] = "Müəllimlər";
+}
+
+<header class="pub-detail-hero">
+    <div class="pub-container">
+        <h1>Müəllimlərimiz</h1>
+        <p style="opacity:.9; margin-top:8px;">Sahə təcrübəsi olan peşəkar müəllim heyəti</p>
+    </div>
+</header>
+
+<section class="pub-section">
+    <div class="pub-container">
+        <div style="text-align:center; margin-bottom:34px; color:var(--pub-muted); font-size:14px;">
+            <strong style="color:var(--pub-ink); font-size:18px;">@Model.Count</strong> müəllim
+        </div>
+
+        @if (!Model.Any())
+        {
+            <div class="pub-empty">
+                <i class="fas fa-chalkboard-teacher"></i>
+                <p>Hazırda göstəriləcək müəllim yoxdur.</p>
+            </div>
+        }
+        else
+        {
+            <div class="pub-grid">
+                @foreach (var t in Model)
+                {
+                    var initial = string.IsNullOrEmpty(t.FullName) ? "?" : t.FullName.Substring(0, 1).ToUpper();
+                    <div class="pub-card">
+                        <div class="pub-card-body" style="text-align:center; align-items:center;">
+                            <div class="pub-teacher-avatar pub-grad-@(PublicVisuals.Grad(t.Id))">@initial</div>
+                            <h3>@t.FullName</h3>
+                            <div class="desc" style="flex:none;">
+                                @(string.IsNullOrEmpty(t.Title) ? "Müəllim" : t.Title)
+                            </div>
+                            <span class="pub-chip" style="margin-top:14px;">
+                                <i class="fas fa-layer-group"></i> @t.GroupCount qrup
+                            </span>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</section>

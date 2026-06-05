@@ -1,10 +1,28 @@
 @model IEnumerable<SIS.BLL.Services.DTOs.Enrollment.EnrollmentListDto>
 @{
     ViewData["Title"] = L["GroupStudents"].Value;
+    var first = Model.FirstOrDefault();
+
+    string StatusBadge(EnrollmentStatus s) => s switch
+    {
+        EnrollmentStatus.Active => "badge-success",
+        EnrollmentStatus.Completed => "badge-info",
+        EnrollmentStatus.Dropped => "badge-danger",
+        _ => "badge-secondary"
+    };
 }
 <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
     <a href="/Admin/Enrollment" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i></a>
-    <h2 style="font-size:20px; font-weight:700;">@L["GroupStudents"]</h2>
+    <div>
+        <h2 style="font-size:20px; font-weight:700;">@(first?.GroupName ?? L["GroupStudents"].Value)</h2>
+        @if (first != null)
+        {
+            <div style="font-size:13px; color:var(--text-muted);">
+                <i class="fas fa-graduation-cap"></i> @first.CourseName
+                · <i class="fas fa-chalkboard-teacher"></i> @first.TeacherName
+            </div>
+        }
+    </div>
     <div style="margin-left:auto;">
         <a href="/Admin/Enrollment/Create?groupId=@ViewBag.GroupId" class="btn btn-primary btn-sm">
             <i class="fas fa-user-plus"></i> Qeydiyyat et
@@ -32,7 +50,7 @@
                         <td><code style="background:var(--bg-hover); padding:2px 8px; border-radius:4px; font-size:12px;">@e.StudentNumber</code></td>
                         <td style="color:var(--text-secondary); font-size:13px;">—</td>
                         <td style="color:var(--text-secondary); font-size:13px;">@e.EnrolledAt.ToString("dd.MM.yyyy")</td>
-                        <td><span class="badge badge-success">@L["Active"]</span></td>
+                        <td><span class="badge @StatusBadge(e.Status)">@e.Status</span></td>
                         <td>
                             <form method="post" action="/Admin/Enrollment/Drop/@e.Id?groupId=@ViewBag.GroupId"
                                   onsubmit="return confirm('?')">

@@ -36,13 +36,21 @@ namespace SIS.BLL.Services.Implementations
         public async Task<IEnumerable<TeacherListDto>> GetAllTeachersAsync()
         {
             var teachers = await _unitOfWork.Teachers.GetAllWithUsersAsync();
+
+            // Qrup sayını birbaşa Groups cədvəlindən sayırıq —
+            // GetAllWithUsersAsync Groups navigation-ı yükləmir.
+            var allGroups = await _unitOfWork.Groups.GetAllAsync();
+            var groupCountByTeacher = allGroups
+                .GroupBy(g => g.TeacherId)
+                .ToDictionary(g => g.Key, g => g.Count());
+
             return teachers.Select(t => new TeacherListDto
             {
                 Id = t.Id, FullName = t.AppUser?.FullName ?? "",
                 FinCode = t.AppUser?.FinCode, Email = t.AppUser?.Email ?? "",
                 EmployeeNumber = t.EmployeeNumber, Title = t.Title,
                 IsActive = t.AppUser?.IsActive ?? false,
-                GroupCount = t.Groups?.Count ?? 0
+                GroupCount = groupCountByTeacher.TryGetValue(t.Id, out var c) ? c : 0
             });
         }
 

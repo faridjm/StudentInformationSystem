@@ -679,4 +679,178 @@ You can now log in with your new password.</value>
   <data name="ErrorOccurred" xml:space="preserve">
     <value>An error occurred</value>
   </data>
+  <data name="AcademicStructure" xml:space="preserve">
+    <value>Academic Structure</value>
+  </data>
+  <data name="CoursesProgrammes" xml:space="preserve">
+    <value>Courses / Programmes</value>
+  </data>
+  <data name="AcademicYearSeason" xml:space="preserve">
+    <value>Academic Year / Season</value>
+  </data>
+  <data name="CurriculumTemplates" xml:space="preserve">
+    <value>Curriculum Templates</value>
+  </data>
+  <data name="AcademicOperations" xml:space="preserve">
+    <value>Academic Operations</value>
+  </data>
+  <data name="AdminAccess" xml:space="preserve">
+    <value>Admin Access</value>
+  </data>
+  <data name="Notifications" xml:space="preserve">
+    <value>Notifications</value>
+  </data>
+  <data name="AcademicInformation" xml:space="preserve">
+    <value>Academic Information</value>
+  </data>
+  <data name="Programme" xml:space="preserve">
+    <value>Programme</value>
+  </data>
+  <data name="AcademicYear" xml:space="preserve">
+    <value>Academic Year / Season</value>
+  </data>
+  <data name="OfficialGrade" xml:space="preserve">
+    <value>Official Grade</value>
+  </data>
+  <data name="Enrollment" xml:space="preserve">
+    <value>Enrollment</value>
+  </data>
+  <data name="AuditLogs" xml:space="preserve">
+    <value>Audit Logs</value>
+  </data>
+  <data name="ActiveCourses" xml:space="preserve">
+    <value>Active Courses</value>
+  </data>
+  <data name="PendingAssignments" xml:space="preserve">
+    <value>Pending Assignments</value>
+  </data>
+  <data name="Eligible" xml:space="preserve">
+    <value>Eligible</value>
+  </data>
+  <data name="NotEligible" xml:space="preserve">
+    <value>Not Eligible</value>
+  </data>
+  <data name="CertificateStatus" xml:space="preserve">
+    <value>Certificate Status</value>
+  </data>
+  <data name="Missing" xml:space="preserve">
+    <value>Missing</value>
+  </data>
+  <data name="RiskStudent" xml:space="preserve">
+    <value>Risk Student</value>
+  </data>
+  <data name="Dropped" xml:space="preserve">
+    <value>Dropped</value>
+  </data>
+  <data name="Completed" xml:space="preserve">
+    <value>Completed</value>
+  </data>
+  <data name="InstitutionWideAnnouncement" xml:space="preserve">
+    <value>Institution-wide</value>
+  </data>
+  <data name="GroupAnnouncement" xml:space="preserve">
+    <value>Group</value>
+  </data>
+  <data name="Credit" xml:space="preserve">
+    <value>Credit</value>
+  </data>
+  <data name="TotalHours" xml:space="preserve">
+    <value>Total Hours</value>
+  </data>
+  <data name="Level" xml:space="preserve">
+    <value>Level</value>
+  </data>
+  <data name="Department" xml:space="preserve">
+    <value>Department</value>
+  </data>
+  <data name="Departments" xml:space="preserve">
+    <value>Departments</value>
+  </data>
+  <data name="NewDepartment" xml:space="preserve">
+    <value>New Department</value>
+  </data>
+  <data name="EditDepartment" xml:space="preserve">
+    <value>Edit Department</value>
+  </data>
+  <data name="ActiveCourseCount" xml:space="preserve">
+    <value>Active Course Count</value>
+  </data>
+  <data name="Activate" xml:space="preserve">
+    <value>Activate</value>
+  </data>
+  <data name="SelectDepartment" xml:space="preserve">
+    <value>Select department</value>
+  </data>
+  <data name="NoDepartment" xml:space="preserve">
+    <value>No department</value>
+  </data>
+  <data name="BirthDate" xml:space="preserve">
+    <value>Birth Date</value>
+  </data>
+  <data name="RegistrationDate" xml:space="preserve">
+    <value>Registration Date</value>
+  </data>
+  <data name="AnnouncementTarget" xml:space="preserve">
+    <value>Target</value>
+  </data>
+  <data name="TargetAll" xml:space="preserve">
+    <value>Everyone</value>
+  </data>
+  <data name="TargetStudents" xml:space="preserve">
+    <value>Students only</value>
+  </data>
+  <data name="TargetTeachers" xml:space="preserve">
+    <value>Teachers only</value>
+  </data>
+  <data name="TargetGroupStudents" xml:space="preserve">
+    <value>Group students</value>
+  </data>
+  <data name="TargetSelectedUsers" xml:space="preserve">
+    <value>Selected users</value>
+  </data>
+  <data name="SendAsEmail" xml:space="preserve">
+    <value>Send as email</value>
+  </data>
+  <data name="SendAsEmailHelp" xml:space="preserve">
+    <value>Announcement will appear in the panel. If checked, it will also be sent by email.</value>
+  </data>
+  <data name="SearchUsers" xml:space="preserve">
+    <value>Search users</value>
+  </data>
+  <data name="MinimumTwoChars" xml:space="preserve">
+    <value>Type at least 2 characters</value>
+  </data>
+  <data name="Recipients" xml:space="preserve">
+    <value>Recipients</value>
+  </data>
+  <data name="Read" xml:space="preserve">
+    <value>Read</value>
+  </data>
+  <data name="Unread" xml:space="preserve">
+    <value>Unread</value>
+  </data>
+  <data name="Archive" xml:space="preserve">
+    <value>Archive</value>
+  </data>
+  <data name="Archived" xml:space="preserve">
+    <value>Archived</value>
+  </data>
+  <data name="ArchiveConversation" xml:space="preserve">
+    <value>Archive conversation</value>
+  </data>
+  <data name="RestoreConversation" xml:space="preserve">
+    <value>Restore</value>
+  </data>
+  <data name="Chats" xml:space="preserve">
+    <value>Chats</value>
+  </data>
+  <data name="AllRoles" xml:space="preserve">
+    <value>All roles</value>
+  </data>
+  <data name="AllStatuses" xml:space="preserve">
+    <value>All statuses</value>
+  </data>
+  <data name="ArchivePrivacyNote" xml:space="preserve">
+    <value>Chat archive is available only to SuperAdmin for security and administrative oversight purposes.</value>
+  </data>
 </root>

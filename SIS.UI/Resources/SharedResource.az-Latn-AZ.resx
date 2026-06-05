@@ -679,4 +679,178 @@
   <data name="ErrorOccurred" xml:space="preserve">
     <value>Xəta baş verdi</value>
   </data>
+  <data name="AcademicStructure" xml:space="preserve">
+    <value>Akademik Struktur</value>
+  </data>
+  <data name="CoursesProgrammes" xml:space="preserve">
+    <value>Kurslar / Proqramlar</value>
+  </data>
+  <data name="AcademicYearSeason" xml:space="preserve">
+    <value>Tədris İli / Sezon</value>
+  </data>
+  <data name="CurriculumTemplates" xml:space="preserve">
+    <value>Tədris Şablonları</value>
+  </data>
+  <data name="AcademicOperations" xml:space="preserve">
+    <value>Akademik Əməliyyatlar</value>
+  </data>
+  <data name="AdminAccess" xml:space="preserve">
+    <value>Admin Girişi</value>
+  </data>
+  <data name="Notifications" xml:space="preserve">
+    <value>Bildirişlər</value>
+  </data>
+  <data name="AcademicInformation" xml:space="preserve">
+    <value>Akademik Məlumat</value>
+  </data>
+  <data name="Programme" xml:space="preserve">
+    <value>Proqram</value>
+  </data>
+  <data name="AcademicYear" xml:space="preserve">
+    <value>Tədris İli / Sezon</value>
+  </data>
+  <data name="OfficialGrade" xml:space="preserve">
+    <value>Rəsmi Qiymət</value>
+  </data>
+  <data name="Enrollment" xml:space="preserve">
+    <value>Qeydiyyat</value>
+  </data>
+  <data name="AuditLogs" xml:space="preserve">
+    <value>Audit Logları</value>
+  </data>
+  <data name="ActiveCourses" xml:space="preserve">
+    <value>Aktiv Kurslar</value>
+  </data>
+  <data name="PendingAssignments" xml:space="preserve">
+    <value>Gözləyən Tapşırıqlar</value>
+  </data>
+  <data name="Eligible" xml:space="preserve">
+    <value>Uyğun</value>
+  </data>
+  <data name="NotEligible" xml:space="preserve">
+    <value>Uyğun deyil</value>
+  </data>
+  <data name="CertificateStatus" xml:space="preserve">
+    <value>Sertifikat Statusu</value>
+  </data>
+  <data name="Missing" xml:space="preserve">
+    <value>Çatışmır</value>
+  </data>
+  <data name="RiskStudent" xml:space="preserve">
+    <value>Risk</value>
+  </data>
+  <data name="Dropped" xml:space="preserve">
+    <value>Ayrılıb</value>
+  </data>
+  <data name="Completed" xml:space="preserve">
+    <value>Tamamlanıb</value>
+  </data>
+  <data name="InstitutionWideAnnouncement" xml:space="preserve">
+    <value>Ümumi elan</value>
+  </data>
+  <data name="GroupAnnouncement" xml:space="preserve">
+    <value>Qrup elanı</value>
+  </data>
+  <data name="Credit" xml:space="preserve">
+    <value>Kredit</value>
+  </data>
+  <data name="TotalHours" xml:space="preserve">
+    <value>Ümumi saat</value>
+  </data>
+  <data name="Level" xml:space="preserve">
+    <value>Səviyyə</value>
+  </data>
+  <data name="Department" xml:space="preserve">
+    <value>Şöbə</value>
+  </data>
+  <data name="Departments" xml:space="preserve">
+    <value>Şöbələr</value>
+  </data>
+  <data name="NewDepartment" xml:space="preserve">
+    <value>Yeni Şöbə</value>
+  </data>
+  <data name="EditDepartment" xml:space="preserve">
+    <value>Şöbəni Redaktə Et</value>
+  </data>
+  <data name="ActiveCourseCount" xml:space="preserve">
+    <value>Aktiv Kurs Sayı</value>
+  </data>
+  <data name="Activate" xml:space="preserve">
+    <value>Aktiv et</value>
+  </data>
+  <data name="SelectDepartment" xml:space="preserve">
+    <value>Şöbə seçin</value>
+  </data>
+  <data name="NoDepartment" xml:space="preserve">
+    <value>Şöbə yoxdur</value>
+  </data>
+  <data name="BirthDate" xml:space="preserve">
+    <value>Doğum tarixi</value>
+  </data>
+  <data name="RegistrationDate" xml:space="preserve">
+    <value>Qeydiyyat tarixi</value>
+  </data>
+  <data name="AnnouncementTarget" xml:space="preserve">
+    <value>Hədəf</value>
+  </data>
+  <data name="TargetAll" xml:space="preserve">
+    <value>Hamıya</value>
+  </data>
+  <data name="TargetStudents" xml:space="preserve">
+    <value>Yalnız tələbələrə</value>
+  </data>
+  <data name="TargetTeachers" xml:space="preserve">
+    <value>Yalnız müəllimlərə</value>
+  </data>
+  <data name="TargetGroupStudents" xml:space="preserve">
+    <value>Qrup tələbələrinə</value>
+  </data>
+  <data name="TargetSelectedUsers" xml:space="preserve">
+    <value>Fərdi istifadəçilərə</value>
+  </data>
+  <data name="SendAsEmail" xml:space="preserve">
+    <value>Email olaraq göndər</value>
+  </data>
+  <data name="SendAsEmailHelp" xml:space="preserve">
+    <value>Elan paneldə görünəcək. Bu seçim aktivdirsə, email olaraq da göndəriləcək.</value>
+  </data>
+  <data name="SearchUsers" xml:space="preserve">
+    <value>İstifadəçi axtar</value>
+  </data>
+  <data name="MinimumTwoChars" xml:space="preserve">
+    <value>Minimum 2 simvol yazın</value>
+  </data>
+  <data name="Recipients" xml:space="preserve">
+    <value>Alıcılar</value>
+  </data>
+  <data name="Read" xml:space="preserve">
+    <value>Oxunub</value>
+  </data>
+  <data name="Unread" xml:space="preserve">
+    <value>Oxunmayıb</value>
+  </data>
+  <data name="Archive" xml:space="preserve">
+    <value>Arxiv</value>
+  </data>
+  <data name="Archived" xml:space="preserve">
+    <value>Arxivləşdirilmiş</value>
+  </data>
+  <data name="ArchiveConversation" xml:space="preserve">
+    <value>Söhbəti arxivləşdir</value>
+  </data>
+  <data name="RestoreConversation" xml:space="preserve">
+    <value>Bərpa et</value>
+  </data>
+  <data name="Chats" xml:space="preserve">
+    <value>Söhbətlər</value>
+  </data>
+  <data name="AllRoles" xml:space="preserve">
+    <value>Bütün rollar</value>
+  </data>
+  <data name="AllStatuses" xml:space="preserve">
+    <value>Bütün statuslar</value>
+  </data>
+  <data name="ArchivePrivacyNote" xml:space="preserve">
+    <value>Söhbət arxivi yalnız təhlükəsizlik və inzibati nəzarət məqsədi ilə SuperAdmin üçün əlçatandır.</value>
+  </data>
 </root>

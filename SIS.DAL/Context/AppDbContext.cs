@@ -17,6 +17,7 @@ namespace SIS.DAL.Context
 
         public DbSet<Student> Students { get; set; }
         public DbSet<Teacher> Teachers { get; set; }
+        public DbSet<Department> Departments { get; set; }
         public DbSet<Course> Courses { get; set; }
         public DbSet<Group> Groups { get; set; }
         public DbSet<GroupScheduleDay> GroupScheduleDays { get; set; }
@@ -28,6 +29,7 @@ namespace SIS.DAL.Context
         public DbSet<Grade> Grades { get; set; }
         public DbSet<AttendanceRecord> AttendanceRecords { get; set; }
         public DbSet<Announcement> Announcements { get; set; }
+        public DbSet<AnnouncementRecipient> AnnouncementRecipients { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<ActivityLog> ActivityLogs { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }

@@ -23,7 +23,7 @@ namespace SIS.DAL.Repositories.Implementations
                 .Include(g => g.Course)
                 .Include(g => g.AcademicYear)
                 .Include(g => g.ScheduleDays)
-                .Include(g => g.Enrollments)
+                .Include(g => g.Enrollments).ThenInclude(e => e.Student)
                 .Where(g => g.TeacherId == teacherId)
                 .ToListAsync();
 
@@ -31,7 +31,7 @@ namespace SIS.DAL.Repositories.Implementations
             => await _dbSet
                 .Include(g => g.Teacher).ThenInclude(t => t.AppUser)
                 .Include(g => g.AcademicYear)
-                .Include(g => g.Enrollments)
+                .Include(g => g.Enrollments).ThenInclude(e => e.Student)
                 .Where(g => g.CourseId == courseId)
                 .ToListAsync();
 

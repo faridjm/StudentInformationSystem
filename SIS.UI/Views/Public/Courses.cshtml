@@ -1,0 +1,67 @@
+@using SIS.UI.ViewModels
+@model PublicCoursesViewModel
+@{
+    ViewData["Title"] = "Kurslar";
+}
+
+<header class="pub-detail-hero">
+    <div class="pub-container">
+        <h1>Kurslar / Proqramlar</h1>
+        <p style="opacity:.9; margin-top:8px;">Acadex-in bütün aktiv təhsil proqramları</p>
+    </div>
+</header>
+
+<section class="pub-section">
+    <div class="pub-container">
+        <form method="get" action="/Public/Courses"
+              style="display:grid; grid-template-columns:2fr 1fr 1fr auto; gap:12px; margin-bottom:34px;">
+            <input type="text" name="q" value="@Model.Q" placeholder="Kurs axtar..." class="pub-input" />
+            <select name="department" class="pub-input">
+                <option value="">Bütün şöbələr</option>
+                @foreach (var d in Model.Departments)
+                {
+                    <option value="@d" selected="@(d == Model.SelectedDepartment)">@d</option>
+                }
+            </select>
+            <select name="level" class="pub-input">
+                <option value="">Bütün səviyyələr</option>
+                @foreach (var lv in Model.Levels)
+                {
+                    <option value="@lv" selected="@(lv == Model.SelectedLevel)">@lv</option>
+                }
+            </select>
+            <button type="submit" class="pub-btn pub-btn-primary">
+                <i class="fas fa-magnifying-glass"></i> Axtar
+            </button>
+        </form>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+            <div style="color:var(--pub-muted); font-size:14px;">
+                <strong style="color:var(--pub-ink); font-size:18px;">@Model.Courses.Count</strong> proqram tapıldı
+            </div>
+            @if (!string.IsNullOrEmpty(Model.Q) || !string.IsNullOrEmpty(Model.SelectedDepartment) || !string.IsNullOrEmpty(Model.SelectedLevel))
+            {
+                <a href="/Public/Courses" class="pub-btn pub-btn-ghost" style="padding:8px 16px; font-size:13px;">
+                    <i class="fas fa-times"></i> Filtri sıfırla
+                </a>
+            }
+        </div>
+
+        @if (!Model.Courses.Any())
+        {
+            <div class="pub-empty">
+                <i class="fas fa-folder-open"></i>
+                <p>Axtarışınıza uyğun kurs tapılmadı.</p>
+            </div>
+        }
+        else
+        {
+            <div class="pub-grid">
+                @foreach (var c in Model.Courses)
+                {
+                    <partial name="_CourseCard" model="c" />
+                }
+            </div>
+        }
+    </div>
+</section>

@@ -1,0 +1,33 @@
+@model SIS.BLL.Services.DTOs.Department.DepartmentDto
+@{
+    ViewData["Title"] = Model.Name;
+}
+<div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
+    <a href="/Admin/Department" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i></a>
+    <h2 style="font-size:20px; font-weight:700;">@Model.Name</h2>
+    <span class="badge @(Model.IsActive ? "badge-success" : "badge-danger")">@(Model.IsActive ? L["Active"].Value : "Deaktiv")</span>
+    <a href="/Admin/Department/Edit/@Model.Id" class="btn btn-primary btn-sm" style="margin-left:auto;"><i class="fas fa-edit"></i> @L["Edit"]</a>
+</div>
+
+<div class="card" style="max-width:640px;">
+    <div class="card-body">
+        <table style="width:100%; font-size:14px;">
+            <tr style="border-bottom:1px solid var(--border);">
+                <td style="padding:10px 0; color:var(--text-muted); width:40%;">@L["Name"]</td>
+                <td style="padding:10px 0; font-weight:500;">@Model.Name</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border);">
+                <td style="padding:10px 0; color:var(--text-muted);">@L["Description"]</td>
+                <td style="padding:10px 0;">@(string.IsNullOrEmpty(Model.Description) ? "—" : Model.Description)</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border);">
+                <td style="padding:10px 0; color:var(--text-muted);">@L["ActiveCourseCount"]</td>
+                <td style="padding:10px 0;"><span class="badge badge-primary">@Model.ActiveCourseCount</span></td>
+            </tr>
+            <tr>
+                <td style="padding:10px 0; color:var(--text-muted);">Yaradılıb</td>
+                <td style="padding:10px 0;">@Model.CreatedAt.ToString("dd.MM.yyyy")</td>
+            </tr>
+        </table>
+    </div>
+</div>

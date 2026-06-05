@@ -1,0 +1,175 @@
+@model SIS.BLL.Services.DTOs.Common.PagedResult<SIS.BLL.Services.DTOs.Archive.ArchiveConversationListItemDto>
+
+@{
+    ViewData["Title"] = L["Archive"].Value;
+    string? search   = ViewBag.Search   as string;
+    string? role     = ViewBag.Role     as string;
+    string? status   = ViewBag.Status   as string;
+    string? fromDate = ViewBag.FromDate as string;
+    string? toDate   = ViewBag.ToDate   as string;
+    int pageSize     = ViewBag.PageSize is int ps ? ps : 25;
+}
+
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+    <div>
+        <h2 style="font-size:20px; font-weight:700;">@L["Archive"]</h2>
+        <p style="color:var(--text-secondary); font-size:13px; margin-top:4px;">
+            <i class="fas fa-shield-halved"></i>
+            @L["ArchivePrivacyNote"]
+        </p>
+    </div>
+    <span style="color:var(--text-secondary); font-size:13px;">
+        Cəmi: <strong style="color:var(--text-primary);">@Model.TotalCount</strong>
+    </span>
+</div>
+
+<!-- TABS -->
+<div style="display:flex; gap:6px; margin-bottom:14px; border-bottom:1px solid var(--border);">
+    <a href="/Admin/Archive/Chats"
+       style="padding:8px 16px; border-bottom:2px solid var(--accent); color:var(--text-primary); font-weight:600; text-decoration:none;">
+        <i class="fas fa-comments"></i> @L["Chats"]
+    </a>
+    <span style="padding:8px 16px; color:var(--text-secondary); font-size:13px;" title="Gələcək versiyalar üçün">
+        <i class="fas fa-box-archive"></i> @L["Archived"]
+    </span>
+</div>
+
+<!-- FILTERS -->
+<form method="get" action="/Admin/Archive/Chats" class="card" style="padding:14px; margin-bottom:14px;">
+    <div style="display:grid; grid-template-columns:2fr 1fr 1fr 1fr 1fr auto; gap:10px;">
+        <input type="text" name="search" value="@search" class="form-control" placeholder="Ad, email, qrup adı..." />
+        <select name="role" class="form-control">
+            <option value="">@L["AllRoles"]</option>
+            <option value="Student"  selected="@(role == "Student")">@L["Students"]</option>
+            <option value="Teacher"  selected="@(role == "Teacher")">@L["Teachers"]</option>
+        </select>
+        <select name="status" class="form-control">
+            <option value="">@L["AllStatuses"]</option>
+            <option value="Active"   selected="@(status == "Active")">@L["Active"]</option>
+            <option value="Archived" selected="@(status == "Archived")">@L["Archived"]</option>
+        </select>
+        <input type="date" name="fromDate" value="@fromDate" class="form-control" title="Bu tarixdən" />
+        <input type="date" name="toDate"   value="@toDate"   class="form-control" title="Bu tarixə qədər" />
+        <button type="submit" class="btn btn-primary"><i class="fas fa-magnifying-glass"></i></button>
+    </div>
+    @if (!string.IsNullOrEmpty(search) || !string.IsNullOrEmpty(role) || !string.IsNullOrEmpty(status)
+         || !string.IsNullOrEmpty(fromDate) || !string.IsNullOrEmpty(toDate))
+    {
+        <div style="margin-top:10px;">
+            <a href="/Admin/Archive/Chats" style="color:var(--accent); font-size:12px;">
+                <i class="fas fa-times"></i> Filtri sıfırla
+            </a>
+        </div>
+    }
+</form>
+
+@if (!Model.Items.Any())
+{
+    <div class="card" style="padding:60px 20px; text-align:center; color:var(--text-secondary);">
+        <i class="fas fa-comments" style="font-size:42px; opacity:.3; margin-bottom:14px; display:block;"></i>
+        <p>Heç bir söhbət tapılmadı.</p>
+    </div>
+}
+else
+{
+    <div class="card" style="padding:0; overflow-x:auto;">
+        <table style="width:100%; border-collapse:collapse; font-size:13px;">
+            <thead>
+                <tr style="background:var(--bg-hover); text-align:left;">
+                    <th style="padding:10px 14px;">@L["Teacher"]</th>
+                    <th style="padding:10px 14px;">@L["Student"]</th>
+                    <th style="padding:10px 14px;">@L["Group"]</th>
+                    <th style="padding:10px 14px;">Son mesaj</th>
+                    <th style="padding:10px 14px; text-align:center; width:70px;">Mesaj</th>
+                    <th style="padding:10px 14px; text-align:center; width:90px;">@L["Status"]</th>
+                    <th style="padding:10px 14px; text-align:right; width:80px;"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var c in Model.Items)
+                {
+                    <tr style="border-top:1px solid var(--border);">
+                        <td style="padding:10px 14px;">
+                            <div style="font-weight:500;">@c.TeacherFullName</div>
+                            <div style="font-size:11px; color:var(--text-secondary);">@c.TeacherEmail</div>
+                        </td>
+                        <td style="padding:10px 14px;">
+                            <div style="font-weight:500;">@c.StudentFullName</div>
+                            <div style="font-size:11px; color:var(--text-secondary);">@c.StudentEmail</div>
+                        </td>
+                        <td style="padding:10px 14px;">
+                            <span style="font-weight:500;">@c.GroupName</span>
+                            @if (!string.IsNullOrEmpty(c.CourseName))
+                            {
+                                <div style="font-size:11px; color:var(--text-secondary);">@c.CourseName</div>
+                            }
+                        </td>
+                        <td style="padding:10px 14px;">
+                            @if (!string.IsNullOrEmpty(c.LastMessagePreview))
+                            {
+                                <div style="font-size:12px; color:var(--text-primary); max-width:280px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                                    @c.LastMessagePreview
+                                </div>
+                                <div style="font-size:11px; color:var(--text-secondary); margin-top:2px;">
+                                    @c.LastMessageAt?.ToLocalTime().ToString("dd.MM.yyyy HH:mm")
+                                </div>
+                            }
+                            else
+                            {
+                                <span style="color:var(--text-secondary); font-style:italic; font-size:12px;">Mesaj yoxdur</span>
+                            }
+                        </td>
+                        <td style="padding:10px 14px; text-align:center;">@c.MessageCount</td>
+                        <td style="padding:10px 14px; text-align:center;">
+                            @if (c.IsArchived)
+                            {
+                                <span class="badge" style="background:#e5e7eb; color:#374151;">
+                                    <i class="fas fa-box-archive"></i> @L["Archived"]
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-success">@L["Active"]</span>
+                            }
+                        </td>
+                        <td style="padding:10px 14px; text-align:right;">
+                            <a href="/Admin/Archive/Conversation/@c.Id" class="btn btn-sm btn-secondary">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (Model.TotalPages > 1)
+    {
+        var qs = $"&search={search}&role={role}&status={status}&fromDate={fromDate}&toDate={toDate}&pageSize={pageSize}";
+        <div style="display:flex; justify-content:center; gap:6px; margin-top:18px; flex-wrap:wrap;">
+            @if (Model.Page > 1)
+            {
+                <a href="?page=@(Model.Page - 1)@qs" class="btn btn-sm btn-secondary"><i class="fas fa-chevron-left"></i></a>
+            }
+            @{
+                int start = Math.Max(1, Model.Page - 2);
+                int end   = Math.Min(Model.TotalPages, Model.Page + 2);
+            }
+            @for (int p = start; p <= end; p++)
+            {
+                if (p == Model.Page)
+                {
+                    <span class="btn btn-sm btn-primary" style="pointer-events:none;">@p</span>
+                }
+                else
+                {
+                    <a href="?page=@p@qs" class="btn btn-sm btn-secondary">@p</a>
+                }
+            }
+            @if (Model.Page < Model.TotalPages)
+            {
+                <a href="?page=@(Model.Page + 1)@qs" class="btn btn-sm btn-secondary"><i class="fas fa-chevron-right"></i></a>
+            }
+        </div>
+    }
+}

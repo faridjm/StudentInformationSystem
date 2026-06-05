@@ -1,2 +1,55 @@
-@* Removed - This view references deprecated DTOs. Will be rebuilt with new Group/Course model. *@
-<p style="color:#e94560; padding:20px;">Bu səhifə yenilənir...</p>
+@model IEnumerable<SIS.BLL.Services.DTOs.Department.DepartmentDto>
+@{
+    ViewData["Title"] = L["Departments"].Value;
+}
+
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+    <h2 style="font-size:20px; font-weight:700;">@L["Departments"]</h2>
+    <a href="/Admin/Department/Create" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> @L["NewDepartment"]</a>
+</div>
+
+<div class="card">
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>@L["Name"]</th>
+                    <th>@L["Description"]</th>
+                    <th style="text-align:center;">@L["ActiveCourseCount"]</th>
+                    <th>@L["Status"]</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var d in Model)
+                {
+                    <tr>
+                        <td style="font-weight:600;">@d.Name</td>
+                        <td style="color:var(--text-muted); font-size:13px;">@(string.IsNullOrEmpty(d.Description) ? "—" : d.Description)</td>
+                        <td style="text-align:center;"><span class="badge badge-primary">@d.ActiveCourseCount</span></td>
+                        <td><span class="badge @(d.IsActive ? "badge-success" : "badge-danger")">@(d.IsActive ? L["Active"].Value : "Deaktiv")</span></td>
+                        <td style="text-align:right; white-space:nowrap;">
+                            <a href="/Admin/Department/Details/@d.Id" class="btn btn-sm btn-secondary" title="@L["Details"]"><i class="fas fa-eye"></i></a>
+                            <a href="/Admin/Department/Edit/@d.Id" class="btn btn-sm btn-secondary" title="@L["Edit"]"><i class="fas fa-edit"></i></a>
+                            <form method="post" action="/Admin/Department/Toggle/@d.Id" style="display:inline;">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="isActive" value="@((!d.IsActive).ToString().ToLower())" />
+                                <button type="submit" class="btn btn-sm @(d.IsActive ? "btn-secondary" : "btn-success")" title="@(d.IsActive ? "Deaktiv et" : L["Activate"].Value)">
+                                    <i class="fas @(d.IsActive ? "fa-toggle-off" : "fa-toggle-on")"></i>
+                                </button>
+                            </form>
+                            <form method="post" action="/Admin/Department/Delete/@d.Id" style="display:inline;" onsubmit="return confirm('Şöbəni silmək istəyirsiniz?')">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-sm btn-danger" title="@L["Delete"]"><i class="fas fa-trash"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="5"><div class="empty-state"><i class="fas fa-building"></i><h4>@L["NoData"]</h4></div></td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

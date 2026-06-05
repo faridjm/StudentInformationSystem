@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SIS.BLL.Services.DTOs.Auth;
 using SIS.BLL.Services.DTOs.Student;
 using SIS.UI.ApiClients;
+using SIS.UI.ViewModels;
 
 namespace SIS.UI.Areas.Admin.Controllers
 {
@@ -13,13 +14,18 @@ namespace SIS.UI.Areas.Admin.Controllers
         private readonly IStudentApi _studentApi;
         private readonly IAuthApi _authApi;
         private readonly IInstitutionalEmailApi _emailApi;
+        private readonly IEnrollmentApi _enrollmentApi;
+        private readonly ITranscriptApi _transcriptApi;
 
         public StudentController(IStudentApi studentApi, IAuthApi authApi,
-            IInstitutionalEmailApi emailApi)
+            IInstitutionalEmailApi emailApi, IEnrollmentApi enrollmentApi,
+            ITranscriptApi transcriptApi)
         {
             _studentApi = studentApi;
             _authApi    = authApi;
             _emailApi   = emailApi;
+            _enrollmentApi = enrollmentApi;
+            _transcriptApi = transcriptApi;
         }
 
         public async Task<IActionResult> Index()
@@ -28,7 +34,61 @@ namespace SIS.UI.Areas.Admin.Controllers
         public async Task<IActionResult> Detail(int id)
         {
             var s = await _studentApi.GetByIdAsync(id);
+
+            // F1 — Academic Information: tələbənin enrollment-ləri + akademik xülasə.
+            // Data mövcud Enrollment + Transcript servislərindən gəlir (schema dəyişikliyi yoxdur).
+            var rows = new List<StudentAcademicRowVm>();
+            try
+            {
+                var enrollments = await _enrollmentApi.GetByStudentAsync(id);
+                foreach (var e in enrollments)
+                {
+                    var row = new StudentAcademicRowVm
+                    {
+                        EnrollmentId = e.Id,
+                        CourseName   = e.CourseName,
+                        GroupName    = e.GroupName,
+                        TeacherName  = e.TeacherName,
+                        Status       = e.Status,
+                        EnrolledAt   = e.EnrolledAt
+                    };
+                    // Akademik göstəricilər (attendance %, official grade, GPA, season, tarixlər)
+                    // transcript servisindən gəlir. Hesablama yoxdursa sətir yenə də göstərilir.
+                    try
+                    {
+                        var t = await _transcriptApi.GetAsync(e.Id);
+                        row.AcademicYear         = t.AcademicYear;
+                        row.StartDate            = t.StartDate;
+                        row.EndDate              = t.EndDate;
+                        row.AttendancePercentage = t.AttendancePercentage;
+                        row.OfficialGrade        = t.OfficialGrade;
+                        row.GPA                  = t.GPA;
+                        row.CertificateEligible  = t.CertificateEligible;
+                        row.TranscriptLoaded     = true;
+                    }
+                    catch { /* transcript hazır deyil — sətir əsas məlumatla göstərilir */ }
+
+                    rows.Add(row);
+                }
+            }
+            catch { /* enrollment servisi əlçatan deyil — boş akademik blok */ }
+
+            ViewBag.AcademicRows = rows;
             return View(s);
+        }
+
+        // F1/F4 — Tələbənin transkript PDF-ni yüklə (API-ni proxy edir, Admin icazəlidir).
+        public async Task<IActionResult> Transcript(int enrollmentId, int studentId)
+        {
+            var response = await _transcriptApi.GetPdfAsync(enrollmentId);
+            if (!response.IsSuccessStatusCode)
+            {
+                TempData["Error"] = "Transkript yüklənə bilmədi";
+                return RedirectToAction("Detail", new { id = studentId });
+            }
+            var bytes = await response.Content.ReadAsByteArrayAsync();
+            var fileName = response.Content.Headers.ContentDisposition?.FileName?.Trim('"') ?? "transcript.pdf";
+            return File(bytes, "application/pdf", fileName);
         }
 
         public IActionResult Create() => View();

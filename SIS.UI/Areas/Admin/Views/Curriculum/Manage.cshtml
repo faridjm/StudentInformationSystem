@@ -11,6 +11,12 @@
         AssessmentType.Homework => "Ev tapşırığı",
         _ => t.ToString()
     };
+
+    int TypeValue(AssessmentType t) => (int)t;
+
+    // Növbəti boş SessionNumber default dəyəri (server tərəfdən hesablanır,
+    // sonra client AJAX-la yeniləyir)
+    int defaultNext = (Model?.Items?.Where(i => i.Id != 0).Select(i => (int?)i.SessionNumber).Max() ?? 0) + 1;
 }
 
 @if (Model == null)
@@ -32,21 +38,27 @@ else
     <!-- Yeni sıra -->
     <div class="card" style="padding:18px; margin-bottom:18px;">
         <div style="font-weight:700; margin-bottom:10px;"><i class="fas fa-plus"></i> Sıra əlavə et</div>
-        <form method="post" action="/Admin/Curriculum/AddItem">
+        <form method="post" action="/Admin/Curriculum/AddItem" id="addSessionForm">
             @Html.AntiForgeryToken()
             <input type="hidden" name="templateId" value="@Model.Id" />
-            <div style="display:grid; grid-template-columns:100px 1fr; gap:12px; margin-bottom:10px;">
+            <div style="display:grid; grid-template-columns:120px 1fr; gap:12px; margin-bottom:6px;">
                 <div class="form-group" style="margin:0;">
                     <label class="form-label" style="font-size:12px;">Dərs № *</label>
-                    <input name="sessionNumber" type="number" min="1" class="form-control" required />
+                    <input id="addSessionNumber" name="sessionNumber" type="number" min="1"
+                           value="@defaultNext" class="form-control" required />
                 </div>
                 <div class="form-group" style="margin:0;">
                     <label class="form-label" style="font-size:12px;">Mövzu *</label>
                     <input name="topic" class="form-control" required />
                 </div>
             </div>
+            <small style="color:var(--text-secondary); font-size:11px; display:block; margin-bottom:10px;">
+                Növbəti boş sıra avtomatik təklif olunur, istəsəniz dəyişə bilərsiniz.
+            </small>
             <label style="display:flex; align-items:center; gap:8px; font-size:13px; margin-bottom:10px; cursor:pointer;">
-                <input type="checkbox" name="hasAssessment" value="true" id="hasAssess" onchange="document.getElementById('assessFields').style.display=this.checked?'grid':'none'" style="width:16px; height:16px;" />
+                <input type="checkbox" name="hasAssessment" value="true" id="hasAssess"
+                       onchange="document.getElementById('assessFields').style.display=this.checked?'grid':'none'"
+                       style="width:16px; height:16px;" />
                 Bu sırada qiymətləndirmə var
             </label>
             <div id="assessFields" style="display:none; grid-template-columns:1fr 1fr 1fr 1fr; gap:12px;">
@@ -93,7 +105,9 @@ else
                         <th style="padding:10px 14px; width:70px;">Dərs №</th>
                         <th style="padding:10px 14px;">Mövzu</th>
                         <th style="padding:10px 14px;">Qiymətləndirmə</th>
-                        <th style="padding:10px 14px; text-align:right;"></th>
+                        <th style="padding:10px 14px; width:80px;">Çəki %</th>
+                        <th style="padding:10px 14px; width:80px;">Maks bal</th>
+                        <th style="padding:10px 14px; text-align:right; width:120px;">Əməliyyat</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -106,7 +120,7 @@ else
                                 @if (i.HasAssessment && i.AssessmentType.HasValue)
                                 {
                                     <span style="padding:2px 8px; border-radius:10px; font-size:11px; background:var(--accent-soft, rgba(233,69,96,.12)); color:var(--accent);">
-                                        @i.AssessmentTitle · @TypeLabel(i.AssessmentType.Value) · %@i.WeightPercent · @i.MaxScore bal
+                                        @i.AssessmentTitle · @TypeLabel(i.AssessmentType.Value)
                                     </span>
                                 }
                                 else
@@ -114,8 +128,23 @@ else
                                     <span style="color:var(--text-secondary);">—</span>
                                 }
                             </td>
-                            <td style="padding:10px 14px; text-align:right;">
-                                <form method="post" action="/Admin/Curriculum/DeleteItem" style="display:inline;" onsubmit="return confirm('Sıra silinsin?');">
+                            <td style="padding:10px 14px;">@(i.HasAssessment && i.WeightPercent.HasValue ? $"%{i.WeightPercent}" : "—")</td>
+                            <td style="padding:10px 14px;">@(i.HasAssessment && i.MaxScore.HasValue ? i.MaxScore.ToString() : "—")</td>
+                            <td style="padding:10px 14px; text-align:right; white-space:nowrap;">
+                                <button type="button" class="btn btn-sm btn-secondary" onclick='openEdit(@Html.Raw(System.Text.Json.JsonSerializer.Serialize(new {
+                                    id = i.Id,
+                                    sessionNumber = i.SessionNumber,
+                                    topic = i.Topic,
+                                    hasAssessment = i.HasAssessment,
+                                    assessmentTitle = i.AssessmentTitle,
+                                    assessmentType = i.AssessmentType.HasValue ? (int?)TypeValue(i.AssessmentType.Value) : null,
+                                    weightPercent = i.WeightPercent,
+                                    maxScore = i.MaxScore
+                                })))'>
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <form method="post" action="/Admin/Curriculum/DeleteItem" style="display:inline;"
+                                      onsubmit="return confirmDelete(this, @(i.HasAssessment ? "true" : "false"));">
                                     @Html.AntiForgeryToken()
                                     <input type="hidden" name="itemId" value="@i.Id" />
                                     <input type="hidden" name="templateId" value="@Model.Id" />
@@ -128,4 +157,137 @@ else
             </table>
         </div>
     }
+
+    <!-- ── EDIT MODAL ── -->
+    <div id="editModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:1000; align-items:center; justify-content:center;">
+        <div style="background:var(--bg-card, #fff); border-radius:10px; width:560px; max-width:92%; max-height:92vh; overflow-y:auto;">
+            <div style="padding:18px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between;">
+                <div style="font-weight:700;">Dərs sırasını redaktə et</div>
+                <button type="button" onclick="closeEdit()" class="btn btn-sm btn-secondary"><i class="fas fa-times"></i></button>
+            </div>
+            <form method="post" action="/Admin/Curriculum/UpdateItem" style="padding:18px 20px;">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" id="edit_id" />
+                <input type="hidden" name="templateId" value="@Model.Id" />
+
+                <div style="display:grid; grid-template-columns:120px 1fr; gap:12px; margin-bottom:12px;">
+                    <div class="form-group" style="margin:0;">
+                        <label class="form-label" style="font-size:12px;">Dərs № *</label>
+                        <input id="edit_sessionNumber" name="sessionNumber" type="number" min="1" class="form-control" required />
+                    </div>
+                    <div class="form-group" style="margin:0;">
+                        <label class="form-label" style="font-size:12px;">Mövzu *</label>
+                        <input id="edit_topic" name="topic" class="form-control" required />
+                    </div>
+                </div>
+
+                <label style="display:flex; align-items:center; gap:8px; font-size:13px; margin-bottom:12px; cursor:pointer;">
+                    <input type="checkbox" name="hasAssessment" value="true" id="edit_hasAssess"
+                           onchange="toggleEditAssess(this.checked)" style="width:16px; height:16px;" />
+                    Bu sırada qiymətləndirmə var
+                </label>
+
+                <div id="edit_assessFields" style="display:none; grid-template-columns:1fr 1fr 1fr 1fr; gap:12px;">
+                    <div class="form-group" style="margin:0;">
+                        <label class="form-label" style="font-size:12px;">Başlıq</label>
+                        <input id="edit_assessmentTitle" name="assessmentTitle" class="form-control" />
+                    </div>
+                    <div class="form-group" style="margin:0;">
+                        <label class="form-label" style="font-size:12px;">Növ</label>
+                        <select id="edit_assessmentType" name="assessmentType" class="form-control">
+                            <option value="0">Quiz</option>
+                            <option value="1">Tapşırıq</option>
+                            <option value="2">Final Layihə</option>
+                            <option value="3">İmtahan</option>
+                            <option value="4">Ev tapşırığı</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin:0;">
+                        <label class="form-label" style="font-size:12px;">Çəki %</label>
+                        <input id="edit_weightPercent" name="weightPercent" type="number" step="0.5" min="0" class="form-control" />
+                    </div>
+                    <div class="form-group" style="margin:0;">
+                        <label class="form-label" style="font-size:12px;">Maks bal</label>
+                        <input id="edit_maxScore" name="maxScore" type="number" step="0.5" min="0" class="form-control" />
+                    </div>
+                </div>
+
+                <div id="edit_assessWarning"
+                     style="display:none; margin-top:10px; padding:8px 10px; background:#fef3c7; color:#92400e; border-radius:6px; font-size:12px;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Bu sıradakı qiymətləndirmə silinəcək. Saxla deməklə təsdiqləyirsiniz.
+                </div>
+
+                <div style="margin-top:16px; display:flex; gap:10px; justify-content:flex-end;">
+                    <button type="button" onclick="closeEdit()" class="btn btn-secondary">Ləğv et</button>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Saxla</button>
+                </div>
+            </form>
+        </div>
+    </div>
+}
+
+@section Scripts {
+<script>
+(function () {
+    var templateId = @(Model?.Id ?? 0);
+    var addSession = document.getElementById('addSessionNumber');
+
+    // Səhifə açıldıqda və əlavə əməliyyatdan sonra növbəti boş sıranı server-dən təzələ
+    function refreshNext() {
+        if (!addSession || !templateId) return;
+        fetch('/Admin/Curriculum/NextSessionNumber?templateId=' + templateId)
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (d) {
+                if (d && typeof d.next === 'number') addSession.value = d.next;
+            })
+            .catch(function () {});
+    }
+    refreshNext();
+})();
+
+// Cascade-delete confirm
+function confirmDelete(form, hasAssessment) {
+    if (hasAssessment) {
+        return confirm('Bu dərs sırasında qiymətləndirmə var. Silsəniz, bağlı qiymətləndirmə də silinəcək. Davam etmək istəyirsiniz?');
+    }
+    return confirm('Sıra silinsin?');
+}
+
+// ── Edit modal ──
+var initialHadAssess = false;
+
+function openEdit(data) {
+    document.getElementById('edit_id').value             = data.id;
+    document.getElementById('edit_sessionNumber').value  = data.sessionNumber;
+    document.getElementById('edit_topic').value          = data.topic || '';
+    document.getElementById('edit_assessmentTitle').value = data.assessmentTitle || '';
+    document.getElementById('edit_weightPercent').value   = data.weightPercent  != null ? data.weightPercent : '';
+    document.getElementById('edit_maxScore').value        = data.maxScore       != null ? data.maxScore      : '';
+    if (data.assessmentType != null)
+        document.getElementById('edit_assessmentType').value = data.assessmentType;
+
+    var chk = document.getElementById('edit_hasAssess');
+    chk.checked = !!data.hasAssessment;
+    initialHadAssess = !!data.hasAssessment;
+    toggleEditAssess(chk.checked);
+
+    var modal = document.getElementById('editModal');
+    modal.style.display = 'flex';
+}
+
+function closeEdit() {
+    document.getElementById('editModal').style.display = 'none';
+}
+
+function toggleEditAssess(checked) {
+    document.getElementById('edit_assessFields').style.display = checked ? 'grid' : 'none';
+    var w = document.getElementById('edit_assessWarning');
+    if (initialHadAssess && !checked) {
+        w.style.display = 'block';
+    } else {
+        w.style.display = 'none';
+    }
+}
+</script>
 }

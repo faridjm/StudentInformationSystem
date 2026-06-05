@@ -14,7 +14,10 @@
         <thead>
             <tr>
                 <th>@L["Name"]</th>
-                <th>@L["Description"]</th>
+                <th>@L["Department"]</th>
+                <th>@L["Credit"]</th>
+                <th>@L["TotalHours"]</th>
+                <th>@L["Level"]</th>
                 <th>@L["Groups"]</th>
                 <th>@L["Status"]</th>
                 <th>@L["Actions"]</th>
@@ -24,8 +27,17 @@
             @foreach (var c in Model)
             {
                 <tr>
-                    <td style="font-weight:500;">@c.Name</td>
-                    <td style="color:var(--text-secondary); font-size:13px;">@(c.Description ?? "—")</td>
+                    <td style="font-weight:500;">
+                        @c.Name
+                        @if (!string.IsNullOrEmpty(c.Description))
+                        {
+                            <div style="color:var(--text-muted); font-size:12px; font-weight:400;">@c.Description</div>
+                        }
+                    </td>
+                    <td>@(string.IsNullOrEmpty(c.DepartmentName) ? L["NoDepartment"].Value : c.DepartmentName)</td>
+                    <td>@c.Credit</td>
+                    <td>@c.TotalHours</td>
+                    <td>@(string.IsNullOrEmpty(c.Level) ? "—" : c.Level)</td>
                     <td>@c.GroupCount</td>
                     <td><span class="badge @(c.IsActive ? "badge-success" : "badge-danger")">@(c.IsActive ? L["Active"].Value : "Deaktiv")</span></td>
                     <td style="display:flex; gap:6px;">

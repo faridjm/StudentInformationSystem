@@ -60,9 +60,20 @@
                         <input name="FinCode" class="form-control" placeholder="7KUE4F8" maxlength="7" />
                     </div>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">@L["Date"]</label>
-                    <input name="BirthDate" type="date" class="form-control" />
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                    <div class="form-group">
+                        <label class="form-label">@L["BirthDate"]</label>
+                        <input name="BirthDate" type="date" class="form-control"
+                               max="@DateTime.Today.ToString("yyyy-MM-dd")"
+                               placeholder="@L["BirthDate"]" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">@L["RegistrationDate"]</label>
+                        <input type="date" class="form-control"
+                               value="@DateTime.Today.ToString("yyyy-MM-dd")"
+                               readonly
+                               style="background:var(--bg-hover); cursor:not-allowed;" />
+                    </div>
                 </div>
             </div>
         </div>

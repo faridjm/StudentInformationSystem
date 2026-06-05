@@ -62,4 +62,17 @@ namespace SIS.BLL.Services.DTOs.Curriculum
         public decimal? WeightPercent { get; set; }
         public decimal? MaxScore { get; set; }
     }
+
+    public class UpdateTemplateItemDto
+    {
+        public int Id { get; set; }
+        public int CurriculumTemplateId { get; set; }
+        public int SessionNumber { get; set; }
+        public string Topic { get; set; } = null!;
+        public bool HasAssessment { get; set; }
+        public string? AssessmentTitle { get; set; }
+        public AssessmentType? AssessmentType { get; set; }
+        public decimal? WeightPercent { get; set; }
+        public decimal? MaxScore { get; set; }
+    }
 }

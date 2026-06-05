@@ -62,14 +62,20 @@
                 </div>
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
                     <div class="form-group">
-                        <label class="form-label">@L["Date"]</label>
-                        <input name="BirthDate" type="date" class="form-control" />
+                        <label class="form-label">@L["BirthDate"]</label>
+                        <input name="BirthDate" type="date" class="form-control"
+                               max="@DateTime.Today.ToString("yyyy-MM-dd")"
+                               placeholder="@L["BirthDate"]" />
                     </div>
                     <div class="form-group">
-                        <label class="form-label">@L["PDF_EnrollmentYear"] *</label>
-                        <input name="EnrollmentYear" type="number" value="2026" class="form-control" required />
+                        <label class="form-label">@L["RegistrationDate"]</label>
+                        <input type="date" class="form-control"
+                               value="@DateTime.Today.ToString("yyyy-MM-dd")"
+                               readonly
+                               style="background:var(--bg-hover); cursor:not-allowed;" />
                     </div>
                 </div>
+                <input type="hidden" name="EnrollmentYear" value="@DateTime.Now.Year" />
             </div>
         </div>
         <div style="display:flex; gap:12px; margin-top:16px;">

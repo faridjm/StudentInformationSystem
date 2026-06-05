@@ -22,6 +22,26 @@
             <i class="fas fa-chart-pie"></i> @L["Dashboard"]
         </a>
 
+        <div class="sidebar-section">@L["AcademicStructure"]</div>
+        <a href="/Admin/Department" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Department" ? "active" : "")">
+            <i class="fas fa-building"></i> @L["Departments"]
+        </a>
+        <a href="/Admin/Course" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Course" ? "active" : "")">
+            <i class="fas fa-graduation-cap"></i> @L["CoursesProgrammes"]
+        </a>
+        <a href="/Admin/AcademicYear" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "AcademicYear" ? "active" : "")">
+            <i class="fas fa-calendar-alt"></i> @L["AcademicYearSeason"]
+        </a>
+        <a href="/Admin/Curriculum" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Curriculum" ? "active" : "")">
+            <i class="fas fa-stream"></i> @L["CurriculumTemplates"]
+        </a>
+        <a href="/Admin/Group" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Group" ? "active" : "")">
+            <i class="fas fa-users"></i> @L["Groups"]
+        </a>
+        <a href="/Admin/Enrollment" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Enrollment" ? "active" : "")">
+            <i class="fas fa-clipboard-list"></i> @L["Enrollments"]
+        </a>
+
         <div class="sidebar-section">@L["Users"]</div>
         <a href="/Admin/Student" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Student" ? "active" : "")">
             <i class="fas fa-user-graduate"></i> @L["Students"]
@@ -29,35 +49,29 @@
         <a href="/Admin/Teacher" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Teacher" ? "active" : "")">
             <i class="fas fa-chalkboard-teacher"></i> @L["Teachers"]
         </a>
+        @if (User.IsInRole("SuperAdmin"))
+        {
+            <a href="/Admin/AdminAccess" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "AdminAccess" ? "active" : "")">
+                <i class="fas fa-user-shield"></i> @L["AdminAccess"]
+            </a>
+        }
 
-        <div class="sidebar-section">@L["Academic"]</div>
-        <a href="/Admin/Course" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Course" ? "active" : "")">
-            <i class="fas fa-graduation-cap"></i> @L["AcademicPrograms"]
-        </a>
-        <a href="/Admin/Group" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Group" ? "active" : "")">
-            <i class="fas fa-users"></i> @L["Groups"]
-        </a>
-        <a href="/Admin/Curriculum" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Curriculum" ? "active" : "")">
-            <i class="fas fa-stream"></i> Tədris Şablonları
-        </a>
-        <a href="/Admin/Enrollment" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Enrollment" ? "active" : "")">
-            <i class="fas fa-clipboard-list"></i> @L["Enrollments"]
-        </a>
-
-        <div class="sidebar-section">@L["System"]</div>
-        <a href="/Admin/AcademicYear" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "AcademicYear" ? "active" : "")">
-            <i class="fas fa-calendar-alt"></i> @L["Seasons"]
-        </a>
+        <div class="sidebar-section">@L["AcademicOperations"]</div>
         <a href="/Admin/Announcement" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Announcement" ? "active" : "")">
             <i class="fas fa-bullhorn"></i> @L["Announcements"]
         </a>
+        <a href="/Notifications" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Notifications" ? "active" : "")">
+            <i class="fas fa-bell"></i> @L["Notifications"]
+        </a>
+
         @if (User.IsInRole("SuperAdmin"))
         {
+            <div class="sidebar-section">@L["System"]</div>
             <a href="/Admin/AuditLogs" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "AuditLogs" ? "active" : "")">
-                <i class="fas fa-clipboard-list"></i> Audit Log
+                <i class="fas fa-clipboard-list"></i> @L["AuditLogs"]
             </a>
-            <a href="/Admin/AdminAccess" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "AdminAccess" ? "active" : "")">
-                <i class="fas fa-user-shield"></i> Admin Girişi
+            <a href="/Admin/Archive/Chats" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Archive" ? "active" : "")">
+                <i class="fas fa-box-archive"></i> @L["Archive"]
             </a>
         }
 

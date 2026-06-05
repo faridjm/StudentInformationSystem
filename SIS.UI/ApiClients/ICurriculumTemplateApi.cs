@@ -29,7 +29,18 @@ namespace SIS.UI.ApiClients
         [Post("/api/curriculumtemplate/items")]
         Task<CurriculumTemplateItemDto> AddItemAsync([Body] CreateTemplateItemDto dto);
 
+        [Put("/api/curriculumtemplate/items")]
+        Task<CurriculumTemplateItemDto> UpdateItemAsync([Body] UpdateTemplateItemDto dto);
+
         [Delete("/api/curriculumtemplate/items/{itemId}")]
         Task DeleteItemAsync(int itemId);
+
+        [Get("/api/curriculumtemplate/{templateId}/next-session-number")]
+        Task<NextSessionNumberResponse> GetNextSessionNumberAsync(int templateId);
+    }
+
+    public class NextSessionNumberResponse
+    {
+        public int NextSessionNumber { get; set; }
     }
 }

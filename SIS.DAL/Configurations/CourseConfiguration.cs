@@ -11,6 +11,7 @@ namespace SIS.DAL.Configurations
             builder.HasKey(c => c.Id);
             builder.Property(c => c.Name).IsRequired().HasMaxLength(200);
             builder.Property(c => c.Description).HasMaxLength(1000);
+            builder.Property(c => c.Level).HasMaxLength(50);
             builder.HasQueryFilter(c => !c.IsDeleted);
         }
     }

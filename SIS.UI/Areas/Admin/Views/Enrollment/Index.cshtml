@@ -11,7 +11,8 @@
             <thead>
                 <tr>
                     <th>@L["Group"]</th>
-                    <th>@L["AcademicPrograms"]</th>
+                    <th>@L["Course"] / @L["Programme"]</th>
+                    <th>@L["AcademicYear"]</th>
                     <th>@L["Teacher"]</th>
                     <th>@L["StudentCount"]</th>
                     <th></th>
@@ -21,8 +22,12 @@
                 @foreach (var g in Model)
                 {
                     <tr>
-                        <td><strong>@g.Name</strong></td>
+                        <td>
+                            <strong>@g.Name</strong>
+                            <div style="font-size:11px; color:var(--text-muted);">@g.StartDate.ToString("dd.MM.yy") – @g.EndDate.ToString("dd.MM.yy")</div>
+                        </td>
                         <td>@g.CourseName</td>
+                        <td>@(g.SeasonName ?? "—")</td>
                         <td>@g.TeacherName</td>
                         <td>@g.EnrolledCount / @g.Capacity</td>
                         <td style="text-align:right;">
@@ -37,7 +42,7 @@
                 }
                 @if (!Model.Any())
                 {
-                    <tr><td colspan="5" style="text-align:center; color:var(--text-secondary); padding:30px;">@L["NoGroups"]</td></tr>
+                    <tr><td colspan="6" style="text-align:center; color:var(--text-secondary); padding:30px;">@L["NoGroups"]</td></tr>
                 }
             </tbody>
         </table>

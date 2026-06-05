@@ -21,7 +21,8 @@ namespace SIS.UI.Controllers
                     return RedirectToAction("Index", "Dashboard", new { area = "Student" });
             }
 
-            return RedirectToAction("Login", "Auth");
+            // Login olmayan ziyarətçi public marketing saytına yönləndirilir.
+            return RedirectToAction("Index", "Public");
         }
     }
 }

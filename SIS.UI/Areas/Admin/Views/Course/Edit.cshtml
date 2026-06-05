@@ -1,6 +1,7 @@
 @model SIS.BLL.Services.DTOs.Course.UpdateCourseDto
 @{
     ViewData["Title"] = L["EditCourse"].Value;
+    var departments = ViewBag.Departments as List<SIS.BLL.Services.DTOs.Department.DepartmentDto> ?? new();
 }
 <div style="max-width:560px; margin:0 auto;">
     <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
@@ -17,8 +18,32 @@
                     <input name="Name" value="@Model.Name" class="form-control" required />
                 </div>
                 <div class="form-group">
+                    <label class="form-label">@L["Department"]</label>
+                    <select name="DepartmentId" class="form-control">
+                        <option value="">@L["SelectDepartment"]</option>
+                        @foreach (var d in departments)
+                        {
+                            <option value="@d.Id" selected="@(Model.DepartmentId == d.Id)">@d.Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="form-group">
                     <label class="form-label">@L["Description"]</label>
                     <textarea name="Description" class="form-control" rows="3">@Model.Description</textarea>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px;">
+                    <div class="form-group">
+                        <label class="form-label">@L["Credit"]</label>
+                        <input name="Credit" type="number" min="0" value="@Model.Credit" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">@L["TotalHours"]</label>
+                        <input name="TotalHours" type="number" min="0" value="@Model.TotalHours" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">@L["Level"]</label>
+                        <input name="Level" value="@Model.Level" class="form-control" placeholder="Beginner / Intermediate / Advanced" />
+                    </div>
                 </div>
                 <div class="form-group">
                     <label class="form-label">@L["Status"]</label>

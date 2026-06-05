@@ -1,158 +1,183 @@
 @model SIS.BLL.Services.DTOs.Common.PagedResult<SIS.BLL.Services.DTOs.AuditLog.AuditLogDto>
+
 @{
-    ViewData["Title"] = "Audit Log";
-    var actions = ViewBag.Actions as List<string> ?? new();
-    var entities = ViewBag.Entities as List<string> ?? new();
-    var curAction = ViewBag.Action as string;
-    var curEntity = ViewBag.EntityName as string;
-    var curSearch = ViewBag.Search as string;
-    var curFrom = ViewBag.FromDate as string;
-    var curTo = ViewBag.ToDate as string;
-    var pageSize = (int)(ViewBag.PageSize ?? 20);
+    ViewData["Title"] = L["AuditLogs"].Value;
+    var actions  = ViewBag.Actions  as List<string> ?? new List<string>();
+    var entities = ViewBag.Entities as List<string> ?? new List<string>();
+    string? selAction   = ViewBag.Action     as string;
+    string? selEntity   = ViewBag.EntityName as string;
+    string? search      = ViewBag.Search     as string;
+    string? fromDate    = ViewBag.FromDate   as string;
+    string? toDate      = ViewBag.ToDate     as string;
+    int pageSize = ViewBag.PageSize is int ps ? ps : 20;
 
-    string BadgeStyle(string action)
+    string ActionBadge(string a) => a.ToLowerInvariant() switch
     {
-        var a = action.ToLowerInvariant();
-        if (a.Contains("delete") || a.Contains("drop") || a.Contains("deactivate")) return "background:#fee2e2; color:#dc2626;";
-        if (a.Contains("update") || a.Contains("review") || a.Contains("save")) return "background:#dbeafe; color:#2563eb;";
-        if (a.Contains("activate")) return "background:#ccfbf1; color:#0d9488;";
-        if (a.Contains("download")) return "background:#f3e8ff; color:#9333ea;";
-        if (a.Contains("create") || a.Contains("enroll") || a.Contains("submit")) return "background:#dcfce7; color:#16a34a;";
-        return "background:#f1f5f9; color:#475569;";
-    }
-
-    string QueryWith(int p) =>
-        $"?action={Uri.EscapeDataString(curAction ?? "")}&entityName={Uri.EscapeDataString(curEntity ?? "")}&search={Uri.EscapeDataString(curSearch ?? "")}&fromDate={curFrom}&toDate={curTo}&pageSize={pageSize}&page={p}";
+        "create"   => "background:#dcfce7; color:#166534;",
+        "update"   => "background:#dbeafe; color:#1e40af;",
+        "delete"   => "background:#fee2e2; color:#991b1b;",
+        "submit"   => "background:#ede9fe; color:#5b21b6;",
+        "review"   => "background:#fef3c7; color:#92400e;",
+        "enroll"   => "background:#cffafe; color:#155e75;",
+        "drop"     => "background:#fef2f2; color:#7f1d1d;",
+        "activate" => "background:#dcfce7; color:#14532d;",
+        "deactivate" => "background:#f3f4f6; color:#374151;",
+        _ => "background:var(--bg-hover); color:var(--text-secondary);"
+    };
 }
 
-<h2 style="font-size:20px; font-weight:700; margin-bottom:16px;"><i class="fas fa-clipboard-list"></i> Audit Log</h2>
-
-<form method="get" action="/Admin/AuditLogs/Index" class="card" style="padding:16px; margin-bottom:16px;">
-    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(160px, 1fr)); gap:12px; align-items:end;">
-        <div class="form-group" style="margin:0;">
-            <label class="form-label" style="font-size:12px;">Əməliyyat</label>
-            <select name="action" class="form-control">
-                <option value="">Hamısı</option>
-                @foreach (var a in actions)
-                {
-                    <option value="@a" selected="@(a == curAction)">@a</option>
-                }
-            </select>
-        </div>
-        <div class="form-group" style="margin:0;">
-            <label class="form-label" style="font-size:12px;">Obyekt</label>
-            <select name="entityName" class="form-control">
-                <option value="">Hamısı</option>
-                @foreach (var e in entities)
-                {
-                    <option value="@e" selected="@(e == curEntity)">@e</option>
-                }
-            </select>
-        </div>
-        <div class="form-group" style="margin:0;">
-            <label class="form-label" style="font-size:12px;">Axtarış (ad/təsvir/ID)</label>
-            <input name="search" class="form-control" value="@curSearch" placeholder="..." />
-        </div>
-        <div class="form-group" style="margin:0;">
-            <label class="form-label" style="font-size:12px;">Tarixdən</label>
-            <input name="fromDate" type="date" class="form-control" value="@curFrom" />
-        </div>
-        <div class="form-group" style="margin:0;">
-            <label class="form-label" style="font-size:12px;">Tarixə</label>
-            <input name="toDate" type="date" class="form-control" value="@curTo" />
-        </div>
-        <div class="form-group" style="margin:0;">
-            <label class="form-label" style="font-size:12px;">Səhifə ölçüsü</label>
-            <select name="pageSize" class="form-control">
-                @foreach (var s in new[] { 20, 50, 100 })
-                {
-                    <option value="@s" selected="@(s == pageSize)">@s</option>
-                }
-            </select>
-        </div>
-        <div style="display:flex; gap:8px;">
-            <button type="submit" class="btn btn-primary"><i class="fas fa-filter"></i> Süz</button>
-            <a href="/Admin/AuditLogs/Index" class="btn btn-secondary">Sıfırla</a>
-        </div>
-    </div>
-</form>
-
-<div style="font-size:13px; color:var(--text-secondary); margin-bottom:8px;">
-    Ümumi: <strong>@Model.TotalCount</strong> qeyd · Səhifə @Model.Page / @(Model.TotalPages == 0 ? 1 : Model.TotalPages)
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+    <h2 style="font-size:20px; font-weight:700;">@L["AuditLogs"]</h2>
+    <span style="color:var(--text-secondary); font-size:13px;">
+        Cəmi: <strong style="color:var(--text-primary);">@Model.TotalCount</strong>
+    </span>
 </div>
+
+<!-- FILTRƏLƏR -->
+<form method="get" action="/Admin/AuditLogs" class="card" style="padding:16px; margin-bottom:18px;">
+    <div style="display:grid; grid-template-columns:2fr 1fr 1fr 1fr 1fr auto; gap:10px;">
+        <input type="text" name="search" value="@search" placeholder="Axtar (ad, təsvir, ID)..." class="form-control" />
+        <select name="action" class="form-control">
+            <option value="">Bütün əməliyyatlar</option>
+            @foreach (var a in actions)
+            {
+                <option value="@a" selected="@(a == selAction)">@a</option>
+            }
+        </select>
+        <select name="entityName" class="form-control">
+            <option value="">Bütün entity-lər</option>
+            @foreach (var e in entities)
+            {
+                <option value="@e" selected="@(e == selEntity)">@e</option>
+            }
+        </select>
+        <input type="date" name="fromDate" value="@fromDate" class="form-control" title="Bu tarixdən" />
+        <input type="date" name="toDate" value="@toDate" class="form-control" title="Bu tarixə qədər" />
+        <button type="submit" class="btn btn-primary">
+            <i class="fas fa-magnifying-glass"></i> Axtar
+        </button>
+    </div>
+    @if (!string.IsNullOrEmpty(selAction) || !string.IsNullOrEmpty(selEntity)
+         || !string.IsNullOrEmpty(search) || !string.IsNullOrEmpty(fromDate) || !string.IsNullOrEmpty(toDate))
+    {
+        <div style="margin-top:10px;">
+            <a href="/Admin/AuditLogs" style="color:var(--accent); font-size:12px;">
+                <i class="fas fa-times"></i> Filtri sıfırla
+            </a>
+        </div>
+    }
+</form>
 
 @if (!Model.Items.Any())
 {
-    <div class="card" style="padding:40px; text-align:center; color:var(--text-secondary);">
-        <i class="fas fa-inbox" style="font-size:48px; margin-bottom:12px; opacity:.3;"></i>
-        <p>Qeyd tapılmadı</p>
+    <div class="card" style="padding:60px 20px; text-align:center; color:var(--text-secondary);">
+        <i class="fas fa-clipboard-list" style="font-size:42px; opacity:.3; margin-bottom:14px; display:block;"></i>
+        <p style="font-weight:600; margin-bottom:6px;">Heç bir audit log tapılmadı.</p>
+        <p style="font-size:13px;">Sistemdə (məsələn, tələbə və ya qrup yaratmaq kimi) əməliyyat icra etdikdə loglar burada görünəcək.</p>
     </div>
 }
 else
 {
     <div class="card" style="padding:0; overflow-x:auto;">
-        <table style="width:100%; border-collapse:collapse; font-size:13px; min-width:900px;">
+        <table style="width:100%; border-collapse:collapse; font-size:13px;">
             <thead>
                 <tr style="background:var(--bg-hover); text-align:left;">
-                    <th style="padding:10px 14px;">Tarix</th>
+                    <th style="padding:10px 14px; width:140px;">Tarix</th>
                     <th style="padding:10px 14px;">İstifadəçi</th>
-                    <th style="padding:10px 14px;">Rol</th>
-                    <th style="padding:10px 14px;">Əməliyyat</th>
-                    <th style="padding:10px 14px;">Obyekt</th>
+                    <th style="padding:10px 14px; width:110px;">Rol</th>
+                    <th style="padding:10px 14px; width:120px;">Əməliyyat</th>
+                    <th style="padding:10px 14px; width:140px;">Entity</th>
                     <th style="padding:10px 14px;">Təsvir</th>
-                    <th style="padding:10px 14px;">IP</th>
+                    <th style="padding:10px 14px; width:120px;">IP</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var log in Model.Items)
                 {
                     <tr style="border-top:1px solid var(--border);">
-                        <td style="padding:10px 14px; white-space:nowrap; color:var(--text-secondary);">@log.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
-                        <td style="padding:10px 14px;">@(string.IsNullOrEmpty(log.UserFullName) ? "—" : log.UserFullName)</td>
-                        <td style="padding:10px 14px;">@log.UserRole</td>
-                        <td style="padding:10px 14px;">
-                            <span style="padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; @BadgeStyle(log.Action)">@log.Action</span>
+                        <td style="padding:10px 14px; color:var(--text-secondary); white-space:nowrap;">
+                            @log.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")
                         </td>
                         <td style="padding:10px 14px;">
-                            @log.EntityName@(string.IsNullOrEmpty(log.EntityId) ? "" : $" #{log.EntityId}")
+                            @if (!string.IsNullOrEmpty(log.UserFullName))
+                            {
+                                <span style="font-weight:500;">@log.UserFullName</span>
+                            }
+                            else
+                            {
+                                <span style="color:var(--text-secondary); font-style:italic;">System</span>
+                            }
                         </td>
-                        <td style="padding:10px 14px; max-width:280px;">@log.Description</td>
-                        <td style="padding:10px 14px; color:var(--text-secondary); font-size:12px;">@log.IpAddress</td>
+                        <td style="padding:10px 14px;">
+                            @if (!string.IsNullOrEmpty(log.UserRole))
+                            {
+                                <span class="badge badge-secondary">@log.UserRole</span>
+                            }
+                            else { <span style="color:var(--text-secondary);">—</span> }
+                        </td>
+                        <td style="padding:10px 14px;">
+                            <span style="display:inline-block; padding:3px 10px; border-radius:12px; font-size:11px; font-weight:700; @ActionBadge(log.Action)">
+                                @log.Action
+                            </span>
+                        </td>
+                        <td style="padding:10px 14px;">
+                            <span style="font-weight:500;">@log.EntityName</span>
+                            @if (!string.IsNullOrEmpty(log.EntityId))
+                            {
+                                <span style="color:var(--text-secondary);"> #@log.EntityId</span>
+                            }
+                        </td>
+                        <td style="padding:10px 14px;">
+                            @if (!string.IsNullOrEmpty(log.Description))
+                            {
+                                <span>@log.Description</span>
+                            }
+                            else { <span style="color:var(--text-secondary);">—</span> }
+                        </td>
+                        <td style="padding:10px 14px; color:var(--text-secondary); font-family:monospace; font-size:11px;">
+                            @(log.IpAddress ?? "—")
+                        </td>
                     </tr>
                 }
             </tbody>
         </table>
     </div>
 
+    <!-- PAGINATION -->
     @if (Model.TotalPages > 1)
     {
-        <div style="display:flex; gap:6px; justify-content:center; margin-top:16px; flex-wrap:wrap;">
+        var qs = $"&search={search}&action={selAction}&entityName={selEntity}&fromDate={fromDate}&toDate={toDate}&pageSize={pageSize}";
+        <div style="display:flex; justify-content:center; gap:6px; margin-top:18px; flex-wrap:wrap;">
             @if (Model.Page > 1)
             {
-                <a href="@QueryWith(Model.Page - 1)" class="btn btn-sm btn-secondary"><i class="fas fa-chevron-left"></i></a>
+                <a href="?page=@(Model.Page - 1)@qs" class="btn btn-sm btn-secondary">
+                    <i class="fas fa-chevron-left"></i>
+                </a>
             }
             @{
                 int start = Math.Max(1, Model.Page - 2);
-                int end = Math.Min(Model.TotalPages, Model.Page + 2);
-            }
-            @if (start > 1)
-            {
-                <a href="@QueryWith(1)" class="btn btn-sm btn-secondary">1</a>
-                @if (start > 2) { <span style="padding:6px;">…</span> }
+                int end   = Math.Min(Model.TotalPages, Model.Page + 2);
             }
             @for (int p = start; p <= end; p++)
             {
-                <a href="@QueryWith(p)" class="btn btn-sm @(p == Model.Page ? "btn-primary" : "btn-secondary")">@p</a>
-            }
-            @if (end < Model.TotalPages)
-            {
-                @if (end < Model.TotalPages - 1) { <span style="padding:6px;">…</span> }
-                <a href="@QueryWith(Model.TotalPages)" class="btn btn-sm btn-secondary">@Model.TotalPages</a>
+                if (p == Model.Page)
+                {
+                    <span class="btn btn-sm btn-primary" style="pointer-events:none;">@p</span>
+                }
+                else
+                {
+                    <a href="?page=@p@qs" class="btn btn-sm btn-secondary">@p</a>
+                }
             }
             @if (Model.Page < Model.TotalPages)
             {
-                <a href="@QueryWith(Model.Page + 1)" class="btn btn-sm btn-secondary"><i class="fas fa-chevron-right"></i></a>
+                <a href="?page=@(Model.Page + 1)@qs" class="btn btn-sm btn-secondary">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
             }
+        </div>
+        <div style="text-align:center; margin-top:8px; color:var(--text-secondary); font-size:12px;">
+            Səhifə @Model.Page / @Model.TotalPages — @Model.Items.Count() / @Model.TotalCount
         </div>
     }
 }

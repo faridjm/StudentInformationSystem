@@ -13,6 +13,6 @@ namespace SIS.DAL.Repositories.Implementations
             => await _dbSet.Include(c => c.Groups).Where(c => c.IsActive).OrderBy(c => c.Name).ToListAsync();
 
         public async Task<IEnumerable<Course>> GetAllWithGroupsAsync()
-            => await _dbSet.Include(c => c.Groups).OrderBy(c => c.Name).ToListAsync();
+            => await _dbSet.Include(c => c.Groups).Include(c => c.Department).OrderBy(c => c.Name).ToListAsync();
     }
 }

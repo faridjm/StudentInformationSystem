@@ -74,6 +74,16 @@ namespace SIS.UI.Areas.Teacher.Controllers
                 catch { attendanceSummaries[e.Id] = new AttendanceSummaryDto(); }
             }
 
+            // F6 — hər enrollment üçün akademik xülasə (grade %, GPA, missing assignments, risk).
+            // Data transcript servisindən gəlir; hesablanmırsa o tələbə üçün sadəcə yox sayılır.
+            var transcripts = new Dictionary<int, SIS.BLL.Services.DTOs.Transcript.TranscriptDto>();
+            foreach (var e in enrollments)
+            {
+                try { transcripts[e.Id] = await _transcriptApi.GetAsync(e.Id); }
+                catch { }
+            }
+            ViewBag.Transcripts = transcripts;
+
             // Hər sessiya üçün mövcud davamiyyət records
             var attendancePerSession = new Dictionary<int, List<AttendanceDto>>();
             var pastSessions = sessions.Where(s => s.Date <= _clock.Today).ToList();

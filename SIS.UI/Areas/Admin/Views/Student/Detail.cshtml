@@ -1,7 +1,17 @@
+@using SIS.UI.ViewModels
 @model SIS.BLL.Services.DTOs.Student.StudentDetailDto
 
 @{
     ViewData["Title"] = L["StudentDetails"].Value;
+    var academicRows = ViewBag.AcademicRows as List<StudentAcademicRowVm> ?? new List<StudentAcademicRowVm>();
+
+    string StatusBadge(EnrollmentStatus s) => s switch
+    {
+        EnrollmentStatus.Active => "badge-success",
+        EnrollmentStatus.Completed => "badge-info",
+        EnrollmentStatus.Dropped => "badge-danger",
+        _ => "badge-secondary"
+    };
 }
 
 <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
@@ -39,9 +49,17 @@
                     <td style="padding:10px 0; color:var(--text-secondary);">@L["PDF_StudentNo"]</td>
                     <td style="padding:10px 0;"><code style="background:var(--bg-hover); padding:2px 8px; border-radius:4px;">@Model.StudentNumber</code></td>
                 </tr>
-                <tr>
+                <tr style="border-bottom:1px solid var(--border);">
                     <td style="padding:10px 0; color:var(--text-secondary);">@L["PDF_EnrollmentYear"]</td>
                     <td style="padding:10px 0;">@Model.EnrollmentYear</td>
+                </tr>
+                <tr style="border-bottom:1px solid var(--border);">
+                    <td style="padding:10px 0; color:var(--text-secondary);">@L["Status"]</td>
+                    <td style="padding:10px 0;"><span class="badge @(Model.IsActive ? "badge-success" : "badge-danger")">@(Model.IsActive ? L["Active"].Value : "Deaktiv")</span></td>
+                </tr>
+                <tr>
+                    <td style="padding:10px 0; color:var(--text-secondary);">Yaradılıb</td>
+                    <td style="padding:10px 0;">@Model.CreatedAt.ToString("dd.MM.yyyy")</td>
                 </tr>
             </table>
         </div>
@@ -67,6 +85,83 @@
             </table>
         </div>
     </div>
+</div>
+
+<!-- F1 — Academic Information: enrollment-lər və akademik xülasə -->
+<div class="card" style="margin-top:16px;">
+    <div class="card-header">
+        <span><i class="fas fa-graduation-cap" style="margin-right:8px;"></i>@L["AcademicInformation"]</span>
+        <span class="badge badge-secondary">@academicRows.Count</span>
+    </div>
+    @if (!academicRows.Any())
+    {
+        <div class="empty-state">
+            <i class="fas fa-folder-open"></i>
+            <h4>No academic enrollment found.</h4>
+            <p>Bu tələbənin heç bir qrupa qeydiyyatı yoxdur.</p>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-compact">
+                <thead>
+                    <tr>
+                        <th>@L["Course"] / @L["Programme"]</th>
+                        <th>@L["Group"]</th>
+                        <th>@L["AcademicYear"]</th>
+                        <th>@L["Teacher"]</th>
+                        <th>@L["Enrollment"]</th>
+                        <th>@L["Status"]</th>
+                        <th style="text-align:center;">@L["Attendance"] %</th>
+                        <th style="text-align:center;">@L["OfficialGrade"] %</th>
+                        <th style="text-align:center;">GPA</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var r in academicRows)
+                    {
+                        <tr>
+                            <td style="font-weight:600;">@r.CourseName</td>
+                            <td>@r.GroupName</td>
+                            <td>
+                                @(r.AcademicYear ?? "—")
+                                @if (r.StartDate.HasValue && r.EndDate.HasValue)
+                                {
+                                    <div style="font-size:11px; color:var(--text-muted);">@r.StartDate.Value.ToString("dd.MM.yy") – @r.EndDate.Value.ToString("dd.MM.yy")</div>
+                                }
+                            </td>
+                            <td style="color:var(--text-muted);">@r.TeacherName</td>
+                            <td style="color:var(--text-muted); font-size:12px;">@r.EnrolledAt.ToString("dd.MM.yyyy")</td>
+                            <td><span class="badge @StatusBadge(r.Status)">@r.Status</span></td>
+                            <td style="text-align:center;">
+                                @if (r.AttendancePercentage.HasValue)
+                                {
+                                    <span class="badge @(r.AttendancePercentage >= 75 ? "badge-success" : r.AttendancePercentage >= 50 ? "badge-warning" : "badge-danger")">@r.AttendancePercentage.Value.ToString("F0")%</span>
+                                }
+                                else { <span style="color:var(--text-muted);">—</span> }
+                            </td>
+                            <td style="text-align:center;">
+                                @(r.OfficialGrade.HasValue ? r.OfficialGrade.Value.ToString("F1") + "%" : "—")
+                            </td>
+                            <td style="text-align:center; font-weight:700;">
+                                @(r.GPA.HasValue ? r.GPA.Value.ToString("F2") : "—")
+                            </td>
+                            <td style="text-align:right;">
+                                @if (r.TranscriptLoaded)
+                                {
+                                    <a href="/Admin/Student/Transcript?enrollmentId=@r.EnrollmentId&studentId=@Model.Id" class="btn btn-sm btn-secondary" title="@L["Transcript"]">
+                                        <i class="fas fa-file-pdf"></i> PDF
+                                    </a>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
 </div>
 
 <div style="margin-top:16px; display:flex; gap:10px;">

@@ -12,14 +12,17 @@ namespace SIS.UI.Areas.Student.Controllers
         private readonly IEnrollmentApi _enrollmentApi;
         private readonly IAnnouncementApi _announcementApi;
         private readonly INotificationApi _notificationApi;
+        private readonly ITranscriptApi _transcriptApi;
 
         public DashboardController(IStudentApi studentApi, IEnrollmentApi enrollmentApi,
-            IAnnouncementApi announcementApi, INotificationApi notificationApi)
+            IAnnouncementApi announcementApi, INotificationApi notificationApi,
+            ITranscriptApi transcriptApi)
         {
             _studentApi = studentApi;
             _enrollmentApi = enrollmentApi;
             _announcementApi = announcementApi;
             _notificationApi = notificationApi;
+            _transcriptApi = transcriptApi;
         }
 
         public async Task<IActionResult> Index()
@@ -36,6 +39,33 @@ namespace SIS.UI.Areas.Student.Controllers
                 ViewBag.Enrollments = enrollments.Take(5);
                 ViewBag.Announcements = announcements.Take(5);
                 ViewBag.UnreadCount = unreadCount.Count;
+
+                // F6 — real akademik göstəricilər (transcript servisindən aqreqasiya).
+                // Hesablama yoxdursa (məs. dərs/qiymət hələ yoxdur) sahə null qalır → UI "—" göstərir.
+                double attSum = 0; int attN = 0;
+                decimal gradeSum = 0; int gradeN = 0;
+                int pendingAssignments = 0;
+                int eligibleCount = 0; int transcriptCount = 0;
+
+                foreach (var e in enrollments)
+                {
+                    try
+                    {
+                        var t = await _transcriptApi.GetAsync(e.Id);
+                        attSum += t.AttendancePercentage; attN++;
+                        gradeSum += t.OfficialGrade; gradeN++;
+                        if (t.CertificateEligible) eligibleCount++;
+                        transcriptCount++;
+                        pendingAssignments += t.HomeworkAssignments.Count(h => !h.IsSubmitted);
+                    }
+                    catch { /* bu enrollment üçün transcript hazır deyil */ }
+                }
+
+                ViewBag.AttendancePct = attN > 0 ? (double?)(attSum / attN) : null;
+                ViewBag.OfficialGrade = gradeN > 0 ? (decimal?)(gradeSum / gradeN) : null;
+                ViewBag.PendingAssignments = pendingAssignments;
+                ViewBag.CertificateEligibleCount = eligibleCount;
+                ViewBag.CertificateTotal = transcriptCount;
             }
             catch { }
 

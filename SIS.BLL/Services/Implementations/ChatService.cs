@@ -11,11 +11,14 @@ namespace SIS.BLL.Services.Implementations
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly INotificationService _notifications;
+        private readonly IChatRealtimeNotifier _realtime;
 
-        public ChatService(IUnitOfWork unitOfWork, INotificationService notifications)
+        public ChatService(IUnitOfWork unitOfWork, INotificationService notifications,
+            IChatRealtimeNotifier realtime)
         {
             _unitOfWork = unitOfWork;
             _notifications = notifications;
+            _realtime = realtime;
         }
 
         public async Task<IEnumerable<ConversationDto>> GetMyConversationsAsync(string userId)
@@ -38,7 +41,7 @@ namespace SIS.BLL.Services.Implementations
                     CourseName = c.Group?.Course?.Name ?? "",
                     OtherUserName = otherUser?.FullName ?? "",
                     OtherUserId = isTeacher ? c.StudentUserId : c.TeacherUserId,
-                    LastMessage = lastMsg?.Content,
+                    LastMessage = BuildPreview(lastMsg),
                     LastMessageAt = lastMsg?.SentAt,
                     UnreadCount = unread
                 });
@@ -48,7 +51,6 @@ namespace SIS.BLL.Services.Implementations
 
         public async Task<ConversationDto> GetOrCreateConversationAsync(string currentUserId, int groupId, string targetUserId)
         {
-            // Kim teacher kim student — group-dan tapırıq
             var group = await _unitOfWork.Groups.GetGroupWithDetailsAsync(groupId)
                 ?? throw new NotFoundException("Qrup tapılmadı");
 
@@ -91,7 +93,6 @@ namespace SIS.BLL.Services.Implementations
                 StudentUserId = studentUserId
             });
 
-            // Reload with includes
             conv = await _unitOfWork.Chat.GetConversationAsync(conv.Id);
             var isT = conv!.TeacherUserId == currentUserId;
             var other = isT ? conv.StudentUser : conv.TeacherUser;
@@ -108,22 +109,28 @@ namespace SIS.BLL.Services.Implementations
         public async Task<IEnumerable<MessageDto>> GetMessagesAsync(int conversationId, string currentUserId, int take = 50, int skip = 0)
         {
             var messages = await _unitOfWork.Chat.GetMessagesAsync(conversationId, take, skip);
-            return messages.Select(m => new MessageDto
-            {
-                Id = m.Id,
-                ConversationId = m.ConversationId,
-                SenderUserId = m.SenderUserId,
-                SenderName = m.SenderUser?.FullName ?? "",
-                Content = m.Content,
-                SentAt = m.SentAt,
-                IsRead = m.IsRead,
-                IsMine = m.SenderUserId == currentUserId
-            });
+            return messages.Select(m => MapMessage(m, currentUserId));
         }
 
-        public async Task<MessageDto> SendMessageAsync(string senderUserId, int conversationId, string content)
+        public Task<MessageDto> SendMessageAsync(string senderUserId, int conversationId, string content)
+            => SendInternalAsync(senderUserId, conversationId, content, ChatAttachmentType.None,
+                                 null, null, null, null, null);
+
+        public Task<MessageDto> SendAttachmentMessageAsync(string senderUserId, SendAttachmentMessageDto dto)
+            => SendInternalAsync(senderUserId, dto.ConversationId, dto.Content,
+                                 dto.AttachmentType,
+                                 dto.AttachmentUrl, dto.AttachmentFileName,
+                                 dto.AttachmentContentType, dto.AttachmentSize, dto.DurationSeconds);
+
+        private async Task<MessageDto> SendInternalAsync(
+            string senderUserId, int conversationId, string? content,
+            ChatAttachmentType attachmentType,
+            string? attachmentUrl, string? attachmentFileName,
+            string? attachmentContentType, long? attachmentSize, int? durationSeconds)
         {
-            if (string.IsNullOrWhiteSpace(content))
+            var hasAttachment = attachmentType != ChatAttachmentType.None;
+            var hasText = !string.IsNullOrWhiteSpace(content);
+            if (!hasText && !hasAttachment)
                 throw new BadRequestException("Mesaj boş ola bilməz");
 
             var conv = await _unitOfWork.Chat.GetConversationAsync(conversationId)
@@ -136,36 +143,76 @@ namespace SIS.BLL.Services.Implementations
             {
                 ConversationId = conversationId,
                 SenderUserId = senderUserId,
-                Content = content.Trim()
+                // DB-də Content NOT NULL ola bilər (köhnə schema). Migration tətbiq olunduqdan sonra
+                // bu xətt boş string yerinə null saxlaya bilər. Hazırda təhlükəsiz fallback:
+                Content = hasText ? content!.Trim() : "",
+                AttachmentType = attachmentType,
+                AttachmentUrl = attachmentUrl,
+                AttachmentFileName = attachmentFileName,
+                AttachmentContentType = attachmentContentType,
+                AttachmentSize = attachmentSize,
+                DurationSeconds = durationSeconds
             });
 
-            // Qəbul edənə bildiriş
-            var isSenderTeacher = conv.TeacherUserId == senderUserId;
-            var receiverUserId = isSenderTeacher ? conv.StudentUserId : conv.TeacherUserId;
-            var senderName = isSenderTeacher ? conv.TeacherUser?.FullName : conv.StudentUser?.FullName;
-            var relatedUrl = isSenderTeacher ? "/Student/Messages" : "/Teacher/Messages";
-            var snippet = content.Trim();
-            if (snippet.Length > 80) snippet = snippet.Substring(0, 80) + "…";
-            await _notifications.SendNotificationAsync(receiverUserId,
-                $"Yeni mesaj: {senderName}", snippet, NotificationType.ChatMessage, relatedUrl);
+            // SenderUser navigation-ı üçün təkrar oxu
+            var senderUser = (conv.TeacherUserId == senderUserId)
+                ? conv.TeacherUser
+                : conv.StudentUser;
 
-            return new MessageDto
+            var dto = new MessageDto
             {
                 Id = msg.Id,
                 ConversationId = conversationId,
                 SenderUserId = senderUserId,
-                SenderName = conv.TeacherUserId == senderUserId
-                    ? conv.TeacherUser?.FullName ?? ""
-                    : conv.StudentUser?.FullName ?? "",
+                SenderName = senderUser?.FullName ?? "",
                 Content = msg.Content,
                 SentAt = msg.SentAt,
                 IsRead = false,
-                IsMine = true
+                IsMine = false, // realtime alıcılar üçün — frontend SenderUserId ilə müqayisə edir
+                AttachmentType = msg.AttachmentType,
+                AttachmentUrl = msg.AttachmentUrl,
+                AttachmentFileName = msg.AttachmentFileName,
+                AttachmentContentType = msg.AttachmentContentType,
+                AttachmentSize = msg.AttachmentSize,
+                DurationSeconds = msg.DurationSeconds
             };
+
+            // ── Realtime push (group fan-out, həm sender həm receiver eyni payload alır) ──
+            try { await _realtime.NotifyMessageAsync(conversationId, dto); }
+            catch { /* realtime xətası mesajın saxlanmasını pozmasın */ }
+
+            // ── Notification (yalnız qarşı tərəfə) ──
+            var isSenderTeacher = conv.TeacherUserId == senderUserId;
+            var receiverUserId = isSenderTeacher ? conv.StudentUserId : conv.TeacherUserId;
+            var senderName = senderUser?.FullName ?? "";
+            var relatedUrl = isSenderTeacher ? "/Student/Messages" : "/Teacher/Messages";
+
+            string title = attachmentType switch
+            {
+                ChatAttachmentType.Image => $"Yeni şəkil: {senderName}",
+                ChatAttachmentType.File  => $"Yeni fayl: {senderName}",
+                ChatAttachmentType.Voice => $"Yeni səsli mesaj: {senderName}",
+                _ => $"Yeni mesaj: {senderName}"
+            };
+            var snippet = BuildPreview(msg);
+            try
+            {
+                await _notifications.SendNotificationAsync(receiverUserId, title, snippet,
+                    NotificationType.ChatMessage, relatedUrl);
+            }
+            catch { }
+
+            // Sender üçün IsMine = true olan dto qaytaraq (REST cavabında)
+            dto.IsMine = true;
+            return dto;
         }
 
         public async Task MarkAsReadAsync(int conversationId, string userId)
-            => await _unitOfWork.Chat.MarkAsReadAsync(conversationId, userId);
+        {
+            await _unitOfWork.Chat.MarkAsReadAsync(conversationId, userId);
+            try { await _realtime.NotifyMessagesReadAsync(conversationId, userId); }
+            catch { }
+        }
 
         public async Task<int> GetUnreadCountAsync(string userId)
             => await _unitOfWork.Chat.GetUnreadCountAsync(userId);
@@ -174,6 +221,37 @@ namespace SIS.BLL.Services.Implementations
         {
             var conv = await _unitOfWork.Chat.GetConversationAsync(conversationId);
             return conv != null && (conv.TeacherUserId == userId || conv.StudentUserId == userId);
+        }
+
+        // ── Helpers ──
+        private static MessageDto MapMessage(ChatMessage m, string currentUserId) => new()
+        {
+            Id = m.Id,
+            ConversationId = m.ConversationId,
+            SenderUserId = m.SenderUserId,
+            SenderName = m.SenderUser?.FullName ?? "",
+            Content = m.Content,
+            SentAt = m.SentAt,
+            IsRead = m.IsRead,
+            IsMine = m.SenderUserId == currentUserId,
+            AttachmentType = m.AttachmentType,
+            AttachmentUrl = m.AttachmentUrl,
+            AttachmentFileName = m.AttachmentFileName,
+            AttachmentContentType = m.AttachmentContentType,
+            AttachmentSize = m.AttachmentSize,
+            DurationSeconds = m.DurationSeconds
+        };
+
+        private static string? BuildPreview(ChatMessage? m)
+        {
+            if (m == null) return null;
+            return m.AttachmentType switch
+            {
+                ChatAttachmentType.Image => "📷 Şəkil",
+                ChatAttachmentType.File  => $"📎 {m.AttachmentFileName ?? "Fayl"}",
+                ChatAttachmentType.Voice => $"🎤 Səsli mesaj",
+                _ => m.Content
+            };
         }
     }
 }

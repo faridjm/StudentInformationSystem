@@ -88,6 +88,11 @@ namespace SIS.UI.Areas.Student.Controllers
             var materials = new List<SIS.BLL.Services.DTOs.Material.CourseMaterialDto>();
             try { materials = (await _materialApi.GetVisibleByGroupAsync(enrollment.GroupId)).ToList(); } catch { }
 
+            // F12 — akademik header üçün xülasə (season, tarixlər, official grade, GPA, certificate).
+            SIS.BLL.Services.DTOs.Transcript.TranscriptDto? transcript = null;
+            try { transcript = await _transcriptApi.GetAsync(id); } catch { }
+            ViewBag.Transcript = transcript;
+
             ViewBag.Materials = materials;
             ViewBag.Enrollment = enrollment;
             ViewBag.Attendance = attendance;

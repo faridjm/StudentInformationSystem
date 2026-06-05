@@ -63,11 +63,20 @@ namespace SIS.API.Controllers
         public async Task<IActionResult> AddItem([FromBody] CreateTemplateItemDto dto)
             => Ok(await _service.AddItemAsync(dto));
 
+        [HttpPut("items")]
+        public async Task<IActionResult> UpdateItem([FromBody] UpdateTemplateItemDto dto)
+            => Ok(await _service.UpdateItemAsync(dto));
+
         [HttpDelete("items/{itemId}")]
         public async Task<IActionResult> DeleteItem(int itemId)
         {
             await _service.DeleteItemAsync(itemId);
             return Ok();
         }
+
+        /// <summary>Şablonda növbəti boş SessionNumber.</summary>
+        [HttpGet("{templateId}/next-session-number")]
+        public async Task<IActionResult> GetNextSessionNumber(int templateId)
+            => Ok(new { nextSessionNumber = await _service.GetNextSessionNumberAsync(templateId) });
     }
 }

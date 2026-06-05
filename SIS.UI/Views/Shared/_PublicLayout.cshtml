@@ -1,0 +1,57 @@
+@{
+    var action = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+    string nav(string a) => string.Equals(action, a, StringComparison.OrdinalIgnoreCase) ? "active" : "";
+}
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@(ViewData["Title"] ?? "Acadex") — Acadex</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="/css/public.css" asp-append-version="true" />
+</head>
+<body class="pub">
+    <nav class="pub-nav">
+        <div class="pub-container pub-nav-inner">
+            <a href="/Public" class="pub-logo"><i class="fas fa-graduation-cap" style="color:var(--pub-primary)"></i> Acad<span>ex</span></a>
+            <button class="pub-nav-toggle" onclick="document.getElementById('pubNav').classList.toggle('open')"><i class="fas fa-bars"></i></button>
+            <div class="pub-nav-links" id="pubNav">
+                <a href="/Public" class="@nav("Index")">Ana səhifə</a>
+                <a href="/Public/Courses" class="@nav("Courses")">Kurslar</a>
+                <a href="/Public/Teachers" class="@nav("Teachers")">Müəllimlər</a>
+                <a href="/Public/About" class="@nav("About")">Akademiya</a>
+                <a href="/Public/Graduates" class="@nav("Graduates")">Məzunlar</a>
+                <a href="/Public/Contact" class="@nav("Contact")">Əlaqə</a>
+                <a href="/Auth/Login" class="pub-btn pub-btn-primary"><i class="fas fa-right-to-bracket"></i> Daxil ol</a>
+            </div>
+        </div>
+    </nav>
+
+    @RenderBody()
+
+    <footer class="pub-footer">
+        <div class="pub-container">
+            <div class="pub-footer-grid">
+                <div>
+                    <div class="pub-logo" style="color:#fff; margin-bottom:12px;"><i class="fas fa-graduation-cap" style="color:var(--pub-accent)"></i> Acad<span style="color:var(--pub-accent)">ex</span></div>
+                    <p style="font-size:14px; max-width:340px;">Praktiki, layihə əsaslı təhsil. Acadex peşəkar kurslar və real bacarıqlar üçün öyrənmə platformasıdır.</p>
+                </div>
+                <div>
+                    <h4>Keçidlər</h4>
+                    <a href="/Public">Ana səhifə</a>
+                    <a href="/Public/Courses">Kurslar</a>
+                    <a href="/Public/Teachers">Müəllimlər</a>
+                    <a href="/Public/About">Haqqımızda</a>
+                </div>
+                <div>
+                    <h4>Əlaqə</h4>
+                    <a href="/Public/Contact"><i class="fas fa-envelope"></i> Bizə yazın</a>
+                    <a href="/Auth/Login"><i class="fas fa-right-to-bracket"></i> Sistemə daxil ol</a>
+                </div>
+            </div>
+            <div class="pub-footer-bottom">© @DateTime.Now.Year Acadex. Bütün hüquqlar qorunur.</div>
+        </div>
+    </footer>
+</body>
+</html>

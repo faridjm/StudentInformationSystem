@@ -1,0 +1,54 @@
+@using SIS.UI.ViewModels
+@model List<PublicGraduateViewModel>
+@{
+    ViewData["Title"] = "Məzunlar";
+}
+
+<header class="pub-detail-hero">
+    <div class="pub-container">
+        <h1>Uğurlu məzunlar</h1>
+        <p style="opacity:.9; margin-top:8px;">Acadex məzunlarının karyera hekayələri</p>
+    </div>
+</header>
+
+<section class="pub-section">
+    <div class="pub-container">
+        @if (!Model.Any())
+        {
+            <div class="pub-empty">
+                <i class="fas fa-user-graduate"></i>
+                <p>Məzun hekayələri tezliklə əlavə olunacaq.</p>
+            </div>
+        }
+        else
+        {
+            <div class="pub-graduates">
+                @foreach (var g in Model)
+                {
+                    <div class="pub-grad-card">
+                        <div class="pub-grad-avatar pub-grad-@g.Grad">@g.Initials</div>
+                        <h3>@g.FullName</h3>
+                        <div class="role">@g.Position</div>
+                        <div class="course">@g.Course · @g.Year</div>
+                        <div class="story">"@g.Story"</div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</section>
+
+<section class="pub-section alt">
+    <div class="pub-container">
+        <div class="pub-cta">
+            <h2>Növbəti uğur hekayəsi sənin ola bilər</h2>
+            <p>Proqramlarımızla tanış ol və öz karyera yolunu Acadex-də başlat.</p>
+            <div class="pub-hero-actions">
+                <a href="/Public/Courses" class="pub-btn pub-btn-light"><i class="fas fa-layer-group"></i> Kurslara bax</a>
+                <a href="/Public/Contact" class="pub-btn pub-btn-ghost" style="background:#fff;">
+                    <i class="fas fa-paper-plane"></i> Bizimlə əlaqə saxla
+                </a>
+            </div>
+        </div>
+    </div>
+</section>

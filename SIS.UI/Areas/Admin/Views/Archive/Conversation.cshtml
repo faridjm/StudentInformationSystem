@@ -1,0 +1,188 @@
+@model SIS.BLL.Services.DTOs.Archive.ArchiveConversationDetailDto
+@{
+    ViewData["Title"] = $"{Model.TeacherFullName} ↔ {Model.StudentFullName}";
+}
+
+<div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
+    <a href="/Admin/Archive/Chats" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i></a>
+    <div style="flex:1;">
+        <h2 style="font-size:19px; font-weight:700;">
+            @Model.TeacherFullName <span style="color:var(--text-secondary); font-weight:400;">↔</span> @Model.StudentFullName
+        </h2>
+        <p style="color:var(--text-secondary); font-size:12px; margin-top:2px;">
+            <i class="fas fa-shield-halved"></i> @L["ArchivePrivacyNote"]
+        </p>
+    </div>
+    @if (Model.IsArchived)
+    {
+        <form method="post" action="/Admin/Archive/Restore/@Model.Id" style="margin:0;">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-sm btn-primary">
+                <i class="fas fa-rotate-left"></i> @L["RestoreConversation"]
+            </button>
+        </form>
+    }
+    else
+    {
+        <form method="post" action="/Admin/Archive/Archive/@Model.Id" style="margin:0;"
+              onsubmit="return confirm('Söhbəti arxivləşdirmək istədiyinizə əminsiniz?');">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-sm btn-secondary">
+                <i class="fas fa-box-archive"></i> @L["ArchiveConversation"]
+            </button>
+        </form>
+    }
+</div>
+
+<!-- META -->
+<div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:12px; margin-bottom:16px;">
+    <div class="card" style="padding:12px;">
+        <div style="font-size:11px; color:var(--text-secondary);">@L["Teacher"]</div>
+        <div style="font-weight:600; margin-top:2px;">@Model.TeacherFullName</div>
+        <div style="font-size:11px; color:var(--text-secondary);">@Model.TeacherEmail</div>
+    </div>
+    <div class="card" style="padding:12px;">
+        <div style="font-size:11px; color:var(--text-secondary);">@L["Student"]</div>
+        <div style="font-weight:600; margin-top:2px;">@Model.StudentFullName</div>
+        <div style="font-size:11px; color:var(--text-secondary);">@Model.StudentEmail</div>
+    </div>
+    <div class="card" style="padding:12px;">
+        <div style="font-size:11px; color:var(--text-secondary);">@L["Group"]</div>
+        <div style="font-weight:600; margin-top:2px;">@Model.GroupName</div>
+        @if (!string.IsNullOrEmpty(Model.CourseName))
+        {
+            <div style="font-size:11px; color:var(--text-secondary);">@Model.CourseName</div>
+        }
+    </div>
+    <div class="card" style="padding:12px;">
+        <div style="font-size:11px; color:var(--text-secondary);">@L["Status"]</div>
+        @if (Model.IsArchived)
+        {
+            <div style="margin-top:4px;">
+                <span class="badge" style="background:#e5e7eb; color:#374151;">
+                    <i class="fas fa-box-archive"></i> @L["Archived"]
+                </span>
+            </div>
+            @if (Model.ArchivedAt.HasValue)
+            {
+                <div style="font-size:11px; color:var(--text-secondary); margin-top:2px;">
+                    @Model.ArchivedAt.Value.ToLocalTime().ToString("dd.MM.yyyy HH:mm")
+                    @if (!string.IsNullOrEmpty(Model.ArchivedByName))
+                    {
+                        <span> · @Model.ArchivedByName</span>
+                    }
+                </div>
+            }
+        }
+        else
+        {
+            <div style="margin-top:4px;"><span class="badge badge-success">@L["Active"]</span></div>
+            <div style="font-size:11px; color:var(--text-secondary); margin-top:2px;">
+                @Model.MessageCount mesaj
+            </div>
+        }
+    </div>
+</div>
+
+<!-- MESSAGES -->
+<div class="card" style="padding:18px;">
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
+        <h3 style="font-size:15px; font-weight:700;">
+            <i class="fas fa-comments"></i> Mesaj tarixçəsi (@Model.MessageCount)
+        </h3>
+        <span style="font-size:12px; color:var(--text-secondary);">
+            <i class="fas fa-eye"></i> Read-only
+        </span>
+    </div>
+
+    @if (!Model.Messages.Any())
+    {
+        <div style="padding:30px; text-align:center; color:var(--text-secondary);">
+            Bu söhbətdə mesaj yoxdur.
+        </div>
+    }
+    else
+    {
+        <div style="display:flex; flex-direction:column; gap:8px; max-height:600px; overflow-y:auto; padding:6px 4px;">
+            @{ string? lastDay = null; }
+            @foreach (var m in Model.Messages)
+            {
+                var day = m.SentAt.ToLocalTime().ToString("dd MMM yyyy");
+                if (day != lastDay)
+                {
+                    lastDay = day;
+                    <div style="text-align:center; margin:14px 0 4px;">
+                        <span style="background:var(--bg-hover); color:var(--text-secondary); padding:3px 12px; border-radius:12px; font-size:11px; font-weight:600;">
+                            @day
+                        </span>
+                    </div>
+                }
+                var isTeacher = m.SenderRole == "Teacher";
+                var align     = isTeacher ? "flex-start" : "flex-end";
+                var bg        = isTeacher ? "#f3f4f6" : "rgba(233,69,96,.10)";
+                var color     = "var(--text-primary)";
+                var roleColor = isTeacher ? "#7c3aed" : "#2563eb";
+                <div style="display:flex; justify-content:@align;">
+                    <div style="max-width:60%; padding:10px 14px; background:@bg; border-radius:14px; box-shadow:0 1px 2px rgba(0,0,0,.05);">
+                        <div style="display:flex; align-items:center; gap:6px; margin-bottom:4px;">
+                            <span style="font-size:11px; font-weight:700; color:@roleColor;">@m.SenderFullName</span>
+                            <span style="font-size:10px; color:var(--text-secondary);">@m.SenderRole</span>
+                        </div>
+                        @if (m.AttachmentType == SIS.Entities.Enums.ChatAttachmentType.Image)
+                        {
+                            <a href="@m.AttachmentUrl" target="_blank">
+                                <img src="@m.AttachmentUrl" style="max-width:240px; max-height:240px; border-radius:10px; display:block;" />
+                            </a>
+                            if (!string.IsNullOrEmpty(m.Content))
+                            {
+                                <div style="color:@color; font-size:14px; margin-top:6px; white-space:pre-wrap;">@m.Content</div>
+                            }
+                        }
+                        else if (m.AttachmentType == SIS.Entities.Enums.ChatAttachmentType.File)
+                        {
+                            <div style="display:flex; align-items:center; gap:10px; padding:8px 10px; background:rgba(0,0,0,.05); border-radius:8px; min-width:200px;">
+                                <i class="fas fa-file" style="color:@roleColor; font-size:18px;"></i>
+                                <div style="flex:1; min-width:0;">
+                                    <div style="font-size:12px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">@m.AttachmentFileName</div>
+                                    <div style="font-size:10px; color:var(--text-secondary);">
+                                        @if (m.AttachmentSize.HasValue)
+                                        {
+                                            var s = m.AttachmentSize.Value;
+                                            <span>@(s < 1024 ? s + " B" : s < 1024*1024 ? (s/1024.0).ToString("0.#") + " KB" : (s/1024.0/1024).ToString("0.#") + " MB")</span>
+                                        }
+                                    </div>
+                                </div>
+                                <a href="@m.AttachmentUrl" download="@m.AttachmentFileName" style="color:@roleColor;">
+                                    <i class="fas fa-download"></i>
+                                </a>
+                            </div>
+                            if (!string.IsNullOrEmpty(m.Content))
+                            {
+                                <div style="color:@color; font-size:14px; margin-top:6px; white-space:pre-wrap;">@m.Content</div>
+                            }
+                        }
+                        else if (m.AttachmentType == SIS.Entities.Enums.ChatAttachmentType.Voice)
+                        {
+                            <audio controls preload="none" src="@m.AttachmentUrl" style="width:240px;"></audio>
+                            if (m.DurationSeconds.HasValue)
+                            {
+                                <div style="font-size:10px; color:var(--text-secondary); margin-top:2px;">@m.DurationSeconds saniyə</div>
+                            }
+                        }
+                        else
+                        {
+                            <div style="color:@color; font-size:14px; white-space:pre-wrap; word-wrap:break-word;">@m.Content</div>
+                        }
+                        <div style="font-size:10px; color:var(--text-secondary); margin-top:4px; text-align:right;">
+                            @m.SentAt.ToLocalTime().ToString("HH:mm")
+                            @if (m.IsRead)
+                            {
+                                <i class="fas fa-check-double" style="color:#16a34a; margin-left:4px;"></i>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

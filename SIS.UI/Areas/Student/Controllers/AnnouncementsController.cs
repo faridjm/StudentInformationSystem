@@ -20,5 +20,14 @@ namespace SIS.UI.Areas.Student.Controllers
             var announcements = await _announcementApi.GetMyAnnouncementsAsync();
             return View(announcements);
         }
+
+        [HttpPost]
+        [IgnoreAntiforgeryToken]
+        public async Task<IActionResult> MarkAsRead(int id)
+        {
+            try { await _announcementApi.MarkAsReadAsync(id); }
+            catch { /* read xətası user axınını pozmasın */ }
+            return Ok();
+        }
     }
 }

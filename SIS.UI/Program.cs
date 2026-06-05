@@ -47,6 +47,7 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 // Global simulasiya vəziyyəti — singleton, bütün istifadəçilərə tətbiq edilir
 builder.Services.AddSingleton<GlobalSimulationState>();
 builder.Services.AddScoped<IClock, GlobalClock>();
+builder.Services.AddScoped<SIS.UI.Services.IPublicWebsiteService, SIS.UI.Services.PublicWebsiteService>();
 
 var app = builder.Build();
 

@@ -6,6 +6,7 @@ namespace SIS.DAL.UnitOfWork
     {
         IStudentRepository Students { get; }
         ITeacherRepository Teachers { get; }
+        IDepartmentRepository Departments { get; }
         ICourseRepository Courses { get; }
         IGroupRepository Groups { get; }
         IClassSessionRepository ClassSessions { get; }
@@ -15,6 +16,7 @@ namespace SIS.DAL.UnitOfWork
         IGradeRepository Grades { get; }
         IAttendanceRecordRepository AttendanceRecords { get; }
         IAnnouncementRepository Announcements { get; }
+        IAnnouncementRecipientRepository AnnouncementRecipients { get; }
         INotificationRepository Notifications { get; }
         IActivityLogRepository ActivityLogs { get; }
         IAcademicYearRepository AcademicYears { get; }
@@ -29,6 +31,7 @@ namespace SIS.DAL.UnitOfWork
         ICourseMaterialRepository CourseMaterials { get; }
         ICurriculumTemplateRepository CurriculumTemplates { get; }
         ICurriculumTemplateItemRepository CurriculumTemplateItems { get; }
+        IArchiveRepository Archive { get; }
 
         Task<int> SaveAsync();
     }

@@ -19,6 +19,7 @@ namespace SIS.API.Hubs
                 throw new HubException("Bu söhbətə giriş icazəniz yoxdur");
 
             await Groups.AddToGroupAsync(Context.ConnectionId, $"conversation-{conversationId}");
+            // Səhifə açıldıqda mövcud unread mesajları read et — diqqət: bu MessagesRead event-ini fan-out edir
             await _chatService.MarkAsReadAsync(conversationId, UserId);
         }
 
@@ -27,25 +28,11 @@ namespace SIS.API.Hubs
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"conversation-{conversationId}");
         }
 
-        public async Task SendMessage(int conversationId, string content)
-        {
-            if (!await _chatService.HasAccessAsync(conversationId, UserId))
-                throw new HubException("Bu söhbətə giriş icazəniz yoxdur");
-
-            var message = await _chatService.SendMessageAsync(UserId, conversationId, content);
-
-            await Clients.Group($"conversation-{conversationId}")
-                .SendAsync("ReceiveMessage", message);
-        }
-
         public async Task MarkAsRead(int conversationId)
         {
             if (!await _chatService.HasAccessAsync(conversationId, UserId))
                 return;
-
             await _chatService.MarkAsReadAsync(conversationId, UserId);
-            await Clients.Group($"conversation-{conversationId}")
-                .SendAsync("MessagesRead", conversationId, UserId);
         }
     }
 }

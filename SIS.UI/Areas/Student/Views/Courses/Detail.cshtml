@@ -17,6 +17,7 @@
     var assignments = ViewBag.Assignments as List<AssignmentDto> ?? new();
     var today = (DateOnly)ViewBag.Today;
     var activeTab = (string)ViewBag.ActiveTab ?? "overview";
+    var transcript = ViewBag.Transcript as SIS.BLL.Services.DTOs.Transcript.TranscriptDto;
 
     // Rəsmi qiymət
     var gradedOfficial = assessmentSubs.Where(s => s.IsGraded && s.MaxScore > 0).ToList();
@@ -61,7 +62,20 @@
         <h2 style="font-size:20px; font-weight:700; margin:0;">@enrollment?.CourseName</h2>
         <div style="font-size:13px; color:var(--text-secondary); margin-top:2px;">
             @enrollment?.GroupName · <i class="fas fa-chalkboard-teacher"></i> @enrollment?.TeacherName
+            @if (transcript != null && !string.IsNullOrEmpty(transcript.AcademicYear))
+            {
+                <text> · <i class="fas fa-calendar-alt"></i> @transcript.AcademicYear</text>
+            }
         </div>
+        @if (transcript != null)
+        {
+            <div style="display:flex; gap:6px; margin-top:8px; flex-wrap:wrap;">
+                <span class="badge badge-primary"><i class="fas fa-graduation-cap"></i> GPA @transcript.GPA.ToString("F2")</span>
+                <span class="badge @(transcript.CertificateEligible ? "badge-success" : "badge-warning")">
+                    <i class="fas fa-certificate"></i> @(transcript.CertificateEligible ? L["Eligible"].Value : L["NotEligible"].Value)
+                </span>
+            </div>
+        }
     </div>
     <a href="/Student/Messages/Start?groupId=@enrollment?.GroupId&teacherId=@enrollment?.TeacherId"
        style="display:inline-flex; align-items:center; gap:8px; padding:10px 18px; border-radius:10px;

@@ -1,0 +1,61 @@
+@{
+    ViewData["Title"] = "Əlaqə";
+}
+
+<header class="pub-detail-hero">
+    <div class="pub-container">
+        <h1>Əlaqə</h1>
+        <p style="opacity:.9; margin-top:8px;">Suallarınız üçün bizimlə əlaqə saxlayın</p>
+    </div>
+</header>
+
+<section class="pub-section">
+    <div class="pub-container pub-grid-2">
+        <div>
+            <div class="pub-panel">
+                <h3><i class="fas fa-paper-plane"></i> Bizə yazın</h3>
+                @if (TempData["PubSuccess"] != null)
+                {
+                    <div style="background:#ecfdf5; border:1px solid #a7f3d0; color:#047857; padding:12px 16px; border-radius:12px; margin-bottom:16px;">
+                        <i class="fas fa-circle-check"></i> @TempData["PubSuccess"]
+                    </div>
+                }
+                <form method="post" action="/Public/Contact">
+                    @Html.AntiForgeryToken()
+                    <div class="pub-field">
+                        <label>Ad Soyad *</label>
+                        <input name="fullName" class="pub-input" required />
+                    </div>
+                    <div class="pub-field">
+                        <label>Email *</label>
+                        <input name="email" type="email" class="pub-input" required />
+                    </div>
+                    <div class="pub-field">
+                        <label>Telefon</label>
+                        <input name="phone" class="pub-input" />
+                    </div>
+                    <div class="pub-field">
+                        <label>Mesaj</label>
+                        <textarea name="message" rows="4" class="pub-input"></textarea>
+                    </div>
+                    <button type="submit" class="pub-btn pub-btn-primary"><i class="fas fa-paper-plane"></i> Göndər</button>
+                </form>
+            </div>
+        </div>
+        <div>
+            <div class="pub-panel">
+                <h3><i class="fas fa-circle-info"></i> Əlaqə məlumatları</h3>
+                <ul class="pub-list">
+                    <li><i class="fas fa-phone"></i> <span>+994 12 000 00 00</span></li>
+                    <li><i class="fas fa-envelope"></i> <span>info@acadex.az</span></li>
+                    <li><i class="fas fa-location-dot"></i> <span>Bakı, Azərbaycan</span></li>
+                </ul>
+            </div>
+            <div class="pub-panel" style="text-align:center;">
+                <h3 style="justify-content:center;"><i class="fas fa-right-to-bracket"></i> Artıq tələbəsən?</h3>
+                <p style="color:var(--pub-muted); font-size:14px; margin-bottom:14px;">Hesabınla daxil ol və panelinə keç.</p>
+                <a href="/Auth/Login" class="pub-btn pub-btn-primary" style="width:100%; justify-content:center;">Sistemə daxil ol</a>
+            </div>
+        </div>
+    </div>
+</section>

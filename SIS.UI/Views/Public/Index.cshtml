@@ -1,0 +1,163 @@
+@using SIS.UI.ViewModels
+@using SIS.UI.Services
+@model PublicHomeViewModel
+@{
+    ViewData["Title"] = "Ana səhifə";
+    string stat(int n) => n > 0 ? n.ToString() : "—";
+}
+
+<!-- HERO -->
+<header class="pub-hero">
+    <div class="pub-container pub-hero-inner">
+        <div>
+            <span class="pub-eyebrow"><i class="fas fa-bolt"></i> Praktiki, layihə əsaslı təhsil</span>
+            <h1>Karyeranı Acadex ilə növbəti səviyyəyə qaldır</h1>
+            <p>Real layihələr, peşəkar müəllimlər və strukturlaşdırılmış kurikulum ilə praktiki təhsil təcrübəsi.</p>
+            <div class="pub-hero-actions">
+                <a href="/Public/Courses" class="pub-btn pub-btn-light"><i class="fas fa-layer-group"></i> Kurslara bax</a>
+                <a href="/Public/About" class="pub-btn pub-btn-primary"><i class="fas fa-building-columns"></i> Akademiya ilə tanış ol</a>
+            </div>
+        </div>
+        <div class="pub-hero-figure">
+            <i class="fas fa-graduation-cap glyph"></i>
+            <div class="float f1"><i class="fas fa-laptop-code"></i> Coding Lab</div>
+            <div class="float f2"><i class="fas fa-chart-line"></i> Real layihələr</div>
+            <div class="float f3"><i class="fas fa-certificate"></i> Sertifikat</div>
+        </div>
+    </div>
+</header>
+
+<!-- STATS -->
+<section class="pub-section">
+    <div class="pub-container">
+        <div class="pub-stats">
+            <div class="pub-stat"><div class="num">@stat(Model.Stats.CourseCount)</div><div class="lbl">Aktiv proqram</div></div>
+            <div class="pub-stat"><div class="num">@stat(Model.Stats.GroupCount)</div><div class="lbl">Aktiv qrup</div></div>
+            <div class="pub-stat"><div class="num">@stat(Model.Stats.TeacherCount)</div><div class="lbl">Müəllim</div></div>
+            <div class="pub-stat"><div class="num">@stat(Model.Stats.DepartmentCount)</div><div class="lbl">Şöbə</div></div>
+        </div>
+    </div>
+</section>
+
+<!-- ABOUT SHORT -->
+<section class="pub-section alt">
+    <div class="pub-container">
+        <div class="pub-section-head">
+            <h2>Acadex haqqında</h2>
+            <p>Acadex — nəzəriyyəni praktikaya çevirən kurs akademiyasıdır. Hər proqram real layihələr, davamlı qiymətləndirmə və mentor dəstəyi üzərində qurulub.</p>
+        </div>
+    </div>
+</section>
+
+<!-- POPULAR COURSES -->
+<section class="pub-section">
+    <div class="pub-container">
+        <div class="pub-section-head"><h2>Populyar kurslar</h2><p>Ən çox açıq qrupu olan proqramlar</p></div>
+        @if (!Model.PopularCourses.Any())
+        {
+            <div class="pub-empty"><i class="fas fa-book"></i><p>Hazırda aktiv kurs yoxdur. Tezliklə yeni proqramlar əlavə olunacaq.</p></div>
+        }
+        else
+        {
+            <div class="pub-grid">
+                @foreach (var c in Model.PopularCourses) { <partial name="_CourseCard" model="c" /> }
+            </div>
+            <div class="pub-mt"><a href="/Public/Courses" class="pub-btn pub-btn-ghost">Bütün kurslara bax <i class="fas fa-arrow-right"></i></a></div>
+        }
+    </div>
+</section>
+
+<!-- WHY ACADEX -->
+<section class="pub-section alt">
+    <div class="pub-container">
+        <div class="pub-section-head"><h2>Niyə Acadex?</h2><p>Öyrənməni ölçülə bilən nəticəyə çeviririk</p></div>
+        <div class="pub-features">
+            <div class="pub-feature"><div class="ico"><i class="fas fa-diagram-project"></i></div><h3>Praktiki layihə əsaslı təhsil</h3><p>Hər modul real layihə tapşırıqları ilə möhkəmlənir.</p></div>
+            <div class="pub-feature"><div class="ico"><i class="fas fa-user-tie"></i></div><h3>Peşəkar mentorlar</h3><p>Sahə təcrübəsi olan praktik müəllim heyəti.</p></div>
+            <div class="pub-feature"><div class="ico"><i class="fas fa-list-check"></i></div><h3>Strukturlaşdırılmış kurikulum</h3><p>Dərs-dərs planlanmış mövzular və qiymətləndirmə planı.</p></div>
+            <div class="pub-feature"><div class="ico"><i class="fas fa-square-poll-vertical"></i></div><h3>Real qiymətləndirmə və GPA</h3><p>Şəffaf qiymətləndirmə, GPA və nəticə izləmə.</p></div>
+            <div class="pub-feature"><div class="ico"><i class="fas fa-folder-open"></i></div><h3>Materiallar və quiz sistemi</h3><p>Dərs materialları, tapşırıqlar və onlayn quizlər.</p></div>
+            <div class="pub-feature"><div class="ico"><i class="fas fa-file-lines"></i></div><h3>Transkript və izləmə</h3><p>Transkript və davamlı irəliləyiş izləməsi.</p></div>
+        </div>
+    </div>
+</section>
+
+<!-- FACILITIES -->
+<section class="pub-section">
+    <div class="pub-container">
+        <div class="pub-section-head"><h2>Akademiya şəraiti</h2><p>Müasir öyrənmə mühiti və otaqlar</p></div>
+        <div class="pub-grid">
+            @foreach (var f in Model.Facilities)
+            {
+                <div class="pub-facility">
+                    <div class="pub-imgph pub-grad-@f.Grad"><i class="fas @f.Icon"></i><span class="tag">@f.Type</span></div>
+                    <div class="body">
+                        <h3>@f.Name</h3>
+                        <div class="meta"><i class="fas fa-users"></i> @f.Capacity nəfər</div>
+                        <p>@f.Description</p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<!-- TEACHERS PREVIEW -->
+<section class="pub-section alt">
+    <div class="pub-container">
+        <div class="pub-section-head"><h2>Müəllimlərimiz</h2><p>Sahə təcrübəsi olan peşəkar heyət</p></div>
+        @if (!Model.Teachers.Any())
+        {
+            <div class="pub-empty"><i class="fas fa-chalkboard-teacher"></i><p>Müəllim məlumatları tezliklə əlavə olunacaq.</p></div>
+        }
+        else
+        {
+            <div class="pub-grid">
+                @foreach (var t in Model.Teachers)
+                {
+                    <div class="pub-card"><div class="pub-card-body" style="text-align:center; align-items:center;">
+                        <div class="pub-teacher-avatar pub-grad-@(PublicVisuals.Grad(t.Id))">@(string.IsNullOrEmpty(t.FullName) ? "?" : t.FullName.Substring(0,1).ToUpper())</div>
+                        <h3>@t.FullName</h3>
+                        <div class="desc" style="flex:none;">@(string.IsNullOrEmpty(t.Title) ? "Müəllim" : t.Title)</div>
+                        <span class="pub-chip" style="margin-top:12px;"><i class="fas fa-layer-group"></i> @t.GroupCount qrup</span>
+                    </div></div>
+                }
+            </div>
+            <div class="pub-mt"><a href="/Public/Teachers" class="pub-btn pub-btn-ghost">Bütün müəllimlər <i class="fas fa-arrow-right"></i></a></div>
+        }
+    </div>
+</section>
+
+<!-- GRADUATES -->
+<section class="pub-section">
+    <div class="pub-container">
+        <div class="pub-section-head"><h2>Uğurlu məzunlar</h2><p>Acadex məzunlarının karyera hekayələri</p></div>
+        <div class="pub-graduates">
+            @foreach (var g in Model.Graduates)
+            {
+                <div class="pub-grad-card">
+                    <div class="pub-grad-avatar pub-grad-@g.Grad">@g.Initials</div>
+                    <h3>@g.FullName</h3>
+                    <div class="role">@g.Position</div>
+                    <div class="course">@g.Course · @g.Year</div>
+                    <div class="story">“@g.Story”</div>
+                </div>
+            }
+        </div>
+        <div class="pub-mt"><a href="/Public/Graduates" class="pub-btn pub-btn-ghost">Bütün hekayələr <i class="fas fa-arrow-right"></i></a></div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="pub-section alt">
+    <div class="pub-container">
+        <div class="pub-cta">
+            <h2>Yeni karyera yoluna bu gün başla</h2>
+            <p>Proqramları araşdır və sənə uyğun qrupa müraciət et.</p>
+            <div class="pub-hero-actions">
+                <a href="/Public/Courses" class="pub-btn pub-btn-light"><i class="fas fa-layer-group"></i> Kurslara bax</a>
+                <a href="/Public/Contact" class="pub-btn pub-btn-ghost" style="background:#fff;"><i class="fas fa-paper-plane"></i> Bizimlə əlaqə saxla</a>
+            </div>
+        </div>
+    </div>
+</section>

@@ -679,4 +679,178 @@
   <data name="ErrorOccurred" xml:space="preserve">
     <value>Произошла ошибка</value>
   </data>
+  <data name="AcademicStructure" xml:space="preserve">
+    <value>Академическая структура</value>
+  </data>
+  <data name="CoursesProgrammes" xml:space="preserve">
+    <value>Курсы / Программы</value>
+  </data>
+  <data name="AcademicYearSeason" xml:space="preserve">
+    <value>Учебный год / Сезон</value>
+  </data>
+  <data name="CurriculumTemplates" xml:space="preserve">
+    <value>Учебные шаблоны</value>
+  </data>
+  <data name="AcademicOperations" xml:space="preserve">
+    <value>Академические операции</value>
+  </data>
+  <data name="AdminAccess" xml:space="preserve">
+    <value>Доступ администратора</value>
+  </data>
+  <data name="Notifications" xml:space="preserve">
+    <value>Уведомления</value>
+  </data>
+  <data name="AcademicInformation" xml:space="preserve">
+    <value>Академическая информация</value>
+  </data>
+  <data name="Programme" xml:space="preserve">
+    <value>Программа</value>
+  </data>
+  <data name="AcademicYear" xml:space="preserve">
+    <value>Учебный год / Сезон</value>
+  </data>
+  <data name="OfficialGrade" xml:space="preserve">
+    <value>Официальная оценка</value>
+  </data>
+  <data name="Enrollment" xml:space="preserve">
+    <value>Зачисление</value>
+  </data>
+  <data name="AuditLogs" xml:space="preserve">
+    <value>Журнал аудита</value>
+  </data>
+  <data name="ActiveCourses" xml:space="preserve">
+    <value>Активные курсы</value>
+  </data>
+  <data name="PendingAssignments" xml:space="preserve">
+    <value>Ожидающие задания</value>
+  </data>
+  <data name="Eligible" xml:space="preserve">
+    <value>Соответствует</value>
+  </data>
+  <data name="NotEligible" xml:space="preserve">
+    <value>Не соответствует</value>
+  </data>
+  <data name="CertificateStatus" xml:space="preserve">
+    <value>Статус сертификата</value>
+  </data>
+  <data name="Missing" xml:space="preserve">
+    <value>Отсутствует</value>
+  </data>
+  <data name="RiskStudent" xml:space="preserve">
+    <value>Группа риска</value>
+  </data>
+  <data name="Dropped" xml:space="preserve">
+    <value>Отчислен</value>
+  </data>
+  <data name="Completed" xml:space="preserve">
+    <value>Завершено</value>
+  </data>
+  <data name="InstitutionWideAnnouncement" xml:space="preserve">
+    <value>Общеинституциональное</value>
+  </data>
+  <data name="GroupAnnouncement" xml:space="preserve">
+    <value>Объявление группы</value>
+  </data>
+  <data name="Credit" xml:space="preserve">
+    <value>Кредит</value>
+  </data>
+  <data name="TotalHours" xml:space="preserve">
+    <value>Всего часов</value>
+  </data>
+  <data name="Level" xml:space="preserve">
+    <value>Уровень</value>
+  </data>
+  <data name="Department" xml:space="preserve">
+    <value>Кафедра</value>
+  </data>
+  <data name="Departments" xml:space="preserve">
+    <value>Кафедры</value>
+  </data>
+  <data name="NewDepartment" xml:space="preserve">
+    <value>Новая Кафедра</value>
+  </data>
+  <data name="EditDepartment" xml:space="preserve">
+    <value>Редактировать Кафедру</value>
+  </data>
+  <data name="ActiveCourseCount" xml:space="preserve">
+    <value>Активные курсы</value>
+  </data>
+  <data name="Activate" xml:space="preserve">
+    <value>Активировать</value>
+  </data>
+  <data name="SelectDepartment" xml:space="preserve">
+    <value>Выберите кафедру</value>
+  </data>
+  <data name="NoDepartment" xml:space="preserve">
+    <value>Нет кафедры</value>
+  </data>
+  <data name="BirthDate" xml:space="preserve">
+    <value>Дата рождения</value>
+  </data>
+  <data name="RegistrationDate" xml:space="preserve">
+    <value>Дата регистрации</value>
+  </data>
+  <data name="AnnouncementTarget" xml:space="preserve">
+    <value>Цель</value>
+  </data>
+  <data name="TargetAll" xml:space="preserve">
+    <value>Всем</value>
+  </data>
+  <data name="TargetStudents" xml:space="preserve">
+    <value>Только студентам</value>
+  </data>
+  <data name="TargetTeachers" xml:space="preserve">
+    <value>Только учителям</value>
+  </data>
+  <data name="TargetGroupStudents" xml:space="preserve">
+    <value>Студентам группы</value>
+  </data>
+  <data name="TargetSelectedUsers" xml:space="preserve">
+    <value>Выбранным пользователям</value>
+  </data>
+  <data name="SendAsEmail" xml:space="preserve">
+    <value>Отправить по email</value>
+  </data>
+  <data name="SendAsEmailHelp" xml:space="preserve">
+    <value>Объявление появится на панели. При активном выборе будет отправлено и по email.</value>
+  </data>
+  <data name="SearchUsers" xml:space="preserve">
+    <value>Поиск пользователей</value>
+  </data>
+  <data name="MinimumTwoChars" xml:space="preserve">
+    <value>Введите минимум 2 символа</value>
+  </data>
+  <data name="Recipients" xml:space="preserve">
+    <value>Получатели</value>
+  </data>
+  <data name="Read" xml:space="preserve">
+    <value>Прочитано</value>
+  </data>
+  <data name="Unread" xml:space="preserve">
+    <value>Не прочитано</value>
+  </data>
+  <data name="Archive" xml:space="preserve">
+    <value>Архив</value>
+  </data>
+  <data name="Archived" xml:space="preserve">
+    <value>Архивирован</value>
+  </data>
+  <data name="ArchiveConversation" xml:space="preserve">
+    <value>Архивировать беседу</value>
+  </data>
+  <data name="RestoreConversation" xml:space="preserve">
+    <value>Восстановить</value>
+  </data>
+  <data name="Chats" xml:space="preserve">
+    <value>Чаты</value>
+  </data>
+  <data name="AllRoles" xml:space="preserve">
+    <value>Все роли</value>
+  </data>
+  <data name="AllStatuses" xml:space="preserve">
+    <value>Все статусы</value>
+  </data>
+  <data name="ArchivePrivacyNote" xml:space="preserve">
+    <value>Архив чатов доступен только SuperAdmin для целей безопасности и административного контроля.</value>
+  </data>
 </root>

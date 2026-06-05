@@ -31,6 +31,7 @@ namespace SIS.UI.Extensions
             Add<IAuthApi>();
             Add<IStudentApi>();
             Add<ITeacherApi>();
+            Add<IDepartmentApi>();
             Add<ICourseApi>();
             Add<IGroupApi>();
             Add<IEnrollmentApi>();
@@ -53,6 +54,8 @@ namespace SIS.UI.Extensions
             Add<ITeacherDashboardApi>();
             Add<ICurriculumTemplateApi>();
             Add<IInstitutionalEmailApi>();
+            Add<IArchiveApi>();
+            Add<IPublicApi>();
 
             return services;
         }

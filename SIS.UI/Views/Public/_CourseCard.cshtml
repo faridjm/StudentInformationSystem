@@ -1,0 +1,24 @@
+@using SIS.UI.Services
+@model SIS.BLL.Services.DTOs.Public.PublicCourseDto
+@{
+    var icon = PublicVisuals.CourseIcon(Model.Name, Model.DepartmentName);
+    var grad = PublicVisuals.Grad(Model.Id);
+}
+<div class="pub-card">
+    <div class="pub-imgph pub-grad-@grad">
+        <i class="fas @icon"></i>
+        @if (!string.IsNullOrEmpty(Model.DepartmentName)) { <span class="tag">@Model.DepartmentName</span> }
+    </div>
+    <div class="pub-card-body">
+        <h3>@Model.Name</h3>
+        <div class="desc">@(string.IsNullOrEmpty(Model.ShortDescription) ? "Bu proqram üçün təsvir tezliklə əlavə olunacaq." : Model.ShortDescription)</div>
+        <div class="pub-card-meta">
+            @if (!string.IsNullOrEmpty(Model.Level)) { <span><i class="fas fa-signal"></i> @Model.Level</span> }
+            @if (Model.TotalSessions > 0) { <span><i class="fas fa-list-ol"></i> @Model.TotalSessions dərs</span> }
+            <span><i class="fas fa-users"></i> @Model.UpcomingGroupCount açıq qrup</span>
+        </div>
+    </div>
+    <div class="pub-card-foot">
+        <a href="/Public/CourseDetail/@Model.Id" class="pub-btn pub-btn-primary" style="width:100%; justify-content:center;">Ətraflı bax <i class="fas fa-arrow-right"></i></a>
+    </div>
+</div>

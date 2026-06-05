@@ -73,6 +73,11 @@ function openAnnouncement(id) {
     const m = document.getElementById('modal-' + id);
     m.style.display = 'flex';
     document.body.style.overflow = 'hidden';
+    // Read olaraq işarələ — backend recipient.IsRead = true et
+    fetch('/Student/Announcements/MarkAsRead/' + id, {
+        method: 'POST',
+        headers: { 'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || '' }
+    }).catch(() => {});
 }
 function closeAnnouncement(id) {
     document.getElementById('modal-' + id).style.display = 'none';
