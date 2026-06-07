@@ -1,0 +1,99 @@
+@using SIS.Entities.Enums
+@model SIS.BLL.Services.DTOs.PublicAdmin.PublicContactMessageDetailDto
+@{
+    ViewData["Title"] = $"Mesaj #{Model.Id}";
+    string StTxt(ContactMessageStatus s) => s switch
+    { ContactMessageStatus.New => "Yeni", ContactMessageStatus.Read => "Oxunub",
+      ContactMessageStatus.Replied => "Cavablandı", ContactMessageStatus.Archived => "Arxiv", _ => s.ToString() };
+}
+
+<style>
+    .cd-grid { display: grid; grid-template-columns: 1.6fr 1fr; gap: 18px; align-items: start; }
+    .cd-card { background: #fff; border: 1px solid var(--pa-border); border-radius: 14px; padding: 22px; margin-bottom: 16px; }
+    .cd-card h3 { font-size: 14px; font-weight: 700; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+    .cd-card h3 i { width: 32px; height: 32px; border-radius: 9px; background: rgba(124,58,237,.12);
+        color: #6D28D9; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; }
+    .cd-info { display: grid; grid-template-columns: 110px 1fr; row-gap: 10px; font-size: 14px; }
+    .cd-info .lbl { color: var(--pa-muted); font-size: 12.5px; }
+    .cd-info .val { color: var(--pa-ink); font-weight: 600; }
+    .cd-msg { padding: 16px; background: var(--pa-bg); border-radius: 10px; font-size: 14.5px;
+        line-height: 1.65; white-space: pre-wrap; color: var(--pa-ink); }
+    .cd-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .cd-ctrl { width: 100%; padding: 10px 12px; border: 1px solid var(--pa-border); border-radius: 10px;
+        font-family: inherit; font-size: 14px; outline: none; }
+    .cd-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+        padding: 9px 14px; border-radius: 10px; border: none; cursor: pointer;
+        font-size: 13px; font-weight: 600; text-decoration: none; }
+    .cd-btn-primary { background: linear-gradient(135deg, var(--pa-primary), var(--pa-primary-2)); color: #fff; width: 100%; }
+    .cd-btn-secondary { background: var(--pa-bg); color: var(--pa-ink); border: 1px solid var(--pa-border); width: 100%; }
+    .cd-btn[disabled] { opacity: .55; cursor: not-allowed; }
+    @@media (max-width: 1000px) { .cd-grid { grid-template-columns: 1fr; } }
+</style>
+
+<a href="/PublicAdmin/ContactMessages" style="font-size:13px; color:var(--pa-muted); text-decoration:none;">
+    <i class="fas fa-arrow-left"></i> Contact Mesajları
+</a>
+
+<div class="cd-grid" style="margin-top:14px;">
+    <div>
+        <div class="cd-card">
+            <h3><i class="fas fa-envelope"></i> @Model.FullName</h3>
+            <div class="cd-info">
+                <div class="lbl">Email</div><div class="val"><a href="mailto:@Model.Email" style="color:var(--pa-primary); text-decoration:none;">@Model.Email</a></div>
+                @if (!string.IsNullOrEmpty(Model.Phone))
+                { <div class="lbl">Telefon</div><div class="val">@Model.Phone</div> }
+                @if (!string.IsNullOrEmpty(Model.Subject))
+                { <div class="lbl">Mövzu</div><div class="val">@Model.Subject</div> }
+                <div class="lbl">Tarix</div><div class="val">@Model.CreatedAt.ToLocalTime().ToString("dd MMMM yyyy, HH:mm")</div>
+                <div class="lbl">Status</div><div class="val">@StTxt(Model.Status)</div>
+            </div>
+        </div>
+
+        <div class="cd-card">
+            <h3><i class="fas fa-message"></i> Mesaj</h3>
+            <div class="cd-msg">@Model.Message</div>
+        </div>
+
+        <div class="cd-card">
+            <h3><i class="fas fa-note-sticky"></i> Admin qeydi</h3>
+            <form method="post" action="/PublicAdmin/ContactMessages/UpdateNote">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" value="@Model.Id" />
+                <textarea name="adminNote" rows="4" maxlength="2000" class="cd-ctrl"
+                          style="min-height:90px; resize:vertical;">@Model.AdminNote</textarea>
+                <button type="submit" class="cd-btn cd-btn-primary" style="width:auto; margin-top:10px;">
+                    <i class="fas fa-save"></i> Qeydi yadda saxla
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div>
+        <div class="cd-card">
+            <h3><i class="fas fa-arrows-rotate"></i> Status</h3>
+            <div class="cd-actions">
+                @foreach (ContactMessageStatus s in Enum.GetValues(typeof(ContactMessageStatus)))
+                {
+                    <form method="post" action="/PublicAdmin/ContactMessages/UpdateStatus">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@Model.Id" />
+                        <input type="hidden" name="status" value="@s" />
+                        <button type="submit"
+                            class="cd-btn @(Model.Status == s ? "cd-btn-primary" : "cd-btn-secondary")"
+                            @(Model.Status == s ? "disabled" : "")>@StTxt(s)</button>
+                    </form>
+                }
+            </div>
+        </div>
+
+        <div class="cd-card">
+            <h3><i class="fas fa-reply"></i> Cavab göndər</h3>
+            <p style="font-size:13px; color:var(--pa-muted); margin-bottom:10px;">
+                Mesaj sahibinə birbaşa cavab yazmaq üçün email kliyentini açın:
+            </p>
+            <a href="mailto:@Model.Email?subject=Re: @(Model.Subject ?? "Acadex müraciətiniz")" class="cd-btn cd-btn-primary">
+                <i class="fas fa-paper-plane"></i> Email göndər
+            </a>
+        </div>
+    </div>
+</div>

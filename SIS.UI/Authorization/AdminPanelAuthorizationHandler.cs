@@ -19,14 +19,20 @@ namespace SIS.UI.Authorization
             if (user?.Identity == null || !user.Identity.IsAuthenticated)
                 return;
 
-            // SuperAdmin (kurs müdürü) həmişə icazəlidir; Moderator mövcud davranışla icazəli
-            if (user.IsInRole("SuperAdmin") || user.IsInRole("Moderator"))
+            // SuperAdmin Academic Admin panelə həmişə icazəlidir.
+            if (user.IsInRole("SuperAdmin"))
             {
                 context.Succeed(requirement);
                 return;
             }
 
-            // Admin yalnız aktiv və vaxtı keçməmiş grant olduqda
+            // Moderator yalnız PublicAdmin panelə icazəlidir — Academic Admin DENY.
+            if (user.IsInRole("Moderator"))
+            {
+                return;
+            }
+
+            // Admin yalnız aktiv və vaxtı keçməmiş grant olduqda Academic Admin panelə girə bilər.
             if (user.IsInRole("Admin"))
             {
                 try
@@ -36,12 +42,12 @@ namespace SIS.UI.Authorization
                 }
                 catch
                 {
-                    // Yoxlama mümkün olmadıqda fail-closed (icazə verilmir)
+                    // Yoxlama mümkün olmadıqda fail-closed (icazə verilmir).
                 }
                 return;
             }
 
-            // Teacher / Student / digərləri: deny
+            // Teacher / Student / digərləri: deny.
         }
     }
 }

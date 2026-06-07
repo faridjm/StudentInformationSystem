@@ -1,0 +1,239 @@
+@using SIS.BLL.Services.DTOs.Common
+@using SIS.BLL.Services.DTOs.Public
+@using SIS.BLL.Services.DTOs.Course
+@using SIS.Entities.Enums
+@model PagedResult<CourseApplicationListDto>
+@{
+    ViewData["Title"] = "Müraciətlər";
+    var stats   = ViewBag.Stats as CourseApplicationStatsDto ?? new CourseApplicationStatsDto();
+    var courses = ViewBag.Courses as IEnumerable<CourseDto> ?? Enumerable.Empty<CourseDto>();
+    var search  = ViewBag.Search as string;
+    var status  = ViewBag.Status as CourseApplicationStatus?;
+    var cid     = ViewBag.CourseId as int?;
+    var fromDt  = ViewBag.FromDate as DateTime?;
+    var toDt    = ViewBag.ToDate as DateTime?;
+
+    string StatusBadgeClass(CourseApplicationStatus s) => s switch
+    {
+        CourseApplicationStatus.New                => "ba-st-new",
+        CourseApplicationStatus.Contacted          => "ba-st-contacted",
+        CourseApplicationStatus.Accepted           => "ba-st-accepted",
+        CourseApplicationStatus.Rejected           => "ba-st-rejected",
+        CourseApplicationStatus.ConvertedToStudent => "ba-st-converted",
+        _ => "ba-st-new"
+    };
+    string StatusText(CourseApplicationStatus s) => s switch
+    {
+        CourseApplicationStatus.New                => "Yeni",
+        CourseApplicationStatus.Contacted          => "Əlaqə saxlandı",
+        CourseApplicationStatus.Accepted           => "Qəbul olundu",
+        CourseApplicationStatus.Rejected           => "Rədd edildi",
+        CourseApplicationStatus.ConvertedToStudent => "Tələbəyə çevrildi",
+        _ => s.ToString()
+    };
+}
+
+<style>
+    .ba-page { display: flex; flex-direction: column; gap: 18px; }
+    .ba-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 14px; flex-wrap: wrap; }
+    .ba-head h1 { font-size: 22px; font-weight: 800; letter-spacing: -.4px; }
+    .ba-head .sub { color: var(--text-secondary); font-size: 13.5px; margin-top: 2px; }
+
+    .ba-kpi { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+    .ba-kpi .c {
+        background: var(--card-bg, #fff); border: 1px solid var(--border);
+        padding: 14px 16px; border-radius: 12px; display: flex; align-items: center; gap: 12px;
+    }
+    .ba-kpi .c .ico {
+        width: 38px; height: 38px; border-radius: 10px; flex: none;
+        display: inline-flex; align-items: center; justify-content: center; font-size: 15px;
+    }
+    .ba-kpi .c .n { font-size: 22px; font-weight: 800; line-height: 1; }
+    .ba-kpi .c .l { font-size: 12px; color: var(--text-secondary); margin-top: 3px; }
+    .ba-kpi .c.total .ico { background: var(--accent-soft); color: var(--accent); }
+    .ba-kpi .c.new .ico { background: rgba(59,130,246,.12); color: #2563EB; }
+    .ba-kpi .c.contacted .ico { background: rgba(245,158,11,.14); color: #B45309; }
+    .ba-kpi .c.accepted .ico { background: rgba(16,185,129,.12); color: #047857; }
+    .ba-kpi .c.converted .ico { background: rgba(124,58,237,.12); color: #6D28D9; }
+
+    .ba-filters {
+        background: var(--card-bg, #fff); border: 1px solid var(--border);
+        border-radius: 12px; padding: 14px; display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1fr 1fr auto; gap: 10px;
+    }
+    .ba-filters .form-control { padding: 9px 12px; }
+
+    .ba-table {
+        background: var(--card-bg, #fff); border: 1px solid var(--border);
+        border-radius: 12px; overflow: hidden;
+    }
+
+    /* Status badges */
+    .ba-status {
+        display: inline-flex; align-items: center; gap: 5px;
+        padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 700;
+        text-transform: uppercase; letter-spacing: .4px; white-space: nowrap;
+    }
+    .ba-st-new       { background: rgba(59,130,246,.12);  color: #2563EB; }
+    .ba-st-contacted { background: rgba(245,158,11,.16); color: #B45309; }
+    .ba-st-accepted  { background: rgba(16,185,129,.12); color: #047857; }
+    .ba-st-rejected  { background: rgba(239,68,68,.12);  color: #DC2626; }
+    .ba-st-converted { background: rgba(124,58,237,.12); color: #6D28D9; }
+
+    .ba-empty { text-align: center; padding: 50px 20px; color: var(--text-secondary); }
+    .ba-empty i { font-size: 36px; opacity: .35; display: block; margin-bottom: 10px; color: var(--accent); }
+
+    .ba-page-nav {
+        display: flex; gap: 6px; justify-content: center; padding: 14px;
+        border-top: 1px solid var(--border);
+    }
+    .ba-page-nav a, .ba-page-nav span {
+        padding: 6px 12px; border-radius: 8px; font-size: 13px; text-decoration: none;
+        border: 1px solid var(--border); color: var(--text-secondary); font-weight: 600;
+    }
+    .ba-page-nav a:hover { border-color: var(--accent); color: var(--accent); }
+    .ba-page-nav .active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+    @@media (max-width: 1100px) {
+        .ba-kpi { grid-template-columns: repeat(3, 1fr); }
+        .ba-filters { grid-template-columns: 1fr 1fr; }
+    }
+    @@media (max-width: 640px) {
+        .ba-kpi { grid-template-columns: 1fr 1fr; }
+        .ba-filters { grid-template-columns: 1fr; }
+    }
+</style>
+
+<div class="ba-page">
+
+    <div class="ba-head">
+        <div>
+            <h1><i class="fas fa-inbox" style="color:var(--accent); margin-right:6px;"></i> Müraciətlər</h1>
+            <div class="sub">Public saytdan gələn kurs müraciətlərini idarə edin</div>
+        </div>
+        <a href="/Public/Courses" target="_blank" class="btn btn-secondary btn-sm">
+            <i class="fas fa-up-right-from-square"></i> Public saytı aç
+        </a>
+    </div>
+
+    @* ===== KPI ===== *@
+    <div class="ba-kpi">
+        <div class="c total">
+            <div class="ico"><i class="fas fa-layer-group"></i></div>
+            <div><div class="n">@stats.TotalCount</div><div class="l">Cəmi</div></div>
+        </div>
+        <div class="c new">
+            <div class="ico"><i class="fas fa-envelope-open-text"></i></div>
+            <div><div class="n">@stats.NewCount</div><div class="l">Yeni</div></div>
+        </div>
+        <div class="c contacted">
+            <div class="ico"><i class="fas fa-phone"></i></div>
+            <div><div class="n">@stats.ContactedCount</div><div class="l">Əlaqə saxlandı</div></div>
+        </div>
+        <div class="c accepted">
+            <div class="ico"><i class="fas fa-circle-check"></i></div>
+            <div><div class="n">@stats.AcceptedCount</div><div class="l">Qəbul olundu</div></div>
+        </div>
+        <div class="c converted">
+            <div class="ico"><i class="fas fa-user-graduate"></i></div>
+            <div><div class="n">@stats.ConvertedCount</div><div class="l">Tələbəyə çevrildi</div></div>
+        </div>
+    </div>
+
+    @* ===== FILTERS ===== *@
+    <form method="get" action="/Admin/PublicApplications" class="ba-filters">
+        <input type="text" name="search" value="@search" class="form-control" placeholder="Ad / email / telefon..." />
+        <select name="status" class="form-control">
+            <option value="">Bütün statuslar</option>
+            @foreach (CourseApplicationStatus s in Enum.GetValues(typeof(CourseApplicationStatus)))
+            {
+                <option value="@s" selected="@(status == s)">@StatusText(s)</option>
+            }
+        </select>
+        <select name="courseId" class="form-control">
+            <option value="">Bütün kurslar</option>
+            @foreach (var c in courses.OrderBy(x => x.Name))
+            {
+                <option value="@c.Id" selected="@(cid == c.Id)">@c.Name</option>
+            }
+        </select>
+        <input type="date" name="fromDate" value="@(fromDt?.ToString("yyyy-MM-dd"))" class="form-control" />
+        <input type="date" name="toDate"   value="@(toDt?.ToString("yyyy-MM-dd"))"   class="form-control" />
+        <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-filter"></i> Filtr</button>
+    </form>
+
+    @* ===== TABLE ===== *@
+    <div class="ba-table">
+        @if (!Model.Items.Any())
+        {
+            <div class="ba-empty">
+                <i class="fas fa-inbox"></i>
+                <p>Heç bir müraciət yoxdur.</p>
+            </div>
+        }
+        else
+        {
+            <table class="table" style="margin:0;">
+                <thead>
+                    <tr>
+                        <th>Ad Soyad</th>
+                        <th>Əlaqə</th>
+                        <th>Kurs</th>
+                        <th>Qrup</th>
+                        <th>Status</th>
+                        <th>Tarix</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var a in Model.Items)
+                    {
+                        <tr>
+                            <td>
+                                <div style="font-weight:600;">@a.FullName</div>
+                                @if (a.ConvertedStudentId.HasValue)
+                                {
+                                    <div style="font-size:11px; color:#6D28D9; font-weight:600; margin-top:2px;">
+                                        <i class="fas fa-user-graduate"></i> Tələbəyə çevrildi
+                                    </div>
+                                }
+                            </td>
+                            <td>
+                                <div style="font-size:13px;">@a.Email</div>
+                                <div style="font-size:12px; color:var(--text-secondary);">@a.Phone</div>
+                            </td>
+                            <td>@(a.CourseName ?? "—")</td>
+                            <td>@(a.GroupName ?? "—")</td>
+                            <td><span class="ba-status @StatusBadgeClass(a.Status)">@StatusText(a.Status)</span></td>
+                            <td style="font-size:12px; color:var(--text-secondary); white-space:nowrap;">
+                                @a.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")
+                            </td>
+                            <td style="text-align:right; white-space:nowrap;">
+                                <a href="/Admin/PublicApplications/Details/@a.Id" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-eye"></i> Aç
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            @if (Model.TotalPages > 1)
+            {
+                <div class="ba-page-nav">
+                    @for (int p = 1; p <= Model.TotalPages; p++)
+                    {
+                        if (p == Model.Page)
+                        {
+                            <span class="active">@p</span>
+                        }
+                        else
+                        {
+                            <a href="?search=@search&status=@status&courseId=@cid&fromDate=@(fromDt?.ToString("yyyy-MM-dd"))&toDate=@(toDt?.ToString("yyyy-MM-dd"))&page=@p">@p</a>
+                        }
+                    }
+                </div>
+            }
+        }
+    </div>
+</div>

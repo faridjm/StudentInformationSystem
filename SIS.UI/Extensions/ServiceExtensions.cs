@@ -50,6 +50,7 @@ namespace SIS.UI.Extensions
             Add<IQuizApi>();
             Add<IAuditLogApi>();
             Add<IAdminAccessApi>();
+            Add<ISystemUsersApi>();
             Add<ICourseMaterialApi>();
             Add<ITeacherDashboardApi>();
             Add<ICurriculumTemplateApi>();
@@ -57,6 +58,9 @@ namespace SIS.UI.Extensions
             Add<IArchiveApi>();
             Add<IOnlineLessonApi>();
             Add<IPublicApi>();
+            Add<ICourseApplicationApi>();
+            Add<IPublicAdminApi>();
+            Add<IPublicContactApi>();
 
             return services;
         }

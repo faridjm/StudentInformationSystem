@@ -25,7 +25,10 @@
     else
     {
         <form method="post" action="/Admin/Archive/Archive/@Model.Id" style="margin:0;"
-              onsubmit="return confirm('Söhbəti arxivləşdirmək istədiyinizə əminsiniz?');">
+              data-confirm="Söhbəti arxivləşdirmək istədiyinizə əminsiniz?"
+              data-confirm-title="Söhbəti arxivləşdir"
+              data-confirm-text="Arxivləşdir"
+              data-confirm-type="warning">
             @Html.AntiForgeryToken()
             <button type="submit" class="btn btn-sm btn-secondary">
                 <i class="fas fa-box-archive"></i> @L["ArchiveConversation"]

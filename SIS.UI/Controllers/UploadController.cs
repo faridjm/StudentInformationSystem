@@ -55,6 +55,49 @@ namespace SIS.UI.Controllers
             });
         }
 
+        // PublicAdmin şəkil upload (yalnız SuperAdmin)
+        private static readonly string[] AllowedImageExtensions =
+            [".jpg", ".jpeg", ".png", ".webp"];
+        private const long MaxImageSize = 5 * 1024 * 1024; // 5 MB
+        private static readonly string[] AllowedFolders =
+            ["courses", "teachers", "facilities", "graduates", "home"];
+
+        [HttpPost]
+        [Authorize(Policy = "PublicAdminOnly")]
+        [ValidateAntiForgeryToken]
+        [RequestSizeLimit(5 * 1024 * 1024)]
+        public async Task<IActionResult> PublicImage(IFormFile file, string folder)
+        {
+            if (file == null || file.Length == 0)
+                return BadRequest(new { error = "Şəkil seçilmədi" });
+            if (file.Length > MaxImageSize)
+                return BadRequest(new { error = "Şəkil 5 MB-dan böyük ola bilməz" });
+
+            var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
+            if (!AllowedImageExtensions.Contains(ext))
+                return BadRequest(new { error = $"İcazəli formatlar: {string.Join(", ", AllowedImageExtensions)}" });
+
+            var safeFolder = (folder ?? "").Trim().ToLowerInvariant();
+            if (!AllowedFolders.Contains(safeFolder))
+                return BadRequest(new { error = "Folder düzgün deyil." });
+
+            var uploadsDir = Path.Combine(_env.WebRootPath, "uploads", "public", safeFolder);
+            Directory.CreateDirectory(uploadsDir);
+
+            var fileName = $"{Guid.NewGuid():N}{ext}";
+            var filePath = Path.Combine(uploadsDir, fileName);
+
+            using var stream = System.IO.File.Create(filePath);
+            await file.CopyToAsync(stream);
+
+            return Ok(new
+            {
+                url = $"/uploads/public/{safeFolder}/{fileName}",
+                name = file.FileName,
+                size = file.Length
+            });
+        }
+
         // Tədris materialları üçün yükləmə (denylist + 25 MB limit)
         [HttpPost]
         [ValidateAntiForgeryToken]

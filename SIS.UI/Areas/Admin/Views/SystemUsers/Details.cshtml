@@ -1,0 +1,92 @@
+@model SIS.BLL.Services.DTOs.SystemUsers.SystemUserDetailDto
+
+@{
+    ViewData["Title"] = $"İstifadəçi: {Model.FullName}";
+
+    string RoleBadge(string r) => r switch
+    {
+        "SuperAdmin" => "background:#581c87; color:#fff;",
+        "Admin"      => "background:#1d4ed8; color:#fff;",
+        "Moderator"  => "background:#0d9488; color:#fff;",
+        "Teacher"    => "background:#4f46e5; color:#fff;",
+        "Student"    => "background:#059669; color:#fff;",
+        _            => "background:#475569; color:#fff;"
+    };
+}
+
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+    <h2 style="font-size:20px; font-weight:700; margin:0;">İstifadəçi məlumatları</h2>
+    <div>
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary"><i class="fas fa-pen"></i> Redaktə</a>
+        <a asp-action="ChangePassword" asp-route-id="@Model.Id" class="btn"><i class="fas fa-key"></i> Şifrə</a>
+        <a asp-action="Index" class="btn"><i class="fas fa-arrow-left"></i> Geri</a>
+    </div>
+</div>
+
+<div class="card" style="padding:24px; max-width:760px;">
+    <table class="table" style="width:100%;">
+        <tr>
+            <th style="width:200px; color:var(--text-secondary); font-weight:600;">Tam Ad</th>
+            <td>@Model.FullName</td>
+        </tr>
+        <tr>
+            <th style="color:var(--text-secondary); font-weight:600;">Email</th>
+            <td>
+                @Model.Email
+                @if (Model.EmailConfirmed)
+                {
+                    <span style="margin-left:8px; padding:2px 8px; border-radius:999px; background:#dcfce7; color:#166534; font-size:11px; font-weight:700;">təsdiqlənmiş</span>
+                }
+            </td>
+        </tr>
+        <tr>
+            <th style="color:var(--text-secondary); font-weight:600;">Telefon</th>
+            <td>@(string.IsNullOrEmpty(Model.PhoneNumber) ? "—" : Model.PhoneNumber)</td>
+        </tr>
+        <tr>
+            <th style="color:var(--text-secondary); font-weight:600;">Rol</th>
+            <td><span style="@RoleBadge(Model.Role); padding:3px 10px; border-radius:999px; font-size:12px; font-weight:700;">@Model.Role</span></td>
+        </tr>
+        <tr>
+            <th style="color:var(--text-secondary); font-weight:600;">Panel Access</th>
+            <td>
+                @Model.PanelAccess
+                @if (Model.Role == "Admin")
+                {
+                    @if (Model.AdminAccessActive == true)
+                    {
+                        <span style="margin-left:6px; padding:2px 8px; border-radius:999px; background:#dcfce7; color:#166534; font-size:11px; font-weight:700;">access aktiv</span>
+                    }
+                    else
+                    {
+                        <span style="margin-left:6px; padding:2px 8px; border-radius:999px; background:#f3f4f6; color:#374151; font-size:11px; font-weight:700;">access yox</span>
+                    }
+                }
+            </td>
+        </tr>
+        <tr>
+            <th style="color:var(--text-secondary); font-weight:600;">Status</th>
+            <td>
+                @if (Model.IsActive)
+                {
+                    <span style="background:#dcfce7; color:#166534; padding:3px 10px; border-radius:999px; font-size:12px; font-weight:700;">Aktiv</span>
+                }
+                else
+                {
+                    <span style="background:#fee2e2; color:#991b1b; padding:3px 10px; border-radius:999px; font-size:12px; font-weight:700;">Deaktiv</span>
+                }
+            </td>
+        </tr>
+        <tr>
+            <th style="color:var(--text-secondary); font-weight:600;">Yaradıldı</th>
+            <td>@Model.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
+        </tr>
+        @if (Model.UpdatedAt.HasValue)
+        {
+            <tr>
+                <th style="color:var(--text-secondary); font-weight:600;">Yenilənmə</th>
+                <td>@Model.UpdatedAt.Value.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
+            </tr>
+        }
+    </table>
+</div>

@@ -67,7 +67,9 @@
                                     <i class="fas fa-edit"></i>
                                 </a>
                                 <form method="post" action="/Admin/AcademicYear/Delete/@year.Id"
-                                      onsubmit="return confirm('?')">
+                                      data-confirm="Bu akademik il silinsin?"
+                                      data-confirm-title="Akademik ili silmək?"
+                                      data-confirm-text="Sil">
                                     @Html.AntiForgeryToken()
                                     <button type="submit" class="btn btn-sm btn-danger">
                                         <i class="fas fa-trash"></i>

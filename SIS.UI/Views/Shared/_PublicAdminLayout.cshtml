@@ -1,0 +1,204 @@
+@{
+    string ctrl = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    string act(string c) => string.Equals(ctrl, c, StringComparison.OrdinalIgnoreCase) ? "active" : "";
+}
+<!DOCTYPE html>
+<html lang="@System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    @inject IHtmlLocalizer<SIS.UI.SharedResource> L
+    <title>@ViewData["Title"] — Acadex 360 PublicAdmin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="/css/acadex-theme.css" asp-append-version="true" />
+    <style>
+        :root {
+            --pa-primary: #7C3AED;
+            --pa-primary-2: #4F46E5;
+            --pa-accent: #10B981;
+            --pa-bg: #F8FAFC;
+            --pa-surface: #FFFFFF;
+            --pa-ink: #0F172A;
+            --pa-muted: #64748B;
+            --pa-border: #E2E8F0;
+            --pa-sidebar: #0F172A;
+            --pa-sidebar-2: #1E293B;
+        }
+        body.pa-body {
+            font-family: 'Inter','Segoe UI',system-ui,sans-serif;
+            background: var(--pa-bg); color: var(--pa-ink); margin: 0;
+        }
+        /* ===== SIDEBAR ===== */
+        .pa-sidebar {
+            position: fixed; top: 0; left: 0; bottom: 0; width: 260px;
+            background: linear-gradient(180deg, var(--pa-sidebar), var(--pa-sidebar-2));
+            color: #CBD5E1; padding: 22px 16px; overflow-y: auto;
+            box-shadow: 4px 0 24px rgba(15,23,42,.18);
+        }
+        .pa-logo {
+            display: flex; align-items: center; gap: 12px; padding: 0 6px 18px;
+            border-bottom: 1px solid rgba(255,255,255,.08); margin-bottom: 16px;
+        }
+        .pa-logo .mark {
+            width: 38px; height: 38px; border-radius: 11px;
+            background: linear-gradient(135deg, var(--pa-primary), var(--pa-primary-2));
+            display: inline-flex; align-items: center; justify-content: center;
+            color: #fff; font-size: 16px;
+            box-shadow: 0 8px 18px rgba(124,58,237,.45);
+        }
+        .pa-logo .txt { color: #fff; font-weight: 800; font-size: 18px; letter-spacing: -.3px; }
+        .pa-logo .sub { color: #94A3B8; font-size: 11px; text-transform: uppercase; letter-spacing: 1.1px; margin-top: 2px; }
+        .pa-sec { color: #64748B; font-size: 10.5px; text-transform: uppercase;
+            letter-spacing: 1.2px; margin: 18px 8px 8px; font-weight: 700; }
+        .pa-item {
+            display: flex; align-items: center; gap: 12px;
+            padding: 10px 12px; border-radius: 10px;
+            color: #CBD5E1; text-decoration: none; font-size: 14px; font-weight: 500;
+            margin-bottom: 2px; transition: background .15s, color .15s;
+        }
+        .pa-item i { width: 18px; text-align: center; font-size: 14px; color: #94A3B8; }
+        .pa-item:hover { background: rgba(255,255,255,.06); color: #fff; }
+        .pa-item:hover i { color: var(--pa-accent); }
+        .pa-item.active {
+            background: linear-gradient(135deg, rgba(124,58,237,.25), rgba(79,70,229,.18));
+            color: #fff; box-shadow: inset 3px 0 0 var(--pa-accent);
+        }
+        .pa-item.active i { color: var(--pa-accent); }
+        .pa-badge {
+            margin-left: auto; padding: 2px 8px; border-radius: 999px;
+            background: var(--pa-accent); color: #fff; font-size: 11px; font-weight: 700;
+        }
+        /* ===== MAIN ===== */
+        .pa-main { margin-left: 260px; min-height: 100vh; display: flex; flex-direction: column; }
+        .pa-top {
+            background: #fff; border-bottom: 1px solid var(--pa-border);
+            padding: 14px 28px; display: flex; align-items: center; justify-content: space-between; gap: 16px;
+            position: sticky; top: 0; z-index: 10;
+        }
+        .pa-top .ttl { font-size: 16px; font-weight: 700; color: var(--pa-ink); }
+        .pa-top .right { display: flex; align-items: center; gap: 12px; }
+        .pa-back-admin {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 7px 13px; border-radius: 10px; background: var(--pa-bg);
+            color: var(--pa-muted); text-decoration: none; font-size: 13px; font-weight: 600;
+            border: 1px solid var(--pa-border);
+        }
+        .pa-back-admin:hover { color: var(--pa-primary); border-color: var(--pa-primary); }
+        .pa-user {
+            display: inline-flex; align-items: center; gap: 10px;
+            padding: 6px 12px 6px 6px; border-radius: 999px; background: var(--pa-bg);
+            border: 1px solid var(--pa-border);
+        }
+        .pa-user .av {
+            width: 30px; height: 30px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--pa-primary), var(--pa-primary-2));
+            color: #fff; display: flex; align-items: center; justify-content: center;
+            font-size: 13px; font-weight: 700;
+        }
+        .pa-user .nm { font-size: 13.5px; font-weight: 600; color: var(--pa-ink); }
+        .pa-logout {
+            background: none; border: none; padding: 6px 10px; cursor: pointer;
+            color: var(--pa-muted); font-size: 13px; border-radius: 8px;
+        }
+        .pa-logout:hover { background: #FEE2E2; color: #B91C1C; }
+        .pa-content { padding: 28px; flex: 1; max-width: 1400px; width: 100%; margin: 0 auto; }
+        .pa-alert {
+            border-radius: 12px; padding: 12px 16px; margin-bottom: 16px;
+            font-size: 14px; display: flex; align-items: center; gap: 10px;
+        }
+        .pa-alert.success { background: #ECFDF5; border: 1px solid #A7F3D0; color: #047857; }
+        .pa-alert.error   { background: #FEF2F2; border: 1px solid #FECACA; color: #B91C1C; }
+
+        @@media (max-width: 1024px) {
+            .pa-sidebar { transform: translateX(-100%); transition: transform .2s; z-index: 100; }
+            .pa-sidebar.open { transform: translateX(0); }
+            .pa-main { margin-left: 0; }
+            .pa-mobile-toggle { display: inline-flex !important; }
+        }
+        .pa-mobile-toggle {
+            display: none; align-items: center; justify-content: center;
+            background: none; border: 1px solid var(--pa-border);
+            border-radius: 10px; padding: 8px 12px; color: var(--pa-ink); cursor: pointer;
+        }
+    </style>
+</head>
+<body class="pa-body">
+
+    <nav class="pa-sidebar" id="paSidebar">
+        <div class="pa-logo">
+            <span class="mark"><i class="fas fa-globe"></i></span>
+            <div>
+                <div class="txt">Acadex <span style="font-size:11px; font-weight:700; padding:2px 6px; border-radius:5px; background:rgba(255,255,255,0.15); margin-left:2px; vertical-align:middle;">360</span></div>
+                <div class="sub">Public Admin</div>
+            </div>
+        </div>
+
+        <div class="pa-sec">Main</div>
+        <a href="/PublicAdmin/Dashboard"        class="pa-item @act("Dashboard")"><i class="fas fa-chart-pie"></i> Dashboard</a>
+
+        <div class="pa-sec">Website Management</div>
+        <a href="/PublicAdmin/Applications"     class="pa-item @act("Applications")"><i class="fas fa-inbox"></i> Müraciətlər</a>
+        <a href="/PublicAdmin/PublicCourses"    class="pa-item @act("PublicCourses")"><i class="fas fa-book-open"></i> Public Kurslar</a>
+        <a href="/PublicAdmin/PublicTeachers"   class="pa-item @act("PublicTeachers")"><i class="fas fa-chalkboard-teacher"></i> Public Müəllimlər</a>
+        <a href="/PublicAdmin/Facilities"       class="pa-item @act("Facilities")"><i class="fas fa-school"></i> Facilities</a>
+        <a href="/PublicAdmin/Graduates"        class="pa-item @act("Graduates")"><i class="fas fa-user-graduate"></i> Məzun Hekayələri</a>
+        <a href="/PublicAdmin/Faq"              class="pa-item @act("Faq")"><i class="fas fa-circle-question"></i> FAQ</a>
+        <a href="/PublicAdmin/ContactMessages"  class="pa-item @act("ContactMessages")"><i class="fas fa-envelope"></i> Contact Mesajları</a>
+
+        <div class="pa-sec">Tools</div>
+        <a href="/Public" target="_blank"       class="pa-item"><i class="fas fa-up-right-from-square"></i> Public saytı aç</a>
+        @if (User.IsInRole("SuperAdmin"))
+        {
+            <a href="/Admin/Dashboard"          class="pa-item"><i class="fas fa-arrow-left"></i> Academic Admin-ə qayıt</a>
+        }
+    </nav>
+
+    <main class="pa-main">
+        <header class="pa-top">
+            <div style="display:flex; align-items:center; gap:12px;">
+                <button class="pa-mobile-toggle" type="button"
+                        onclick="document.getElementById('paSidebar').classList.toggle('open')">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <span class="ttl">@(ViewData["Title"] ?? "PublicAdmin")</span>
+            </div>
+            <div class="right">
+                @if (User.IsInRole("SuperAdmin"))
+                {
+                    <a href="/Admin/Dashboard" class="pa-back-admin">
+                        <i class="fas fa-arrow-right"></i> Academic Admin
+                    </a>
+                }
+                <div class="pa-user">
+                    <div class="av">@(User.Identity?.Name?.FirstOrDefault().ToString().ToUpper() ?? "S")</div>
+                    <div class="nm">@User.Identity?.Name</div>
+                </div>
+                <form asp-area="" asp-controller="Auth" asp-action="Logout" method="post" style="display:inline;">
+                    <button type="submit" class="pa-logout" title="Çıxış">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </form>
+            </div>
+        </header>
+
+        <div class="pa-content">
+            @if (TempData["Success"] != null)
+            {
+                <div class="pa-alert success"><i class="fas fa-circle-check"></i> @TempData["Success"]</div>
+            }
+            @if (TempData["Error"] != null)
+            {
+                <div class="pa-alert error"><i class="fas fa-circle-exclamation"></i> @TempData["Error"]</div>
+            }
+            @RenderBody()
+        </div>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+    <script src="/js/acadex-confirm.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

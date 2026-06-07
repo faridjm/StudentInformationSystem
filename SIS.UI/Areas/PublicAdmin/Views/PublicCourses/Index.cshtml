@@ -1,0 +1,92 @@
+@model List<SIS.BLL.Services.DTOs.PublicAdmin.PublicCourseProfileRowDto>
+@{ ViewData["Title"] = "Public Kurslar"; }
+
+<style>
+    .pc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+    .pc-card { background: #fff; border: 1px solid var(--pa-border); border-radius: 14px;
+        overflow: hidden; display: flex; flex-direction: column; }
+    .pc-cover { height: 130px; display: flex; align-items: center; justify-content: center;
+        background: linear-gradient(135deg, var(--pa-primary), var(--pa-primary-2)); color: #fff; font-size: 28px;
+        position: relative; }
+    .pc-cover.has-img { background-size: cover; background-position: center; }
+    .pc-body { padding: 16px; flex: 1; display: flex; flex-direction: column; }
+    .pc-title { font-size: 15px; font-weight: 700; }
+    .pc-meta { font-size: 12px; color: var(--pa-muted); margin-top: 4px; }
+    .pc-state { margin-top: 12px; display: flex; gap: 6px; flex-wrap: wrap; }
+    .pc-chip { padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 700;
+        text-transform: uppercase; letter-spacing: .4px; }
+    .pc-on  { background: rgba(16,185,129,.12); color: #047857; }
+    .pc-off { background: #F1F5F9; color: #475569; }
+    .pc-feat { background: rgba(245,158,11,.14); color: #B45309; }
+    .pc-foot { padding: 12px 16px; border-top: 1px solid var(--pa-border); display: flex; gap: 8px; }
+    .pc-btn { flex: 1; padding: 8px; border-radius: 8px; border: 1px solid var(--pa-border); background: #fff;
+        cursor: pointer; font-size: 12.5px; font-weight: 600; color: var(--pa-ink); text-decoration: none;
+        display: flex; align-items: center; justify-content: center; gap: 5px; }
+    .pc-btn:hover { border-color: var(--pa-primary); color: var(--pa-primary); }
+    .pc-btn-primary { background: linear-gradient(135deg, var(--pa-primary), var(--pa-primary-2));
+        color: #fff; border-color: transparent; }
+    .pc-btn-primary:hover { color: #fff; }
+</style>
+
+<div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
+    <div>
+        <h1 style="font-size:20px; font-weight:800;"><i class="fas fa-book-open" style="color:var(--pa-primary);"></i> Public Kurslar</h1>
+        <p style="font-size:13px; color:var(--pa-muted); margin-top:4px;">
+            Akademik kurslarınız üçün public marketing profili yaradın və public saytda göstərin.
+        </p>
+    </div>
+    <a href="/Public/Courses" target="_blank" class="pc-btn" style="max-width:180px;">
+        <i class="fas fa-up-right-from-square"></i> Public-də gör
+    </a>
+</div>
+
+@if (!Model.Any())
+{
+    <div style="background:#fff; border:1px dashed var(--pa-border); border-radius:14px; padding:50px 20px; text-align:center; color:var(--pa-muted);">
+        <i class="fas fa-book" style="font-size:32px; opacity:.35; color:var(--pa-primary);"></i>
+        <p style="margin-top:10px;">Akademik panel-də hələ kurs yaradılmayıb.</p>
+    </div>
+}
+else
+{
+    <div class="pc-grid">
+        @foreach (var c in Model)
+        {
+            <div class="pc-card">
+                <div class="pc-cover @(string.IsNullOrEmpty(c.CoverImageUrl) ? "" : "has-img")"
+                     style="@(string.IsNullOrEmpty(c.CoverImageUrl) ? "" : $"background-image:url('{c.CoverImageUrl}')")">
+                    @if (string.IsNullOrEmpty(c.CoverImageUrl)) { <i class="fas fa-book-open"></i> }
+                </div>
+                <div class="pc-body">
+                    <div class="pc-title">@(string.IsNullOrEmpty(c.PublicTitle) ? c.CourseName : c.PublicTitle)</div>
+                    <div class="pc-meta">
+                        @c.CourseName
+                        @if (!string.IsNullOrEmpty(c.DepartmentName)) { <span> · @c.DepartmentName</span> }
+                    </div>
+                    <div class="pc-state">
+                        @if (c.Id == 0) { <span class="pc-chip pc-off">Profil yoxdur</span> }
+                        else if (c.IsVisible) { <span class="pc-chip pc-on"><i class="fas fa-eye"></i> Public-də görünür</span> }
+                        else { <span class="pc-chip pc-off"><i class="fas fa-eye-slash"></i> Gizli</span> }
+                        @if (c.IsFeatured) { <span class="pc-chip pc-feat"><i class="fas fa-star"></i> Featured</span> }
+                    </div>
+                </div>
+                <div class="pc-foot">
+                    <a href="/PublicAdmin/PublicCourses/Edit?courseId=@c.CourseId" class="pc-btn pc-btn-primary">
+                        <i class="fas fa-pen"></i> Düzəliş
+                    </a>
+                    @if (c.Id > 0)
+                    {
+                        <form method="post" action="/PublicAdmin/PublicCourses/ToggleVisibility" style="flex:1;">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="courseId" value="@c.CourseId" />
+                            <button type="submit" class="pc-btn" style="width:100%;">
+                                <i class="fas @(c.IsVisible ? "fa-eye-slash" : "fa-eye")"></i>
+                                @(c.IsVisible ? "Gizlət" : "Göstər")
+                            </button>
+                        </form>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+}

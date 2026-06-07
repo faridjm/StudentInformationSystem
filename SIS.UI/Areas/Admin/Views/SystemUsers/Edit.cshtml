@@ -1,0 +1,139 @@
+@model SIS.BLL.Services.DTOs.SystemUsers.UpdateSystemUserDto
+
+@{
+    ViewData["Title"] = "İstifadəçini Redaktə Et";
+    string userId = ViewBag.UserId as string ?? "";
+    string panelAccess = ViewBag.PanelAccess as string ?? "—";
+    bool? aaActive = ViewBag.AdminAccessActive as bool?;
+    bool isSelf = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value == userId;
+}
+
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+    <h2 style="font-size:20px; font-weight:700; margin:0;">İstifadəçini Redaktə Et</h2>
+    <div>
+        <a asp-action="ChangePassword" asp-route-id="@userId" class="btn"><i class="fas fa-key"></i> Şifrəni dəyiş</a>
+        <a asp-action="Index" class="btn"><i class="fas fa-arrow-left"></i> Geri</a>
+    </div>
+</div>
+
+<div class="card" style="padding:24px; max-width:760px;">
+    <form asp-action="Edit" asp-route-id="@userId" method="post">
+        @Html.AntiForgeryToken()
+
+        <div asp-validation-summary="All" class="text-danger" style="margin-bottom:14px;"></div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+            <div>
+                <label class="form-label">Tam Ad *</label>
+                <input asp-for="FullName" class="form-control" required />
+            </div>
+            <div>
+                <label class="form-label">Email *</label>
+                <input asp-for="Email" type="email" class="form-control" required />
+            </div>
+
+            <div>
+                <label class="form-label">Telefon</label>
+                <input asp-for="PhoneNumber" class="form-control" />
+            </div>
+            <div>
+                <label class="form-label">Rol *</label>
+                @if (isSelf)
+                {
+                    <select asp-for="Role" id="roleSelect" class="form-control" required disabled>
+                        <option value="Admin">Admin</option>
+                        <option value="Moderator">Moderator</option>
+                        <option value="Teacher">Teacher</option>
+                        <option value="Student">Student</option>
+                        <option value="SuperAdmin">SuperAdmin</option>
+                    </select>
+                    <input type="hidden" asp-for="Role" />
+                    <small style="color:var(--text-secondary); font-size:11px;">SuperAdmin öz rolunu dəyişə bilməz.</small>
+                }
+                else
+                {
+                    <select asp-for="Role" id="roleSelect" class="form-control" required>
+                        <option value="Admin">Admin</option>
+                        <option value="Moderator">Moderator</option>
+                        <option value="Teacher">Teacher</option>
+                        <option value="Student">Student</option>
+                        <option value="SuperAdmin">SuperAdmin</option>
+                    </select>
+                }
+            </div>
+        </div>
+
+        <div id="panelHelper"
+             style="margin-top:14px; padding:12px 14px; border-radius:10px; background:rgba(99,102,241,0.08); border:1px solid rgba(99,102,241,0.2); font-size:13px; color:var(--text-secondary);">
+            <strong>Panel Access: </strong><span id="panelAccessText">@panelAccess</span>
+            @if (Model.Role == "Admin")
+            {
+                <div style="margin-top:6px;">
+                    @if (aaActive == true)
+                    {
+                        <span style="color:#166534; font-weight:600;">Admin Access aktiv — istifadəçi /Admin panelinə daxil ola bilər.</span>
+                    }
+                    else
+                    {
+                        <span style="color:#92400e; font-weight:600;">Admin Access aktiv deyil — istifadəçi yalnız siz aktivləşdirəndə /Admin panelinə daxil ola biləcək.</span>
+                        <a href="/Admin/AdminAccess" style="margin-left:6px; color:var(--accent);">Admin Access bölməsinə keç →</a>
+                    }
+                </div>
+            }
+            <div id="panelNote" style="margin-top:6px;"></div>
+        </div>
+
+        <div style="margin-top:14px; display:flex; gap:24px; flex-wrap:wrap; align-items:center;">
+            @if (isSelf)
+            {
+                <label style="display:flex; gap:8px; align-items:center;">
+                    <input asp-for="IsActive" type="checkbox" disabled />
+                    Aktiv
+                </label>
+                <input type="hidden" asp-for="IsActive" />
+                <small style="color:var(--text-secondary); font-size:11px;">SuperAdmin öz hesabını deaktiv edə bilməz.</small>
+            }
+            else
+            {
+                <label style="display:flex; gap:8px; align-items:center;">
+                    <input asp-for="IsActive" type="checkbox" />
+                    Aktiv
+                </label>
+            }
+            <label style="display:flex; gap:8px; align-items:center;">
+                <input asp-for="EmailConfirmed" type="checkbox" /> Email təsdiqlənmiş
+            </label>
+        </div>
+
+        <div style="display:flex; gap:10px; margin-top:24px;">
+            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Yadda saxla</button>
+            <a asp-action="Index" class="btn">İmtina</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        (function () {
+            const roleSel = document.getElementById('roleSelect');
+            const txt     = document.getElementById('panelAccessText');
+            const note    = document.getElementById('panelNote');
+
+            const map = {
+                'SuperAdmin': { p: 'Academic Admin + PublicAdmin + AuditLogs', n: '⚠️ Yüksək səlahiyyətli rol.' },
+                'Admin':      { p: 'Academic Admin Panel', n: 'Admin yalnız aktiv admin access ilə akademik panelə daxil ola bilir.' },
+                'Moderator':  { p: 'PublicAdmin Panel', n: 'Moderator yalnız public website idarəetmə panelinə daxil olur.' },
+                'Teacher':    { p: 'Teacher Panel', n: '' },
+                'Student':    { p: 'Student Panel', n: '' }
+            };
+
+            function refresh() {
+                const v = roleSel.value;
+                if (!v || !map[v]) return;
+                txt.textContent = map[v].p;
+                note.textContent = map[v].n;
+            }
+            roleSel.addEventListener('change', refresh);
+        })();
+    </script>
+}

@@ -1,0 +1,126 @@
+@model SIS.BLL.Services.DTOs.SystemUsers.CreateSystemUserDto
+
+@{
+    ViewData["Title"] = "Yeni Sistem İstifadəçisi";
+}
+
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+    <h2 style="font-size:20px; font-weight:700; margin:0;">Yeni Sistem İstifadəçisi</h2>
+    <a asp-action="Index" class="btn"><i class="fas fa-arrow-left"></i> Geri</a>
+</div>
+
+<div class="card" style="padding:24px; max-width:760px;">
+    <form asp-action="Create" method="post">
+        @Html.AntiForgeryToken()
+
+        <div asp-validation-summary="All" class="text-danger" style="margin-bottom:14px;"></div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+            <div>
+                <label class="form-label">Tam Ad *</label>
+                <input asp-for="FullName" class="form-control" required />
+            </div>
+            <div>
+                <label class="form-label">Email *</label>
+                <input asp-for="Email" type="email" class="form-control" required />
+            </div>
+
+            <div>
+                <label class="form-label">Telefon</label>
+                <input asp-for="PhoneNumber" class="form-control" />
+            </div>
+            <div>
+                <label class="form-label">Rol *</label>
+                <select asp-for="Role" id="roleSelect" class="form-control" required>
+                    <option value="">Seçin...</option>
+                    <option value="Admin">Admin</option>
+                    <option value="Moderator">Moderator</option>
+                    <option value="Teacher">Teacher</option>
+                    <option value="Student">Student</option>
+                    <option value="SuperAdmin">SuperAdmin</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="form-label">Şifrə *</label>
+                <input asp-for="Password" type="password" class="form-control" required />
+            </div>
+            <div>
+                <label class="form-label">Şifrə təkrar *</label>
+                <input asp-for="ConfirmPassword" type="password" class="form-control" required />
+            </div>
+        </div>
+
+        <div id="panelHelper"
+             style="margin-top:14px; padding:12px 14px; border-radius:10px; background:rgba(99,102,241,0.08); border:1px solid rgba(99,102,241,0.2); font-size:13px; color:var(--text-secondary); display:none;">
+            <strong>Panel Access: </strong><span id="panelAccessText">—</span>
+            <div id="panelNote" style="margin-top:6px;"></div>
+        </div>
+
+        <div style="margin-top:14px; display:flex; gap:24px; flex-wrap:wrap; align-items:center;">
+            <label style="display:flex; gap:8px; align-items:center;">
+                <input asp-for="IsActive" type="checkbox" /> Aktiv
+            </label>
+            <label style="display:flex; gap:8px; align-items:center;">
+                <input asp-for="SendWelcomeEmail" type="checkbox" /> Welcome email göndər
+            </label>
+        </div>
+
+        <div style="display:flex; gap:10px; margin-top:24px;">
+            <button type="submit" class="btn btn-primary" id="submitBtn"><i class="fas fa-save"></i> Yarat</button>
+            <a asp-action="Index" class="btn">İmtina</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        (function () {
+            const roleSel = document.getElementById('roleSelect');
+            const helper  = document.getElementById('panelHelper');
+            const txt     = document.getElementById('panelAccessText');
+            const note    = document.getElementById('panelNote');
+            const submit  = document.getElementById('submitBtn');
+
+            const map = {
+                'SuperAdmin': { p: 'Academic Admin + PublicAdmin + AuditLogs', n: '⚠️ Yüksək səlahiyyətli rol — diqqətlə yaradın.' },
+                'Admin':      { p: 'Academic Admin Panel', n: 'Admin yalnız SuperAdmin tərəfindən aktiv admin access veriləndə akademik panelə daxil ola bilər.' },
+                'Moderator':  { p: 'PublicAdmin Panel', n: 'Moderator yalnız public website idarəetmə panelinə daxil ola bilər.' },
+                'Teacher':    { p: 'Teacher Panel', n: '' },
+                'Student':    { p: 'Student Panel', n: '' }
+            };
+
+            function refresh() {
+                const v = roleSel.value;
+                if (!v || !map[v]) { helper.style.display = 'none'; return; }
+                helper.style.display = 'block';
+                txt.textContent = map[v].p;
+                note.textContent = map[v].n;
+            }
+
+            roleSel.addEventListener('change', refresh);
+            refresh();
+
+            // SuperAdmin yaratmaq üçün əlavə təsdiq
+            document.querySelector('form').addEventListener('submit', function (e) {
+                if (roleSel.value !== 'SuperAdmin') return;
+                // İkinci submit (modal-dan sonra) — keç
+                if (this.dataset.acxConfirmedSuper === '1') { this.dataset.acxConfirmedSuper = ''; return; }
+                e.preventDefault();
+                var form = this;
+                window.acadexConfirm({
+                    title: 'Yeni SuperAdmin yaradılır',
+                    message: 'Yeni SuperAdmin yaratmaq yüksək səlahiyyət verir. Davam etmək istəyirsiniz?',
+                    confirmText: 'Bəli, yarat',
+                    cancelText: 'Ləğv et',
+                    type: 'warning'
+                }).then(function (ok) {
+                    if (ok) {
+                        form.dataset.acxConfirmedSuper = '1';
+                        form.requestSubmit ? form.requestSubmit() : form.submit();
+                    }
+                });
+            });
+        })();
+    </script>
+}

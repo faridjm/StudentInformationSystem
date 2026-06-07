@@ -39,6 +39,7 @@ namespace SIS.API.Extensions
             services.AddScoped<IQuizService, QuizService>();
             services.AddScoped<IAuditLogService, AuditLogService>();
             services.AddScoped<IAdminAccessService, AdminAccessService>();
+            services.AddScoped<ISystemUsersService, SystemUsersService>();
             services.AddScoped<ICourseMaterialService, CourseMaterialService>();
             services.AddScoped<ITeacherDashboardService, TeacherDashboardService>();
             services.AddScoped<ICurriculumTemplateService, CurriculumTemplateService>();
@@ -52,6 +53,8 @@ namespace SIS.API.Extensions
             services.AddScoped<IInstitutionalEmailService, InstitutionalEmailService>();
             services.AddScoped<IArchiveService, ArchiveService>();
             services.AddScoped<IOnlineLessonService, OnlineLessonService>();
+            services.AddScoped<ICourseApplicationService, CourseApplicationService>();
+            services.AddScoped<IPublicAdminService, PublicAdminService>();
 
             services.AddFluentValidationAutoValidation();
             services.AddValidatorsFromAssembly(typeof(AssessmentService).Assembly);

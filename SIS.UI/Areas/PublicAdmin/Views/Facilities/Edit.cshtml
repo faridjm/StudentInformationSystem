@@ -1,0 +1,108 @@
+@model SIS.BLL.Services.DTOs.PublicAdmin.PublicFacilityDto
+@{ ViewData["Title"] = Model.Id == 0 ? "Yeni Facility" : "Facility düzəlişi"; }
+
+<style>
+    .fe-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 18px; align-items: start; }
+    .fe-card { background: #fff; border: 1px solid var(--pa-border); border-radius: 14px; padding: 22px; margin-bottom: 16px; }
+    .fe-fld { margin-bottom: 14px; }
+    .fe-fld label { display: block; font-size: 12.5px; color: var(--pa-muted); font-weight: 600; margin-bottom: 6px; }
+    .fe-ctrl { width: 100%; padding: 10px 12px; border: 1px solid var(--pa-border); border-radius: 10px;
+        font-family: inherit; font-size: 14px; outline: none; }
+    .fe-ctrl:focus { border-color: var(--pa-primary); }
+    textarea.fe-ctrl { min-height: 100px; resize: vertical; line-height: 1.55; }
+    .fe-toggle { display: flex; align-items: center; gap: 10px; padding: 12px; background: var(--pa-bg);
+        border-radius: 10px; cursor: pointer; }
+    .fe-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+        padding: 10px 16px; border-radius: 10px; border: none; cursor: pointer; font-size: 14px; font-weight: 600;
+        text-decoration: none; }
+    .fe-btn-primary { background: linear-gradient(135deg, var(--pa-primary), var(--pa-primary-2)); color: #fff; }
+    .fe-btn-ghost { background: #fff; color: var(--pa-ink); border: 1px solid var(--pa-border); }
+    .fe-img { width: 100%; height: 160px; border-radius: 10px; border: 1px solid var(--pa-border);
+        background: var(--pa-bg); display: flex; align-items: center; justify-content: center;
+        color: var(--pa-muted); background-size: cover; background-position: center; }
+    @@media (max-width: 1000px) { .fe-grid { grid-template-columns: 1fr; } }
+</style>
+
+<a href="/PublicAdmin/Facilities" style="font-size:13px; color:var(--pa-muted); text-decoration:none;">
+    <i class="fas fa-arrow-left"></i> Facilities
+</a>
+
+<form method="post" action="/PublicAdmin/Facilities/Save">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="Id" value="@Model.Id" />
+
+    <div class="fe-grid" style="margin-top:14px;">
+        <div>
+            <div class="fe-card">
+                <div class="fe-fld">
+                    <label>Başlıq *</label>
+                    <input name="Title" class="fe-ctrl" maxlength="200" required value="@Model.Title" />
+                </div>
+                <div class="fe-fld">
+                    <label>Növ</label>
+                    <input name="Type" class="fe-ctrl" maxlength="80"
+                           placeholder="Classroom, Lab, Project Room..." value="@Model.Type" />
+                </div>
+                <div class="fe-fld">
+                    <label>Tutum</label>
+                    <input name="Capacity" type="number" class="fe-ctrl" value="@Model.Capacity" />
+                </div>
+                <div class="fe-fld">
+                    <label>Təsvir</label>
+                    <textarea name="Description" class="fe-ctrl" maxlength="1000">@Model.Description</textarea>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <div class="fe-card">
+                <div class="fe-fld">
+                    <label>Şəkil</label>
+                    <div class="fe-img" id="imgPreview"
+                         style="@(string.IsNullOrEmpty(Model.ImageUrl) ? "" : $"background-image:url('{Model.ImageUrl}')")">
+                        @if (string.IsNullOrEmpty(Model.ImageUrl)) { <i class="fas fa-image"></i> }
+                    </div>
+                    <input type="hidden" name="ImageUrl" id="ImageUrl" value="@Model.ImageUrl" />
+                    <input type="file" id="imgInput" accept=".jpg,.jpeg,.png,.webp" style="margin-top:10px; font-size:13px;" />
+                    <div id="imgStatus" style="font-size:12px; color:var(--pa-muted); margin-top:6px;"></div>
+                </div>
+                <label class="fe-toggle">
+                    <input type="checkbox" name="IsVisible" value="true" @(Model.IsVisible ? "checked" : "") />
+                    <span><strong>Görünür</strong></span>
+                </label>
+                <div class="fe-fld" style="margin-top:14px;">
+                    <label>Sıralama</label>
+                    <input name="SortOrder" type="number" class="fe-ctrl" value="@Model.SortOrder" />
+                </div>
+            </div>
+            <div class="fe-card">
+                <button type="submit" class="fe-btn fe-btn-primary" style="width:100%;">
+                    <i class="fas fa-save"></i> Yadda saxla
+                </button>
+                <a href="/PublicAdmin/Facilities" class="fe-btn fe-btn-ghost" style="width:100%; margin-top:10px;">Ləğv et</a>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+<script>
+    document.getElementById('imgInput')?.addEventListener('change', async function (e) {
+        var f = e.target.files[0]; if (!f) return;
+        var status = document.getElementById('imgStatus'); status.textContent = 'Yüklənir...';
+        var fd = new FormData(); fd.append('file', f); fd.append('folder', 'facilities');
+        var token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+        try {
+            var resp = await fetch('/Upload/PublicImage', { method: 'POST', body: fd,
+                headers: { 'RequestVerificationToken': token } });
+            var data = await resp.json();
+            if (resp.ok) {
+                document.getElementById('ImageUrl').value = data.url;
+                var p = document.getElementById('imgPreview');
+                p.style.backgroundImage = "url('" + data.url + "')"; p.innerHTML = '';
+                status.textContent = 'Yükləndi';
+            } else { status.textContent = 'Xəta: ' + (data.error || ''); }
+        } catch { status.textContent = 'Şəbəkə xətası'; }
+    });
+</script>
+}

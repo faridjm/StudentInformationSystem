@@ -42,7 +42,11 @@
                     <td><span class="badge @(c.IsActive ? "badge-success" : "badge-danger")">@(c.IsActive ? L["Active"].Value : "Deaktiv")</span></td>
                     <td style="display:flex; gap:6px;">
                         <a href="/Admin/Course/Edit/@c.Id" class="btn btn-sm btn-secondary"><i class="fas fa-edit"></i></a>
-                        <form method="post" action="/Admin/Course/Delete/@c.Id" onsubmit="return confirm('Silmək istədiyinizdən əminsinizmi?')" style="margin:0;">
+                        <form method="post" action="/Admin/Course/Delete/@c.Id"
+                              data-confirm="Kursu silmək istədiyinizdən əminsinizmi?"
+                              data-confirm-title="Kursu silmək?"
+                              data-confirm-text="Sil"
+                              style="margin:0;">
                             @Html.AntiForgeryToken()
                             <button type="submit" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
                         </form>

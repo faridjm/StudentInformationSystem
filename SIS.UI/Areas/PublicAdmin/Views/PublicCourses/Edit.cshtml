@@ -1,0 +1,136 @@
+@model SIS.BLL.Services.DTOs.PublicAdmin.PublicCourseProfileEditDto
+@{ ViewData["Title"] = "Public kurs profili"; }
+
+<style>
+    .pe-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 18px; align-items: start; }
+    .pe-card { background: #fff; border: 1px solid var(--pa-border); border-radius: 14px; padding: 22px; margin-bottom: 16px; }
+    .pe-card h3 { font-size: 14px; font-weight: 700; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+    .pe-card h3 i { color: var(--pa-primary); }
+    .pe-fld { margin-bottom: 14px; }
+    .pe-fld label { display: block; font-size: 12.5px; color: var(--pa-muted); font-weight: 600; margin-bottom: 6px; }
+    .pe-ctrl { width: 100%; padding: 10px 12px; border: 1px solid var(--pa-border); border-radius: 10px;
+        font-family: inherit; font-size: 14px; outline: none; }
+    .pe-ctrl:focus { border-color: var(--pa-primary); }
+    textarea.pe-ctrl { min-height: 100px; resize: vertical; line-height: 1.55; }
+    .pe-toggle { display: flex; align-items: center; gap: 10px; padding: 12px; background: var(--pa-bg);
+        border-radius: 10px; margin-bottom: 10px; cursor: pointer; }
+    .pe-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+        padding: 10px 16px; border-radius: 10px; border: none; cursor: pointer; font-size: 14px; font-weight: 600;
+        text-decoration: none; }
+    .pe-btn-primary { background: linear-gradient(135deg, var(--pa-primary), var(--pa-primary-2)); color: #fff; }
+    .pe-btn-ghost { background: #fff; color: var(--pa-ink); border: 1px solid var(--pa-border); }
+    .pe-img-preview { width: 100%; height: 160px; border-radius: 10px; border: 1px solid var(--pa-border);
+        background: var(--pa-bg); display: flex; align-items: center; justify-content: center; color: var(--pa-muted);
+        background-size: cover; background-position: center; }
+    @@media (max-width: 1000px) { .pe-grid { grid-template-columns: 1fr; } }
+</style>
+
+<a href="/PublicAdmin/PublicCourses" style="font-size:13px; color:var(--pa-muted); text-decoration:none;">
+    <i class="fas fa-arrow-left"></i> Public Kurslar
+</a>
+
+<form method="post" action="/PublicAdmin/PublicCourses/Edit" id="courseEditForm">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="CourseId" value="@Model.CourseId" />
+
+    <div class="pe-grid" style="margin-top:14px;">
+        <div>
+            <div class="pe-card">
+                <h3><i class="fas fa-book-open"></i> Profil məlumatları</h3>
+                <div class="pe-fld">
+                    <label>Public başlıq</label>
+                    <input name="PublicTitle" class="pe-ctrl" maxlength="200"
+                           placeholder="Akademik addan fərqlənə bilər" value="@Model.PublicTitle" />
+                </div>
+                <div class="pe-fld">
+                    <label>Qısa təsvir</label>
+                    <textarea name="PublicShortDescription" class="pe-ctrl" maxlength="500"
+                              style="min-height:60px;" placeholder="Kart üçün 1-2 cümlə">@Model.PublicShortDescription</textarea>
+                </div>
+                <div class="pe-fld">
+                    <label>Tam təsvir</label>
+                    <textarea name="PublicDescription" class="pe-ctrl" maxlength="4000"
+                              placeholder="Detail səhifədə görünən tam mətn">@Model.PublicDescription</textarea>
+                </div>
+            </div>
+
+            <div class="pe-card">
+                <h3><i class="fas fa-lightbulb"></i> Tələbə üçün dəyər</h3>
+                <div class="pe-fld">
+                    <label>Nə öyrənəcək (hər sətirdə bir bənd)</label>
+                    <textarea name="WhatYouWillLearn" class="pe-ctrl" maxlength="4000"
+                              placeholder="Məs:&#10;C# fundamentals&#10;OOP prinsipləri&#10;Layihə qurma">@Model.WhatYouWillLearn</textarea>
+                </div>
+                <div class="pe-fld">
+                    <label>Karyera istiqamətləri</label>
+                    <textarea name="CareerOutcomes" class="pe-ctrl" maxlength="4000"
+                              placeholder="Junior .NET Developer, Backend Engineer və s.">@Model.CareerOutcomes</textarea>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <div class="pe-card">
+                <h3><i class="fas fa-image"></i> Cover şəkli</h3>
+                <div class="pe-img-preview" id="imgPreview"
+                     style="@(string.IsNullOrEmpty(Model.CoverImageUrl) ? "" : $"background-image:url('{Model.CoverImageUrl}')")">
+                    @if (string.IsNullOrEmpty(Model.CoverImageUrl))
+                    { <span><i class="fas fa-image"></i> Şəkil yoxdur</span> }
+                </div>
+                <input type="hidden" name="CoverImageUrl" id="CoverImageUrl" value="@Model.CoverImageUrl" />
+                <input type="file" id="imgInput" accept=".jpg,.jpeg,.png,.webp" style="margin-top:10px; font-size:13px;" />
+                <div id="imgStatus" style="font-size:12px; color:var(--pa-muted); margin-top:6px;"></div>
+            </div>
+
+            <div class="pe-card">
+                <h3><i class="fas fa-cog"></i> Görünürlük</h3>
+                <label class="pe-toggle">
+                    <input type="checkbox" name="IsVisible" value="true" @(Model.IsVisible ? "checked" : "") />
+                    <span><strong>Public saytda göstər</strong></span>
+                </label>
+                <label class="pe-toggle">
+                    <input type="checkbox" name="IsFeatured" value="true" @(Model.IsFeatured ? "checked" : "") />
+                    <span><strong>Featured (önə çıxar)</strong></span>
+                </label>
+                <div class="pe-fld" style="margin-top:14px;">
+                    <label>Sıralama</label>
+                    <input name="SortOrder" type="number" class="pe-ctrl" value="@Model.SortOrder" />
+                </div>
+            </div>
+
+            <div class="pe-card">
+                <button type="submit" class="pe-btn pe-btn-primary" style="width:100%;">
+                    <i class="fas fa-save"></i> Yadda saxla
+                </button>
+                <a href="/PublicAdmin/PublicCourses" class="pe-btn pe-btn-ghost" style="width:100%; margin-top:10px;">
+                    Ləğv et
+                </a>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+<script>
+    document.getElementById('imgInput')?.addEventListener('change', async function (e) {
+        var f = e.target.files[0]; if (!f) return;
+        var status = document.getElementById('imgStatus');
+        status.textContent = 'Yüklənir...';
+        var fd = new FormData(); fd.append('file', f); fd.append('folder', 'courses');
+        var token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+        try {
+            var resp = await fetch('/Upload/PublicImage', {
+                method: 'POST', body: fd,
+                headers: { 'RequestVerificationToken': token }
+            });
+            var data = await resp.json();
+            if (resp.ok) {
+                document.getElementById('CoverImageUrl').value = data.url;
+                document.getElementById('imgPreview').style.backgroundImage = "url('" + data.url + "')";
+                document.getElementById('imgPreview').innerHTML = '';
+                status.textContent = 'Yükləndi: ' + data.url;
+            } else { status.textContent = 'Xəta: ' + (data.error || 'naməlum'); }
+        } catch (err) { status.textContent = 'Şəbəkə xətası.'; }
+    });
+</script>
+}

@@ -33,6 +33,9 @@ namespace SIS.BLL.Services.Interfaces
         /// <summary>İstifadəçi (teacher və ya enrolled student) classroom-a giriş icazəsi varmı?</summary>
         Task<bool> CanAccessClassroomAsync(int onlineLessonId, string userId);
 
+        /// <summary>İstifadəçi bu dərsin sahib müəllimidirmi? (mute kimi idarəetmə əməliyyatları üçün)</summary>
+        Task<bool> IsClassroomTeacherAsync(int onlineLessonId, string userId);
+
         Task<IEnumerable<OnlineLessonChatMessageDto>> GetClassroomChatHistoryAsync(int onlineLessonId, string requestingUserId);
 
         Task<OnlineLessonChatMessageDto> SaveClassroomChatMessageAsync(int onlineLessonId, string senderUserId, string text);

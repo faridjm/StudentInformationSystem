@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Refit;
 using SIS.BLL.Services.DTOs.Auth;
+using SIS.BLL.Services.DTOs.AuditLog;
 using SIS.UI.ApiClients;
 using System.Security.Claims;
 
@@ -13,11 +14,13 @@ namespace SIS.UI.Controllers
     {
         private readonly IAuthApi _authApi;
         private readonly IStringLocalizer<SharedResource> _l;
+        private readonly IAuditLogApi _auditApi;
 
-        public AuthController(IAuthApi authApi, IStringLocalizer<SharedResource> localizer)
+        public AuthController(IAuthApi authApi, IStringLocalizer<SharedResource> localizer, IAuditLogApi auditApi)
         {
             _authApi = authApi;
             _l = localizer;
+            _auditApi = auditApi;
         }
 
         [HttpGet]
@@ -111,7 +114,65 @@ namespace SIS.UI.Controllers
             return RedirectToAction("Login");
         }
 
-        public IActionResult AccessDenied() => View();
+        public async Task<IActionResult> AccessDenied(string? returnUrl = null)
+        {
+            // İstifadəçi hansı panelə girməyə cəhd etdiyini path-dan müəyyən edirik.
+            // Audit log sistemə təhlükəsizlik hadisəsi kimi yazılır (best-effort).
+            try
+            {
+                if (User.Identity?.IsAuthenticated == true)
+                {
+                    var path = (returnUrl ?? Request.Query["ReturnUrl"].ToString() ?? "").ToLowerInvariant();
+                    var role = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value
+                               ?? (User.IsInRole("SuperAdmin") ? "SuperAdmin"
+                                   : User.IsInRole("Admin") ? "Admin"
+                                   : User.IsInRole("Moderator") ? "Moderator"
+                                   : User.IsInRole("Teacher") ? "Teacher"
+                                   : User.IsInRole("Student") ? "Student" : "Unknown");
+
+                    string action;
+                    string description;
+                    if (path.StartsWith("/publicadmin"))
+                    {
+                        action = "AccessDeniedToPublicAdmin";
+                        description = $"{role} istifadəçisi PublicAdmin panelinə girməyə cəhd etdi: {returnUrl}";
+                    }
+                    else if (path.StartsWith("/admin"))
+                    {
+                        // Admin rolu var amma access aktiv deyil — fərqli action
+                        if (User.IsInRole("Admin"))
+                        {
+                            action = "AdminAccessDeniedInactive";
+                            description = $"Admin {User.Identity?.Name} aktiv access olmadan Academic Admin panelinə girməyə cəhd etdi: {returnUrl}";
+                        }
+                        else
+                        {
+                            action = "AccessDeniedToAcademicAdmin";
+                            description = $"{role} istifadəçisi Academic Admin panelinə girməyə cəhd etdi: {returnUrl}";
+                        }
+                    }
+                    else
+                    {
+                        // Naməlum sahə — sadəcə skip et.
+                        ViewBag.ReturnUrl = returnUrl;
+                        return View();
+                    }
+
+                    await _auditApi.LogSecurityEventAsync(new SecurityEventDto
+                    {
+                        Action = action,
+                        Description = description
+                    });
+                }
+            }
+            catch
+            {
+                // Audit yazılması istifadəçi cavabını pozmamalıdır.
+            }
+
+            ViewBag.ReturnUrl = returnUrl;
+            return View();
+        }
 
         [HttpGet]
         public IActionResult ForgotPassword() => View();

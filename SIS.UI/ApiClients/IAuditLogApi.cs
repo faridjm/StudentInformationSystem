@@ -16,5 +16,11 @@ namespace SIS.UI.ApiClients
 
         [Get("/api/auditlog/entities")]
         Task<IEnumerable<string>> GetEntitiesAsync();
+
+        /// <summary>
+        /// UI tərəfdən təhlükəsizlik hadisəsi (məsələn AccessDeniedToPublicAdmin) qeydə almaq.
+        /// </summary>
+        [Post("/api/auditlog/security-event")]
+        Task LogSecurityEventAsync([Body] SecurityEventDto dto);
     }
 }

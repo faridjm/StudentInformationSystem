@@ -13,26 +13,52 @@
 
 <style>
     .classroom-grid { display:grid; grid-template-columns: 1fr 320px; gap:14px; height: calc(100vh - 180px); }
-    .video-area { display:flex; flex-direction:column; background:#0f172a; border-radius:12px; overflow:hidden; }
-    .video-grid { flex:1; display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:8px; padding:10px; overflow:auto; }
+    .video-area { display:flex; flex-direction:column; background:#0f172a; border-radius:12px; overflow:hidden; min-height:0; }
+    .video-grid { flex:1; display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:8px; padding:10px; overflow:auto; min-height:0; }
     .video-tile { position:relative; background:#1e293b; border-radius:8px; aspect-ratio:16/9; overflow:hidden; }
     .video-tile video { width:100%; height:100%; object-fit:cover; }
     .video-tile .name { position:absolute; bottom:6px; left:8px; background:rgba(0,0,0,.6); color:#fff; font-size:11px; padding:2px 8px; border-radius:4px; }
     .video-tile.local .name { background:rgba(147,51,234,.85); }
-    .toolbar { display:flex; gap:8px; padding:10px 14px; background:#1e293b; align-items:center; }
-    .tb-btn { background:rgba(255,255,255,.1); color:#fff; border:none; border-radius:50%; width:42px; height:42px; cursor:pointer; transition:all .15s; }
+    /* Tile böyüt düyməsi */
+    .tile-expand { position:absolute; top:6px; left:8px; background:rgba(0,0,0,.55); color:#fff; border:none; border-radius:6px; width:28px; height:28px; cursor:pointer; opacity:0; transition:opacity .15s; font-size:12px; }
+    .video-tile:hover .tile-expand, .screen-stage:hover .tile-expand { opacity:1; }
+    /* Toolbar — HƏMİŞƏ görünən (sticky bottom) */
+    .toolbar { display:flex; gap:8px; padding:10px 14px; background:#1e293b; align-items:center; flex:0 0 auto; z-index:20; box-shadow:0 -4px 14px rgba(0,0,0,.25); flex-wrap:wrap; }
+    .tb-btn { background:rgba(255,255,255,.1); color:#fff; border:none; border-radius:50%; width:42px; height:42px; cursor:pointer; transition:all .15s; flex:0 0 auto; }
     .tb-btn:hover { background:rgba(255,255,255,.2); }
     .tb-btn.off { background:#dc2626; }
+    .tb-btn.sharing { background:#10b981; }
     .tb-btn.leave { background:#dc2626; }
     .tb-btn.end { background:#9333ea; }
+    /* Screen share stage — flex:1, qrid strip olur */
+    .screen-stage { position:relative; flex:1; background:#000; border-bottom:2px solid #10b981; min-height:0; display:none; }
+    .screen-stage video { width:100%; height:100%; object-fit:contain; background:#000; }
+    .screen-stage-badge { position:absolute; top:10px; left:12px; display:inline-flex; align-items:center; gap:6px;
+        background:rgba(16,185,129,.92); color:#fff; font-size:12px; font-weight:700; padding:5px 12px; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,.3); }
+    .screen-stage .tile-expand { top:auto; bottom:10px; right:12px; left:auto; width:34px; height:34px; opacity:.9; }
+    /* Stage aktiv olanda video-area: stage flex:1, grid horizontal strip, toolbar həmişə altda görünür */
+    .video-area.has-stage .screen-stage { display:block; }
+    .video-area.has-stage .video-grid { flex:0 0 auto; height:120px; display:flex; gap:8px; overflow-x:auto; overflow-y:hidden; }
+    .video-area.has-stage .video-grid .video-tile { flex:0 0 200px; aspect-ratio:16/9; }
+    .video-tile .share-tag { position:absolute; top:6px; right:8px; background:#10b981; color:#fff; font-size:10px; font-weight:700; padding:2px 7px; border-radius:4px; display:none; }
+    .video-tile.sharing .share-tag { display:inline-block; }
     .side-panel { display:flex; flex-direction:column; background:var(--bg-card); border:1px solid var(--border); border-radius:12px; overflow:hidden; }
     .side-tabs { display:flex; border-bottom:1px solid var(--border); }
     .side-tabs button { flex:1; padding:10px; border:none; background:none; color:var(--text-secondary); font-size:13px; font-weight:600; cursor:pointer; border-bottom:2px solid transparent; }
     .side-tabs button.active { color:var(--accent); border-bottom-color:var(--accent); }
     .side-content { flex:1; overflow:auto; padding:10px; }
-    .participant-row { display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:6px; }
+    .participant-row { display:flex; align-items:center; gap:8px; padding:7px 8px; border-radius:6px; }
     .participant-row:hover { background:var(--bg-hover); }
-    .participant-dot { width:8px; height:8px; border-radius:50%; background:#22c55e; }
+    .participant-dot { width:8px; height:8px; border-radius:50%; background:#22c55e; flex:0 0 auto; }
+    .participant-dot.muted { background:#94a3b8; }
+    .participant-name { flex:1; font-size:13px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .participant-role { font-size:10px; font-weight:700; padding:1px 7px; border-radius:999px; flex:0 0 auto; }
+    .participant-role.teacher { background:#ede9fe; color:#6d28d9; }
+    .participant-role.student { background:#d1fae5; color:#047857; }
+    .participant-mic { font-size:11px; color:#94a3b8; flex:0 0 auto; }
+    .participant-mic.muted { color:#dc2626; }
+    .p-mute-btn { background:none; border:1px solid var(--border); color:var(--text-secondary); border-radius:6px; padding:3px 8px; font-size:11px; cursor:pointer; flex:0 0 auto; }
+    .p-mute-btn:hover { background:#fee2e2; color:#b91c1c; border-color:#fecaca; }
     .chat-msgs { flex:1; overflow:auto; padding:10px; display:flex; flex-direction:column; gap:6px; }
     .chat-msg { padding:6px 10px; border-radius:8px; background:var(--bg-hover); font-size:13px; }
     .chat-msg .meta { font-size:10px; color:var(--text-secondary); margin-bottom:2px; display:flex; justify-content:space-between; }
@@ -43,6 +69,41 @@
     .live-badge { display:inline-flex; align-items:center; gap:5px; background:#22c55e; color:#fff; padding:3px 10px; border-radius:6px; font-size:11px; font-weight:700; }
     .live-badge::before { content:''; width:7px; height:7px; background:#fff; border-radius:50%; animation: pulse 1.5s infinite; }
     @@keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:.3; } }
+    /* Fullscreen modal (app içi) */
+    .fs-modal { position:fixed; inset:0; background:rgba(0,0,0,.92); z-index:10001; display:none; align-items:center; justify-content:center; flex-direction:column; }
+    .fs-modal.open { display:flex; }
+    .fs-modal video { max-width:96vw; max-height:88vh; object-fit:contain; background:#000; border-radius:8px; }
+    .fs-modal-close { position:absolute; top:18px; right:22px; background:rgba(255,255,255,.14); color:#fff; border:none; border-radius:10px; width:44px; height:44px; cursor:pointer; font-size:18px; }
+    .fs-modal-close:hover { background:rgba(255,255,255,.25); }
+    .fs-modal-title { position:absolute; top:22px; left:24px; color:#fff; font-size:14px; font-weight:600; opacity:.85; }
+    /* Toast */
+    .cls-toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:#1e293b; color:#fff; padding:12px 20px; border-radius:10px; font-size:14px; z-index:10002; box-shadow:0 10px 30px rgba(0,0,0,.4); display:none; align-items:center; gap:10px; }
+    .cls-toast.show { display:flex; animation: toastIn .25s ease; }
+    @@keyframes toastIn { from { opacity:0; transform:translate(-50%, 10px); } to { opacity:1; transform:translate(-50%, 0); } }
+    @@media (max-width: 900px) {
+        .classroom-grid { grid-template-columns: 1fr; height:auto; }
+        .video-area { height:60vh; }
+    }
+    /* Pre-join lobby */
+    .prejoin-overlay { position:fixed; inset:0; background:rgba(15,23,42,.96); z-index:10005; display:flex; align-items:center; justify-content:center; padding:20px; }
+    .prejoin-overlay.hidden { display:none; }
+    .prejoin-card { background:var(--bg-card,#fff); border-radius:18px; width:min(94vw,460px); padding:26px 26px 22px; box-shadow:0 30px 70px rgba(0,0,0,.5); }
+    .prejoin-title { font-size:18px; font-weight:800; display:flex; align-items:center; gap:10px; color:var(--text-primary); }
+    .prejoin-sub { font-size:13px; color:var(--text-secondary); margin:6px 0 18px; }
+    .prejoin-preview { position:relative; background:#0f172a; border-radius:12px; aspect-ratio:16/9; overflow:hidden; margin-bottom:16px; }
+    .prejoin-preview video { width:100%; height:100%; object-fit:cover; transform:scaleX(-1); }
+    .prejoin-cam-off { position:absolute; inset:0; display:none; flex-direction:column; align-items:center; justify-content:center; gap:8px; color:#94a3b8; }
+    .prejoin-cam-off i { font-size:34px; }
+    .prejoin-cam-off span { font-size:13px; }
+    .prejoin-preview.cam-off video { display:none; }
+    .prejoin-preview.cam-off .prejoin-cam-off { display:flex; }
+    .prejoin-toggles { display:flex; gap:10px; margin-bottom:14px; }
+    .prejoin-toggle { flex:1; display:flex; align-items:center; justify-content:center; gap:8px; padding:11px; border-radius:10px; border:1px solid var(--border); background:var(--bg-hover); color:var(--text-primary); font-size:13px; font-weight:600; cursor:pointer; transition:all .15s; }
+    .prejoin-toggle.on { border-color:var(--accent); color:var(--accent); }
+    .prejoin-toggle.off { background:#fee2e2; border-color:#fecaca; color:#b91c1c; }
+    .prejoin-hint { font-size:12px; color:var(--text-secondary); margin-bottom:18px; display:flex; gap:8px; align-items:flex-start; }
+    .prejoin-actions { display:flex; gap:10px; }
+    .prejoin-actions .btn { flex:1; }
 </style>
 
 <!-- Header -->
@@ -61,6 +122,41 @@
     <span style="font-size:11px; color:var(--text-secondary);">Sessiya #@Model.SessionNumber · @Model.SessionDate.ToString("dd.MM.yyyy")</span>
 </div>
 
+<!-- Pre-join lobby (qoşulmazdan əvvəl mikrofon/kamera seçimi) -->
+<div id="preJoinOverlay" class="prejoin-overlay">
+    <div class="prejoin-card">
+        <div class="prejoin-title"><i class="fas fa-video" style="color:var(--accent);"></i> Dərsə qoşulmağa hazırsınız?</div>
+        <div class="prejoin-sub">@Model.Title · @Model.GroupName</div>
+
+        <div class="prejoin-preview">
+            <video id="preJoinVideo" autoplay muted playsinline></video>
+            <div class="prejoin-cam-off" id="preJoinCamOff"><i class="fas fa-video-slash"></i><span>Kamera bağlıdır</span></div>
+        </div>
+
+        <div class="prejoin-toggles">
+            <button type="button" class="prejoin-toggle on" id="preMic">
+                <i class="fas fa-microphone"></i> <span>Mikrofon</span>
+            </button>
+            <button type="button" class="prejoin-toggle on" id="preCam">
+                <i class="fas fa-video"></i> <span>Kamera</span>
+            </button>
+        </div>
+
+        <div class="prejoin-hint" id="preJoinHint">
+            <i class="fas fa-circle-info"></i> Mikrofon və kameranı qoşulduqdan sonra da idarə edə bilərsiniz.
+        </div>
+
+        <div class="prejoin-actions">
+            <button type="button" class="btn btn-primary" id="preJoinBtn">
+                <i class="fas fa-right-to-bracket"></i> İndi qoşul
+            </button>
+            <button type="button" class="btn" id="preJoinNoMedia" style="background:var(--bg-hover);">
+                Media olmadan qoşul
+            </button>
+        </div>
+    </div>
+</div>
+
 <div class="classroom-grid" id="classroomRoot"
      data-lesson-id="@Model.Id"
      data-is-teacher="@(isTeacher ? "true" : "false")"
@@ -70,15 +166,33 @@
      data-user-name="@currentUserName">
     <!-- Video area -->
     <div class="video-area">
+        <!-- Screen share stage (yalnız kimsə ekran paylaşanda görünür) -->
+        <div class="screen-stage" id="screenStage">
+            <video id="screenStageVideo" autoplay playsinline></video>
+            <div class="screen-stage-badge">
+                <i class="fas fa-desktop"></i> <span id="screenSharerName">İştirakçı</span> ekranını paylaşır
+            </div>
+            <button class="tile-expand" type="button" title="Böyüt" onclick="window.acadexClassroomExpand && window.acadexClassroomExpand('screenStageVideo', document.getElementById('screenSharerName')?.textContent)">
+                <i class="fas fa-expand"></i>
+            </button>
+        </div>
         <div class="video-grid" id="videoGrid">
             <div class="video-tile local" id="localTile">
                 <video id="localVideo" autoplay muted playsinline></video>
                 <div class="name">Siz (@currentUserName)</div>
+                <button class="tile-expand" type="button" title="Böyüt" onclick="window.acadexClassroomExpand && window.acadexClassroomExpand('localVideo', 'Siz')">
+                    <i class="fas fa-expand"></i>
+                </button>
             </div>
         </div>
         <div class="toolbar">
             <button class="tb-btn" id="btnMic" title="Mikrofon"><i class="fas fa-microphone"></i></button>
             <button class="tb-btn" id="btnCam" title="Kamera"><i class="fas fa-video"></i></button>
+            <button class="tb-btn" id="btnScreen" title="Ekranı paylaş"><i class="fas fa-desktop"></i></button>
+            @if (isTeacher)
+            {
+                <button class="tb-btn" id="btnMuteAll" title="Bütün tələbələri sustur"><i class="fas fa-microphone-slash"></i></button>
+            }
             <div style="flex:1;"></div>
             <button class="tb-btn leave" id="btnLeave" title="Tərk et"><i class="fas fa-sign-out-alt"></i></button>
             @if (isTeacher)
@@ -114,6 +228,16 @@
     <div style="font-size:18px; font-weight:600;">Online dərs bitdi</div>
     <a href="javascript:history.back()" class="btn btn-primary">Geri qayıt</a>
 </div>
+
+<!-- Fullscreen / böyüt modalı -->
+<div id="fsModal" class="fs-modal">
+    <div class="fs-modal-title" id="fsModalTitle"></div>
+    <button class="fs-modal-close" id="fsModalClose" type="button" title="Kiçilt (ESC)"><i class="fas fa-times"></i></button>
+    <video id="fsModalVideo" autoplay playsinline></video>
+</div>
+
+<!-- Toast -->
+<div id="clsToast" class="cls-toast"><i class="fas fa-circle-info"></i> <span id="clsToastText"></span></div>
 
 @section Scripts {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>

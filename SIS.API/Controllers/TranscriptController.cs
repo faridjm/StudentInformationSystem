@@ -58,16 +58,17 @@ namespace SIS.API.Controllers
         }
 
         [HttpGet("{enrollmentId}/pdf")]
-        public async Task<IActionResult> GetTranscriptPdf(int enrollmentId)
+        public async Task<IActionResult> GetTranscriptPdf(int enrollmentId, [FromQuery] string? lang = "az")
         {
             try
             {
                 await AuthorizeAccessAsync(enrollmentId);
                 var data = await _transcriptService.GenerateTranscriptAsync(enrollmentId);
-                var pdf = _pdfService.GeneratePdf(data);
-                var fileName = $"Transcript_{data.StudentNumber}_{data.GroupName}_{DateTime.Now:yyyyMMdd}.pdf";
+                var pdf = _pdfService.GeneratePdf(data, lang);
+                var langCode = PdfLocalization.Normalize(lang);
+                var fileName = $"Transcript_{data.StudentNumber}_{data.GroupName}_{langCode}_{DateTime.Now:yyyyMMdd}.pdf";
                 await _audit.LogAsync("Download", "Transcript", enrollmentId.ToString(),
-                    $"Transkript PDF yükləndi: {data.StudentNumber} — {data.GroupName}");
+                    $"Transkript PDF yükləndi ({langCode}): {data.StudentNumber} — {data.GroupName}");
                 return File(pdf, "application/pdf", fileName);
             }
             catch (UnauthorizedAccessException)
@@ -81,7 +82,7 @@ namespace SIS.API.Controllers
         }
 
         [HttpPost("{enrollmentId}/email")]
-        public async Task<IActionResult> SendTranscriptByEmail(int enrollmentId)
+        public async Task<IActionResult> SendTranscriptByEmail(int enrollmentId, [FromQuery] string? lang = "az")
         {
             try
             {
@@ -90,23 +91,27 @@ namespace SIS.API.Controllers
                 if (string.IsNullOrEmpty(data.Email))
                     return BadRequest(new { error = "Bu hesabda email yoxdur" });
 
-                var pdf = _pdfService.GeneratePdf(data);
-                var fileName = $"Transcript_{data.StudentNumber}_{data.GroupName}_{DateTime.Now:yyyyMMdd}.pdf";
+                var pdf = _pdfService.GeneratePdf(data, lang);
+                var langCode = PdfLocalization.Normalize(lang);
+                var safeName = SanitizeFileName(data.StudentName);
+                var fileName = langCode == "az"
+                    ? $"Akademik_Cixaris_{safeName}.pdf"
+                    : $"Academic_Transcript_{safeName}.pdf";
 
                 try
                 {
                     await _emailService.SendTranscriptAsync(data.Email, data.StudentName,
-                        data.CourseName, data.GroupName, pdf, fileName);
+                        data.CourseName, data.GroupName, pdf, fileName, langCode);
                 }
                 catch (Exception ex)
                 {
-                    await _audit.LogAsync("EmailSendFailed", "Transcript", enrollmentId.ToString(),
-                        $"Transkript email göndərilmədi: {data.StudentNumber} — {ex.Message}");
+                    await _audit.LogAsync("SendTranscriptToEmailFailed", "Transcript", enrollmentId.ToString(),
+                        $"Transkript email göndərilmədi ({langCode}): {data.StudentNumber} — {ex.Message}");
                     return StatusCode(500, new { error = "Email göndərilə bilmədi" });
                 }
 
-                await _audit.LogAsync("SendTranscriptEmail", "Transcript", enrollmentId.ToString(),
-                    $"Transkript email göndərildi: {data.StudentNumber} → {data.Email}");
+                await _audit.LogAsync("SendTranscriptToEmail", "Transcript", enrollmentId.ToString(),
+                    $"Student {data.StudentName} sent transcript PDF to email in {langCode} language.");
                 return Ok(new { message = "Transkript email-ə göndərildi" });
             }
             catch (UnauthorizedAccessException)
@@ -117,6 +122,16 @@ namespace SIS.API.Controllers
             {
                 return BadRequest(new { error = ex.Message });
             }
+        }
+
+        // Fayl adı üçün təhlükəsiz simvollar (problemli simvolları _ ilə əvəz et)
+        private static string SanitizeFileName(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name)) return "Student";
+            var invalid = System.IO.Path.GetInvalidFileNameChars();
+            var clean = new string(name.Select(ch => invalid.Contains(ch) ? '_' : ch).ToArray());
+            clean = clean.Replace(' ', '_');
+            return string.IsNullOrWhiteSpace(clean) ? "Student" : clean;
         }
 
         private async Task AuthorizeAccessAsync(int enrollmentId)

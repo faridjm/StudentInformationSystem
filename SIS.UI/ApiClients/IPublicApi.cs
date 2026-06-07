@@ -1,5 +1,6 @@
 using Refit;
 using SIS.BLL.Services.DTOs.Public;
+using SIS.BLL.Services.DTOs.PublicAdmin;
 
 namespace SIS.UI.ApiClients
 {
@@ -19,5 +20,15 @@ namespace SIS.UI.ApiClients
 
         [Get("/api/public/teachers")]
         Task<IEnumerable<PublicTeacherDto>> GetTeachersAsync();
+
+        // ===== PublicAdmin-managed content (visible only) =====
+        [Get("/api/public/facilities")]
+        Task<List<PublicFacilityDto>> GetPublicFacilitiesAsync();
+
+        [Get("/api/public/graduates")]
+        Task<List<PublicGraduateStoryDto>> GetPublicGraduatesAsync();
+
+        [Get("/api/public/faqs")]
+        Task<List<PublicFaqDto>> GetPublicFaqsAsync();
     }
 }

@@ -36,6 +36,14 @@ namespace SIS.UI.Extensions
 
                 options.AddPolicy("StudentOnly", policy =>
                     policy.RequireRole("Student"));
+
+                // PublicAdmin panel — SuperAdmin və Moderator daxil ola bilər.
+                // Admin / Teacher / Student / anonymous DENY.
+                options.AddPolicy("PublicAdminOnly", policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireRole("SuperAdmin", "Moderator");
+                });
             });
 
             return services;

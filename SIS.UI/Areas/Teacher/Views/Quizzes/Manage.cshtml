@@ -63,7 +63,10 @@
                         }
                     </div>
                 </div>
-                <form method="post" action="/Teacher/Quizzes/DeleteQuestion" onsubmit="return confirm('Sual silinsin?');">
+                <form method="post" action="/Teacher/Quizzes/DeleteQuestion"
+                      data-confirm="Bu sual silinsin?"
+                      data-confirm-title="Sual silinsin?"
+                      data-confirm-text="Sil">
                     @Html.AntiForgeryToken()
                     <input type="hidden" name="quizId" value="@Model.Id" />
                     <input type="hidden" name="questionId" value="@q.Id" />
@@ -169,8 +172,8 @@ document.getElementById('addQForm').addEventListener('submit', function (e) {
             correct++;
         }
     });
-    if (rows.length < 2) { alert('Ən azı 2 variant lazımdır'); e.preventDefault(); return; }
-    if (correct < 1) { alert('Ən azı bir düz variant işarələyin'); e.preventDefault(); return; }
+    if (rows.length < 2) { window.acadexAlert({ title: 'Diqqət', message: 'Ən azı 2 variant lazımdır', type: 'warning' }); e.preventDefault(); return; }
+    if (correct < 1) { window.acadexAlert({ title: 'Diqqət', message: 'Ən azı bir düz variant işarələyin', type: 'warning' }); e.preventDefault(); return; }
 });
 
 // İlkin 2 variant

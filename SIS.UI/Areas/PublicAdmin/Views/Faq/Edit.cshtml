@@ -1,0 +1,61 @@
+@model SIS.BLL.Services.DTOs.PublicAdmin.PublicFaqDto
+@{ ViewData["Title"] = Model.Id == 0 ? "Yeni FAQ" : "FAQ düzəlişi"; }
+
+<style>
+    .qe-card { background: #fff; border: 1px solid var(--pa-border); border-radius: 14px;
+        padding: 22px; max-width: 760px; margin: 0 auto; }
+    .qe-fld { margin-bottom: 14px; }
+    .qe-fld label { display: block; font-size: 12.5px; color: var(--pa-muted); font-weight: 600; margin-bottom: 6px; }
+    .qe-ctrl { width: 100%; padding: 10px 12px; border: 1px solid var(--pa-border); border-radius: 10px;
+        font-family: inherit; font-size: 14px; outline: none; }
+    .qe-ctrl:focus { border-color: var(--pa-primary); }
+    textarea.qe-ctrl { min-height: 160px; resize: vertical; line-height: 1.6; }
+    .qe-toggle { display: flex; align-items: center; gap: 10px; padding: 12px; background: var(--pa-bg);
+        border-radius: 10px; cursor: pointer; }
+    .qe-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+        padding: 10px 16px; border-radius: 10px; border: none; cursor: pointer; font-size: 14px; font-weight: 600;
+        text-decoration: none; }
+    .qe-btn-primary { background: linear-gradient(135deg, var(--pa-primary), var(--pa-primary-2)); color: #fff; }
+    .qe-btn-ghost { background: #fff; color: var(--pa-ink); border: 1px solid var(--pa-border); }
+</style>
+
+<a href="/PublicAdmin/Faq" style="font-size:13px; color:var(--pa-muted); text-decoration:none;">
+    <i class="fas fa-arrow-left"></i> FAQ
+</a>
+
+<div class="qe-card" style="margin-top:14px;">
+    <form method="post" action="/PublicAdmin/Faq/Save">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="Id" value="@Model.Id" />
+
+        <div class="qe-fld">
+            <label>Sual *</label>
+            <input name="Question" class="qe-ctrl" maxlength="300" required value="@Model.Question" />
+        </div>
+        <div class="qe-fld">
+            <label>Cavab *</label>
+            <textarea name="Answer" class="qe-ctrl" maxlength="3000" required>@Model.Answer</textarea>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+            <div class="qe-fld">
+                <label>Kateqoriya</label>
+                <input name="Category" class="qe-ctrl" maxlength="80" value="@Model.Category" />
+            </div>
+            <div class="qe-fld">
+                <label>Sıralama</label>
+                <input name="SortOrder" type="number" class="qe-ctrl" value="@Model.SortOrder" />
+            </div>
+        </div>
+        <label class="qe-toggle" style="margin-bottom:18px;">
+            <input type="checkbox" name="IsVisible" value="true" @(Model.IsVisible ? "checked" : "") />
+            <span><strong>Public saytda göstər</strong></span>
+        </label>
+
+        <div style="display:flex; gap:10px;">
+            <button type="submit" class="qe-btn qe-btn-primary" style="flex:1;">
+                <i class="fas fa-save"></i> Yadda saxla
+            </button>
+            <a href="/PublicAdmin/Faq" class="qe-btn qe-btn-ghost">Ləğv et</a>
+        </div>
+    </form>
+</div>

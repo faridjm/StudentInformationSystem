@@ -53,7 +53,9 @@
                         <td><span class="badge @StatusBadge(e.Status)">@e.Status</span></td>
                         <td>
                             <form method="post" action="/Admin/Enrollment/Drop/@e.Id?groupId=@ViewBag.GroupId"
-                                  onsubmit="return confirm('?')">
+                                  data-confirm="Bu enrollment-i drop etmək istəyirsiniz?"
+                                  data-confirm-title="Tələbəni qrupdan çıxarmaq?"
+                                  data-confirm-text="Çıxar">
                                 @Html.AntiForgeryToken()
                                 <button type="submit" class="btn btn-sm btn-danger"><i class="fas fa-user-minus"></i></button>
                             </form>

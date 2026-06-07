@@ -244,7 +244,11 @@
                                             </form>
                                             <button type="button" class="btn btn-sm btn-secondary" style="padding:2px 8px; font-size:11px;"
                                                     onclick="openEditOL(@ol.Id, '@Html.Raw(ol.Title?.Replace("'","\\'"))', '@Html.Raw(ol.Description?.Replace("'","\\'"))')"><i class="fas fa-pen"></i></button>
-                                            <form method="post" action="/Teacher/Courses/CancelOnlineLesson" style="margin:0;" onsubmit="return confirm('Online dərsi ləğv et?')">
+                                            <form method="post" action="/Teacher/Courses/CancelOnlineLesson" style="margin:0;"
+                                                  data-confirm="Online dərs ləğv edilsin? Tələbələr bildiriş alacaq."
+                                                  data-confirm-title="Online dərsi ləğv et"
+                                                  data-confirm-text="Ləğv et"
+                                                  data-confirm-type="warning">
                                                 @Html.AntiForgeryToken()
                                                 <input type="hidden" name="groupId" value="@Model.Id" />
                                                 <input type="hidden" name="id" value="@ol.Id" />
@@ -926,7 +930,10 @@
                                 <i class="fas @(m.IsActive ? "fa-eye-slash" : "fa-eye")"></i>
                             </button>
                         </form>
-                        <form method="post" action="/Teacher/Courses/DeleteMaterial" style="flex:1;" onsubmit="return confirm('Material silinsin?');">
+                        <form method="post" action="/Teacher/Courses/DeleteMaterial" style="flex:1;"
+                              data-confirm="Material silinsin?"
+                              data-confirm-title="Material silinsin?"
+                              data-confirm-text="Sil">
                             @Html.AntiForgeryToken()
                             <input type="hidden" name="id" value="@m.Id" />
                             <input type="hidden" name="groupId" value="@Model.Id" />
@@ -1099,7 +1106,7 @@ function openDemoConfirm() {
         var l = parseInt(document.getElementById('cntLate').value, 10) || 0;
         var x = parseInt(document.getElementById('cntExcused').value, 10) || 0;
         if (p + a + l + x !== sessions) {
-            alert('Status saylarının cəmi seçilmiş sessiya sayına bərabər olmalıdır (' + sessions + ').');
+            window.acadexAlert({ title: 'Yanlış cəmi', message: 'Status saylarının cəmi seçilmiş sessiya sayına bərabər olmalıdır (' + sessions + ').', type: 'warning' });
             return;
         }
     }

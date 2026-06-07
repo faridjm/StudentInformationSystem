@@ -27,4 +27,15 @@ namespace SIS.BLL.Services.DTOs.AuditLog
         public int Page { get; set; } = 1;
         public int PageSize { get; set; } = 20;
     }
+
+    /// <summary>
+    /// İstifadəçi tərəfindən qeydə alınan təhlükəsizlik hadisəsi
+    /// (məsələn: AccessDeniedToPublicAdmin, AccessDeniedToAcademicAdmin).
+    /// Whitelist-əsaslı validasiya API tərəfindədir.
+    /// </summary>
+    public class SecurityEventDto
+    {
+        public string Action { get; set; } = null!;
+        public string? Description { get; set; }
+    }
 }

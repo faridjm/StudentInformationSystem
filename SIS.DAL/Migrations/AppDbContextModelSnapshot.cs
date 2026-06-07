@@ -1043,6 +1043,75 @@ namespace SIS.DAL.Migrations
                     b.ToTable("Courses");
                 });
 
+            modelBuilder.Entity("SIS.Entities.Models.CourseApplication", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AdminNote")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<int?>("ConvertedStudentId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CourseId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<int?>("GroupId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Message")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConvertedStudentId");
+
+                    b.HasIndex("CourseId");
+
+                    b.HasIndex("CreatedAt");
+
+                    b.HasIndex("Email");
+
+                    b.HasIndex("GroupId");
+
+                    b.HasIndex("Status");
+
+                    b.ToTable("CourseApplications");
+                });
+
             modelBuilder.Entity("SIS.Entities.Models.CourseMaterial", b =>
                 {
                     b.Property<int>("Id")
@@ -1616,6 +1685,166 @@ namespace SIS.DAL.Migrations
                         .IsUnique();
 
                     b.ToTable("OnlineLessonParticipants");
+                });
+
+            modelBuilder.Entity("SIS.Entities.Models.PublicContactMessage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AdminNote").HasMaxLength(2000).HasColumnType("nvarchar(2000)");
+                    b.Property<DateTime>("CreatedAt").HasColumnType("datetime2");
+                    b.Property<string>("Email").IsRequired().HasMaxLength(200).HasColumnType("nvarchar(200)");
+                    b.Property<string>("FullName").IsRequired().HasMaxLength(150).HasColumnType("nvarchar(150)");
+                    b.Property<bool>("IsDeleted").HasColumnType("bit");
+                    b.Property<string>("Message").IsRequired().HasMaxLength(2000).HasColumnType("nvarchar(2000)");
+                    b.Property<string>("Phone").HasMaxLength(40).HasColumnType("nvarchar(40)");
+                    b.Property<int>("Status").HasColumnType("int");
+                    b.Property<string>("Subject").HasMaxLength(200).HasColumnType("nvarchar(200)");
+                    b.Property<DateTime?>("UpdatedAt").HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+                    b.HasIndex("CreatedAt");
+                    b.HasIndex("Email");
+                    b.HasIndex("Status");
+                    b.ToTable("PublicContactMessages");
+                });
+
+            modelBuilder.Entity("SIS.Entities.Models.PublicCourseProfile", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CareerOutcomes").HasMaxLength(4000).HasColumnType("nvarchar(4000)");
+                    b.Property<int>("CourseId").HasColumnType("int");
+                    b.Property<string>("CoverImageUrl").HasMaxLength(500).HasColumnType("nvarchar(500)");
+                    b.Property<DateTime>("CreatedAt").HasColumnType("datetime2");
+                    b.Property<bool>("IsDeleted").HasColumnType("bit");
+                    b.Property<bool>("IsFeatured").HasColumnType("bit");
+                    b.Property<bool>("IsVisible").HasColumnType("bit");
+                    b.Property<string>("PublicDescription").HasMaxLength(4000).HasColumnType("nvarchar(4000)");
+                    b.Property<string>("PublicShortDescription").HasMaxLength(500).HasColumnType("nvarchar(500)");
+                    b.Property<string>("PublicTitle").HasMaxLength(200).HasColumnType("nvarchar(200)");
+                    b.Property<int>("SortOrder").HasColumnType("int");
+                    b.Property<DateTime?>("UpdatedAt").HasColumnType("datetime2");
+                    b.Property<string>("WhatYouWillLearn").HasMaxLength(4000).HasColumnType("nvarchar(4000)");
+
+                    b.HasKey("Id");
+                    b.HasIndex("CourseId").IsUnique();
+                    b.HasIndex("IsVisible");
+                    b.HasIndex("SortOrder");
+                    b.ToTable("PublicCourseProfiles");
+                });
+
+            modelBuilder.Entity("SIS.Entities.Models.PublicFacility", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("Capacity").HasColumnType("int");
+                    b.Property<DateTime>("CreatedAt").HasColumnType("datetime2");
+                    b.Property<string>("Description").HasMaxLength(1000).HasColumnType("nvarchar(1000)");
+                    b.Property<string>("ImageUrl").HasMaxLength(500).HasColumnType("nvarchar(500)");
+                    b.Property<bool>("IsDeleted").HasColumnType("bit");
+                    b.Property<bool>("IsVisible").HasColumnType("bit");
+                    b.Property<int>("SortOrder").HasColumnType("int");
+                    b.Property<string>("Title").IsRequired().HasMaxLength(200).HasColumnType("nvarchar(200)");
+                    b.Property<string>("Type").HasMaxLength(80).HasColumnType("nvarchar(80)");
+                    b.Property<DateTime?>("UpdatedAt").HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+                    b.HasIndex("IsVisible");
+                    b.HasIndex("SortOrder");
+                    b.ToTable("PublicFacilities");
+                });
+
+            modelBuilder.Entity("SIS.Entities.Models.PublicFaq", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Answer").IsRequired().HasMaxLength(3000).HasColumnType("nvarchar(3000)");
+                    b.Property<string>("Category").HasMaxLength(80).HasColumnType("nvarchar(80)");
+                    b.Property<DateTime>("CreatedAt").HasColumnType("datetime2");
+                    b.Property<bool>("IsDeleted").HasColumnType("bit");
+                    b.Property<bool>("IsVisible").HasColumnType("bit");
+                    b.Property<string>("Question").IsRequired().HasMaxLength(300).HasColumnType("nvarchar(300)");
+                    b.Property<int>("SortOrder").HasColumnType("int");
+                    b.Property<DateTime?>("UpdatedAt").HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+                    b.HasIndex("IsVisible");
+                    b.HasIndex("SortOrder");
+                    b.ToTable("PublicFaqs");
+                });
+
+            modelBuilder.Entity("SIS.Entities.Models.PublicGraduateStory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt").HasColumnType("datetime2");
+                    b.Property<string>("CurrentPosition").HasMaxLength(200).HasColumnType("nvarchar(200)");
+                    b.Property<string>("FullName").IsRequired().HasMaxLength(150).HasColumnType("nvarchar(150)");
+                    b.Property<string>("GraduatedCourse").HasMaxLength(200).HasColumnType("nvarchar(200)");
+                    b.Property<int?>("GraduationYear").HasColumnType("int");
+                    b.Property<bool>("IsDeleted").HasColumnType("bit");
+                    b.Property<bool>("IsFeatured").HasColumnType("bit");
+                    b.Property<bool>("IsVisible").HasColumnType("bit");
+                    b.Property<string>("PhotoUrl").HasMaxLength(500).HasColumnType("nvarchar(500)");
+                    b.Property<int>("SortOrder").HasColumnType("int");
+                    b.Property<string>("Story").HasMaxLength(2000).HasColumnType("nvarchar(2000)");
+                    b.Property<DateTime?>("UpdatedAt").HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+                    b.HasIndex("IsFeatured");
+                    b.HasIndex("IsVisible");
+                    b.HasIndex("SortOrder");
+                    b.ToTable("PublicGraduateStories");
+                });
+
+            modelBuilder.Entity("SIS.Entities.Models.PublicTeacherProfile", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Bio").HasMaxLength(2000).HasColumnType("nvarchar(2000)");
+                    b.Property<DateTime>("CreatedAt").HasColumnType("datetime2");
+                    b.Property<string>("DisplayName").HasMaxLength(150).HasColumnType("nvarchar(150)");
+                    b.Property<bool>("IsDeleted").HasColumnType("bit");
+                    b.Property<bool>("IsFeatured").HasColumnType("bit");
+                    b.Property<bool>("IsVisible").HasColumnType("bit");
+                    b.Property<string>("LinkedInUrl").HasMaxLength(500).HasColumnType("nvarchar(500)");
+                    b.Property<string>("PhotoUrl").HasMaxLength(500).HasColumnType("nvarchar(500)");
+                    b.Property<string>("PublicTitle").HasMaxLength(200).HasColumnType("nvarchar(200)");
+                    b.Property<int>("SortOrder").HasColumnType("int");
+                    b.Property<string>("Specialization").HasMaxLength(300).HasColumnType("nvarchar(300)");
+                    b.Property<int>("TeacherId").HasColumnType("int");
+                    b.Property<DateTime?>("UpdatedAt").HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+                    b.HasIndex("IsVisible");
+                    b.HasIndex("SortOrder");
+                    b.HasIndex("TeacherId").IsUnique();
+                    b.ToTable("PublicTeacherProfiles");
                 });
 
             modelBuilder.Entity("SIS.Entities.Models.Quiz", b =>
@@ -2225,6 +2454,30 @@ namespace SIS.DAL.Migrations
                     b.Navigation("Department");
                 });
 
+            modelBuilder.Entity("SIS.Entities.Models.CourseApplication", b =>
+                {
+                    b.HasOne("SIS.Entities.Models.Course", "Course")
+                        .WithMany()
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("SIS.Entities.Models.Group", "Group")
+                        .WithMany()
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("SIS.Entities.Models.Student", "ConvertedStudent")
+                        .WithMany()
+                        .HasForeignKey("ConvertedStudentId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("ConvertedStudent");
+
+                    b.Navigation("Course");
+
+                    b.Navigation("Group");
+                });
+
             modelBuilder.Entity("SIS.Entities.Models.CourseMaterial", b =>
                 {
                     b.HasOne("SIS.Entities.Models.Group", "Group")
@@ -2399,6 +2652,28 @@ namespace SIS.DAL.Migrations
                     b.Navigation("OnlineLesson");
 
                     b.Navigation("Student");
+                });
+
+            modelBuilder.Entity("SIS.Entities.Models.PublicCourseProfile", b =>
+                {
+                    b.HasOne("SIS.Entities.Models.Course", "Course")
+                        .WithMany()
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Course");
+                });
+
+            modelBuilder.Entity("SIS.Entities.Models.PublicTeacherProfile", b =>
+                {
+                    b.HasOne("SIS.Entities.Models.Teacher", "Teacher")
+                        .WithMany()
+                        .HasForeignKey("TeacherId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Teacher");
                 });
 
             modelBuilder.Entity("SIS.Entities.Models.Quiz", b =>

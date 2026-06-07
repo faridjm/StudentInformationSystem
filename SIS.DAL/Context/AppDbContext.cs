@@ -50,6 +50,13 @@ namespace SIS.DAL.Context
         public DbSet<OnlineLesson> OnlineLessons { get; set; }
         public DbSet<OnlineLessonParticipant> OnlineLessonParticipants { get; set; }
         public DbSet<OnlineLessonChatMessage> OnlineLessonChatMessages { get; set; }
+        public DbSet<CourseApplication> CourseApplications { get; set; }
+        public DbSet<PublicCourseProfile> PublicCourseProfiles { get; set; }
+        public DbSet<PublicTeacherProfile> PublicTeacherProfiles { get; set; }
+        public DbSet<PublicFacility> PublicFacilities { get; set; }
+        public DbSet<PublicGraduateStory> PublicGraduateStories { get; set; }
+        public DbSet<PublicFaq> PublicFaqs { get; set; }
+        public DbSet<PublicContactMessage> PublicContactMessages { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

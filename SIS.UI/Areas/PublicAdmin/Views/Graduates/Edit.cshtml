@@ -1,0 +1,119 @@
+@model SIS.BLL.Services.DTOs.PublicAdmin.PublicGraduateStoryDto
+@{ ViewData["Title"] = Model.Id == 0 ? "Yeni Məzun Hekayəsi" : "Məzun Hekayəsi düzəlişi"; }
+
+<style>
+    .ge-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 18px; align-items: start; }
+    .ge-card { background: #fff; border: 1px solid var(--pa-border); border-radius: 14px; padding: 22px; margin-bottom: 16px; }
+    .ge-fld { margin-bottom: 14px; }
+    .ge-fld label { display: block; font-size: 12.5px; color: var(--pa-muted); font-weight: 600; margin-bottom: 6px; }
+    .ge-ctrl { width: 100%; padding: 10px 12px; border: 1px solid var(--pa-border); border-radius: 10px;
+        font-family: inherit; font-size: 14px; outline: none; }
+    .ge-ctrl:focus { border-color: var(--pa-primary); }
+    textarea.ge-ctrl { min-height: 120px; resize: vertical; line-height: 1.55; }
+    .ge-toggle { display: flex; align-items: center; gap: 10px; padding: 12px; background: var(--pa-bg);
+        border-radius: 10px; margin-bottom: 10px; cursor: pointer; }
+    .ge-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+        padding: 10px 16px; border-radius: 10px; border: none; cursor: pointer; font-size: 14px; font-weight: 600;
+        text-decoration: none; }
+    .ge-btn-primary { background: linear-gradient(135deg, var(--pa-primary), var(--pa-primary-2)); color: #fff; }
+    .ge-btn-ghost { background: #fff; color: var(--pa-ink); border: 1px solid var(--pa-border); }
+    .ge-photo { width: 100px; height: 100px; border-radius: 50%; margin: 0 auto;
+        background: var(--pa-bg); display: flex; align-items: center; justify-content: center;
+        color: var(--pa-muted); border: 1px solid var(--pa-border);
+        background-size: cover; background-position: center; }
+    @@media (max-width: 1000px) { .ge-grid { grid-template-columns: 1fr; } }
+</style>
+
+<a href="/PublicAdmin/Graduates" style="font-size:13px; color:var(--pa-muted); text-decoration:none;">
+    <i class="fas fa-arrow-left"></i> Məzun Hekayələri
+</a>
+
+<form method="post" action="/PublicAdmin/Graduates/Save">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="Id" value="@Model.Id" />
+
+    <div class="ge-grid" style="margin-top:14px;">
+        <div>
+            <div class="ge-card">
+                <div class="ge-fld">
+                    <label>Ad Soyad *</label>
+                    <input name="FullName" class="ge-ctrl" maxlength="150" required value="@Model.FullName" />
+                </div>
+                <div class="ge-fld">
+                    <label>Bitirdiyi kurs</label>
+                    <input name="GraduatedCourse" class="ge-ctrl" maxlength="200" value="@Model.GraduatedCourse" />
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+                    <div class="ge-fld">
+                        <label>Bitirmə ili</label>
+                        <input name="GraduationYear" type="number" class="ge-ctrl" min="2000" max="2100" value="@Model.GraduationYear" />
+                    </div>
+                    <div class="ge-fld">
+                        <label>Hazırkı vəzifə</label>
+                        <input name="CurrentPosition" class="ge-ctrl" maxlength="200" value="@Model.CurrentPosition" />
+                    </div>
+                </div>
+                <div class="ge-fld">
+                    <label>Hekayə</label>
+                    <textarea name="Story" class="ge-ctrl" maxlength="2000"
+                              placeholder="Tələbə hekayəsi və təcrübəsi">@Model.Story</textarea>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <div class="ge-card">
+                <label style="display:block; font-size:12.5px; color:var(--pa-muted); font-weight:600; margin-bottom:8px;">Foto</label>
+                <div class="ge-photo" id="photoPreview"
+                     style="@(string.IsNullOrEmpty(Model.PhotoUrl) ? "" : $"background-image:url('{Model.PhotoUrl}')")">
+                    @if (string.IsNullOrEmpty(Model.PhotoUrl)) { <i class="fas fa-user" style="font-size:28px;"></i> }
+                </div>
+                <input type="hidden" name="PhotoUrl" id="PhotoUrl" value="@Model.PhotoUrl" />
+                <input type="file" id="photoInput" accept=".jpg,.jpeg,.png,.webp" style="margin-top:10px; font-size:13px; width:100%;" />
+                <div id="photoStatus" style="font-size:12px; color:var(--pa-muted); margin-top:6px; text-align:center;"></div>
+            </div>
+            <div class="ge-card">
+                <label class="ge-toggle">
+                    <input type="checkbox" name="IsVisible" value="true" @(Model.IsVisible ? "checked" : "") />
+                    <span><strong>Görünür</strong></span>
+                </label>
+                <label class="ge-toggle">
+                    <input type="checkbox" name="IsFeatured" value="true" @(Model.IsFeatured ? "checked" : "") />
+                    <span><strong>Featured</strong></span>
+                </label>
+                <div class="ge-fld" style="margin-top:14px;">
+                    <label>Sıralama</label>
+                    <input name="SortOrder" type="number" class="ge-ctrl" value="@Model.SortOrder" />
+                </div>
+            </div>
+            <div class="ge-card">
+                <button type="submit" class="ge-btn ge-btn-primary" style="width:100%;">
+                    <i class="fas fa-save"></i> Yadda saxla
+                </button>
+                <a href="/PublicAdmin/Graduates" class="ge-btn ge-btn-ghost" style="width:100%; margin-top:10px;">Ləğv et</a>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+<script>
+    document.getElementById('photoInput')?.addEventListener('change', async function (e) {
+        var f = e.target.files[0]; if (!f) return;
+        var status = document.getElementById('photoStatus'); status.textContent = 'Yüklənir...';
+        var fd = new FormData(); fd.append('file', f); fd.append('folder', 'graduates');
+        var token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+        try {
+            var resp = await fetch('/Upload/PublicImage', { method:'POST', body:fd,
+                headers:{ 'RequestVerificationToken': token } });
+            var data = await resp.json();
+            if (resp.ok) {
+                document.getElementById('PhotoUrl').value = data.url;
+                var p = document.getElementById('photoPreview');
+                p.style.backgroundImage = "url('" + data.url + "')"; p.innerHTML = '';
+                status.textContent = 'Yükləndi';
+            } else { status.textContent = 'Xəta: ' + (data.error || ''); }
+        } catch { status.textContent = 'Şəbəkə xətası'; }
+    });
+</script>
+}

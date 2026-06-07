@@ -1,0 +1,82 @@
+@model List<SIS.BLL.Services.DTOs.PublicAdmin.PublicGraduateStoryDto>
+@{ ViewData["Title"] = "Məzun Hekayələri"; }
+
+<style>
+    .pg-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+    .pg-card { background: #fff; border: 1px solid var(--pa-border); border-radius: 14px; padding: 22px; text-align: center; }
+    .pg-photo { width: 76px; height: 76px; border-radius: 50%; margin: 0 auto 12px;
+        background: linear-gradient(135deg, var(--pa-primary), var(--pa-primary-2));
+        display: flex; align-items: center; justify-content: center; color: #fff; font-size: 24px;
+        font-weight: 800; background-size: cover; background-position: center; }
+    .pg-name { font-size: 15px; font-weight: 700; }
+    .pg-role { color: var(--pa-primary); font-weight: 600; font-size: 12.5px; margin-top: 3px; }
+    .pg-meta { font-size: 12px; color: var(--pa-muted); margin-top: 4px; }
+    .pg-chip { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 11px;
+        font-weight: 700; text-transform: uppercase; letter-spacing: .4px; margin-top: 10px; }
+    .pg-on { background: rgba(16,185,129,.12); color: #047857; }
+    .pg-off { background: #F1F5F9; color: #475569; }
+    .pg-feat { background: rgba(245,158,11,.14); color: #B45309; }
+    .pg-actions { display: flex; gap: 8px; margin-top: 14px; }
+    .pg-btn { flex: 1; padding: 8px; border-radius: 8px; border: 1px solid var(--pa-border); background: #fff;
+        cursor: pointer; font-size: 12.5px; font-weight: 600; color: var(--pa-ink); text-decoration: none;
+        display: flex; align-items: center; justify-content: center; gap: 5px; }
+    .pg-btn:hover { border-color: var(--pa-primary); color: var(--pa-primary); }
+    .pg-btn-danger { color: #DC2626; }
+    .pg-btn-danger:hover { border-color: #DC2626; }
+</style>
+
+<div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:16px;">
+    <div>
+        <h1 style="font-size:20px; font-weight:800;"><i class="fas fa-user-graduate" style="color:var(--pa-primary);"></i> Məzun Hekayələri</h1>
+        <p style="font-size:13px; color:var(--pa-muted); margin-top:4px;">Uğur hekayələrini idarə edin.</p>
+    </div>
+    <a href="/PublicAdmin/Graduates/Create"
+       style="padding:9px 16px; background:linear-gradient(135deg,var(--pa-primary),var(--pa-primary-2));
+              color:#fff; border-radius:10px; text-decoration:none; font-size:13.5px; font-weight:600;">
+        <i class="fas fa-plus"></i> Yeni
+    </a>
+</div>
+
+@if (!Model.Any())
+{
+    <div style="background:#fff; border:1px dashed var(--pa-border); border-radius:14px; padding:50px 20px; text-align:center; color:var(--pa-muted);">
+        <i class="fas fa-user-graduate" style="font-size:32px; opacity:.35; color:var(--pa-primary);"></i>
+        <p style="margin-top:10px;">Hələ məzun hekayəsi əlavə edilməyib.</p>
+    </div>
+}
+else
+{
+    <div class="pg-grid">
+        @foreach (var g in Model)
+        {
+            <div class="pg-card">
+                <div class="pg-photo" style="@(string.IsNullOrEmpty(g.PhotoUrl) ? "" : $"background-image:url('{g.PhotoUrl}'); color:transparent;")">
+                    @(string.IsNullOrEmpty(g.PhotoUrl) ? (string.IsNullOrEmpty(g.FullName) ? "?" : g.FullName.Substring(0,1).ToUpper()) : "")
+                </div>
+                <div class="pg-name">@g.FullName</div>
+                @if (!string.IsNullOrEmpty(g.CurrentPosition)) { <div class="pg-role">@g.CurrentPosition</div> }
+                <div class="pg-meta">@(g.GraduatedCourse ?? "—") @(g.GraduationYear.HasValue ? "· " + g.GraduationYear : "")</div>
+                <div>
+                    @if (g.IsVisible) { <span class="pg-chip pg-on">Görünür</span> }
+                    else { <span class="pg-chip pg-off">Gizli</span> }
+                    @if (g.IsFeatured) { <span class="pg-chip pg-feat">Featured</span> }
+                </div>
+                <div class="pg-actions">
+                    <a href="/PublicAdmin/Graduates/Edit?id=@g.Id" class="pg-btn">
+                        <i class="fas fa-pen"></i> Düzəliş
+                    </a>
+                    <form method="post" action="/PublicAdmin/Graduates/Delete" style="flex:1;"
+                          data-confirm="Məzun hekayəsi silinsin?"
+                          data-confirm-title="Silmək istəyirsiniz?"
+                          data-confirm-text="Sil">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@g.Id" />
+                        <button type="submit" class="pg-btn pg-btn-danger" style="width:100%;">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        }
+    </div>
+}

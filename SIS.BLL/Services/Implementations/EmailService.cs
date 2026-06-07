@@ -193,25 +193,55 @@ namespace SIS.BLL.Services.Implementations
             await SendAsync(to, $"Yeni Tapşırıq: {assignmentTitle} — Acadex", htmlBody);
         }
 
-        public async Task SendTranscriptAsync(string to, string fullName, string courseName, string groupName, byte[] pdfBytes, string fileName)
+        public async Task SendTranscriptAsync(string to, string fullName, string courseName, string groupName, byte[] pdfBytes, string fileName, string lang = "az")
         {
+            lang = (lang ?? "az").Trim().ToLowerInvariant();
+            if (lang != "en" && lang != "ru") lang = "az";
+
+            // Dilə uyğun subject / başlıq / mətn (database data — ad, kurs, qrup — toxunulmur)
+            string subject, heading, greeting, intro, courseLabel, groupLabel, fileLabel;
+            switch (lang)
+            {
+                case "en":
+                    subject = "Your Acadex 360 Academic Transcript";
+                    heading = "Academic Transcript";
+                    greeting = $"Hello <strong>{fullName}</strong>,";
+                    intro = $"Your academic transcript for the <strong>{courseName}</strong> course has been attached to this email.";
+                    courseLabel = "Course"; groupLabel = "Group"; fileLabel = "File";
+                    break;
+                case "ru":
+                    subject = "Ваша академическая выписка Acadex 360";
+                    heading = "Академическая выписка";
+                    greeting = $"Здравствуйте, <strong>{fullName}</strong>,";
+                    intro = $"Ваша академическая выписка по курсу <strong>{courseName}</strong> прикреплена к этому письму.";
+                    courseLabel = "Курс"; groupLabel = "Группа"; fileLabel = "Файл";
+                    break;
+                default:
+                    subject = "Acadex 360 Akademik çıxarışınız";
+                    heading = "Akademik çıxarış";
+                    greeting = $"Salam <strong>{fullName}</strong>,";
+                    intro = $"Sizin <strong>{courseName}</strong> kursu üzrə akademik çıxarışınız bu emailə əlavə olunub.";
+                    courseLabel = "Kurs"; groupLabel = "Qrup"; fileLabel = "Fayl";
+                    break;
+            }
+
             var htmlBody = $@"
         <!DOCTYPE html><html>
         <body style='font-family:Arial,sans-serif;background:#f4f4f4;padding:20px;'>
             <div style='max-width:600px;margin:0 auto;background:#fff;border-radius:10px;padding:30px;'>
-                <h2 style='color:#e94560;'>📄 Akademik Transkript</h2>
-                <p>Hörmətli <strong>{fullName}</strong>,</p>
-                <p>Sizin <strong>{courseName}</strong> kursu üzrə akademik transkriptiniz aşağıda əlavə olunub.</p>
+                <h2 style='color:#4F46E5;'>📄 {heading} <span style='font-size:13px;color:#10B981;'>Acadex 360</span></h2>
+                <p>{greeting}</p>
+                <p>{intro}</p>
                 <div style='background:#f8f8f8;border-radius:8px;padding:16px;margin:20px 0;'>
-                    <p style='margin:0;'><strong>Kurs:</strong> {courseName}</p>
-                    <p style='margin:8px 0 0;'><strong>Qrup:</strong> {groupName}</p>
-                    <p style='margin:8px 0 0;'><strong>Fayl:</strong> {fileName}</p>
+                    <p style='margin:0;'><strong>{courseLabel}:</strong> {courseName}</p>
+                    <p style='margin:8px 0 0;'><strong>{groupLabel}:</strong> {groupName}</p>
+                    <p style='margin:8px 0 0;'><strong>{fileLabel}:</strong> {fileName}</p>
                 </div>
-                <p style='color:#999;font-size:12px;'>Acadex</p>
+                <p style='color:#999;font-size:12px;'>Acadex 360 · Digital Academy Management Platform</p>
             </div>
         </body></html>";
 
-            await SendWithAttachmentAsync(to, $"Transkript — Acadex", htmlBody, pdfBytes, fileName, "application/pdf");
+            await SendWithAttachmentAsync(to, subject, htmlBody, pdfBytes, fileName, "application/pdf");
         }
 
         private async Task SendWithAttachmentAsync(string to, string subject, string htmlBody, byte[] attachment, string fileName, string contentType)

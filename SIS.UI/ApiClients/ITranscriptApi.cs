@@ -9,9 +9,9 @@ namespace SIS.UI.ApiClients
         Task<TranscriptDto> GetAsync(int enrollmentId);
 
         [Get("/api/transcript/{enrollmentId}/pdf")]
-        Task<HttpResponseMessage> GetPdfAsync(int enrollmentId);
+        Task<HttpResponseMessage> GetPdfAsync(int enrollmentId, string? lang = "az");
 
         [Post("/api/transcript/{enrollmentId}/email")]
-        Task<HttpResponseMessage> SendByEmailAsync(int enrollmentId);
+        Task<HttpResponseMessage> SendByEmailAsync(int enrollmentId, string? lang = "az");
     }
 }

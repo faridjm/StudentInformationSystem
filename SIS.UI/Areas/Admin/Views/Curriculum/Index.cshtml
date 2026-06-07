@@ -81,7 +81,10 @@ else
                                 <input type="hidden" name="active" value="@((!t.IsActive).ToString().ToLower())" />
                                 <button type="submit" class="btn btn-sm btn-secondary">@(t.IsActive ? "Deaktiv et" : "Aktivləşdir")</button>
                             </form>
-                            <form method="post" action="/Admin/Curriculum/Delete" style="display:inline;" onsubmit="return confirm('Şablon silinsin?');">
+                            <form method="post" action="/Admin/Curriculum/Delete" style="display:inline;"
+                                  data-confirm="Bu şablon silinsin?"
+                                  data-confirm-title="Şablon silinsin?"
+                                  data-confirm-text="Sil">
                                 @Html.AntiForgeryToken()
                                 <input type="hidden" name="id" value="@t.Id" />
                                 <button type="submit" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>

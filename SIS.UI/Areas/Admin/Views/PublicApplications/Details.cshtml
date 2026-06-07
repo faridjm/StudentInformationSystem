@@ -1,0 +1,266 @@
+@using SIS.BLL.Services.DTOs.Public
+@using SIS.Entities.Enums
+@model CourseApplicationDetailDto
+@{
+    ViewData["Title"] = $"Müraciət #{Model.Id}";
+
+    string StatusText(CourseApplicationStatus s) => s switch
+    {
+        CourseApplicationStatus.New                => "Yeni",
+        CourseApplicationStatus.Contacted          => "Əlaqə saxlandı",
+        CourseApplicationStatus.Accepted           => "Qəbul olundu",
+        CourseApplicationStatus.Rejected           => "Rədd edildi",
+        CourseApplicationStatus.ConvertedToStudent => "Tələbəyə çevrildi",
+        _ => s.ToString()
+    };
+    string StatusClass(CourseApplicationStatus s) => s switch
+    {
+        CourseApplicationStatus.New                => "bd-st-new",
+        CourseApplicationStatus.Contacted          => "bd-st-contacted",
+        CourseApplicationStatus.Accepted           => "bd-st-accepted",
+        CourseApplicationStatus.Rejected           => "bd-st-rejected",
+        CourseApplicationStatus.ConvertedToStudent => "bd-st-converted",
+        _ => "bd-st-new"
+    };
+    bool converted = Model.ConvertedStudentId.HasValue;
+}
+
+<style>
+    .bd-page { display: grid; grid-template-columns: 1.6fr 1fr; gap: 18px; align-items: start; }
+    .bd-back {
+        display: inline-flex; align-items: center; gap: 6px; color: var(--text-secondary);
+        text-decoration: none; font-size: 13px; margin-bottom: 12px;
+        padding: 6px 10px; border-radius: 8px;
+    }
+    .bd-back:hover { background: var(--bg-hover); color: var(--accent); }
+
+    .bd-hero {
+        background: var(--card-bg, #fff); border: 1px solid var(--border);
+        border-radius: 14px; padding: 22px; margin-bottom: 16px;
+    }
+    .bd-hero h1 { font-size: 22px; font-weight: 800; letter-spacing: -.4px; }
+    .bd-hero .meta { color: var(--text-secondary); font-size: 13px; margin-top: 6px; }
+
+    .bd-card {
+        background: var(--card-bg, #fff); border: 1px solid var(--border);
+        border-radius: 14px; padding: 22px; margin-bottom: 16px;
+    }
+    .bd-card h3 {
+        font-size: 14px; font-weight: 700; letter-spacing: -.2px;
+        display: flex; align-items: center; gap: 8px; margin-bottom: 16px;
+    }
+    .bd-card h3 i {
+        width: 32px; height: 32px; border-radius: 9px;
+        background: var(--accent-soft); color: var(--accent);
+        display: inline-flex; align-items: center; justify-content: center; font-size: 13px;
+    }
+
+    .bd-info { display: grid; grid-template-columns: 130px 1fr; row-gap: 10px; font-size: 14px; }
+    .bd-info .lbl { color: var(--text-secondary); font-size: 12.5px; }
+    .bd-info .val { color: var(--text-main); font-weight: 600; }
+    .bd-info .val a { color: var(--accent); text-decoration: none; }
+
+    .bd-msg {
+        padding: 14px; background: var(--bg-hover); border-radius: 10px;
+        font-size: 14px; color: var(--text-main); line-height: 1.6;
+        white-space: pre-wrap;
+    }
+
+    .bd-status {
+        display: inline-flex; align-items: center; gap: 5px;
+        padding: 5px 12px; border-radius: 999px; font-size: 12px; font-weight: 700;
+        text-transform: uppercase; letter-spacing: .4px;
+    }
+    .bd-st-new       { background: rgba(59,130,246,.12);  color: #2563EB; }
+    .bd-st-contacted { background: rgba(245,158,11,.16); color: #B45309; }
+    .bd-st-accepted  { background: rgba(16,185,129,.12); color: #047857; }
+    .bd-st-rejected  { background: rgba(239,68,68,.12);  color: #DC2626; }
+    .bd-st-converted { background: rgba(124,58,237,.12); color: #6D28D9; }
+
+    .bd-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .bd-actions form { display: contents; }
+
+    @@media (max-width: 1000px) {
+        .bd-page { grid-template-columns: 1fr; }
+    }
+</style>
+
+<a href="/Admin/PublicApplications" class="bd-back">
+    <i class="fas fa-arrow-left"></i> Müraciətlər siyahısına qayıt
+</a>
+
+<div class="bd-page">
+
+    @* ===== LEFT — applicant info ===== *@
+    <div>
+        <div class="bd-hero">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:14px; flex-wrap:wrap;">
+                <div>
+                    <h1>@Model.FullName</h1>
+                    <div class="meta">
+                        <i class="fas fa-calendar-day" style="color:var(--accent);"></i>
+                        @Model.CreatedAt.ToLocalTime().ToString("dd MMMM yyyy, HH:mm")
+                        · #@Model.Id
+                    </div>
+                </div>
+                <span class="bd-status @StatusClass(Model.Status)">@StatusText(Model.Status)</span>
+            </div>
+        </div>
+
+        <div class="bd-card">
+            <h3><i class="fas fa-id-card"></i> Müraciət məlumatları</h3>
+            <div class="bd-info">
+                <div class="lbl">Ad Soyad</div>
+                <div class="val">@Model.FullName</div>
+
+                <div class="lbl">Email</div>
+                <div class="val"><a href="mailto:@Model.Email">@Model.Email</a></div>
+
+                <div class="lbl">Telefon</div>
+                <div class="val"><a href="tel:@Model.Phone">@Model.Phone</a></div>
+
+                <div class="lbl">Kurs</div>
+                <div class="val">@(Model.CourseName ?? "—")</div>
+
+                <div class="lbl">Qrup</div>
+                <div class="val">@(Model.GroupName ?? "—")</div>
+
+                <div class="lbl">Yaradıldı</div>
+                <div class="val">@Model.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</div>
+
+                @if (Model.UpdatedAt.HasValue)
+                {
+                    <div class="lbl">Yeniləndi</div>
+                    <div class="val">@Model.UpdatedAt.Value.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</div>
+                }
+            </div>
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(Model.Message))
+        {
+            <div class="bd-card">
+                <h3><i class="fas fa-message"></i> Mesaj</h3>
+                <div class="bd-msg">@Model.Message</div>
+            </div>
+        }
+
+        <div class="bd-card">
+            <h3><i class="fas fa-note-sticky"></i> Admin qeydi</h3>
+            <form method="post" action="/Admin/PublicApplications/UpdateNote">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" value="@Model.Id" />
+                <textarea name="adminNote" rows="4" maxlength="2000"
+                          class="form-control"
+                          style="font-family:inherit;"
+                          placeholder="Müraciət barədə daxili qeyd yazın...">@Model.AdminNote</textarea>
+                <button type="submit" class="btn btn-primary btn-sm" style="margin-top:10px;">
+                    <i class="fas fa-save"></i> Qeydi yadda saxla
+                </button>
+            </form>
+        </div>
+    </div>
+
+    @* ===== RIGHT — actions ===== *@
+    <div>
+        @* Status actions *@
+        <div class="bd-card">
+            <h3><i class="fas fa-arrows-rotate"></i> Statusu dəyiş</h3>
+            @if (converted)
+            {
+                <p style="font-size:13px; color:var(--text-secondary);">
+                    Müraciət artıq tələbəyə çevrilib — status dəyişdirilə bilməz.
+                </p>
+            }
+            else
+            {
+                <div class="bd-actions">
+                    @foreach (CourseApplicationStatus s in new[]
+                    {
+                        CourseApplicationStatus.New,
+                        CourseApplicationStatus.Contacted,
+                        CourseApplicationStatus.Accepted,
+                        CourseApplicationStatus.Rejected
+                    })
+                    {
+                        <form method="post" action="/Admin/PublicApplications/UpdateStatus">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@Model.Id" />
+                            <input type="hidden" name="status" value="@s" />
+                            <button type="submit"
+                                    class="btn @(Model.Status == s ? "btn-primary" : "btn-secondary") btn-sm"
+                                    style="width:100%;" @(Model.Status == s ? "disabled" : "")>
+                                @StatusText(s)
+                            </button>
+                        </form>
+                    }
+                </div>
+            }
+        </div>
+
+        @* Convert to Student *@
+        <div class="bd-card">
+            <h3><i class="fas fa-user-graduate"></i> Tələbə yarat</h3>
+
+            @if (converted)
+            {
+                <div style="background:var(--accent-soft); color:var(--accent); padding:12px 14px; border-radius:10px; font-size:13px;">
+                    <strong>Yaradılıb:</strong><br />
+                    @(Model.ConvertedStudentName ?? "—")
+                    @if (!string.IsNullOrEmpty(Model.ConvertedStudentNumber))
+                    {
+                        <span> · @Model.ConvertedStudentNumber</span>
+                    }
+                </div>
+            }
+            else
+            {
+                <p style="font-size:12.5px; color:var(--text-secondary); margin-bottom:12px;">
+                    Bu müraciətdən tələbə yaradın. Email və telefon prefill olunub — redaktə edə bilərsiniz.
+                </p>
+                <form method="post" action="/Admin/PublicApplications/Convert"
+                      data-confirm="Tələbə yaradılsın və müraciət ConvertedToStudent olaraq qeyd edilsin?"
+                      data-confirm-title="Tələbə yaradılsın?"
+                      data-confirm-text="Yarat"
+                      data-confirm-type="info">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@Model.Id" />
+
+                    <div style="margin-bottom:10px;">
+                        <label style="font-size:12px; color:var(--text-secondary);">Ad Soyad</label>
+                        <input name="fullName" class="form-control" value="@Model.FullName" required />
+                    </div>
+                    <div style="margin-bottom:10px;">
+                        <label style="font-size:12px; color:var(--text-secondary);">Email</label>
+                        <input name="email" type="email" class="form-control" value="@Model.Email" required />
+                    </div>
+                    <div style="margin-bottom:10px;">
+                        <label style="font-size:12px; color:var(--text-secondary);">Telefon</label>
+                        <input name="phone" class="form-control" value="@Model.Phone" />
+                    </div>
+                    <div style="margin-bottom:10px;">
+                        <label style="font-size:12px; color:var(--text-secondary);">Şifrə (ən azı 6 simvol)</label>
+                        <input name="password" type="text" class="form-control" required minlength="6"
+                               placeholder="Tələbənin başlanğıc şifrəsi" />
+                    </div>
+                    <div style="margin-bottom:10px;">
+                        <label style="font-size:12px; color:var(--text-secondary);">Qeydiyyat ili</label>
+                        <input name="enrollmentYear" type="number" class="form-control"
+                               value="@DateTime.UtcNow.Year" min="2000" max="2100" required />
+                    </div>
+
+                    @if (Model.GroupId.HasValue)
+                    {
+                        <label style="display:flex; align-items:center; gap:8px; font-size:13px; color:var(--text-main); padding:10px; background:var(--bg-hover); border-radius:10px; margin:12px 0; cursor:pointer;">
+                            <input type="checkbox" name="enrollToGroup" value="true" checked />
+                            <span><strong>@Model.GroupName</strong> qrupuna enroll et</span>
+                        </label>
+                    }
+
+                    <button type="submit" class="btn btn-primary" style="width:100%; margin-top:6px;">
+                        <i class="fas fa-user-plus"></i> Tələbə yarat
+                    </button>
+                </form>
+            }
+        </div>
+    </div>
+</div>

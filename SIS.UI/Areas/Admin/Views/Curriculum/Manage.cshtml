@@ -144,7 +144,10 @@ else
                                     <i class="fas fa-edit"></i>
                                 </button>
                                 <form method="post" action="/Admin/Curriculum/DeleteItem" style="display:inline;"
-                                      onsubmit="return confirmDelete(this, @(i.HasAssessment ? "true" : "false"));">
+                                      data-confirm="@(i.HasAssessment ? "Bu dərs sırasında qiymətləndirmə var. Silsəniz, bağlı qiymətləndirmə də silinəcək. Davam edək?" : "Sıra silinsin?")"
+                                      data-confirm-title="@(i.HasAssessment ? "Cascade silinmə" : "Sıra silinsin?")"
+                                      data-confirm-text="Sil"
+                                      data-confirm-type="@(i.HasAssessment ? "warning" : "danger")">
                                     @Html.AntiForgeryToken()
                                     <input type="hidden" name="itemId" value="@i.Id" />
                                     <input type="hidden" name="templateId" value="@Model.Id" />
@@ -246,12 +249,9 @@ else
     refreshNext();
 })();
 
-// Cascade-delete confirm
+// Cascade-delete confirm — artıq lazım deyil (data-confirm istifadə olunur), amma backwards compat üçün saxlanılır.
 function confirmDelete(form, hasAssessment) {
-    if (hasAssessment) {
-        return confirm('Bu dərs sırasında qiymətləndirmə var. Silsəniz, bağlı qiymətləndirmə də silinəcək. Davam etmək istəyirsiniz?');
-    }
-    return confirm('Sıra silinsin?');
+    return true;
 }
 
 // ── Edit modal ──

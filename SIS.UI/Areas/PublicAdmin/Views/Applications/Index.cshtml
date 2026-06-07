@@ -1,0 +1,161 @@
+@using SIS.BLL.Services.DTOs.Common
+@using SIS.BLL.Services.DTOs.Public
+@using SIS.BLL.Services.DTOs.Course
+@using SIS.Entities.Enums
+@model PagedResult<CourseApplicationListDto>
+@{
+    ViewData["Title"] = "Müraciətlər";
+    var stats   = ViewBag.Stats as CourseApplicationStatsDto ?? new CourseApplicationStatsDto();
+    var courses = ViewBag.Courses as IEnumerable<CourseDto> ?? Enumerable.Empty<CourseDto>();
+    var search  = ViewBag.Search as string;
+    var status  = ViewBag.Status as CourseApplicationStatus?;
+    var cid     = ViewBag.CourseId as int?;
+    var fromDt  = ViewBag.FromDate as DateTime?;
+    var toDt    = ViewBag.ToDate as DateTime?;
+
+    string StTxt(CourseApplicationStatus s) => s switch
+    {
+        CourseApplicationStatus.New => "Yeni", CourseApplicationStatus.Contacted => "Əlaqə saxlandı",
+        CourseApplicationStatus.Accepted => "Qəbul olundu", CourseApplicationStatus.Rejected => "Rədd edildi",
+        CourseApplicationStatus.ConvertedToStudent => "Tələbəyə çevrildi", _ => s.ToString()
+    };
+    string StCls(CourseApplicationStatus s) => s switch
+    {
+        CourseApplicationStatus.New => "p-st-new", CourseApplicationStatus.Contacted => "p-st-contacted",
+        CourseApplicationStatus.Accepted => "p-st-accepted", CourseApplicationStatus.Rejected => "p-st-rejected",
+        CourseApplicationStatus.ConvertedToStudent => "p-st-converted", _ => "p-st-new"
+    };
+}
+
+<style>
+    .p-kpi { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 18px; }
+    .p-kpi .c { background: #fff; border: 1px solid var(--pa-border); border-radius: 12px; padding: 14px 16px;
+        display: flex; align-items: center; gap: 12px; }
+    .p-kpi .c .ico { width: 38px; height: 38px; border-radius: 10px;
+        display: inline-flex; align-items: center; justify-content: center; font-size: 15px; }
+    .p-kpi .c .n { font-size: 22px; font-weight: 800; line-height: 1; }
+    .p-kpi .c .l { font-size: 12px; color: var(--pa-muted); margin-top: 3px; }
+    .p-kpi .c.total .ico { background: rgba(124,58,237,.12); color: #6D28D9; }
+    .p-kpi .c.new   .ico { background: rgba(59,130,246,.12); color: #2563EB; }
+    .p-kpi .c.cont  .ico { background: rgba(245,158,11,.14); color: #B45309; }
+    .p-kpi .c.acc   .ico { background: rgba(16,185,129,.12); color: #047857; }
+    .p-kpi .c.conv  .ico { background: rgba(124,58,237,.12); color: #6D28D9; }
+
+    .p-filters {
+        background: #fff; border: 1px solid var(--pa-border); border-radius: 12px; padding: 14px;
+        display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr auto; gap: 10px; margin-bottom: 14px;
+    }
+    .p-filters .ctrl { padding: 9px 12px; border: 1px solid var(--pa-border); border-radius: 8px;
+        font-family: inherit; font-size: 14px; outline: none; background: #fff; }
+    .p-filters .ctrl:focus { border-color: var(--pa-primary); }
+    .p-btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 8px;
+        background: linear-gradient(135deg, var(--pa-primary), var(--pa-primary-2)); color: #fff; border: none;
+        cursor: pointer; font-size: 13px; font-weight: 600; text-decoration: none; }
+    .p-btn-ghost { background: #fff; color: var(--pa-ink); border: 1px solid var(--pa-border); }
+
+    .p-card { background: #fff; border: 1px solid var(--pa-border); border-radius: 12px; overflow: hidden; }
+    .p-table { width: 100%; border-collapse: collapse; }
+    .p-table th { text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: .5px;
+        color: var(--pa-muted); font-weight: 700; padding: 12px; background: #F8FAFC; border-bottom: 1px solid var(--pa-border); }
+    .p-table td { padding: 13px 12px; border-bottom: 1px solid var(--pa-border); font-size: 14px; vertical-align: middle; }
+    .p-table tr:last-child td { border-bottom: none; }
+    .p-table tr:hover td { background: #FAFBFF; }
+
+    .p-status { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 999px;
+        font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; white-space: nowrap; }
+    .p-st-new       { background: rgba(59,130,246,.12);  color: #2563EB; }
+    .p-st-contacted { background: rgba(245,158,11,.16); color: #B45309; }
+    .p-st-accepted  { background: rgba(16,185,129,.12); color: #047857; }
+    .p-st-rejected  { background: rgba(239,68,68,.12);  color: #DC2626; }
+    .p-st-converted { background: rgba(124,58,237,.12); color: #6D28D9; }
+
+    .p-empty { text-align: center; padding: 50px 20px; color: var(--pa-muted); }
+    .p-empty i { font-size: 36px; opacity: .35; display: block; margin-bottom: 10px; color: var(--pa-primary); }
+
+    .p-page { display: flex; gap: 6px; justify-content: center; padding: 14px; border-top: 1px solid var(--pa-border); }
+    .p-page a, .p-page span { padding: 6px 12px; border-radius: 8px; font-size: 13px; text-decoration: none;
+        border: 1px solid var(--pa-border); color: var(--pa-muted); font-weight: 600; }
+    .p-page a:hover { border-color: var(--pa-primary); color: var(--pa-primary); }
+    .p-page .active { background: var(--pa-primary); color: #fff; border-color: var(--pa-primary); }
+
+    @@media (max-width: 1100px) { .p-kpi { grid-template-columns: repeat(3, 1fr); } .p-filters { grid-template-columns: 1fr 1fr; } }
+    @@media (max-width: 640px)  { .p-kpi { grid-template-columns: 1fr 1fr; } .p-filters { grid-template-columns: 1fr; } }
+</style>
+
+<div class="p-kpi">
+    <div class="c total"><div class="ico"><i class="fas fa-layer-group"></i></div>
+        <div><div class="n">@stats.TotalCount</div><div class="l">Cəmi</div></div></div>
+    <div class="c new"><div class="ico"><i class="fas fa-envelope-open-text"></i></div>
+        <div><div class="n">@stats.NewCount</div><div class="l">Yeni</div></div></div>
+    <div class="c cont"><div class="ico"><i class="fas fa-phone"></i></div>
+        <div><div class="n">@stats.ContactedCount</div><div class="l">Əlaqə saxlandı</div></div></div>
+    <div class="c acc"><div class="ico"><i class="fas fa-circle-check"></i></div>
+        <div><div class="n">@stats.AcceptedCount</div><div class="l">Qəbul olundu</div></div></div>
+    <div class="c conv"><div class="ico"><i class="fas fa-user-graduate"></i></div>
+        <div><div class="n">@stats.ConvertedCount</div><div class="l">Tələbəyə çevrildi</div></div></div>
+</div>
+
+<form method="get" action="/PublicAdmin/Applications" class="p-filters">
+    <input type="text" name="search" value="@search" class="ctrl" placeholder="Ad / email / telefon..." />
+    <select name="status" class="ctrl">
+        <option value="">Bütün statuslar</option>
+        @foreach (CourseApplicationStatus s in Enum.GetValues(typeof(CourseApplicationStatus)))
+        { <option value="@s" selected="@(status == s)">@StTxt(s)</option> }
+    </select>
+    <select name="courseId" class="ctrl">
+        <option value="">Bütün kurslar</option>
+        @foreach (var c in courses.OrderBy(x => x.Name))
+        { <option value="@c.Id" selected="@(cid == c.Id)">@c.Name</option> }
+    </select>
+    <input type="date" name="fromDate" value="@(fromDt?.ToString("yyyy-MM-dd"))" class="ctrl" />
+    <input type="date" name="toDate"   value="@(toDt?.ToString("yyyy-MM-dd"))"   class="ctrl" />
+    <button type="submit" class="p-btn"><i class="fas fa-filter"></i> Filtr</button>
+</form>
+
+<div class="p-card">
+    @if (!Model.Items.Any())
+    {
+        <div class="p-empty"><i class="fas fa-inbox"></i><p>Heç bir müraciət yoxdur.</p></div>
+    }
+    else
+    {
+        <table class="p-table">
+            <thead>
+                <tr><th>Ad Soyad</th><th>Əlaqə</th><th>Kurs</th><th>Qrup</th><th>Status</th><th>Tarix</th><th></th></tr>
+            </thead>
+            <tbody>
+                @foreach (var a in Model.Items)
+                {
+                    <tr>
+                        <td><div style="font-weight:600;">@a.FullName</div>
+                            @if (a.ConvertedStudentId.HasValue)
+                            { <div style="font-size:11px; color:#6D28D9; font-weight:600; margin-top:2px;">
+                                <i class="fas fa-user-graduate"></i> Tələbəyə çevrildi</div> }
+                        </td>
+                        <td><div style="font-size:13px;">@a.Email</div>
+                            <div style="font-size:12px; color:var(--pa-muted);">@a.Phone</div></td>
+                        <td>@(a.CourseName ?? "—")</td>
+                        <td>@(a.GroupName ?? "—")</td>
+                        <td><span class="p-status @StCls(a.Status)">@StTxt(a.Status)</span></td>
+                        <td style="font-size:12px; color:var(--pa-muted); white-space:nowrap;">
+                            @a.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
+                        <td style="text-align:right; white-space:nowrap;">
+                            <a href="/PublicAdmin/Applications/Details/@a.Id" class="p-btn">
+                                <i class="fas fa-eye"></i> Aç</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        @if (Model.TotalPages > 1)
+        {
+            <div class="p-page">
+                @for (int p = 1; p <= Model.TotalPages; p++)
+                {
+                    if (p == Model.Page) { <span class="active">@p</span> }
+                    else { <a href="?search=@search&status=@status&courseId=@cid&fromDate=@(fromDt?.ToString("yyyy-MM-dd"))&toDate=@(toDt?.ToString("yyyy-MM-dd"))&page=@p">@p</a> }
+                }
+            </div>
+        }
+    }
+</div>

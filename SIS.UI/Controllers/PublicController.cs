@@ -1,5 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SIS.BLL.Services.DTOs.Public;
+using SIS.BLL.Services.DTOs.PublicAdmin;
+using SIS.UI.ApiClients;
 using SIS.UI.Services;
 
 namespace SIS.UI.Controllers
@@ -8,7 +11,17 @@ namespace SIS.UI.Controllers
     public class PublicController : Controller
     {
         private readonly IPublicWebsiteService _site;
-        public PublicController(IPublicWebsiteService site) { _site = site; }
+        private readonly ICourseApplicationApi _applicationApi;
+        private readonly IPublicContactApi _contactApi;
+
+        public PublicController(IPublicWebsiteService site,
+            ICourseApplicationApi applicationApi,
+            IPublicContactApi contactApi)
+        {
+            _site = site;
+            _applicationApi = applicationApi;
+            _contactApi = contactApi;
+        }
 
         public async Task<IActionResult> Index()
             => View(await _site.GetHomeAsync());
@@ -34,13 +47,87 @@ namespace SIS.UI.Controllers
 
         public IActionResult Contact() => View();
 
-        // Phase 1: mesaj qəbulu (struktur müraciət saxlama CourseApplication mərhələsindədir).
+        // ===== Contact form (PublicContactMessage database-ə yazılır) =====
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Contact(string fullName, string email, string? phone, string? message)
+        public async Task<IActionResult> Contact(string fullName, string email, string? phone, string? subject, string? message)
         {
-            TempData["PubSuccess"] = "Mesajınız üçün təşəkkür edirik! Komandamız tezliklə sizinlə əlaqə saxlayacaq.";
+            if (string.IsNullOrWhiteSpace(fullName) || string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(message))
+            {
+                TempData["PubError"] = "Ad, email və mesaj mütləqdir.";
+                return RedirectToAction("Contact");
+            }
+            try
+            {
+                var resp = await _contactApi.SubmitAsync(new CreatePublicContactMessageDto
+                {
+                    FullName = fullName.Trim(),
+                    Email = email.Trim(),
+                    Phone = phone,
+                    Subject = subject,
+                    Message = message
+                });
+                TempData["PubSuccess"] = resp.IsSuccessStatusCode
+                    ? "Mesajınız üçün təşəkkür edirik! Komandamız tezliklə sizinlə əlaqə saxlayacaq."
+                    : "Mesaj göndərilə bilmədi. Bir az sonra yenidən cəhd edin.";
+            }
+            catch
+            {
+                TempData["PubError"] = "Texniki səbəbdən mesaj göndərilmədi. Zəhmət olmasa yenidən cəhd edin.";
+            }
             return RedirectToAction("Contact");
         }
+
+        // ===== Public Apply form (CourseDetail modal-ından) =====
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Apply(int? courseId, int? groupId,
+            string fullName, string email, string phone, string? message)
+        {
+            // Server-side basic validation (client-side mövcuddur)
+            if (string.IsNullOrWhiteSpace(fullName) ||
+                string.IsNullOrWhiteSpace(email)    ||
+                string.IsNullOrWhiteSpace(phone))
+            {
+                TempData["ApplyError"] = "Ad, email və telefon mütləqdir.";
+                return RedirectToCourseOrCourses(courseId);
+            }
+
+            try
+            {
+                var resp = await _applicationApi.CreateAsync(new CreateCourseApplicationDto
+                {
+                    FullName = fullName.Trim(),
+                    Email = email.Trim(),
+                    Phone = phone.Trim(),
+                    CourseId = courseId,
+                    GroupId = groupId,
+                    Message = message
+                });
+
+                if (resp.IsSuccessStatusCode)
+                {
+                    TempData["ApplySuccess"] =
+                        "Müraciətiniz qəbul edildi. Komandamız sizinlə əlaqə saxlayacaq.";
+                }
+                else
+                {
+                    TempData["ApplyError"] =
+                        "Müraciət göndərilə bilmədi. Bir az sonra yenidən cəhd edin.";
+                }
+            }
+            catch
+            {
+                TempData["ApplyError"] =
+                    "Texniki səbəbdən müraciət göndərilmədi. Zəhmət olmasa yenidən cəhd edin.";
+            }
+
+            return RedirectToCourseOrCourses(courseId);
+        }
+
+        private IActionResult RedirectToCourseOrCourses(int? courseId)
+            => courseId.HasValue
+                ? RedirectToAction("CourseDetail", new { id = courseId.Value })
+                : RedirectToAction("Courses");
     }
 }

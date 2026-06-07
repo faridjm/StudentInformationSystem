@@ -150,11 +150,11 @@ namespace SIS.UI.Areas.Student.Controllers
             }
         }
 
-        public async Task<IActionResult> Transcript(int id)
+        public async Task<IActionResult> Transcript(int id, string? lang = "az")
         {
             try
             {
-                var response = await _transcriptApi.GetPdfAsync(id);
+                var response = await _transcriptApi.GetPdfAsync(id, lang);
                 if (!response.IsSuccessStatusCode)
                 {
                     var errorBody = await response.Content.ReadAsStringAsync();
@@ -174,11 +174,11 @@ namespace SIS.UI.Areas.Student.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SendTranscriptEmail(int id)
+        public async Task<IActionResult> SendTranscriptEmail(int id, string? lang = "az")
         {
             try
             {
-                var response = await _transcriptApi.SendByEmailAsync(id);
+                var response = await _transcriptApi.SendByEmailAsync(id, lang);
                 if (response.IsSuccessStatusCode)
                     TempData["Success"] = "Transkript email-ə göndərildi";
                 else

@@ -6,8 +6,8 @@ namespace SIS.UI.Services
 {
     /// <summary>
     /// Public saytın data qatı: real akademik data API-dən (IPublicApi),
-    /// marketing/mock məzmun isə PublicDemoContent-dən kompozisiya olunur.
-    /// Controller heç bir sorğu yazmır — yalnız bu servisi çağırır.
+    /// PublicAdmin-də idarə olunan kontent isə yenə API vasitəsilə oxunur.
+    /// PublicAdmin-də heç bir məlumat yoxdursa, PublicDemoContent fallback kimi istifadə olunur.
     /// </summary>
     public class PublicWebsiteService : IPublicWebsiteService
     {
@@ -18,8 +18,8 @@ namespace SIS.UI.Services
         {
             var vm = new PublicHomeViewModel
             {
-                Facilities = PublicDemoContent.Facilities(),
-                Graduates = PublicDemoContent.Graduates()
+                Facilities = await GetFacilitiesWithFallbackAsync(),
+                Graduates  = await GetGraduatesWithFallbackAsync()
             };
             try { vm.Stats = await _api.GetStatsAsync(); } catch { vm.Stats = new PublicStatsDto(); }
 
@@ -32,6 +32,51 @@ namespace SIS.UI.Services
 
             try { vm.Teachers = (await _api.GetTeachersAsync()).Take(4).ToList(); } catch { }
             return vm;
+        }
+
+        // ---- helpers: PublicAdmin-managed content with demo fallback ----
+        private async Task<List<PublicFacilityViewModel>> GetFacilitiesWithFallbackAsync()
+        {
+            try
+            {
+                var live = await _api.GetPublicFacilitiesAsync();
+                if (live != null && live.Any())
+                {
+                    return live.Select((f, i) => new PublicFacilityViewModel
+                    {
+                        Name = f.Title,
+                        Type = f.Type ?? "Otaq",
+                        Capacity = f.Capacity ?? 0,
+                        Description = f.Description ?? "",
+                        Icon = "fa-school",
+                        Grad = i % 6
+                    }).ToList();
+                }
+            }
+            catch { /* swallow: fallback */ }
+            return PublicDemoContent.Facilities();
+        }
+
+        private async Task<List<PublicGraduateViewModel>> GetGraduatesWithFallbackAsync()
+        {
+            try
+            {
+                var live = await _api.GetPublicGraduatesAsync();
+                if (live != null && live.Any())
+                {
+                    return live.Select((g, i) => new PublicGraduateViewModel
+                    {
+                        FullName = g.FullName,
+                        Course = g.GraduatedCourse ?? "",
+                        Year = g.GraduationYear ?? DateTime.UtcNow.Year,
+                        Position = g.CurrentPosition ?? "",
+                        Story = g.Story ?? "",
+                        Grad = i % 6
+                    }).ToList();
+                }
+            }
+            catch { /* fallback */ }
+            return PublicDemoContent.Graduates();
         }
 
         public async Task<PublicCoursesViewModel> GetCoursesAsync(string? q, string? department, string? level)
@@ -81,19 +126,24 @@ namespace SIS.UI.Services
             catch { return new List<PublicTeacherDto>(); }
         }
 
-        public Task<PublicAboutViewModel> GetAboutContentAsync()
+        public async Task<PublicAboutViewModel> GetAboutContentAsync()
         {
-            return Task.FromResult(new PublicAboutViewModel
+            return new PublicAboutViewModel
             {
                 Story = PublicDemoContent.Story,
                 Mission = PublicDemoContent.Mission,
                 Vision = PublicDemoContent.Vision,
-                Facilities = PublicDemoContent.Facilities(),
+                Facilities = await GetFacilitiesWithFallbackAsync(),
                 Timeline = PublicDemoContent.Timeline(),
                 Methodology = PublicDemoContent.Methodology()
-            });
+            };
         }
 
-        public List<PublicGraduateViewModel> GetGraduates() => PublicDemoContent.Graduates();
+        public List<PublicGraduateViewModel> GetGraduates()
+        {
+            // Sync interface — best-effort blocking call (sıra dəyişmir, fallback varsa demo).
+            try { return GetGraduatesWithFallbackAsync().GetAwaiter().GetResult(); }
+            catch { return PublicDemoContent.Graduates(); }
+        }
     }
 }

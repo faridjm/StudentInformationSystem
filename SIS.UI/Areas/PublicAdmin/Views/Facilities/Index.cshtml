@@ -1,0 +1,82 @@
+@model List<SIS.BLL.Services.DTOs.PublicAdmin.PublicFacilityDto>
+@{ ViewData["Title"] = "Facilities"; }
+
+<style>
+    .pf-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+    .pf-card { background: #fff; border: 1px solid var(--pa-border); border-radius: 14px; overflow: hidden; }
+    .pf-img { height: 130px; background: linear-gradient(135deg, var(--pa-primary), var(--pa-primary-2));
+        display: flex; align-items: center; justify-content: center; color: #fff; font-size: 32px;
+        background-size: cover; background-position: center; }
+    .pf-body { padding: 16px; }
+    .pf-title { font-weight: 700; font-size: 15px; }
+    .pf-meta { font-size: 12px; color: var(--pa-muted); margin-top: 4px; }
+    .pf-foot { padding: 12px 16px; border-top: 1px solid var(--pa-border); display: flex; gap: 8px; }
+    .pf-btn { flex: 1; padding: 8px; border-radius: 8px; border: 1px solid var(--pa-border); background: #fff;
+        cursor: pointer; font-size: 12.5px; font-weight: 600; color: var(--pa-ink); text-decoration: none;
+        display: flex; align-items: center; justify-content: center; gap: 5px; }
+    .pf-btn:hover { border-color: var(--pa-primary); color: var(--pa-primary); }
+    .pf-btn-danger { color: #DC2626; }
+    .pf-btn-danger:hover { border-color: #DC2626; color: #DC2626; }
+    .pf-chip { display: inline-flex; padding: 3px 9px; border-radius: 999px; font-size: 11px; font-weight: 700;
+        text-transform: uppercase; letter-spacing: .4px; margin-top: 8px; }
+    .pf-on  { background: rgba(16,185,129,.12); color: #047857; }
+    .pf-off { background: #F1F5F9; color: #475569; }
+</style>
+
+<div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:16px;">
+    <div>
+        <h1 style="font-size:20px; font-weight:800;"><i class="fas fa-school" style="color:var(--pa-primary);"></i> Facilities</h1>
+        <p style="font-size:13px; color:var(--pa-muted); margin-top:4px;">Akademiya şəraitini idarə edin.</p>
+    </div>
+    <a href="/PublicAdmin/Facilities/Create"
+       style="padding:9px 16px; background:linear-gradient(135deg,var(--pa-primary),var(--pa-primary-2));
+              color:#fff; border-radius:10px; text-decoration:none; font-size:13.5px; font-weight:600;">
+        <i class="fas fa-plus"></i> Yeni
+    </a>
+</div>
+
+@if (!Model.Any())
+{
+    <div style="background:#fff; border:1px dashed var(--pa-border); border-radius:14px; padding:50px 20px; text-align:center; color:var(--pa-muted);">
+        <i class="fas fa-school" style="font-size:32px; opacity:.35; color:var(--pa-primary);"></i>
+        <p style="margin-top:10px;">Hələ facility əlavə edilməyib.</p>
+    </div>
+}
+else
+{
+    <div class="pf-grid">
+        @foreach (var f in Model.OrderBy(x => x.SortOrder))
+        {
+            <div class="pf-card">
+                <div class="pf-img" style="@(string.IsNullOrEmpty(f.ImageUrl) ? "" : $"background-image:url('{f.ImageUrl}')")">
+                    @if (string.IsNullOrEmpty(f.ImageUrl)) { <i class="fas fa-school"></i> }
+                </div>
+                <div class="pf-body">
+                    <div class="pf-title">@f.Title</div>
+                    <div class="pf-meta">
+                        @(string.IsNullOrEmpty(f.Type) ? "—" : f.Type)
+                        @if (f.Capacity.HasValue) { <span> · @f.Capacity nəfər</span> }
+                    </div>
+                    <span class="pf-chip @(f.IsVisible ? "pf-on" : "pf-off")">
+                        <i class="fas @(f.IsVisible ? "fa-eye" : "fa-eye-slash")"></i>&nbsp;@(f.IsVisible ? "Görünür" : "Gizli")
+                    </span>
+                </div>
+                <div class="pf-foot">
+                    <a href="/PublicAdmin/Facilities/Edit?id=@f.Id" class="pf-btn">
+                        <i class="fas fa-pen"></i> Düzəliş
+                    </a>
+                    <form method="post" action="/PublicAdmin/Facilities/Delete" style="flex:1;"
+                          data-confirm="Bu facility silinsin?"
+                          data-confirm-title="Silmək istəyirsiniz?"
+                          data-confirm-text="Sil">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@f.Id" />
+                        <button type="submit" class="pf-btn pf-btn-danger" style="width:100%;">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        }
+    </div>
+}

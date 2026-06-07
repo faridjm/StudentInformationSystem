@@ -75,6 +75,14 @@ body.pub {
 }
 .pub-logo span { background: linear-gradient(135deg, var(--pub-primary), var(--pub-secondary));
     -webkit-background-clip: text; background-clip: text; color: transparent; }
+.pub-logo .logo-360 {
+    background: linear-gradient(135deg, #10B981, #4F46E5);
+    color: #fff !important;
+    -webkit-background-clip: initial; background-clip: initial;
+    font-size: 11px; font-weight: 800; letter-spacing: .5px;
+    padding: 3px 8px; border-radius: 999px; line-height: 1;
+    margin-left: 4px; box-shadow: 0 4px 10px rgba(16,185,129,.25);
+}
 .pub-nav-links { display: flex; align-items: center; gap: 4px; }
 .pub-nav-links > a {
     color: var(--pub-ink); font-weight: 500; font-size: 15px;
@@ -692,6 +700,11 @@ body.pub {
 }
 .pub-footer .pub-logo { color: #fff; }
 .pub-footer .pub-logo span { background: linear-gradient(135deg, #A5B4FC, #34D399); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.pub-footer .pub-logo .logo-360 {
+    background: linear-gradient(135deg, #10B981, #6366F1);
+    color: #fff !important;
+    -webkit-background-clip: initial; background-clip: initial;
+}
 .pub-social { display: flex; gap: 10px; margin-top: 18px; }
 .pub-social a {
     width: 38px; height: 38px; border-radius: 10px;

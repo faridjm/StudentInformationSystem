@@ -494,6 +494,17 @@ namespace SIS.BLL.Services.Implementations
             return false;
         }
 
+        public async Task<bool> IsClassroomTeacherAsync(int onlineLessonId, string userId)
+        {
+            if (string.IsNullOrEmpty(userId)) return false;
+
+            var lesson = await _unitOfWork.OnlineLessons.GetByIdAsync(onlineLessonId);
+            if (lesson == null) return false;
+
+            var teacher = await _unitOfWork.Teachers.GetTeacherByUserIdAsync(userId);
+            return teacher != null && lesson.TeacherId == teacher.Id;
+        }
+
         public async Task<IEnumerable<OnlineLessonChatMessageDto>> GetClassroomChatHistoryAsync(int onlineLessonId, string requestingUserId)
         {
             if (!await CanAccessClassroomAsync(onlineLessonId, requestingUserId))

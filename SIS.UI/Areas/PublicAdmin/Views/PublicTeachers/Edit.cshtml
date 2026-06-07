@@ -1,0 +1,132 @@
+@model SIS.BLL.Services.DTOs.PublicAdmin.PublicTeacherProfileEditDto
+@{ ViewData["Title"] = "Public müəllim profili"; }
+
+<style>
+    .te-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 18px; align-items: start; }
+    .te-card { background: #fff; border: 1px solid var(--pa-border); border-radius: 14px; padding: 22px; margin-bottom: 16px; }
+    .te-card h3 { font-size: 14px; font-weight: 700; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+    .te-card h3 i { color: var(--pa-primary); }
+    .te-fld { margin-bottom: 14px; }
+    .te-fld label { display: block; font-size: 12.5px; color: var(--pa-muted); font-weight: 600; margin-bottom: 6px; }
+    .te-ctrl { width: 100%; padding: 10px 12px; border: 1px solid var(--pa-border); border-radius: 10px;
+        font-family: inherit; font-size: 14px; outline: none; }
+    .te-ctrl:focus { border-color: var(--pa-primary); }
+    textarea.te-ctrl { min-height: 100px; resize: vertical; line-height: 1.55; }
+    .te-toggle { display: flex; align-items: center; gap: 10px; padding: 12px; background: var(--pa-bg);
+        border-radius: 10px; margin-bottom: 10px; cursor: pointer; }
+    .te-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+        padding: 10px 16px; border-radius: 10px; border: none; cursor: pointer; font-size: 14px; font-weight: 600;
+        text-decoration: none; }
+    .te-btn-primary { background: linear-gradient(135deg, var(--pa-primary), var(--pa-primary-2)); color: #fff; }
+    .te-btn-ghost { background: #fff; color: var(--pa-ink); border: 1px solid var(--pa-border); }
+    .te-photo-preview { width: 100px; height: 100px; border-radius: 50%; margin: 0 auto;
+        background: var(--pa-bg); display: flex; align-items: center; justify-content: center;
+        color: var(--pa-muted); border: 1px solid var(--pa-border);
+        background-size: cover; background-position: center; }
+    @@media (max-width: 1000px) { .te-grid { grid-template-columns: 1fr; } }
+</style>
+
+<a href="/PublicAdmin/PublicTeachers" style="font-size:13px; color:var(--pa-muted); text-decoration:none;">
+    <i class="fas fa-arrow-left"></i> Public Müəllimlər
+</a>
+
+<form method="post" action="/PublicAdmin/PublicTeachers/Edit">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="TeacherId" value="@Model.TeacherId" />
+
+    <div class="te-grid" style="margin-top:14px;">
+        <div>
+            <div class="te-card">
+                <h3><i class="fas fa-id-badge"></i> Profil məlumatları</h3>
+                <div class="te-fld">
+                    <label>Public ad</label>
+                    <input name="DisplayName" class="te-ctrl" maxlength="150" value="@Model.DisplayName" />
+                </div>
+                <div class="te-fld">
+                    <label>Public titul / rol</label>
+                    <input name="PublicTitle" class="te-ctrl" maxlength="200"
+                           value="@Model.PublicTitle" placeholder="Senior .NET Mentor" />
+                </div>
+                <div class="te-fld">
+                    <label>İxtisas / sahə</label>
+                    <input name="Specialization" class="te-ctrl" maxlength="300"
+                           value="@Model.Specialization" placeholder="Backend, .NET, Cloud" />
+                </div>
+                <div class="te-fld">
+                    <label>Qısa bio</label>
+                    <textarea name="Bio" class="te-ctrl" maxlength="2000"
+                              placeholder="Müəllim haqqında qısa məlumat">@Model.Bio</textarea>
+                </div>
+                <div class="te-fld">
+                    <label>LinkedIn (URL)</label>
+                    <input name="LinkedInUrl" class="te-ctrl" maxlength="500"
+                           value="@Model.LinkedInUrl" placeholder="https://linkedin.com/in/..." />
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <div class="te-card">
+                <h3><i class="fas fa-camera"></i> Foto</h3>
+                <div class="te-photo-preview" id="photoPreview"
+                     style="@(string.IsNullOrEmpty(Model.PhotoUrl) ? "" : $"background-image:url('{Model.PhotoUrl}')")">
+                    @if (string.IsNullOrEmpty(Model.PhotoUrl)) { <i class="fas fa-user" style="font-size:28px;"></i> }
+                </div>
+                <input type="hidden" name="PhotoUrl" id="PhotoUrl" value="@Model.PhotoUrl" />
+                <input type="file" id="photoInput" accept=".jpg,.jpeg,.png,.webp" style="margin-top:10px; font-size:13px; width:100%;" />
+                <div id="photoStatus" style="font-size:12px; color:var(--pa-muted); margin-top:6px; text-align:center;"></div>
+            </div>
+
+            <div class="te-card">
+                <h3><i class="fas fa-cog"></i> Görünürlük</h3>
+                <label class="te-toggle">
+                    <input type="checkbox" name="IsVisible" value="true" @(Model.IsVisible ? "checked" : "") />
+                    <span><strong>Public saytda göstər</strong></span>
+                </label>
+                <label class="te-toggle">
+                    <input type="checkbox" name="IsFeatured" value="true" @(Model.IsFeatured ? "checked" : "") />
+                    <span><strong>Featured</strong></span>
+                </label>
+                <div class="te-fld" style="margin-top:14px;">
+                    <label>Sıralama</label>
+                    <input name="SortOrder" type="number" class="te-ctrl" value="@Model.SortOrder" />
+                </div>
+            </div>
+
+            <div class="te-card">
+                <button type="submit" class="te-btn te-btn-primary" style="width:100%;">
+                    <i class="fas fa-save"></i> Yadda saxla
+                </button>
+                <a href="/PublicAdmin/PublicTeachers" class="te-btn te-btn-ghost" style="width:100%; margin-top:10px;">
+                    Ləğv et
+                </a>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+<script>
+    document.getElementById('photoInput')?.addEventListener('change', async function (e) {
+        var f = e.target.files[0]; if (!f) return;
+        var status = document.getElementById('photoStatus');
+        status.textContent = 'Yüklənir...';
+        var fd = new FormData(); fd.append('file', f); fd.append('folder', 'teachers');
+        var token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+        try {
+            var resp = await fetch('/Upload/PublicImage', {
+                method: 'POST', body: fd,
+                headers: { 'RequestVerificationToken': token }
+            });
+            var data = await resp.json();
+            if (resp.ok) {
+                document.getElementById('PhotoUrl').value = data.url;
+                var p = document.getElementById('photoPreview');
+                p.style.backgroundImage = "url('" + data.url + "')";
+                p.innerHTML = '';
+                status.textContent = 'Yükləndi';
+            } else { status.textContent = 'Xəta: ' + (data.error || ''); }
+        } catch { status.textContent = 'Şəbəkə xətası'; }
+    });
+</script>
+}

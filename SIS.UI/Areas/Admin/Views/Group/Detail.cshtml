@@ -158,7 +158,10 @@
                                 @if (matchSession != null) { <span> · #@matchSession.SessionNumber</span> }
                             </div>
                         </div>
-                        <form method="post" action="/Admin/Assessment/Delete/@a.Id?returnGroupId=@Model.Id" onsubmit="return confirm('Silinsin?')">
+                        <form method="post" action="/Admin/Assessment/Delete/@a.Id?returnGroupId=@Model.Id"
+                              data-confirm="Bu qiymətləndirmə komponenti silinsin?"
+                              data-confirm-title="Silinsin?"
+                              data-confirm-text="Sil">
                             @Html.AntiForgeryToken()
                             <button type="submit" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
                         </form>

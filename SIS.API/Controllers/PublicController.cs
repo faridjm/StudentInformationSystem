@@ -19,16 +19,50 @@ namespace SIS.API.Controllers
         private readonly ITeacherService _teacherService;
         private readonly ICurriculumTemplateService _curriculumService;
         private readonly IDepartmentService _departmentService;
+        private readonly ICourseApplicationService _applicationService;
+        private readonly IPublicAdminService _publicAdmin;
 
         public PublicController(ICourseService courseService, IGroupService groupService,
             ITeacherService teacherService, ICurriculumTemplateService curriculumService,
-            IDepartmentService departmentService)
+            IDepartmentService departmentService,
+            ICourseApplicationService applicationService,
+            IPublicAdminService publicAdmin)
         {
             _courseService = courseService;
             _groupService = groupService;
             _teacherService = teacherService;
             _curriculumService = curriculumService;
             _departmentService = departmentService;
+            _applicationService = applicationService;
+            _publicAdmin = publicAdmin;
+        }
+
+        // ============== PUBLIC CONTENT (visible only) ==============
+        [HttpGet("facilities")]
+        public async Task<IActionResult> GetFacilities()
+            => Ok(await _publicAdmin.GetFacilitiesAsync(onlyVisible: true));
+
+        [HttpGet("graduates")]
+        public async Task<IActionResult> GetGraduates()
+            => Ok(await _publicAdmin.GetGraduatesAsync(onlyVisible: true));
+
+        [HttpGet("faqs")]
+        public async Task<IActionResult> GetFaqs()
+            => Ok(await _publicAdmin.GetFaqsAsync(onlyVisible: true));
+
+        // ============== PUBLIC APPLY (anonymous) ==============
+        [HttpPost("applications")]
+        public async Task<IActionResult> CreateApplication([FromBody] CreateCourseApplicationDto dto)
+        {
+            try
+            {
+                var id = await _applicationService.CreateAsync(dto);
+                return Ok(new { id, message = "Müraciətiniz qəbul edildi. Komandamız sizinlə əlaqə saxlayacaq." });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
         }
 
         [HttpGet("stats")]

@@ -24,6 +24,8 @@ namespace SIS.API.Extensions
 
 
                 await SeedAdminAsync(userManager);
+
+                await SeedModeratorAsync(userManager);
             }
             catch (Exception ex)
             {
@@ -86,6 +88,26 @@ namespace SIS.API.Extensions
             var result = await userManager.CreateAsync(user, "Admin@123");
             if (result.Succeeded)
                 await userManager.AddToRoleAsync(user, RoleConstants.Admin);
+        }
+
+        // PublicAdmin paneli üçün ayrıca rol — public sayt kontentini idarə edir.
+        private static async Task SeedModeratorAsync(UserManager<AppUser> userManager)
+        {
+            var moderator = await userManager.FindByEmailAsync("moderator@sis.az");
+            if (moderator != null) return;
+
+            var user = new AppUser
+            {
+                FullName = "Public Moderator",
+                Email = "moderator@sis.az",
+                UserName = "moderator@sis.az",
+                IsActive = true,
+                EmailConfirmed = true
+            };
+
+            var result = await userManager.CreateAsync(user, "Moderator@123");
+            if (result.Succeeded)
+                await userManager.AddToRoleAsync(user, RoleConstants.Moderator);
         }
     }
 }

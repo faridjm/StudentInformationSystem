@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     @inject IHtmlLocalizer<SIS.UI.SharedResource> L
-    <title>@ViewData["Title"] — Acadex @L["TeacherPanel"].Value</title>
+    <title>@ViewData["Title"] — Acadex 360 @L["TeacherPanel"].Value</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link rel="stylesheet" href="/css/acadex-theme.css" asp-append-version="true" />
 </head>
@@ -13,7 +13,7 @@
 
     <nav class="sidebar">
         <div class="sidebar-logo">
-            <div class="logo-text">Acadex</div>
+            <div class="logo-text">Acadex <span style="font-size:13px; font-weight:700; padding:2px 7px; border-radius:6px; background:rgba(255,255,255,0.15); margin-left:4px; vertical-align:middle;">360</span></div>
             <div class="logo-sub">@L["TeacherPanel"]</div>
         </div>
 
@@ -129,6 +129,7 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+    <script src="/js/acadex-confirm.js" asp-append-version="true"></script>
     <script>
         document.addEventListener('click', function(e) {
         if (!e.target.closest('.dropdown')) {

@@ -84,39 +84,55 @@
         <i class="fas fa-comment-dots" style="font-size:15px;"></i>
         <span>@L["Messages"]</span>
     </a>
-    <a href="/Student/Courses/Transcript/@enrollment?.Id" target="_blank"
-       style="display:inline-flex; align-items:center; gap:10px; padding:10px 20px; border-radius:10px;
-              background:linear-gradient(135deg, #e94560 0%, #c2185b 100%); color:#fff; text-decoration:none;
-              font-size:13px; font-weight:600; box-shadow:0 4px 15px rgba(233,69,96,0.4);
-              transition:all .2s; position:relative; overflow:hidden;"
-       onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(233,69,96,0.5)'"
-       onmouseout="this.style.transform=''; this.style.boxShadow='0 4px 15px rgba(233,69,96,0.4)'">
-        <span style="display:flex; align-items:center; justify-content:center; width:32px; height:32px; background:rgba(255,255,255,0.2); border-radius:8px;">
-            <i class="fas fa-file-pdf" style="font-size:16px;"></i>
-        </span>
-        <span>
-            <div style="line-height:1.2;">Transkript</div>
-            <div style="font-size:10px; font-weight:400; opacity:.8;">PDF yüklə</div>
-        </span>
-        <i class="fas fa-download" style="font-size:11px; opacity:.7;"></i>
-    </a>
-    <form method="post" action="/Student/Courses/SendTranscriptEmail/@enrollment?.Id" style="margin:0;"
-          onsubmit="return confirm('Transkript PDF email-ə göndəriləcək. Davam edək?');">
-        @Html.AntiForgeryToken()
-        <button type="submit"
-                style="display:inline-flex; align-items:center; gap:8px; padding:10px 16px; border-radius:10px;
-                       background:linear-gradient(135deg, #3b82f6, #2563eb); color:#fff; border:none; cursor:pointer;
-                       font-size:13px; font-weight:600; box-shadow:0 4px 15px rgba(59,130,246,0.35);
-                       transition:all .2s; margin-left:8px;"
-                onmouseover="this.style.transform='translateY(-2px)'"
-                onmouseout="this.style.transform=''">
-            <i class="fas fa-envelope" style="font-size:14px;"></i>
-            <span>
-                <div style="line-height:1.2;">Email-ə Göndər</div>
-                <div style="font-size:10px; font-weight:400; opacity:.8;">PDF attachment</div>
+    <div style="display:inline-flex; align-items:center; gap:10px; flex-wrap:wrap;">
+        <!-- Ümumi PDF dili seçimi (Variant B) -->
+        <div style="display:inline-flex; align-items:center; gap:6px; padding:6px 8px; border-radius:10px; background:var(--bg-hover,#f1f5f9); border:1px solid var(--border,#e2e8f0);">
+            <span style="font-size:11px; font-weight:600; color:var(--text-secondary,#64748b);"><i class="fas fa-language"></i> PDF dili:</span>
+            <div id="pdfLangSwitch" style="display:inline-flex; gap:2px;">
+                <button type="button" class="pdf-lang-btn active" data-lang="az" onclick="setPdfLang('az')">AZ</button>
+                <button type="button" class="pdf-lang-btn" data-lang="en" onclick="setPdfLang('en')">EN</button>
+                <button type="button" class="pdf-lang-btn" data-lang="ru" onclick="setPdfLang('ru')">RU</button>
+            </div>
+        </div>
+
+        <!-- Download PDF -->
+        <a id="transcriptDownloadLink" href="/Student/Courses/Transcript/@enrollment?.Id?lang=az" target="_blank"
+           style="display:inline-flex; align-items:center; gap:10px; padding:10px 18px; border-radius:10px;
+                  background:linear-gradient(135deg, #e94560 0%, #c2185b 100%); color:#fff; text-decoration:none;
+                  font-size:13px; font-weight:600; box-shadow:0 4px 15px rgba(233,69,96,0.4); transition:all .2s;"
+           onmouseover="this.style.transform='translateY(-2px)'"
+           onmouseout="this.style.transform=''">
+            <span style="display:flex; align-items:center; justify-content:center; width:32px; height:32px; background:rgba(255,255,255,0.2); border-radius:8px;">
+                <i class="fas fa-file-pdf" style="font-size:16px;"></i>
             </span>
-        </button>
-    </form>
+            <span>
+                <div style="line-height:1.2;">Transkript</div>
+                <div style="font-size:10px; font-weight:400; opacity:.8;">PDF yüklə</div>
+            </span>
+            <i class="fas fa-download" style="font-size:11px; opacity:.7;"></i>
+        </a>
+
+        <!-- Send to Email -->
+        <form id="transcriptEmailForm" method="post" action="/Student/Courses/SendTranscriptEmail/@enrollment?.Id?lang=az" style="margin:0;"
+              data-confirm="Transkript PDF seçilmiş dildə email ünvanınıza göndəriləcək. Davam edək?"
+              data-confirm-title="Transkripti email-ə göndər"
+              data-confirm-text="Göndər"
+              data-confirm-type="info">
+            @Html.AntiForgeryToken()
+            <button type="submit"
+                    style="display:inline-flex; align-items:center; gap:8px; padding:10px 16px; border-radius:10px;
+                           background:linear-gradient(135deg, #3b82f6, #2563eb); color:#fff; border:none; cursor:pointer;
+                           font-size:13px; font-weight:600; box-shadow:0 4px 15px rgba(59,130,246,0.35); transition:all .2s;"
+                    onmouseover="this.style.transform='translateY(-2px)'"
+                    onmouseout="this.style.transform=''">
+                <i class="fas fa-envelope" style="font-size:14px;"></i>
+                <span>
+                    <div style="line-height:1.2;">Email-ə Göndər</div>
+                    <div style="font-size:10px; font-weight:400; opacity:.8;">PDF attachment</div>
+                </span>
+            </button>
+        </form>
+    </div>
 </div>
 
 <!-- Stat cards -->
@@ -587,7 +603,23 @@
 <form id="olTokenForm" style="display:none;">@Html.AntiForgeryToken()</form>
 
 @section Scripts {
+<style>
+    .pdf-lang-btn { padding:4px 10px; border:1px solid var(--border,#e2e8f0); background:var(--bg-card,#fff); color:var(--text-secondary,#64748b); border-radius:7px; font-size:12px; font-weight:700; cursor:pointer; transition:all .15s; }
+    .pdf-lang-btn.active { background:linear-gradient(135deg,#4F46E5,#7C3AED); color:#fff; border-color:transparent; }
+    .pdf-lang-btn:hover { border-color:#4F46E5; }
+</style>
 <script>
+// Transcript PDF dil seçimi (Download + Email üçün ümumi)
+var enrollmentIdForTranscript = @(enrollment?.Id ?? 0);
+function setPdfLang(lang) {
+    document.querySelectorAll('.pdf-lang-btn').forEach(function (b) {
+        b.classList.toggle('active', b.dataset.lang === lang);
+    });
+    var dl = document.getElementById('transcriptDownloadLink');
+    if (dl) dl.href = '/Student/Courses/Transcript/' + enrollmentIdForTranscript + '?lang=' + lang;
+    var form = document.getElementById('transcriptEmailForm');
+    if (form) form.action = '/Student/Courses/SendTranscriptEmail/' + enrollmentIdForTranscript + '?lang=' + lang;
+}
 function switchTab(name) {
     document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
     document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
@@ -610,10 +642,10 @@ function joinOnlineLesson(lessonId) {
             if (res.canJoin && res.classroomUrl) {
                 window.location.href = res.classroomUrl;
             } else {
-                alert(res.message || 'Dərsə qoşulmaq mümkün olmadı');
+                window.acadexAlert({ title: 'Qoşulmaq mümkün olmadı', message: res.message || 'Dərsə qoşulmaq mümkün olmadı', type: 'warning' });
             }
         })
-        .catch(() => alert('Şəbəkə xətası'));
+        .catch(() => window.acadexAlert({ title: 'Şəbəkə xətası', message: 'Şəbəkə xətası baş verdi', type: 'danger' }));
 }
 </script>
 }

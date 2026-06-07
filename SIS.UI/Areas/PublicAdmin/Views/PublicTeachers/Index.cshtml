@@ -1,0 +1,84 @@
+@model List<SIS.BLL.Services.DTOs.PublicAdmin.PublicTeacherProfileRowDto>
+@{ ViewData["Title"] = "Public Müəllimlər"; }
+
+<style>
+    .pt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+    .pt-card { background: #fff; border: 1px solid var(--pa-border); border-radius: 14px;
+        padding: 22px; text-align: center; }
+    .pt-photo { width: 84px; height: 84px; border-radius: 50%; margin: 0 auto 14px;
+        background: linear-gradient(135deg, var(--pa-primary), var(--pa-primary-2));
+        display: flex; align-items: center; justify-content: center; color: #fff; font-size: 28px;
+        font-weight: 800; background-size: cover; background-position: center;
+        border: 3px solid #fff; box-shadow: 0 8px 18px rgba(15,23,42,.12); }
+    .pt-name { font-size: 15px; font-weight: 700; }
+    .pt-meta { font-size: 12px; color: var(--pa-muted); margin-top: 4px; }
+    .pt-chips { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; margin-top: 12px; }
+    .pt-chip { padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 700;
+        text-transform: uppercase; letter-spacing: .4px; }
+    .pt-on { background: rgba(16,185,129,.12); color: #047857; }
+    .pt-off { background: #F1F5F9; color: #475569; }
+    .pt-actions { display: flex; gap: 8px; margin-top: 14px; }
+    .pt-btn { flex: 1; padding: 8px; border-radius: 8px; border: 1px solid var(--pa-border);
+        background: #fff; cursor: pointer; font-size: 12.5px; font-weight: 600;
+        color: var(--pa-ink); text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 5px; }
+    .pt-btn:hover { border-color: var(--pa-primary); color: var(--pa-primary); }
+    .pt-btn-primary { background: linear-gradient(135deg, var(--pa-primary), var(--pa-primary-2));
+        color: #fff; border-color: transparent; }
+    .pt-btn-primary:hover { color: #fff; }
+</style>
+
+<div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:16px;">
+    <div>
+        <h1 style="font-size:20px; font-weight:800;"><i class="fas fa-chalkboard-teacher" style="color:var(--pa-primary);"></i> Public Müəllimlər</h1>
+        <p style="font-size:13px; color:var(--pa-muted); margin-top:4px;">
+            Müəllimlər public saytda yalnız siz Public Profile yaratdıqda görünür.
+        </p>
+    </div>
+</div>
+
+@if (!Model.Any())
+{
+    <div style="background:#fff; border:1px dashed var(--pa-border); border-radius:14px;
+                padding:50px 20px; text-align:center; color:var(--pa-muted);">
+        <i class="fas fa-chalkboard-teacher" style="font-size:32px; opacity:.35; color:var(--pa-primary);"></i>
+        <p style="margin-top:10px;">Akademik panel-də hələ müəllim yaradılmayıb.</p>
+    </div>
+}
+else
+{
+    <div class="pt-grid">
+        @foreach (var t in Model)
+        {
+            <div class="pt-card">
+                <div class="pt-photo"
+                     style="@(string.IsNullOrEmpty(t.PhotoUrl) ? "" : $"background-image:url('{t.PhotoUrl}'); color:transparent;")">
+                    @(string.IsNullOrEmpty(t.PhotoUrl)
+                        ? (string.IsNullOrEmpty(t.TeacherName) ? "?" : t.TeacherName.Substring(0,1).ToUpper())
+                        : "")
+                </div>
+                <div class="pt-name">@(string.IsNullOrEmpty(t.DisplayName) ? t.TeacherName : t.DisplayName)</div>
+                <div class="pt-meta">@(string.IsNullOrEmpty(t.PublicTitle) ? "Mentor" : t.PublicTitle)</div>
+                <div class="pt-chips">
+                    @if (t.Id == 0) { <span class="pt-chip pt-off">Profil yoxdur</span> }
+                    else if (t.IsVisible) { <span class="pt-chip pt-on"><i class="fas fa-eye"></i> Görünür</span> }
+                    else { <span class="pt-chip pt-off"><i class="fas fa-eye-slash"></i> Gizli</span> }
+                </div>
+                <div class="pt-actions">
+                    <a href="/PublicAdmin/PublicTeachers/Edit?teacherId=@t.TeacherId" class="pt-btn pt-btn-primary">
+                        <i class="fas fa-pen"></i> Düzəliş
+                    </a>
+                    @if (t.Id > 0)
+                    {
+                        <form method="post" action="/PublicAdmin/PublicTeachers/ToggleVisibility" style="flex:1;">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="teacherId" value="@t.TeacherId" />
+                            <button type="submit" class="pt-btn" style="width:100%;">
+                                <i class="fas @(t.IsVisible ? "fa-eye-slash" : "fa-eye")"></i>
+                            </button>
+                        </form>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+}

@@ -1,0 +1,87 @@
+@using SIS.Entities.Enums
+@model List<SIS.BLL.Services.DTOs.PublicAdmin.PublicContactMessageListDto>
+@{
+    ViewData["Title"] = "Contact Mesajları";
+    string StTxt(ContactMessageStatus s) => s switch
+    { ContactMessageStatus.New => "Yeni", ContactMessageStatus.Read => "Oxunub",
+      ContactMessageStatus.Replied => "Cavablandı", ContactMessageStatus.Archived => "Arxiv", _ => s.ToString() };
+    string StCls(ContactMessageStatus s) => s switch
+    { ContactMessageStatus.New => "cm-new", ContactMessageStatus.Read => "cm-read",
+      ContactMessageStatus.Replied => "cm-rep", ContactMessageStatus.Archived => "cm-arc", _ => "cm-new" };
+}
+
+<style>
+    .cm-card { background: #fff; border: 1px solid var(--pa-border); border-radius: 12px; overflow: hidden; }
+    .cm-table { width: 100%; border-collapse: collapse; }
+    .cm-table th { text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: .5px;
+        color: var(--pa-muted); font-weight: 700; padding: 12px; background: #F8FAFC; border-bottom: 1px solid var(--pa-border); }
+    .cm-table td { padding: 13px 12px; border-bottom: 1px solid var(--pa-border); font-size: 14px; }
+    .cm-table tr.unread td { background: rgba(124,58,237,.04); }
+    .cm-table tr:hover td { background: #FAFBFF; }
+    .cm-st { display: inline-flex; padding: 3px 10px; border-radius: 999px; font-size: 11px;
+        font-weight: 700; text-transform: uppercase; letter-spacing: .4px; white-space: nowrap; }
+    .cm-new { background: rgba(59,130,246,.12); color: #2563EB; }
+    .cm-read { background: #F1F5F9; color: #475569; }
+    .cm-rep { background: rgba(16,185,129,.12); color: #047857; }
+    .cm-arc { background: #E2E8F0; color: #64748B; }
+    .cm-btn { padding: 7px 12px; border-radius: 8px; background: linear-gradient(135deg, var(--pa-primary), var(--pa-primary-2));
+        color: #fff; border: none; text-decoration: none; font-size: 12.5px; font-weight: 600;
+        display: inline-flex; align-items: center; gap: 5px; }
+    .cm-filter { display: flex; gap: 8px; margin-bottom: 14px; }
+    .cm-fchip { padding: 7px 14px; border-radius: 999px; background: #fff; border: 1px solid var(--pa-border);
+        color: var(--pa-muted); font-size: 13px; font-weight: 600; text-decoration: none; }
+    .cm-fchip.active { background: var(--pa-primary); color: #fff; border-color: var(--pa-primary); }
+</style>
+
+<div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:16px;">
+    <div>
+        <h1 style="font-size:20px; font-weight:800;"><i class="fas fa-envelope" style="color:var(--pa-primary);"></i> Contact Mesajları</h1>
+        <p style="font-size:13px; color:var(--pa-muted); margin-top:4px;">Public Contact formundan gələn mesajlar.</p>
+    </div>
+</div>
+
+<div class="cm-filter">
+    @{ var current = Context.Request.Query["status"].ToString(); }
+    <a href="/PublicAdmin/ContactMessages" class="cm-fchip @(string.IsNullOrEmpty(current) ? "active" : "")">Hamısı</a>
+    @foreach (ContactMessageStatus s in Enum.GetValues(typeof(ContactMessageStatus)))
+    {
+        <a href="?status=@s" class="cm-fchip @(current == s.ToString() ? "active" : "")">@StTxt(s)</a>
+    }
+</div>
+
+<div class="cm-card">
+    @if (!Model.Any())
+    {
+        <div style="padding:50px 20px; text-align:center; color:var(--pa-muted);">
+            <i class="fas fa-envelope" style="font-size:32px; opacity:.35; color:var(--pa-primary);"></i>
+            <p style="margin-top:10px;">Mesaj yoxdur.</p>
+        </div>
+    }
+    else
+    {
+        <table class="cm-table">
+            <thead>
+                <tr><th>Ad Soyad</th><th>Email</th><th>Mövzu</th><th>Status</th><th>Tarix</th><th></th></tr>
+            </thead>
+            <tbody>
+                @foreach (var m in Model)
+                {
+                    <tr class="@(m.Status == ContactMessageStatus.New ? "unread" : "")">
+                        <td style="font-weight:600;">@m.FullName</td>
+                        <td>@m.Email</td>
+                        <td>@(string.IsNullOrEmpty(m.Subject) ? "—" : m.Subject)</td>
+                        <td><span class="cm-st @StCls(m.Status)">@StTxt(m.Status)</span></td>
+                        <td style="font-size:12px; color:var(--pa-muted); white-space:nowrap;">
+                            @m.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")
+                        </td>
+                        <td style="text-align:right;">
+                            <a href="/PublicAdmin/ContactMessages/Details/@m.Id" class="cm-btn">
+                                <i class="fas fa-eye"></i> Aç
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

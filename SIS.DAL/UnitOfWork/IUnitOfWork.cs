@@ -33,6 +33,7 @@ namespace SIS.DAL.UnitOfWork
         ICurriculumTemplateItemRepository CurriculumTemplateItems { get; }
         IArchiveRepository Archive { get; }
         IOnlineLessonRepository OnlineLessons { get; }
+        ICourseApplicationRepository CourseApplications { get; }
 
         Task<int> SaveAsync();
     }

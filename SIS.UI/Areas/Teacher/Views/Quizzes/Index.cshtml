@@ -76,7 +76,11 @@ else
                     <div style="display:flex; gap:8px;">
                         <a href="/Teacher/Quizzes/Manage/@q.Id" class="btn btn-sm btn-secondary"><i class="fas fa-cog"></i> İdarə et</a>
                         <a href="/Teacher/Quizzes/Results/@q.Id" class="btn btn-sm btn-secondary"><i class="fas fa-chart-bar"></i> Nəticələr</a>
-                        <form method="post" action="/Teacher/Quizzes/Delete" onsubmit="return confirm('Quiz silinsin?');" style="display:inline;">
+                        <form method="post" action="/Teacher/Quizzes/Delete"
+                              data-confirm="Quiz silinsin? Bu əməliyyat geri qaytarılmaya bilər."
+                              data-confirm-title="Quiz silinsin?"
+                              data-confirm-text="Sil"
+                              style="display:inline;">
                             @Html.AntiForgeryToken()
                             <input type="hidden" name="id" value="@q.Id" />
                             <input type="hidden" name="groupId" value="@groupId" />

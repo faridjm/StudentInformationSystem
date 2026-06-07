@@ -38,7 +38,10 @@
                                     <i class="fas @(d.IsActive ? "fa-toggle-off" : "fa-toggle-on")"></i>
                                 </button>
                             </form>
-                            <form method="post" action="/Admin/Department/Delete/@d.Id" style="display:inline;" onsubmit="return confirm('Şöbəni silmək istəyirsiniz?')">
+                            <form method="post" action="/Admin/Department/Delete/@d.Id" style="display:inline;"
+                                  data-confirm="Bu əməliyyat geri qaytarılmaya bilər."
+                                  data-confirm-title="Şöbəni silmək istəyirsiniz?"
+                                  data-confirm-text="Sil">
                                 @Html.AntiForgeryToken()
                                 <button type="submit" class="btn btn-sm btn-danger" title="@L["Delete"]"><i class="fas fa-trash"></i></button>
                             </form>

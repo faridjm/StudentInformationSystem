@@ -32,30 +32,45 @@
                         <span>@TempData["PubSuccess"]</span>
                     </div>
                 }
+                @if (TempData["PubError"] != null)
+                {
+                    <div class="pub-alert" style="background:#FEF2F2; border:1px solid #FECACA; color:#B91C1C;">
+                        <i class="fas fa-circle-exclamation"></i>
+                        <span>@TempData["PubError"]</span>
+                    </div>
+                }
 
                 <form method="post" action="/Public/Contact">
                     @Html.AntiForgeryToken()
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
                         <div class="pub-field">
                             <label>Ad Soyad *</label>
-                            <input name="fullName" class="pub-input" required placeholder="Adınızı və soyadınızı yazın" />
+                            <input name="fullName" class="pub-input" required maxlength="150"
+                                   placeholder="Adınızı və soyadınızı yazın" />
                         </div>
                         <div class="pub-field">
                             <label>Telefon</label>
-                            <input name="phone" class="pub-input" placeholder="+994 50 000 00 00" />
+                            <input name="phone" class="pub-input" maxlength="40"
+                                   placeholder="+994 50 000 00 00" />
                         </div>
                     </div>
                     <div class="pub-field">
                         <label>Email *</label>
-                        <input name="email" type="email" class="pub-input" required placeholder="email@example.com" />
+                        <input name="email" type="email" class="pub-input" required maxlength="200"
+                               placeholder="email@example.com" />
                     </div>
                     <div class="pub-field">
-                        <label>Mesaj</label>
-                        <textarea name="message" rows="5" class="pub-textarea"
+                        <label>Mövzu</label>
+                        <input name="subject" class="pub-input" maxlength="200"
+                               placeholder="Qısa mövzu (istəyə bağlı)" />
+                    </div>
+                    <div class="pub-field">
+                        <label>Mesaj *</label>
+                        <textarea name="message" rows="5" class="pub-textarea" required maxlength="2000"
                                   placeholder="Sizə necə kömək edə bilərik? Hansı proqramla maraqlanırsınız?"></textarea>
                     </div>
                     <button type="submit" class="pub-btn pub-btn-primary pub-btn-block">
-                        <i class="fas fa-paper-plane"></i> Müraciəti göndər
+                        <i class="fas fa-paper-plane"></i> Mesajı göndər
                     </button>
                 </form>
             </div>
@@ -99,7 +114,7 @@
             <div class="pub-map-placeholder">
                 <div class="pin">
                     <i class="fas fa-location-dot"></i>
-                    <div>Acadex Akademiyası</div>
+                    <div>Acadex 360</div>
                     <div style="font-size:13px; font-weight:500; color:var(--pub-muted); margin-top:4px;">Bakı, Azərbaycan</div>
                 </div>
             </div>

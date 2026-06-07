@@ -93,7 +93,9 @@ else
                         <td style="padding:10px 14px; text-align:right; white-space:nowrap;">
                             <a href="/Admin/Announcement/Detail/@a.Id" class="btn btn-sm btn-secondary"><i class="fas fa-eye"></i></a>
                             <form method="post" action="/Admin/Announcement/Delete/@a.Id" style="display:inline;"
-                                  onsubmit="return confirm('Elanı silmək istədiyinizdən əminsinizmi?')">
+                                  data-confirm="Elanı silmək istədiyinizdən əminsinizmi?"
+                                  data-confirm-title="Elanı silmək?"
+                                  data-confirm-text="Sil">
                                 @Html.AntiForgeryToken()
                                 <button type="submit" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
                             </form>

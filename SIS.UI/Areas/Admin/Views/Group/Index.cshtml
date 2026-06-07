@@ -57,7 +57,10 @@
                         <td style="text-align:right;">
                             <a href="/Admin/Group/Detail/@g.Id" class="btn btn-sm btn-secondary"><i class="fas fa-eye"></i></a>
                             <a href="/Admin/Group/Edit/@g.Id" class="btn btn-sm btn-secondary"><i class="fas fa-edit"></i></a>
-                            <form method="post" action="/Admin/Group/Delete/@g.Id" style="display:inline;" onsubmit="return confirm('Qrupu silmək istəyirsiniz?')">
+                            <form method="post" action="/Admin/Group/Delete/@g.Id" style="display:inline;"
+                                  data-confirm="Bu qrupu silmək istəyirsiniz? Bu əməliyyat geri qaytarılmaya bilər."
+                                  data-confirm-title="Qrupu silmək istəyirsiniz?"
+                                  data-confirm-text="Sil">
                                 @Html.AntiForgeryToken()
                                 <button type="submit" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
                             </form>
