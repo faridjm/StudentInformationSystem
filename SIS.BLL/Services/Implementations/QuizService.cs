@@ -14,14 +14,16 @@ namespace SIS.BLL.Services.Implementations
         private readonly ICurrentUser _currentUser;
         private readonly IAuditLogService _audit;
         private readonly INotificationService _notifications;
+        private readonly IEmailService _emailService;
 
-        public QuizService(IUnitOfWork unitOfWork, IStudentService studentService, ICurrentUser currentUser, IAuditLogService audit, INotificationService notifications)
+        public QuizService(IUnitOfWork unitOfWork, IStudentService studentService, ICurrentUser currentUser, IAuditLogService audit, INotificationService notifications, IEmailService emailService)
         {
             _unitOfWork = unitOfWork;
             _studentService = studentService;
             _currentUser = currentUser;
             _audit = audit;
             _notifications = notifications;
+            _emailService = emailService;
         }
 
         // ── Teacher: read ────────────────────────────────────────────
@@ -167,12 +169,23 @@ namespace SIS.BLL.Services.Implementations
             if (active)
             {
                 var enrolled = await _unitOfWork.Enrollments.GetByGroupAsync(quiz.GroupId);
-                var studentUserIds = enrolled
-                    .Where(e => !e.IsDeleted && e.Student != null && e.Student.AppUserId != null)
-                    .Select(e => e.Student.AppUserId);
+                var enrolledList = enrolled.Where(e => !e.IsDeleted && e.Student != null && e.Student.AppUserId != null).ToList();
+                var studentUserIds = enrolledList.Select(e => e.Student.AppUserId);
                 await _notifications.SendToManyAsync(studentUserIds,
                     "Yeni quiz aktiv", $"\"{quiz.Title}\" quiz-i cavablandırmaq üçün açıqdır",
                     NotificationType.QuizActivated, "/Student/Quizzes");
+
+                // Email — fail olsa main əməliyyatı pozma
+                var group = await _unitOfWork.Groups.GetGroupWithDetailsAsync(quiz.GroupId);
+                var courseName = group?.Course?.Name ?? "";
+                var groupName = group?.Name ?? "";
+                foreach (var e in enrolledList)
+                {
+                    var email = e.Student?.AppUser?.Email;
+                    var name = e.Student?.AppUser?.FullName ?? "";
+                    if (string.IsNullOrEmpty(email)) continue;
+                    _ = _emailService.SendQuizActivatedAsync(email, name, quiz.Title, courseName, groupName, null);
+                }
             }
         }
 
@@ -416,6 +429,85 @@ namespace SIS.BLL.Services.Implementations
                 IsSubmitted = attempt.IsSubmitted,
                 SubmittedAt = attempt.SubmittedAt
             };
+        }
+
+        // ── Detallı nəticə (sual-sual) ─────────────────────────────────
+        public async Task<QuizAttemptDetailDto?> GetAttemptDetailAsync(int attemptId, string requestingUserId)
+        {
+            var attempt = await _unitOfWork.QuizAttempts.GetDetailAsync(attemptId);
+            if (attempt == null || !attempt.IsSubmitted) return null;
+
+            // Authorization: ya qrupun müəllimi, ya da cəhdin sahibi olan tələbə
+            var quiz = attempt.Quiz;
+            var group = await _unitOfWork.Groups.GetGroupWithDetailsAsync(quiz.GroupId);
+            bool authorized = false;
+
+            var teacher = await _unitOfWork.Teachers.GetTeacherByUserIdAsync(requestingUserId);
+            if (teacher != null && group != null && group.TeacherId == teacher.Id)
+                authorized = true;
+
+            if (!authorized)
+            {
+                var student = await _unitOfWork.Students.GetStudentByUserIdAsync(requestingUserId);
+                if (student != null && attempt.Enrollment?.StudentId == student.Id)
+                    authorized = true;
+            }
+
+            if (!authorized)
+                throw new UnauthorizedException("Bu nəticəyə baxmaq icazəniz yoxdur");
+
+            var dto = new QuizAttemptDetailDto
+            {
+                AttemptId = attempt.Id,
+                QuizId = attempt.QuizId,
+                QuizTitle = quiz.Title,
+                EnrollmentId = attempt.EnrollmentId,
+                StudentName = attempt.Enrollment?.Student?.AppUser?.FullName ?? "",
+                StudentNumber = attempt.Enrollment?.Student?.StudentNumber ?? "",
+                Score = attempt.Score,
+                SubmittedAt = attempt.SubmittedAt,
+                TotalQuestions = quiz.Questions.Count,
+                CorrectCount = attempt.Answers.Count(a => a.IsCorrect),
+                WrongCount = attempt.Answers.Count(a => !a.IsCorrect)
+            };
+
+            // Sualları order üzrə map et — hər sualın option-ları + tələbənin seçimi
+            foreach (var q in quiz.Questions.OrderBy(q => q.Order))
+            {
+                var ans = attempt.Answers.FirstOrDefault(a => a.QuizQuestionId == q.Id);
+                var selectedIds = ParseSelectedOptionIds(ans?.SelectedOptionIds);
+                var correctIds = q.Options.Where(o => o.IsCorrect).Select(o => o.Id).ToList();
+
+                dto.Questions.Add(new QuizQuestionResultDto
+                {
+                    QuestionId = q.Id,
+                    Order = q.Order,
+                    Text = q.Text,
+                    Points = q.Points,
+                    PointsAwarded = ans?.PointsAwarded ?? 0,
+                    IsCorrect = ans?.IsCorrect ?? false,
+                    SelectedOptionIds = selectedIds,
+                    CorrectOptionIds = correctIds,
+                    Options = q.Options.OrderBy(o => o.Order).Select(o => new QuizOptionResultDto
+                    {
+                        Id = o.Id,
+                        Text = o.Text,
+                        IsCorrect = o.IsCorrect,
+                        WasSelected = selectedIds.Contains(o.Id)
+                    }).ToList()
+                });
+            }
+
+            return dto;
+        }
+
+        private static List<int> ParseSelectedOptionIds(string? csv)
+        {
+            if (string.IsNullOrWhiteSpace(csv)) return new List<int>();
+            return csv.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                .Select(s => int.TryParse(s.Trim(), out var id) ? id : 0)
+                .Where(id => id > 0)
+                .ToList();
         }
 
         // ── Helpers ──────────────────────────────────────────────────

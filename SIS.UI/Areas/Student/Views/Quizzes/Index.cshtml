@@ -38,7 +38,7 @@ else
                         @if (taken)
                         {
                             <span style="font-weight:700; color:#22c55e; margin-right:8px;"><i class="fas fa-star"></i> @myResult!.Score%</span>
-                            <a href="/Student/Quizzes/Take?quizId=@quiz.Id&enrollmentId=@enrollment.Id" class="btn btn-sm btn-secondary">Bax</a>
+                            <a href="/Student/Quizzes/Result/@myResult.AttemptId" class="btn btn-sm btn-secondary"><i class="fas fa-list-ul"></i> Detallı bax</a>
                         }
                         else
                         {

@@ -20,6 +20,14 @@ namespace SIS.BLL.Services.DTOs.Attendance
         public int PresentCount { get; set; }
         public int AbsentCount { get; set; }
         public int LateCount { get; set; }
+        public int ExcusedCount { get; set; }
+
+        /// <summary>Bütün group sessiyalarının sayı (cancelled-i istisna).</summary>
+        public int TotalCompletedSessions { get; set; }
+
+        /// <summary>Davamiyyət götürülmüş sessiya sayı (denominator).</summary>
+        public int AttendanceTakenSessions { get; set; }
+
         public double AttendancePercentage { get; set; }
     }
 

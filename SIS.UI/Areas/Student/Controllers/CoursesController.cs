@@ -171,5 +171,22 @@ namespace SIS.UI.Areas.Student.Controllers
                 return RedirectToAction("Detail", new { id });
             }
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SendTranscriptEmail(int id)
+        {
+            try
+            {
+                var response = await _transcriptApi.SendByEmailAsync(id);
+                if (response.IsSuccessStatusCode)
+                    TempData["Success"] = "Transkript email-ə göndərildi";
+                else
+                    TempData["Error"] = "Transkript email göndərilə bilmədi";
+            }
+            catch (Refit.ApiException ex) { TempData["Error"] = string.IsNullOrEmpty(ex.Content) ? ex.Message : ex.Content; }
+            catch (Exception ex) { TempData["Error"] = ex.Message; }
+            return RedirectToAction("Detail", new { id });
+        }
     }
 }

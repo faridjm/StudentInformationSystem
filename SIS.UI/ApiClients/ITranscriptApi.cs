@@ -10,5 +10,8 @@ namespace SIS.UI.ApiClients
 
         [Get("/api/transcript/{enrollmentId}/pdf")]
         Task<HttpResponseMessage> GetPdfAsync(int enrollmentId);
+
+        [Post("/api/transcript/{enrollmentId}/email")]
+        Task<HttpResponseMessage> SendByEmailAsync(int enrollmentId);
     }
 }

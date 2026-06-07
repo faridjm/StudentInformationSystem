@@ -4,203 +4,621 @@
 @{
     ViewData["Title"] = L["Dashboard"].Value;
     var effectiveDate = SimState.IsActive ? SimState.DateDisplay : DateTime.Now.ToString("dd MMMM yyyy, dddd");
+
+    // Smart greeting summary (real data — no logic change, just composed)
+    int todayCount      = Model.TodayClassesCount;
+    int pendingReviews  = Model.PendingAssignmentReviews + Model.PendingGrades;
+    int attendanceTodo  = Model.AttendanceNotTakenCount;
+    int totalActions    = pendingReviews + attendanceTodo;
+    string firstName    = (Model.TeacherName ?? "").Split(' ').FirstOrDefault() ?? "Müəllim";
+
+    // Time-of-day greeting (real clock — sim only sets date, not time)
+    var hour = DateTime.Now.Hour;
+    string greet = hour < 6 ? "Xoş gecələr" : hour < 12 ? "Sabahınız xeyir" : hour < 18 ? "Günortanız xeyir" : "Axşamınız xeyir";
 }
 
-<div style="margin-bottom:20px; display:flex; justify-content:space-between; align-items:flex-start; gap:12px; flex-wrap:wrap;">
-    <div>
-        <h2 style="font-size:22px; font-weight:700;">Salam, @Model.TeacherName 👋</h2>
-        <p style="color:var(--text-secondary); font-size:13px; margin-top:2px;">Bugünkü iş masanız · bu gün <strong>@Model.TodayClassesCount</strong> dərs</p>
-    </div>
-    <div style="display:flex; align-items:center; gap:8px;">
-        <span class="badge badge-primary"><i class="fas fa-calendar-day"></i> @effectiveDate</span>
-        @if (SimState.IsActive)
-        {
-            <span class="badge badge-warning"><i class="fas fa-clock"></i> Simulyasiya</span>
-        }
-    </div>
-</div>
+@* ============================================================
+   Scoped dashboard styles — yalnız bu səhifə üçün
+   ============================================================ *@
+<style>
+    .td-page { display: flex; flex-direction: column; gap: 22px; }
 
-@functions {
-    string Card(string icon, string label, int value, string color, string href)
-        => $@"<a href='{href}' style='text-decoration:none;'><div class='card' style='padding:18px; display:flex; align-items:center; gap:14px; transition:border-color .2s;' onmouseover=""this.style.borderColor='var(--accent)'"" onmouseout=""this.style.borderColor='var(--border)'"">
-                <div style='width:46px; height:46px; border-radius:12px; background:{color}22; display:flex; align-items:center; justify-content:center;'>
-                    <i class='fas {icon}' style='color:{color}; font-size:20px;'></i></div>
-                <div><div style='font-size:24px; font-weight:800;'>{value}</div>
-                <div style='font-size:12px; color:var(--text-secondary);'>{label}</div></div></div></a>";
-}
+    /* ===== HEADER ===== */
+    .td-header {
+        display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap;
+    }
+    .td-greet { display: flex; flex-direction: column; gap: 4px; }
+    .td-greet .eyebrow {
+        font-size: 11.5px; font-weight: 700; letter-spacing: .9px; text-transform: uppercase;
+        color: var(--accent);
+    }
+    .td-greet h1 { font-size: 24px; font-weight: 800; letter-spacing: -.4px; line-height: 1.15; }
+    .td-greet .summary {
+        color: var(--text-secondary); font-size: 13.5px; margin-top: 2px;
+    }
+    .td-greet .summary strong { color: var(--text-primary, var(--text-color)); }
 
-<!-- Statistik kartlar -->
-<div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(220px,1fr)); gap:14px; margin-bottom:22px;">
-    @Html.Raw(Card("fa-layer-group", "Aktiv qruplar", Model.ActiveGroupsCount, "#3b82f6", "/Teacher/Courses"))
-    @Html.Raw(Card("fa-chalkboard", "Bugünkü dərslər", Model.TodayClassesCount, "#8b5cf6", "#todayClasses"))
-    @Html.Raw(Card("fa-clipboard-check", "Yoxlanılacaq tapşırıq", Model.PendingAssignmentReviews, "#f59e0b", "#reviewQueue"))
-    @Html.Raw(Card("fa-clipboard-question", "Aktiv quizlər", Model.ActiveQuizzesCount, "#10b981", "/Teacher/Quizzes"))
-    @Html.Raw(Card("fa-envelope", "Oxunmamış mesaj", Model.UnreadMessages, "#ec4899", "/Teacher/Messages"))
-    @Html.Raw(Card("fa-star-half-stroke", "Gözləyən qiymət", Model.PendingGrades, "#ef4444", "#reviewQueue"))
-</div>
+    .td-head-badges { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .td-pill {
+        display: inline-flex; align-items: center; gap: 7px;
+        background: var(--card-bg, #fff); border: 1px solid var(--border);
+        padding: 7px 12px; border-radius: 999px;
+        font-size: 12.5px; font-weight: 600; color: var(--text-secondary);
+    }
+    .td-pill i { color: var(--accent); font-size: 12px; }
+    .td-pill.sim { background: rgba(245,158,11,.10); border-color: rgba(245,158,11,.30); color: #B45309; }
+    .td-pill.sim i { color: #D97706; }
+    .td-pill.live { background: rgba(16,185,129,.10); border-color: rgba(16,185,129,.30); color: #047857; }
+    .td-pill.live i { color: #059669; }
+    .td-pill.live .live-dot {
+        width: 7px; height: 7px; border-radius: 50%; background: #10B981;
+        box-shadow: 0 0 0 3px rgba(16,185,129,.25);
+    }
 
-<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(340px,1fr)); gap:18px; align-items:start;">
+    /* ===== KPI CARDS ===== */
+    .td-kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .td-kpi {
+        position: relative; padding: 18px; border-radius: 14px;
+        background: var(--card-bg, #fff); border: 1px solid var(--border);
+        display: flex; align-items: center; gap: 14px;
+        text-decoration: none; color: inherit;
+        transition: transform .15s, border-color .15s, box-shadow .15s;
+        min-height: 92px;
+    }
+    .td-kpi:hover { transform: translateY(-2px); border-color: var(--accent); box-shadow: 0 8px 20px rgba(15,23,42,.08); }
+    .td-kpi .k-ico {
+        width: 48px; height: 48px; border-radius: 12px; flex: none;
+        display: inline-flex; align-items: center; justify-content: center;
+        font-size: 20px;
+    }
+    .td-kpi .k-body { display: flex; flex-direction: column; min-width: 0; }
+    .td-kpi .k-num { font-size: 26px; font-weight: 800; letter-spacing: -.6px; line-height: 1.1; }
+    .td-kpi .k-lbl {
+        font-size: 12.5px; color: var(--text-secondary); margin-top: 2px;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    /* Subtle alert accent if there's something pending */
+    .td-kpi.alert .k-num { color: #B45309; }
+    .td-kpi.alert::after {
+        content: ""; position: absolute; top: 12px; right: 12px;
+        width: 8px; height: 8px; border-radius: 50%; background: #F59E0B;
+        box-shadow: 0 0 0 3px rgba(245,158,11,.20);
+    }
+    /* Icon color treatments — sakit, accent yumşaq fon ilə */
+    .ki-blue   { background: rgba(59,130,246,.12);  color: #2563EB; }
+    .ki-violet { background: rgba(124,58,237,.12);  color: #7C3AED; }
+    .ki-amber  { background: rgba(245,158,11,.14); color: #B45309; }
+    .ki-rose   { background: rgba(239,68,68,.12);  color: #DC2626; }
+    .ki-green  { background: rgba(16,185,129,.12); color: #059669; }
+    .ki-pink   { background: rgba(236,72,153,.12); color: #BE185D; }
 
-    <!-- Sol sütun -->
-    <div style="display:flex; flex-direction:column; gap:18px;">
+    /* ===== SECONDARY MINI STRIP ===== */
+    .td-mini-strip {
+        display: flex; gap: 10px; flex-wrap: wrap;
+        padding: 12px 14px; border-radius: 12px;
+        background: var(--card-bg, #fff); border: 1px solid var(--border);
+    }
+    .td-mini {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: 6px 12px; border-radius: 999px;
+        background: var(--bg-hover); color: var(--text-secondary);
+        font-size: 12.5px; font-weight: 600; text-decoration: none;
+        transition: background .15s, color .15s;
+    }
+    .td-mini:hover { background: var(--accent-soft); color: var(--accent); }
+    .td-mini .num { font-weight: 800; color: var(--text-primary, var(--text-color)); }
+    .td-mini.alert { background: rgba(245,158,11,.10); color: #B45309; }
+    .td-mini.alert .num { color: #B45309; }
+    .td-mini-divider {
+        width: 1px; height: 22px; background: var(--border); align-self: center;
+    }
+    .td-mini-strip .mini-spacer { flex: 1; }
+    .td-mini-strip .mini-link {
+        font-size: 12.5px; color: var(--accent); text-decoration: none; font-weight: 600;
+    }
 
-        <!-- Bugünkü dərslər -->
-        <div id="todayClasses">
-            <h3 style="font-size:16px; font-weight:700; margin-bottom:12px;"><i class="fas fa-chalkboard"></i> Bugünkü dərslər</h3>
-            @if (!Model.TodayClasses.Any())
+    /* ===== MAIN GRID ===== */
+    .td-grid { display: grid; grid-template-columns: 1.55fr 1fr; gap: 18px; align-items: start; }
+
+    /* ===== SECTION CARDS ===== */
+    .td-sec {
+        background: var(--card-bg, #fff); border: 1px solid var(--border);
+        border-radius: 14px; overflow: hidden;
+    }
+    .td-sec-head {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 14px 18px; border-bottom: 1px solid var(--border); gap: 10px;
+    }
+    .td-sec-head .left { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .td-sec-head .ico {
+        width: 32px; height: 32px; border-radius: 9px;
+        background: var(--accent-soft); color: var(--accent);
+        display: inline-flex; align-items: center; justify-content: center; font-size: 14px;
+    }
+    .td-sec-head h3 { font-size: 14.5px; font-weight: 700; letter-spacing: -.2px; }
+    .td-sec-head .sub { font-size: 11.5px; color: var(--text-secondary); margin-left: 4px; }
+    .td-sec-head .right { display: inline-flex; align-items: center; gap: 10px; }
+    .td-sec-head .right a { font-size: 12.5px; color: var(--accent); text-decoration: none; font-weight: 600; }
+    .td-sec-body { padding: 14px 18px; }
+    .td-sec-body.tight { padding: 6px 0; }
+
+    /* ===== TODAY'S CLASSES (primary focus) ===== */
+    .td-class {
+        display: grid; grid-template-columns: 70px 1fr auto; gap: 14px; align-items: center;
+        padding: 14px 16px; border-bottom: 1px solid var(--border);
+        transition: background .15s;
+    }
+    .td-class:last-child { border-bottom: none; }
+    .td-class:hover { background: var(--bg-hover); }
+    .td-class .time-box {
+        text-align: center; padding: 8px 6px; border-radius: 10px;
+        background: var(--accent-soft); color: var(--accent);
+    }
+    .td-class .time-box .t-start { font-size: 15px; font-weight: 800; letter-spacing: -.3px; line-height: 1.1; }
+    .td-class .time-box .t-end   { font-size: 10.5px; opacity: .85; margin-top: 2px; }
+    .td-class .info { min-width: 0; }
+    .td-class .info .title {
+        font-weight: 700; font-size: 14.5px; letter-spacing: -.2px;
+        display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    }
+    .td-class .info .title .course {
+        font-weight: 500; color: var(--text-secondary); font-size: 13px;
+    }
+    .td-class .info .meta {
+        font-size: 12px; color: var(--text-secondary); margin-top: 4px;
+        display: flex; gap: 12px; flex-wrap: wrap;
+    }
+    .td-class .info .meta i { color: var(--accent); margin-right: 4px; }
+    .td-class .actions { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+    .td-status {
+        font-size: 10.5px; font-weight: 700; padding: 4px 10px; border-radius: 999px;
+        text-transform: uppercase; letter-spacing: .4px;
+        display: inline-flex; align-items: center; gap: 5px;
+    }
+    .td-status.ok      { background: rgba(16,185,129,.12); color: #047857; }
+    .td-status.pending { background: rgba(245,158,11,.14); color: #B45309; }
+
+    /* ===== REVIEW QUEUE ===== */
+    .td-queue { display: flex; flex-direction: column; }
+    .td-queue .row {
+        display: flex; align-items: center; gap: 12px;
+        padding: 12px 18px; border-bottom: 1px solid var(--border);
+        text-decoration: none; color: inherit; transition: background .15s;
+    }
+    .td-queue .row:last-child { border-bottom: none; }
+    .td-queue .row:hover { background: var(--bg-hover); }
+    .td-queue .row .ico {
+        width: 32px; height: 32px; border-radius: 9px; flex: none;
+        display: inline-flex; align-items: center; justify-content: center;
+        font-size: 13px;
+    }
+    .td-queue .row .lbl {
+        flex: 1; font-size: 13px; font-weight: 600; color: var(--text-color, inherit);
+        min-width: 0;
+    }
+    .td-queue .row .lbl .sub {
+        display: block; font-weight: 500; color: var(--text-secondary); font-size: 11.5px; margin-top: 1px;
+    }
+    .td-queue .row .cnt {
+        min-width: 28px; text-align: center; padding: 3px 9px; border-radius: 999px;
+        background: var(--bg-hover); color: var(--text-secondary);
+        font-size: 12px; font-weight: 800;
+    }
+    .td-queue .row.has .cnt {
+        background: var(--accent); color: #fff;
+    }
+    .td-queue .row.warn .ico { background: rgba(245,158,11,.14); color: #B45309; }
+    .td-queue .row.warn.has .cnt { background: #F59E0B; }
+    .td-queue .row.rose .ico { background: rgba(239,68,68,.12); color: #DC2626; }
+    .td-queue .row.rose.has .cnt { background: #EF4444; }
+    .td-queue .row.violet .ico { background: rgba(124,58,237,.12); color: #7C3AED; }
+    .td-queue .row.violet.has .cnt { background: #7C3AED; }
+    .td-queue .row.green .ico { background: rgba(16,185,129,.12); color: #059669; }
+    .td-queue .row.green.has .cnt { background: #10B981; }
+    .td-queue .row .chev { color: var(--text-secondary); opacity: .55; font-size: 10px; }
+
+    /* ===== COMPACT EMPTY ===== */
+    .td-empty {
+        padding: 22px 18px; text-align: center; color: var(--text-secondary);
+        display: flex; flex-direction: column; align-items: center; gap: 6px;
+    }
+    .td-empty i { font-size: 22px; opacity: .35; }
+    .td-empty p { font-size: 13px; }
+
+    /* ===== PENDING ASSIGNMENT / QUIZ LISTS ===== */
+    .td-list-row {
+        display: flex; align-items: center; justify-content: space-between; gap: 10px;
+        padding: 12px 18px; border-bottom: 1px solid var(--border);
+    }
+    .td-list-row:last-child { border-bottom: none; }
+    .td-list-row .info { min-width: 0; }
+    .td-list-row .info .t { font-weight: 600; font-size: 13.5px; }
+    .td-list-row .info .s { font-size: 11.5px; color: var(--text-secondary); margin-top: 2px; }
+    .td-list-row .info .s i { color: var(--accent); margin-right: 3px; }
+    .td-list-row .count-chip {
+        padding: 3px 9px; border-radius: 999px;
+        background: rgba(245,158,11,.14); color: #B45309;
+        font-size: 11.5px; font-weight: 800; white-space: nowrap;
+    }
+
+    /* ===== NOTIFICATIONS LIST ===== */
+    .td-notif {
+        display: block; padding: 12px 18px; text-decoration: none; color: inherit;
+        border-bottom: 1px solid var(--border); transition: background .15s;
+    }
+    .td-notif:last-child { border-bottom: none; }
+    .td-notif:hover { background: var(--bg-hover); }
+    .td-notif.unread { background: var(--accent-soft); }
+    .td-notif .t {
+        font-size: 13px; font-weight: 700;
+        display: flex; align-items: center; gap: 6px;
+    }
+    .td-notif .dot {
+        width: 7px; height: 7px; border-radius: 50%; background: var(--accent);
+    }
+    .td-notif .m { font-size: 12px; color: var(--text-secondary); margin-top: 2px;
+        overflow: hidden; text-overflow: ellipsis; display: -webkit-box;
+        -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+    .td-notif .d { font-size: 10.5px; color: var(--text-secondary); opacity: .75; margin-top: 4px; }
+    .td-sec .seeall {
+        display: block; text-align: center; padding: 10px;
+        font-size: 12.5px; color: var(--accent); text-decoration: none; font-weight: 600;
+        border-top: 1px solid var(--border);
+    }
+    .td-sec .seeall:hover { background: var(--bg-hover); }
+
+    /* ===== RESPONSIVE ===== */
+    @@media (max-width: 1180px) {
+        .td-kpis { grid-template-columns: repeat(2, 1fr); }
+        .td-grid { grid-template-columns: 1fr; }
+    }
+    @@media (max-width: 560px) {
+        .td-kpis { grid-template-columns: 1fr 1fr; }
+        .td-class { grid-template-columns: 60px 1fr; }
+        .td-class .actions { grid-column: 1 / -1; flex-direction: row; align-items: center; justify-content: space-between; }
+    }
+</style>
+
+<div class="td-page">
+
+    @* ============== HEADER ============== *@
+    <div class="td-header">
+        <div class="td-greet">
+            <span class="eyebrow">@L["Dashboard"]</span>
+            <h1>@greet, @firstName 👋</h1>
+            <div class="summary">
+                @if (todayCount > 0)
+                {
+                    <text>Bu gün <strong>@todayCount</strong> dərsiniz var</text>
+                }
+                else
+                {
+                    <text>Bu gün cədvəlinizdə dərs yoxdur</text>
+                }
+                @if (totalActions > 0)
+                {
+                    <text> · <strong>@totalActions</strong> iş diqqətinizi gözləyir</text>
+                }
+                else
+                {
+                    <text> · gözləyən iş yoxdur</text>
+                }
+            </div>
+        </div>
+        <div class="td-head-badges">
+            <span class="td-pill"><i class="fas fa-calendar-day"></i> @effectiveDate</span>
+            @if (SimState.IsActive)
             {
-                <div class="card" style="padding:28px; text-align:center; color:var(--text-secondary);">
-                    <i class="fas fa-mug-hot" style="font-size:32px; opacity:.3; display:block; margin-bottom:8px;"></i>
-                    Bu gün dərsiniz yoxdur
-                </div>
+                <span class="td-pill sim"><i class="fas fa-clock-rotate-left"></i> Simulyasiya</span>
             }
             else
             {
-                <div style="display:flex; flex-direction:column; gap:10px;">
-                    @foreach (var c in Model.TodayClasses)
-                    {
-                        <div class="card" style="padding:14px 16px;">
-                            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px; flex-wrap:wrap;">
-                                <div>
-                                    <div style="font-weight:700;">@c.GroupName <span style="font-weight:400; color:var(--text-secondary); font-size:13px;">· @c.CourseName</span></div>
-                                    <div style="font-size:12px; color:var(--text-secondary); margin-top:3px;">
-                                        <i class="fas fa-clock"></i> @c.StartTime–@c.EndTime
-                                        @if (!string.IsNullOrEmpty(c.Room)) { <text>· <i class="fas fa-door-open"></i> @c.Room</text> }
-                                        @if (!string.IsNullOrEmpty(c.Topic)) { <text>· @c.Topic</text> }
+                <span class="td-pill live"><span class="live-dot"></span> Canlı</span>
+            }
+        </div>
+    </div>
+
+    @* ============== PRIMARY KPI CARDS (4 equal) ============== *@
+    <div class="td-kpis">
+        <a class="td-kpi" href="/Teacher/Courses">
+            <div class="k-ico ki-blue"><i class="fas fa-layer-group"></i></div>
+            <div class="k-body">
+                <div class="k-num">@Model.ActiveGroupsCount</div>
+                <div class="k-lbl">Aktiv qruplar</div>
+            </div>
+        </a>
+        <a class="td-kpi" href="#todayClasses">
+            <div class="k-ico ki-violet"><i class="fas fa-chalkboard"></i></div>
+            <div class="k-body">
+                <div class="k-num">@Model.TodayClassesCount</div>
+                <div class="k-lbl">Bugünkü dərslər</div>
+            </div>
+        </a>
+        <a class="td-kpi @(Model.PendingAssignmentReviews > 0 ? "alert" : "")" href="#pendingAssignments">
+            <div class="k-ico ki-amber"><i class="fas fa-clipboard-check"></i></div>
+            <div class="k-body">
+                <div class="k-num">@Model.PendingAssignmentReviews</div>
+                <div class="k-lbl">Yoxlanılacaq tapşırıq</div>
+            </div>
+        </a>
+        <a class="td-kpi @(Model.PendingGrades > 0 ? "alert" : "")" href="/Teacher/Courses">
+            <div class="k-ico ki-rose"><i class="fas fa-star-half-stroke"></i></div>
+            <div class="k-body">
+                <div class="k-num">@Model.PendingGrades</div>
+                <div class="k-lbl">Gözləyən qiymət</div>
+            </div>
+        </a>
+    </div>
+
+    @* ============== SECONDARY MINI STRIP ============== *@
+    <div class="td-mini-strip">
+        <a href="/Teacher/Quizzes" class="td-mini @(Model.ActiveQuizzesCount > 0 ? "alert" : "")">
+            <i class="fas fa-clipboard-question"></i>
+            <span class="num">@Model.ActiveQuizzesCount</span>
+            <span>aktiv quiz</span>
+        </a>
+        <div class="td-mini-divider"></div>
+        <a href="/Teacher/Messages" class="td-mini @(Model.UnreadMessages > 0 ? "alert" : "")">
+            <i class="fas fa-envelope"></i>
+            <span class="num">@Model.UnreadMessages</span>
+            <span>oxunmamış mesaj</span>
+        </a>
+        <div class="td-mini-divider"></div>
+        <a href="/Teacher/Schedule" class="td-mini">
+            <i class="fas fa-calendar-alt"></i>
+            <span>Cədvəlimə bax</span>
+        </a>
+        <span class="mini-spacer"></span>
+        <a href="/Teacher/Courses" class="mini-link">Bütün qruplar <i class="fas fa-arrow-right" style="font-size:10px;"></i></a>
+    </div>
+
+    @* ============== MAIN GRID ============== *@
+    <div class="td-grid">
+
+        @* ========== LEFT COLUMN — PRIMARY FOCUS ========== *@
+        <div style="display:flex; flex-direction:column; gap:18px;">
+
+            @* ----- TODAY'S CLASSES (the hero block) ----- *@
+            <section class="td-sec" id="todayClasses">
+                <div class="td-sec-head">
+                    <div class="left">
+                        <span class="ico"><i class="fas fa-chalkboard"></i></span>
+                        <h3>Bugünkü dərslər</h3>
+                        <span class="sub">· @Model.TodayClassesCount sessiya</span>
+                    </div>
+                    <div class="right">
+                        <a href="/Teacher/Schedule">Cədvəl <i class="fas fa-arrow-right" style="font-size:10px;"></i></a>
+                    </div>
+                </div>
+                @if (!Model.TodayClasses.Any())
+                {
+                    <div class="td-empty" style="padding:36px 18px;">
+                        <i class="fas fa-mug-hot"></i>
+                        <p>Bu gün cədvəlinizdə dərs yoxdur. Yaxşı dincəlin ☕</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="td-sec-body tight">
+                        @foreach (var c in Model.TodayClasses)
+                        {
+                            <div class="td-class">
+                                <div class="time-box">
+                                    <div class="t-start">@c.StartTime</div>
+                                    <div class="t-end">→ @c.EndTime</div>
+                                </div>
+                                <div class="info">
+                                    <div class="title">
+                                        @c.GroupName
+                                        <span class="course">· @c.CourseName</span>
+                                    </div>
+                                    <div class="meta">
+                                        @if (!string.IsNullOrEmpty(c.Room))
+                                        {
+                                            <span><i class="fas fa-door-open"></i>@c.Room</span>
+                                        }
+                                        @if (!string.IsNullOrEmpty(c.Topic))
+                                        {
+                                            <span><i class="fas fa-bookmark"></i>@c.Topic</span>
+                                        }
                                     </div>
                                 </div>
-                                <div style="text-align:right;">
+                                <div class="actions">
                                     @if (c.AttendanceTaken)
                                     {
-                                        <span class="badge badge-success" style="background:#dcfce7; color:#16a34a; padding:3px 10px; border-radius:12px; font-size:11px; font-weight:600;">Davamiyyət alınıb</span>
+                                        <span class="td-status ok"><i class="fas fa-check"></i> Davamiyyət alınıb</span>
+                                        <a href="/Teacher/Courses/Detail/@c.GroupId?tab=attendance" class="btn btn-sm btn-secondary">
+                                            <i class="fas fa-eye"></i> Bax
+                                        </a>
                                     }
                                     else
                                     {
-                                        <span class="badge" style="background:#fef9c3; color:#ca8a04; padding:3px 10px; border-radius:12px; font-size:11px; font-weight:600;">Alınmayıb</span>
-                                    }
-                                    <div style="margin-top:8px;">
-                                        <a href="/Teacher/Courses/Detail/@c.GroupId?tab=attendance" class="btn btn-sm @(c.AttendanceTaken ? "btn-secondary" : "btn-primary")">
-                                            <i class="fas fa-user-check"></i> @(c.AttendanceTaken ? "Bax" : "Davamiyyət al")
+                                        <span class="td-status pending"><i class="fas fa-hourglass-half"></i> Gözləyir</span>
+                                        <a href="/Teacher/Courses/Detail/@c.GroupId?tab=attendance" class="btn btn-sm btn-primary">
+                                            <i class="fas fa-user-check"></i> Davamiyyət al
                                         </a>
-                                    </div>
+                                    }
                                 </div>
                             </div>
-                        </div>
-                    }
-                </div>
-            }
-        </div>
-
-        <!-- Review Queue -->
-        <div id="reviewQueue">
-            <h3 style="font-size:16px; font-weight:700; margin-bottom:12px;"><i class="fas fa-list-check"></i> Review Queue</h3>
-            <div class="card" style="padding:6px 0;">
-                @{
-                    void QueueRow(string icon, string label, int count, string href, string btn)
-                    {
-                        <a href="@href" style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px; text-decoration:none; color:inherit; border-bottom:1px solid var(--border);">
-                            <span style="display:flex; align-items:center; gap:10px;"><i class="fas @icon" style="color:var(--accent); width:18px;"></i> @label</span>
-                            <span style="display:flex; align-items:center; gap:10px;">
-                                <span style="background:@(count > 0 ? "var(--accent)" : "var(--bg-hover)"); color:@(count > 0 ? "#fff" : "var(--text-secondary)"); min-width:24px; text-align:center; padding:2px 8px; border-radius:12px; font-size:12px; font-weight:700;">@count</span>
-                                <span style="font-size:12px; color:var(--text-secondary);">@btn <i class="fas fa-chevron-right" style="font-size:10px;"></i></span>
-                            </span>
-                        </a>
-                    }
+                        }
+                    </div>
                 }
-                @{ QueueRow("fa-user-clock", "Davamiyyət götürülməmiş dərslər", Model.AttendanceNotTakenCount, "#todayClasses", "Bax"); }
-                @{ QueueRow("fa-file-circle-check", "Yoxlanılmamış tapşırıq cavabları", Model.PendingAssignmentReviews, "#pendingAssignments", "Yoxla"); }
-                @{ QueueRow("fa-clipboard-question", "Təhvil verilmiş quiz nəticələri", Model.SubmittedQuizResults, "/Teacher/Quizzes", "Bax"); }
-                @{ QueueRow("fa-star-half-stroke", "Gözləyən qiymətləndirmələr", Model.PendingGrades, "/Teacher/Courses", "Qiymətləndir"); }
-                <a href="/Teacher/Messages" style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px; text-decoration:none; color:inherit;">
-                    <span style="display:flex; align-items:center; gap:10px;"><i class="fas fa-envelope" style="color:var(--accent); width:18px;"></i> Oxunmamış mesajlar</span>
-                    <span style="display:flex; align-items:center; gap:10px;">
-                        <span style="background:@(Model.UnreadMessages > 0 ? "var(--accent)" : "var(--bg-hover)"); color:@(Model.UnreadMessages > 0 ? "#fff" : "var(--text-secondary)"); min-width:24px; text-align:center; padding:2px 8px; border-radius:12px; font-size:12px; font-weight:700;">@Model.UnreadMessages</span>
-                        <span style="font-size:12px; color:var(--text-secondary);">Aç <i class="fas fa-chevron-right" style="font-size:10px;"></i></span>
-                    </span>
-                </a>
-            </div>
-        </div>
+            </section>
 
-        <!-- Yoxlanılacaq tapşırıqlar -->
-        <div id="pendingAssignments">
-            <h3 style="font-size:16px; font-weight:700; margin-bottom:12px;"><i class="fas fa-file-pen"></i> Yoxlanılacaq tapşırıqlar</h3>
-            @if (!Model.PendingAssignments.Any())
-            {
-                <div class="card" style="padding:24px; text-align:center; color:var(--text-secondary);">Yoxlanılacaq tapşırıq yoxdur</div>
-            }
-            else
-            {
-                <div style="display:flex; flex-direction:column; gap:8px;">
-                    @foreach (var p in Model.PendingAssignments)
-                    {
-                        <div class="card" style="padding:12px 16px; display:flex; justify-content:space-between; align-items:center; gap:10px;">
-                            <div>
-                                <div style="font-weight:600; font-size:14px;">@p.AssignmentTitle</div>
-                                <div style="font-size:12px; color:var(--text-secondary);">@p.GroupName · @p.PendingCount cavab gözləyir</div>
-                            </div>
-                            <a href="/Teacher/Assignments/Submissions/@p.AssignmentId" class="btn btn-sm btn-primary"><i class="fas fa-eye"></i> Yoxla</a>
-                        </div>
-                    }
+            @* ----- PENDING ASSIGNMENT REVIEWS ----- *@
+            <section class="td-sec" id="pendingAssignments">
+                <div class="td-sec-head">
+                    <div class="left">
+                        <span class="ico"><i class="fas fa-file-pen"></i></span>
+                        <h3>Yoxlanılacaq tapşırıqlar</h3>
+                        @if (Model.PendingAssignmentReviews > 0)
+                        {
+                            <span class="sub">· @Model.PendingAssignmentReviews cavab</span>
+                        }
+                    </div>
+                    <div class="right">
+                        <a href="/Teacher/Assignments">Hamısı <i class="fas fa-arrow-right" style="font-size:10px;"></i></a>
+                    </div>
                 </div>
-            }
-        </div>
-    </div>
-
-    <!-- Sağ sütun -->
-    <div style="display:flex; flex-direction:column; gap:18px;">
-
-        <!-- Aktiv quizlər -->
-        <div>
-            <h3 style="font-size:16px; font-weight:700; margin-bottom:12px;"><i class="fas fa-clipboard-question"></i> Aktiv quizlər</h3>
-            @if (!Model.ActiveQuizzes.Any())
-            {
-                <div class="card" style="padding:24px; text-align:center; color:var(--text-secondary);">Aktiv quiz yoxdur</div>
-            }
-            else
-            {
-                <div style="display:flex; flex-direction:column; gap:8px;">
-                    @foreach (var q in Model.ActiveQuizzes)
-                    {
-                        <div class="card" style="padding:12px 16px; display:flex; justify-content:space-between; align-items:center; gap:10px;">
-                            <div>
-                                <div style="font-weight:600; font-size:14px;">@q.Title</div>
-                                <div style="font-size:12px; color:var(--text-secondary);">@q.GroupName · @q.AttemptCount cavab</div>
+                @if (!Model.PendingAssignments.Any())
+                {
+                    <div class="td-empty">
+                        <i class="fas fa-circle-check"></i>
+                        <p>Yoxlanılacaq tapşırıq yoxdur</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="td-sec-body tight">
+                        @foreach (var p in Model.PendingAssignments)
+                        {
+                            <div class="td-list-row">
+                                <div class="info">
+                                    <div class="t">@p.AssignmentTitle</div>
+                                    <div class="s"><i class="fas fa-layer-group"></i>@p.GroupName · @p.PendingCount cavab gözləyir</div>
+                                </div>
+                                <span class="count-chip">@p.PendingCount</span>
+                                <a href="/Teacher/Assignments/Submissions/@p.AssignmentId" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-eye"></i> Yoxla
+                                </a>
                             </div>
-                            <a href="/Teacher/Quizzes/Results/@q.QuizId" class="btn btn-sm btn-secondary"><i class="fas fa-chart-bar"></i></a>
-                        </div>
-                    }
-                </div>
-            }
+                        }
+                    </div>
+                }
+            </section>
         </div>
 
-        <!-- Son bildirişlər -->
-        <div>
-            <h3 style="font-size:16px; font-weight:700; margin-bottom:12px;"><i class="fas fa-bell"></i> Son bildirişlər</h3>
-            @if (!Model.RecentNotifications.Any())
-            {
-                <div class="card" style="padding:24px; text-align:center; color:var(--text-secondary);">Bildiriş yoxdur</div>
-            }
-            else
-            {
-                <div class="card" style="padding:6px 0;">
-                    @foreach (var n in Model.RecentNotifications)
+        @* ========== RIGHT COLUMN — ACTIONABLE ========== *@
+        <div style="display:flex; flex-direction:column; gap:18px;">
+
+            @* ----- REVIEW QUEUE ----- *@
+            <section class="td-sec">
+                <div class="td-sec-head">
+                    <div class="left">
+                        <span class="ico"><i class="fas fa-list-check"></i></span>
+                        <h3>Review Queue</h3>
+                    </div>
+                </div>
+                <div class="td-queue">
+                    <a href="#todayClasses" class="row warn @(Model.AttendanceNotTakenCount > 0 ? "has" : "")">
+                        <span class="ico"><i class="fas fa-user-clock"></i></span>
+                        <span class="lbl">Davamiyyət gözləyir
+                            <span class="sub">Bugünkü dərslərdə alınmayıb</span>
+                        </span>
+                        <span class="cnt">@Model.AttendanceNotTakenCount</span>
+                        <i class="fas fa-chevron-right chev"></i>
+                    </a>
+                    <a href="#pendingAssignments" class="row violet @(Model.PendingAssignmentReviews > 0 ? "has" : "")">
+                        <span class="ico"><i class="fas fa-file-circle-check"></i></span>
+                        <span class="lbl">Yoxlanılmamış tapşırıq
+                            <span class="sub">Tələbə cavabları</span>
+                        </span>
+                        <span class="cnt">@Model.PendingAssignmentReviews</span>
+                        <i class="fas fa-chevron-right chev"></i>
+                    </a>
+                    <a href="/Teacher/Quizzes" class="row green @(Model.SubmittedQuizResults > 0 ? "has" : "")">
+                        <span class="ico"><i class="fas fa-clipboard-question"></i></span>
+                        <span class="lbl">Quiz nəticələri
+                            <span class="sub">Təhvil verilmiş cəhdlər</span>
+                        </span>
+                        <span class="cnt">@Model.SubmittedQuizResults</span>
+                        <i class="fas fa-chevron-right chev"></i>
+                    </a>
+                    <a href="/Teacher/Courses" class="row rose @(Model.PendingGrades > 0 ? "has" : "")">
+                        <span class="ico"><i class="fas fa-star-half-stroke"></i></span>
+                        <span class="lbl">Gözləyən qiymət
+                            <span class="sub">Qiymətləndirmə tələb edir</span>
+                        </span>
+                        <span class="cnt">@Model.PendingGrades</span>
+                        <i class="fas fa-chevron-right chev"></i>
+                    </a>
+                    <a href="/Teacher/Messages" class="row @(Model.UnreadMessages > 0 ? "has" : "")">
+                        <span class="ico"><i class="fas fa-envelope"></i></span>
+                        <span class="lbl">Oxunmamış mesajlar
+                            <span class="sub">Yeni söhbətlər</span>
+                        </span>
+                        <span class="cnt">@Model.UnreadMessages</span>
+                        <i class="fas fa-chevron-right chev"></i>
+                    </a>
+                </div>
+            </section>
+
+            @* ----- ACTIVE QUIZZES ----- *@
+            <section class="td-sec">
+                <div class="td-sec-head">
+                    <div class="left">
+                        <span class="ico"><i class="fas fa-clipboard-question"></i></span>
+                        <h3>Aktiv quizlər</h3>
+                        @if (Model.ActiveQuizzesCount > 0)
+                        {
+                            <span class="sub">· @Model.ActiveQuizzesCount aktiv</span>
+                        }
+                    </div>
+                    <div class="right">
+                        <a href="/Teacher/Quizzes">Hamısı <i class="fas fa-arrow-right" style="font-size:10px;"></i></a>
+                    </div>
+                </div>
+                @if (!Model.ActiveQuizzes.Any())
+                {
+                    <div class="td-empty">
+                        <i class="fas fa-clipboard-question"></i>
+                        <p>Hazırda aktiv quiz yoxdur</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="td-sec-body tight">
+                        @foreach (var q in Model.ActiveQuizzes)
+                        {
+                            <div class="td-list-row">
+                                <div class="info">
+                                    <div class="t">@q.Title</div>
+                                    <div class="s"><i class="fas fa-layer-group"></i>@q.GroupName · @q.AttemptCount cavab</div>
+                                </div>
+                                <a href="/Teacher/Quizzes/Results/@q.QuizId" class="btn btn-sm btn-secondary">
+                                    <i class="fas fa-chart-bar"></i> Nəticə
+                                </a>
+                            </div>
+                        }
+                    </div>
+                }
+            </section>
+
+            @* ----- RECENT NOTIFICATIONS ----- *@
+            <section class="td-sec">
+                <div class="td-sec-head">
+                    <div class="left">
+                        <span class="ico"><i class="fas fa-bell"></i></span>
+                        <h3>Son bildirişlər</h3>
+                    </div>
+                </div>
+                @if (!Model.RecentNotifications.Any())
+                {
+                    <div class="td-empty">
+                        <i class="fas fa-bell-slash"></i>
+                        <p>Yeni bildiriş yoxdur</p>
+                    </div>
+                }
+                else
+                {
+                    @foreach (var n in Model.RecentNotifications.Take(5))
                     {
                         var href = $"/Notifications/Open?id={n.Id}" + (string.IsNullOrEmpty(n.RelatedUrl) ? "" : $"&url={Uri.EscapeDataString(n.RelatedUrl)}");
-                        <a href="@href" style="display:block; padding:11px 16px; text-decoration:none; color:inherit; border-bottom:1px solid var(--border); @(n.IsRead ? "" : "background:var(--accent-soft);")">
-                            <div style="font-size:13px; font-weight:600; display:flex; align-items:center; gap:6px;">
-                                @if (!n.IsRead)
-                                {
-                                    <span style="width:7px; height:7px; border-radius:50%; background:var(--accent); display:inline-block;"></span>
-                                }
+                        <a href="@href" class="td-notif @(n.IsRead ? "" : "unread")">
+                            <div class="t">
+                                @if (!n.IsRead) { <span class="dot"></span> }
                                 @n.Title
                             </div>
-                            <div style="font-size:12px; color:var(--text-secondary); margin-top:2px;">@n.Message</div>
-                            <div style="font-size:11px; color:var(--text-secondary); opacity:.7; margin-top:3px;">@n.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</div>
+                            @if (!string.IsNullOrEmpty(n.Message))
+                            {
+                                <div class="m">@n.Message</div>
+                            }
+                            <div class="d">@n.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</div>
                         </a>
                     }
-                    <a href="/Notifications" style="display:block; text-align:center; padding:10px; font-size:13px; color:var(--accent); text-decoration:none;">Hamısına bax</a>
-                </div>
-            }
+                    <a href="/Notifications" class="seeall">Bütün bildirişlər</a>
+                }
+            </section>
         </div>
     </div>
 </div>

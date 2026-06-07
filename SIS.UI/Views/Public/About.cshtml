@@ -6,94 +6,129 @@
 
 <header class="pub-detail-hero">
     <div class="pub-container">
-        <h1>Acadex Akademiyası</h1>
-        <p style="opacity:.9; margin-top:8px;">Praktik bacarıqlar, real layihələr və ölçülə bilən nəticələr</p>
+        <span class="pub-eyebrow"><span class="dot"></span> Acadex Akademiyası</span>
+        <h1>Praktiki təhsil. Real layihələr. Ölçülə bilən nəticələr.</h1>
+        <p class="lead">
+            Acadex sadəcə kurs platforması deyil — strukturlaşdırılmış tədris modeli, mentor dəstəyi
+            və layihə əsaslı qiymətləndirmə üzərində qurulmuş tam funksional bir akademiyadır.
+        </p>
+        <div class="pub-hero-actions" style="margin-top:24px;">
+            <a href="/Public/Courses" class="pub-btn pub-btn-solid-light">
+                <i class="fas fa-layer-group"></i> Proqramlarımız
+            </a>
+            <a href="#facilities" class="pub-btn pub-btn-light">
+                <i class="fas fa-school"></i> Şərait və otaqlar
+            </a>
+        </div>
     </div>
 </header>
 
-<!-- STORY -->
+@* ============ STORY ============ *@
 <section class="pub-section">
-    <div class="pub-container" style="max-width:820px;">
-        <div class="pub-section-head" style="margin-bottom:24px;">
-            <h2>Hekayəmiz</h2>
+    <div class="pub-container" style="max-width:980px;">
+        <div class="pub-section-head left" style="margin-left:0;">
+            <span class="kicker">Hekayəmiz</span>
+            <h2>Acadex necə yarandı</h2>
         </div>
         <div class="pub-panel">
-            <p style="color:var(--pub-muted); font-size:16px; line-height:1.8;">@Model.Story</p>
-        </div>
-    </div>
-</section>
-
-<!-- MISSION + VISION -->
-<section class="pub-section alt">
-    <div class="pub-container" style="max-width:980px;">
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:22px;">
-            <div class="pub-panel" style="margin:0;">
-                <h3><i class="fas fa-bullseye"></i> Missiyamız</h3>
-                <p style="color:var(--pub-muted); font-size:15px;">@Model.Mission</p>
-            </div>
-            <div class="pub-panel" style="margin:0;">
-                <h3><i class="fas fa-eye"></i> Vizyonumuz</h3>
-                <p style="color:var(--pub-muted); font-size:15px;">@Model.Vision</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- FACILITIES -->
-<section class="pub-section">
-    <div class="pub-container">
-        <div class="pub-section-head">
-            <h2>Akademiya şəraiti</h2>
-            <p>Otaqlar və öyrənmə mühiti</p>
-        </div>
-        <div class="pub-grid">
-            @foreach (var f in Model.Facilities)
-            {
-                <div class="pub-facility">
-                    <div class="pub-imgph pub-grad-@f.Grad">
-                        <i class="fas @f.Icon"></i>
-                        <span class="tag">@f.Type</span>
-                    </div>
-                    <div class="body">
-                        <h3>@f.Name</h3>
-                        <div class="meta"><i class="fas fa-users"></i> @f.Capacity nəfər</div>
-                        <p>@f.Description</p>
-                    </div>
+            <p style="color:var(--pub-ink-2); font-size:16.5px; line-height:1.85;">@Model.Story</p>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px; margin-top:24px;">
+                <div style="padding:16px; background:var(--pub-soft); border-radius:12px;">
+                    <div style="font-size:24px; font-weight:800; color:var(--pub-primary);">2021</div>
+                    <div style="font-size:13px; color:var(--pub-muted);">Yaradılma ili</div>
                 </div>
-            }
+                <div style="padding:16px; background:var(--pub-soft-2); border-radius:12px;">
+                    <div style="font-size:24px; font-weight:800; color:var(--pub-secondary);">5+</div>
+                    <div style="font-size:13px; color:var(--pub-muted);">Təhsil istiqaməti</div>
+                </div>
+                <div style="padding:16px; background:var(--pub-soft-3); border-radius:12px;">
+                    <div style="font-size:24px; font-weight:800; color:var(--pub-accent-600);">100%</div>
+                    <div style="font-size:13px; color:var(--pub-muted);">Layihə əsaslı qiymətləndirmə</div>
+                </div>
+                <div style="padding:16px; background:#FEF3C7; border-radius:12px;">
+                    <div style="font-size:24px; font-weight:800; color:#B45309;">Hibrid</div>
+                    <div style="font-size:13px; color:var(--pub-muted);">Online + Əyani format</div>
+                </div>
+            </div>
         </div>
     </div>
 </section>
 
-<!-- METHODOLOGY -->
+@* ============ MISSION + VISION ============ *@
+<section class="pub-section alt">
+    <div class="pub-container" style="max-width:1080px;">
+        <div class="pub-section-head">
+            <span class="kicker">Niyə varıq</span>
+            <h2>Missiya və vizyon</h2>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px;">
+            <div class="pub-panel" style="margin:0; background: linear-gradient(135deg, #fff 0%, var(--pub-soft) 100%);">
+                <h3><i class="fas fa-bullseye"></i> Missiyamız</h3>
+                <p style="color:var(--pub-ink-2); font-size:15.5px; line-height:1.75;">@Model.Mission</p>
+            </div>
+            <div class="pub-panel" style="margin:0; background: linear-gradient(135deg, #fff 0%, var(--pub-soft-2) 100%);">
+                <h3 class="violet"><i class="fas fa-eye"></i> Vizyonumuz</h3>
+                <p style="color:var(--pub-ink-2); font-size:15.5px; line-height:1.75;">@Model.Vision</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+@* ============ METHODOLOGY ============ *@
 @if (Model.Methodology.Any())
 {
-    <section class="pub-section alt">
-        <div class="pub-container" style="max-width:820px;">
+    <section class="pub-section" id="methodology">
+        <div class="pub-container">
             <div class="pub-section-head">
-                <h2>Tədris metodologiyası</h2>
-                <p>Hər kursumuzda tətbiq etdiyimiz prinsiplər</p>
+                <span class="kicker">Tədris modeli</span>
+                <h2>Metodologiyamız</h2>
+                <p>Hər kursumuzda tətbiq olunan əsas prinsiplər və alətlər</p>
             </div>
-            <div class="pub-panel">
-                <ul class="pub-list">
-                    @foreach (var m in Model.Methodology)
-                    {
-                        <li><i class="fas fa-check-circle"></i> @m</li>
-                    }
-                </ul>
+            <div class="pub-features">
+                <div class="pub-feature">
+                    <div class="ico"><i class="fas fa-list-check"></i></div>
+                    <h3>Strukturlaşdırılmış kurikulum</h3>
+                    <p>Hər dərs şablonda planlanır — mövzu, materiallar, tapşırıq aydındır.</p>
+                </div>
+                <div class="pub-feature v2">
+                    <div class="ico"><i class="fas fa-user-check"></i></div>
+                    <h3>Davamiyyət izləməsi</h3>
+                    <p>Hər tələbənin iştirakı və hesabatları real vaxtda izlənir.</p>
+                </div>
+                <div class="pub-feature v3">
+                    <div class="ico"><i class="fas fa-clipboard-check"></i></div>
+                    <h3>Quiz və tapşırıqlar</h3>
+                    <p>Online quiz, assignment yükləmə və avtomatlaşdırılmış nəticə.</p>
+                </div>
+                <div class="pub-feature v2">
+                    <div class="ico"><i class="fas fa-square-poll-vertical"></i></div>
+                    <h3>GPA və transkript</h3>
+                    <p>Şəffaf qiymətləndirmə sistemi və rəsmi transkript sənədi.</p>
+                </div>
+                <div class="pub-feature">
+                    <div class="ico"><i class="fas fa-diagram-project"></i></div>
+                    <h3>Layihə əsaslı qiymətləndirmə</h3>
+                    <p>Hər kursun finalında real istifadəyə uyğun layihə.</p>
+                </div>
+                <div class="pub-feature v3">
+                    <div class="ico"><i class="fas fa-wifi"></i></div>
+                    <h3>Online classroom dəstəyi</h3>
+                    <p>Hibrid format — istənilən yerdən dərslərə qoşulma imkanı.</p>
+                </div>
             </div>
         </div>
     </section>
 }
 
-<!-- TIMELINE -->
+@* ============ TIMELINE ============ *@
 @if (Model.Timeline.Any())
 {
-    <section class="pub-section">
+    <section class="pub-section alt">
         <div class="pub-container">
             <div class="pub-section-head">
+                <span class="kicker">İllər ərzində</span>
                 <h2>Acadex tarixçəsi</h2>
-                <p>İllər ərzində qət etdiyimiz yol</p>
+                <p>Akademiyamızın qət etdiyi yol və əsas mərhələlər</p>
             </div>
             <div class="pub-timeline">
                 @foreach (var t in Model.Timeline)
@@ -108,15 +143,44 @@
     </section>
 }
 
-<!-- CTA -->
+@* ============ FACILITIES ============ *@
+<section class="pub-section" id="facilities">
+    <div class="pub-container">
+        <div class="pub-section-head">
+            <span class="kicker">Akademiya mühiti</span>
+            <h2>Otaqlar və şərait</h2>
+            <p>Müasir təlim mühiti, peşəkar avadanlıq və hibrid öyrənmə infrastrukturu</p>
+        </div>
+        <div class="pub-grid">
+            @foreach (var f in Model.Facilities)
+            {
+                <div class="pub-facility">
+                    <div class="pub-imgph pub-grad-@f.Grad">
+                        <i class="fas @f.Icon"></i>
+                        <span class="tag">@f.Type</span>
+                    </div>
+                    <div class="body">
+                        <h3>@f.Name</h3>
+                        <div class="meta"><i class="fas fa-users"></i> @f.Capacity nəfər tutum</div>
+                        <p>@f.Description</p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+@* ============ CTA ============ *@
 <section class="pub-section alt">
     <div class="pub-container">
         <div class="pub-cta">
             <h2>Növbəti karyera addımını birlikdə atırıq</h2>
             <p>Acadex proqramları ilə tanış ol və sənə uyğun qrupa müraciət et.</p>
             <div class="pub-hero-actions">
-                <a href="/Public/Courses" class="pub-btn pub-btn-light"><i class="fas fa-layer-group"></i> Kurslara bax</a>
-                <a href="/Public/Contact" class="pub-btn pub-btn-ghost" style="background:#fff;">
+                <a href="/Public/Courses" class="pub-btn pub-btn-solid-light">
+                    <i class="fas fa-layer-group"></i> Kurslara bax
+                </a>
+                <a href="/Public/Contact" class="pub-btn pub-btn-light">
                     <i class="fas fa-paper-plane"></i> Bizimlə əlaqə saxla
                 </a>
             </div>

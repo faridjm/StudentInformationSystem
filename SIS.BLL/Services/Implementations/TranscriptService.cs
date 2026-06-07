@@ -7,13 +7,20 @@ using static SIS.BLL.Exceptions.AppException;
 
 namespace SIS.BLL.Services.Implementations
 {
+    /// <summary>
+    /// Transkript DTO-su üçün məlumatları toplayır. Attendance, official grade,
+    /// GPA və homework average — hamısı IAcademicPerformanceService-dən gəlir,
+    /// yəni panel və PDF eyni nəticəni göstərir.
+    /// </summary>
     public class TranscriptService : ITranscriptService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IAcademicPerformanceService _performance;
 
-        public TranscriptService(IUnitOfWork unitOfWork)
+        public TranscriptService(IUnitOfWork unitOfWork, IAcademicPerformanceService performance)
         {
             _unitOfWork = unitOfWork;
+            _performance = performance;
         }
 
         public async Task<TranscriptDto> GenerateTranscriptAsync(int enrollmentId)
@@ -23,11 +30,13 @@ namespace SIS.BLL.Services.Implementations
 
             var student = enrollment.Student
                 ?? throw new NotFoundException("Tələbə tapılmadı");
-
             var group = enrollment.Group
                 ?? throw new NotFoundException("Qrup tapılmadı");
 
-            // ── Assessment Submissions ──
+            // ── Vahid mənbədən performans ──
+            var perf = await _performance.GetEnrollmentPerformanceAsync(enrollmentId);
+
+            // Assessment cədvəli üçün submission-ları detallı göstər
             var assessmentSubs = (await _unitOfWork.AssessmentSubmissions
                 .GetByEnrollmentAsync(enrollmentId)).ToList();
 
@@ -50,17 +59,7 @@ namespace SIS.BLL.Services.Implementations
                 IsGraded = s.IsGraded
             }).OrderBy(a => a.Date).ToList();
 
-            // ── Official Grade: Σ((Score/MaxScore) * WeightPercent) ──
-            decimal officialGrade = 0;
-            foreach (var a in officialAssessments.Where(a => a.IsGraded && a.MaxScore > 0))
-            {
-                officialGrade += (a.Score!.Value / a.MaxScore) * a.WeightPercent;
-            }
-
-            var letterGrade = GpaHelper.ScoreToLetterGrade(officialGrade);
-            var gpa = GpaHelper.CalculateGPA(new[] { (1, officialGrade) });
-
-            // ── Assignment Submissions (ev tapşırıqları) ──
+            // Homework siyahısı (transkript-də ayrıca göstərilir)
             var assignmentSubs = (await _unitOfWork.AssignmentSubmissions
                 .GetByEnrollmentAsync(enrollmentId)).ToList();
 
@@ -74,35 +73,6 @@ namespace SIS.BLL.Services.Implementations
                 IsSubmitted = true,
                 IsLinkedToAssessment = s.Assignment?.AssessmentItemId != null
             }).OrderBy(a => a.DueDate).ToList();
-
-            decimal? hwAvg = null;
-            var gradedHw = assignments.Where(a => a.IsGraded && a.MaxScore > 0 && !a.IsLinkedToAssessment).ToList();
-            if (gradedHw.Any())
-                hwAvg = gradedHw.Average(a => (a.Score!.Value / a.MaxScore) * 100);
-
-            // ── Attendance ──
-            var attendanceRecords = (await _unitOfWork.AttendanceRecords
-                .GetAttendanceByEnrollmentAsync(enrollmentId)).ToList();
-
-            var sessions = await _unitOfWork.ClassSessions.GetByGroupAsync(group.Id);
-            var totalSessions = sessions.Count();
-            var presentCount = attendanceRecords.Count(a => a.Status == AttendanceStatus.Present);
-            var lateCount = attendanceRecords.Count(a => a.Status == AttendanceStatus.Late);
-            var absentCount = attendanceRecords.Count(a => a.Status == AttendanceStatus.Absent);
-            var attPct = totalSessions > 0 ? (double)(presentCount + lateCount) / totalSessions * 100 : 0;
-
-            // ── Performance & Certificate ──
-            var performanceStatus = officialGrade switch
-            {
-                >= 90 => "Əla (Excellent)",
-                >= 80 => "Yaxşı (Good)",
-                >= 70 => "Kafi (Satisfactory)",
-                >= 60 => "Orta (Average)",
-                _ => "Qeyri-kafi (Failing)"
-            };
-
-            // Certificate: grade >= 60 və davamiyyət >= 70%
-            var certificateEligible = officialGrade >= 60 && attPct >= 70;
 
             return new TranscriptDto
             {
@@ -119,22 +89,22 @@ namespace SIS.BLL.Services.Implementations
                 StartDate = group.StartDate,
                 EndDate = group.EndDate,
 
-                TotalSessions = totalSessions,
-                PresentCount = presentCount,
-                LateCount = lateCount,
-                AbsentCount = absentCount,
-                AttendancePercentage = Math.Round(attPct, 1),
+                TotalSessions = perf.TotalCompletedSessions,
+                PresentCount = perf.PresentCount,
+                LateCount = perf.LateCount,
+                AbsentCount = perf.AbsentCount,
+                AttendancePercentage = perf.AttendancePercentage,
 
                 OfficialAssessments = officialAssessments,
-                OfficialGrade = Math.Round(officialGrade, 2),
-                LetterGrade = letterGrade,
-                GPA = gpa,
+                OfficialGrade = perf.OfficialGrade,
+                LetterGrade = perf.LetterGrade,
+                GPA = perf.GPA,
 
                 HomeworkAssignments = assignments,
-                HomeworkAverage = hwAvg.HasValue ? Math.Round(hwAvg.Value, 2) : null,
+                HomeworkAverage = perf.HomeworkAverage,
 
-                PerformanceStatus = performanceStatus,
-                CertificateEligible = certificateEligible,
+                PerformanceStatus = perf.PerformanceStatus,
+                CertificateEligible = perf.CertificateEligible,
                 GeneratedAt = DateTime.UtcNow
             };
         }

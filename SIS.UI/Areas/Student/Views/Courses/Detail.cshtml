@@ -23,18 +23,11 @@
     var onlineLessons = ViewBag.OnlineLessons as Dictionary<int, OnlineLessonDto> ?? new();
     var isOnlineGroup = enrollment != null && enrollment.DeliveryMode != DeliveryMode.InPerson;
 
-    // Rəsmi qiymət
-    var gradedOfficial = assessmentSubs.Where(s => s.IsGraded && s.MaxScore > 0).ToList();
-    decimal offSum = 0; int offCnt = 0;
-    foreach (var s in gradedOfficial) { offSum += (s.Score ?? 0) / s.MaxScore * 100; offCnt++; }
-    var officialGrade = offCnt > 0 ? offSum / offCnt : (decimal?)null;
+    // Vahid mənbə: transcript service (panel və PDF eyni)
+    var officialGrade = transcript != null ? (decimal?)transcript.OfficialGrade : null;
     var offColor = officialGrade == null ? "var(--text-secondary)" : officialGrade >= 70 ? "#22c55e" : officialGrade >= 50 ? "#eab308" : "#ef4444";
 
-    // Tapşırıq ortalaması
-    var gradedHw = assignmentSubs.Where(s => s.IsGraded && s.MaxScore > 0).ToList();
-    decimal hwSum = 0; int hwCnt = 0;
-    foreach (var s in gradedHw) { hwSum += (s.Score ?? 0) / s.MaxScore * 100; hwCnt++; }
-    var hwAvg = hwCnt > 0 ? hwSum / hwCnt : (decimal?)null;
+    var hwAvg = transcript?.HomeworkAverage;
 
     var attPct = summary?.AttendancePercentage ?? 0;
     var attColor = attPct >= 80 ? "#22c55e" : attPct >= 60 ? "#eab308" : "#ef4444";
@@ -107,6 +100,23 @@
         </span>
         <i class="fas fa-download" style="font-size:11px; opacity:.7;"></i>
     </a>
+    <form method="post" action="/Student/Courses/SendTranscriptEmail/@enrollment?.Id" style="margin:0;"
+          onsubmit="return confirm('Transkript PDF email-ə göndəriləcək. Davam edək?');">
+        @Html.AntiForgeryToken()
+        <button type="submit"
+                style="display:inline-flex; align-items:center; gap:8px; padding:10px 16px; border-radius:10px;
+                       background:linear-gradient(135deg, #3b82f6, #2563eb); color:#fff; border:none; cursor:pointer;
+                       font-size:13px; font-weight:600; box-shadow:0 4px 15px rgba(59,130,246,0.35);
+                       transition:all .2s; margin-left:8px;"
+                onmouseover="this.style.transform='translateY(-2px)'"
+                onmouseout="this.style.transform=''">
+            <i class="fas fa-envelope" style="font-size:14px;"></i>
+            <span>
+                <div style="line-height:1.2;">Email-ə Göndər</div>
+                <div style="font-size:10px; font-weight:400; opacity:.8;">PDF attachment</div>
+            </span>
+        </button>
+    </form>
 </div>
 
 <!-- Stat cards -->
@@ -114,21 +124,21 @@
     <div class="stat-card">
         <div class="stat-icon" style="background:rgba(59,130,246,0.15); color:#3b82f6;"><i class="fas fa-graduation-cap"></i></div>
         <div>
-            <div class="stat-value" style="color:@offColor;">@(officialGrade != null ? $"%{officialGrade.Value:F0}" : "—")</div>
+            <div class="stat-value" style="color:@offColor;">@(officialGrade != null ? $"%{officialGrade.Value:F1}" : "—")</div>
             <div class="stat-label">@L["Score"]</div>
         </div>
     </div>
     <div class="stat-card">
         <div class="stat-icon" style="background:rgba(168,85,247,0.15); color:#a855f7;"><i class="fas fa-book"></i></div>
         <div>
-            <div class="stat-value">@(hwAvg != null ? $"%{hwAvg.Value:F0}" : "—")</div>
+            <div class="stat-value">@(hwAvg != null ? $"%{hwAvg.Value:F1}" : "—")</div>
             <div class="stat-label">@L["PDF_HomeworkAvg"]</div>
         </div>
     </div>
     <div class="stat-card">
         <div class="stat-icon" style="background:rgba(34,197,94,0.15); color:#22c55e;"><i class="fas fa-clipboard-check"></i></div>
         <div>
-            <div class="stat-value" style="color:@attColor;">@attPct.ToString("F0")%</div>
+            <div class="stat-value" style="color:@attColor;">@(summary != null && summary.AttendanceTakenSessions > 0 ? attPct.ToString("F1") + "%" : "—")</div>
             <div class="stat-label">@L["Attendance"]</div>
         </div>
     </div>
@@ -224,7 +234,7 @@
             <i class="fas fa-graduation-cap"></i> @L["Assessment"]
             @if (officialGrade != null)
             {
-                <span style="margin-left:12px; font-size:16px; font-weight:800; color:@offColor;">%@officialGrade.Value.ToString("F0")</span>
+                <span style="margin-left:12px; font-size:16px; font-weight:800; color:@offColor;">%@officialGrade.Value.ToString("F1")</span>
             }
         </div>
         <div class="card" style="margin-bottom:20px;">
@@ -242,7 +252,7 @@
                                     @if (s.IsGraded) { <span style="font-weight:700; color:@sc;">@s.Score / @s.MaxScore</span> }
                                     else { <span style="color:var(--text-secondary);">—</span> }
                                 </td>
-                                <td>@if (pct != null) { <span style="color:@sc; font-weight:600;">%@pct.Value.ToString("F0")</span> }</td>
+                                <td>@if (pct != null) { <span style="color:@sc; font-weight:600;">%@pct.Value.ToString("F1")</span> }</td>
                                 <td>
                                     @if (s.IsGraded) { <span class="badge badge-success">@L["Grades"]</span> }
                                     else { <span class="badge badge-warning">@L["Loading"]</span> }
@@ -262,7 +272,7 @@
             <i class="fas fa-book"></i> @L["Assignments"]
             @if (hwAvg != null)
             {
-                <span style="margin-left:12px; font-size:14px; font-weight:700;">%@hwAvg.Value.ToString("F0")</span>
+                <span style="margin-left:12px; font-size:14px; font-weight:700;">%@hwAvg.Value.ToString("F1")</span>
             }
         </div>
         <div class="card">
@@ -280,7 +290,7 @@
                                     @if (s.IsGraded) { <span style="font-weight:700; color:@sc;">@s.Score / @s.MaxScore</span> }
                                     else { <span style="color:var(--text-secondary);">—</span> }
                                 </td>
-                                <td>@if (pct != null) { <span style="color:@sc; font-weight:600;">%@pct.Value.ToString("F0")</span> }</td>
+                                <td>@if (pct != null) { <span style="color:@sc; font-weight:600;">%@pct.Value.ToString("F1")</span> }</td>
                                 <td>
                                     @if (s.IsGraded) { <span class="badge badge-success">@L["Grades"]</span> }
                                     else { <span class="badge badge-warning">@L["Loading"]</span> }
@@ -312,45 +322,65 @@
 
 <!-- ====== TAB: Davamiyyət ====== -->
 <div id="tab-attendance" class="tab-content @(activeTab == "attendance" ? "active" : "")">
-    <div style="display:flex; gap:16px; margin-bottom:16px;">
-        <div class="stat-card" style="flex:1;">
-            <div><div class="stat-value" style="color:#22c55e;">@(summary?.PresentCount ?? 0)</div><div class="stat-label">@L["Present"]</div></div>
+    @{
+        var hasAttendance = (summary?.AttendanceTakenSessions ?? 0) > 0 || attendance.Any();
+    }
+    @if (!hasAttendance)
+    {
+        <div class="card" style="padding:60px 24px; text-align:center;">
+            <i class="fas fa-clipboard-list" style="font-size:42px; color:var(--text-secondary); opacity:0.4; margin-bottom:14px;"></i>
+            <div style="font-size:15px; font-weight:600; margin-bottom:6px;">Hələ davamiyyət qeyd olunmayıb</div>
+            <div style="font-size:13px; color:var(--text-secondary);">Müəllim ilk davamiyyəti qeyd etdikdən sonra burada faiz və qeydlər görünəcək.</div>
         </div>
-        <div class="stat-card" style="flex:1;">
-            <div><div class="stat-value" style="color:#eab308;">@(summary?.LateCount ?? 0)</div><div class="stat-label">@L["Late"]</div></div>
+    }
+    else
+    {
+        <div style="display:grid; grid-template-columns:repeat(6, 1fr); gap:10px; margin-bottom:16px;">
+            <div class="stat-card">
+                <div><div class="stat-value" style="color:#22c55e;">@(summary?.PresentCount ?? 0)</div><div class="stat-label">@L["Present"]</div></div>
+            </div>
+            <div class="stat-card">
+                <div><div class="stat-value" style="color:#eab308;">@(summary?.LateCount ?? 0)</div><div class="stat-label">@L["Late"]</div></div>
+            </div>
+            <div class="stat-card">
+                <div><div class="stat-value" style="color:#ef4444;">@(summary?.AbsentCount ?? 0)</div><div class="stat-label">@L["Absent"]</div></div>
+            </div>
+            <div class="stat-card">
+                <div><div class="stat-value" style="color:#3b82f6;">@(summary?.ExcusedCount ?? 0)</div><div class="stat-label">Üzrlü</div></div>
+            </div>
+            <div class="stat-card">
+                <div><div class="stat-value" style="color:var(--text-primary);">@(summary?.AttendanceTakenSessions ?? 0)</div><div class="stat-label">Taken</div></div>
+            </div>
+            <div class="stat-card">
+                <div><div class="stat-value" style="color:@attColor;">@attPct.ToString("F1")%</div><div class="stat-label">@L["Attendance"]</div></div>
+            </div>
         </div>
-        <div class="stat-card" style="flex:1;">
-            <div><div class="stat-value" style="color:#ef4444;">@(summary?.AbsentCount ?? 0)</div><div class="stat-label">@L["Absent"]</div></div>
+        <div class="card">
+            <div class="card-body" style="padding:0;">
+                <table class="mini-table">
+                    <thead><tr><th>@L["Date"]</th><th>Sessiya</th><th>@L["Status"]</th></tr></thead>
+                    <tbody>
+                        @foreach (var a in attendance.OrderByDescending(x => x.SessionDate))
+                        {
+                            <tr>
+                                <td>@a.SessionDate.ToString("dd.MM.yyyy")</td>
+                                <td style="color:var(--text-secondary);">#@(a.ClassSessionId)</td>
+                                <td>
+                                    @switch (a.Status)
+                                    {
+                                        case AttendanceStatus.Present: <span class="badge badge-success">@L["Present"]</span> break;
+                                        case AttendanceStatus.Late: <span class="badge badge-warning">@L["Late"]</span> break;
+                                        case AttendanceStatus.Absent: <span class="badge badge-danger">@L["Absent"]</span> break;
+                                        case AttendanceStatus.Excused: <span class="badge badge-info">Üzrlü</span> break;
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         </div>
-    </div>
-    <div class="card">
-        <div class="card-body" style="padding:0;">
-            <table class="mini-table">
-                <thead><tr><th>@L["Date"]</th><th>Sessiya</th><th>@L["Status"]</th></tr></thead>
-                <tbody>
-                    @foreach (var a in attendance.OrderByDescending(x => x.SessionDate))
-                    {
-                        <tr>
-                            <td>@a.SessionDate.ToString("dd.MM.yyyy")</td>
-                            <td style="color:var(--text-secondary);">#@(a.ClassSessionId)</td>
-                            <td>
-                                @switch (a.Status)
-                                {
-                                    case AttendanceStatus.Present: <span class="badge badge-success">@L["Present"]</span> break;
-                                    case AttendanceStatus.Late: <span class="badge badge-warning">@L["Late"]</span> break;
-                                    case AttendanceStatus.Absent: <span class="badge badge-danger">@L["Absent"]</span> break;
-                                }
-                            </td>
-                        </tr>
-                    }
-                    @if (!attendance.Any())
-                    {
-                        <tr><td colspan="3" style="text-align:center; color:var(--text-secondary); padding:24px;">@L["NoData"]</td></tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-    </div>
+    }
 
     <div style="margin-top:12px; text-align:right;">
         <a href="/Student/Messages/Start?groupId=@enrollment?.GroupId&teacherId=@enrollment?.TeacherId&prefill=@Uri.EscapeDataString($"Salam, {enrollment?.CourseName} kursunda davamiyyətim haqqında sual vermək istəyirəm: ")"

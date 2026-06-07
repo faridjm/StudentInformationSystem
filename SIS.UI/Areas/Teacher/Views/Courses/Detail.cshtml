@@ -343,6 +343,122 @@
 <!-- ==================== TAB 4: Davamiyyət ==================== -->
 <div id="tab-attendance" class="tab-content @(activeTab == "attendance" ? "active" : "")">
     @{
+        var minSn = sessions.Any() ? sessions.Min(s => s.SessionNumber) : 1;
+        var maxSn = sessions.Any() ? sessions.Max(s => s.SessionNumber) : 1;
+    }
+
+    <!-- Demo Quick Fill (kompakt — yalnız təqdimat/test) -->
+    <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:8px; padding:12px 14px; margin-bottom:14px;">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+            <i class="fas fa-flask" style="color:#f59e0b; font-size:13px;"></i>
+            <strong style="font-size:13px;">Demo Quick Fill</strong>
+            <span style="background:#f59e0b; color:#fff; padding:1px 7px; border-radius:4px; font-size:9px; font-weight:700;">DEMO</span>
+            <span style="font-size:11px; color:var(--text-secondary); margin-left:6px;">Yalnız təqdimat/test üçün — real davamiyyət üçün yuxarıdakı sessiya seçimini istifadə edin</span>
+        </div>
+        <form method="post" action="/Teacher/Courses/GenerateDemoAttendance" id="demoForm"
+              style="display:grid; grid-template-columns:repeat(auto-fit, minmax(110px, auto)); gap:8px; align-items:end;">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="groupId" value="@Model.Id" />
+            <div>
+                <label style="font-size:10px; color:var(--text-secondary); display:block; margin-bottom:2px;">Sessiya №-dan</label>
+                <input type="number" name="fromSessionNumber" id="demoFrom" min="@minSn" max="@maxSn" value="@minSn" required
+                       class="form-control" style="width:80px; padding:4px 8px; font-size:12px;" oninput="updateDemoEstimate()" />
+            </div>
+            <div>
+                <label style="font-size:10px; color:var(--text-secondary); display:block; margin-bottom:2px;">-ə qədər</label>
+                <input type="number" name="toSessionNumber" id="demoTo" min="@minSn" max="@maxSn" value="@maxSn" required
+                       class="form-control" style="width:80px; padding:4px 8px; font-size:12px;" oninput="updateDemoEstimate()" />
+            </div>
+            <div>
+                <label style="font-size:10px; color:var(--text-secondary); display:block; margin-bottom:2px;">Mode</label>
+                <select name="mode" id="demoMode" class="form-control" style="width:140px; padding:4px 8px; font-size:12px;" onchange="toggleCustomCounts()">
+                    <option value="RealisticDemo">Realistic Demo</option>
+                    <option value="AllPresent">All Present</option>
+                    <option value="CustomCounts">Custom Counts</option>
+                </select>
+            </div>
+            <div style="display:flex; align-items:center; gap:5px;">
+                <input type="checkbox" id="demoOverwrite" name="overwriteExisting" value="true" />
+                <label for="demoOverwrite" style="font-size:11px; cursor:pointer; color:var(--text-secondary);">Overwrite</label>
+            </div>
+            <button type="button" onclick="openDemoConfirm()" class="btn" style="background:#f59e0b; color:#fff; padding:5px 12px; font-size:12px; font-weight:600;">
+                <i class="fas fa-magic-wand-sparkles"></i> Apply Demo Fill
+            </button>
+        </form>
+        <!-- Custom Counts inputs — yalnız mode = CustomCounts olduqda görünür -->
+        <div id="customCountsBox" style="display:none; margin-top:10px; padding:10px; background:var(--bg-hover); border-radius:6px;">
+            <div style="display:grid; grid-template-columns:repeat(4, 1fr) auto; gap:8px; align-items:end;">
+                <div>
+                    <label style="font-size:10px; color:var(--text-secondary); display:block; margin-bottom:2px;">Present</label>
+                    <input type="number" name="presentCount" id="cntPresent" min="0" form="demoForm"
+                           class="form-control" style="padding:4px 8px; font-size:12px;" oninput="updateDemoEstimate()" />
+                </div>
+                <div>
+                    <label style="font-size:10px; color:var(--text-secondary); display:block; margin-bottom:2px;">Absent</label>
+                    <input type="number" name="absentCount" id="cntAbsent" min="0" form="demoForm"
+                           class="form-control" style="padding:4px 8px; font-size:12px;" oninput="updateDemoEstimate()" />
+                </div>
+                <div>
+                    <label style="font-size:10px; color:var(--text-secondary); display:block; margin-bottom:2px;">Late</label>
+                    <input type="number" name="lateCount" id="cntLate" min="0" form="demoForm"
+                           class="form-control" style="padding:4px 8px; font-size:12px;" oninput="updateDemoEstimate()" />
+                </div>
+                <div>
+                    <label style="font-size:10px; color:var(--text-secondary); display:block; margin-bottom:2px;">Excused</label>
+                    <input type="number" name="excusedCount" id="cntExcused" min="0" form="demoForm"
+                           class="form-control" style="padding:4px 8px; font-size:12px;" oninput="updateDemoEstimate()" />
+                </div>
+            </div>
+            <div id="demoEstimate" style="margin-top:8px; font-size:11px; color:var(--text-secondary);"></div>
+        </div>
+    </div>
+
+    <!-- Generation summary (yalnız demo-dan sonra) -->
+    @if (TempData["DemoCreated"] != null)
+    {
+        var dCreated = (int)TempData["DemoCreated"]!;
+        var dUpdated = (int)(TempData["DemoUpdated"] ?? 0);
+        var dSkipped = (int)(TempData["DemoSkipped"] ?? 0);
+        var dMode = (string)(TempData["DemoMode"] ?? "");
+        var dPattern = (string?)TempData["DemoPattern"];
+        <div style="background:rgba(34,197,94,0.08); border:1px solid rgba(34,197,94,0.3); border-left:3px solid #22c55e; border-radius:6px; padding:10px 14px; margin-bottom:14px; font-size:13px;">
+            <i class="fas fa-check-circle" style="color:#16a34a;"></i>
+            <strong style="color:#15803d; margin-left:4px;">Demo davamiyyət tətbiq edildi</strong>
+            <span style="margin-left:10px;">Created: <strong>@dCreated</strong> · Updated: <strong>@dUpdated</strong> · Skipped: <strong>@dSkipped</strong></span>
+            @if (!string.IsNullOrEmpty(dPattern))
+            {
+                <div style="margin-top:4px; font-size:11px; color:var(--text-secondary);">Pattern: @dPattern</div>
+            }
+        </div>
+    }
+
+    <!-- Demo Confirmation Modal -->
+    <div id="demoConfirmModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:1000; align-items:center; justify-content:center;">
+        <div style="background:var(--bg-card); border-radius:12px; padding:24px; width:520px; border:1px solid var(--border); box-shadow:0 12px 40px rgba(0,0,0,0.3);">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px;">
+                <i class="fas fa-flask" style="color:#f59e0b; font-size:22px;"></i>
+                <h3 style="margin:0; font-size:16px;">Demo Quick Fill</h3>
+                <span style="background:#f59e0b; color:#fff; padding:2px 8px; border-radius:4px; font-size:10px; font-weight:700; margin-left:auto;">DEMO</span>
+            </div>
+            <div style="background:#fffbeb; border:1px solid #fde68a; border-radius:8px; padding:12px 14px; margin-bottom:14px;">
+                <div style="font-size:13px; color:#92400e; margin-bottom:6px;">
+                    Bu əməliyyat seçilmiş aralıqda <strong>demo attendance yazıları</strong> yaradacaq.
+                </div>
+                <div id="demoConfirmRange" style="font-size:12px; color:#78350f;"></div>
+            </div>
+            <div style="font-size:12px; color:var(--text-secondary); margin-bottom:14px;">
+                ⚠ Bu yalnız təqdimat və test üçündür. Yaradılan yazılar Attendance %, Student panel və Transkript PDF hesablamalarında istifadə olunacaq.
+            </div>
+            <div style="display:flex; gap:8px; justify-content:flex-end;">
+                <button type="button" onclick="closeDemoConfirm()" class="btn btn-secondary">İmtina</button>
+                <button type="button" onclick="document.getElementById('demoForm').submit()" class="btn" style="background:#f59e0b; color:#fff;">
+                    <i class="fas fa-magic-wand-sparkles"></i> Bəli, tətbiq et
+                </button>
+            </div>
+        </div>
+    </div>
+
+    @{
         var pastSessions = sessions.Where(s => s.Date <= today).OrderByDescending(s => s.Date).ToList();
         // Bu sessiya üçün assessment-ləri tapırıq
     }
@@ -440,6 +556,7 @@
                                         <th style="text-align:center;">@L["Present"]</th>
                                         <th style="text-align:center;">@L["Late"]</th>
                                         <th style="text-align:center;">@L["Absent"]</th>
+                                        <th style="text-align:center;">Üzrlü</th>
                                         @if (hasSavedAtt)
                                         {
                                             <th style="text-align:center;">@L["Status"]</th>
@@ -482,6 +599,12 @@
                                                        onchange="this.closest('tr').querySelector('.status-value').value=this.value"
                                                        style="accent-color:#ef4444; width:16px; height:16px;" />
                                             </td>
+                                            <td style="text-align:center;">
+                                                <input type="radio" name="@radioName" value="3"
+                                                       @(curStatus == AttendanceStatus.Excused ? "checked" : "")
+                                                       onchange="this.closest('tr').querySelector('.status-value').value=this.value"
+                                                       style="accent-color:#3b82f6; width:16px; height:16px;" />
+                                            </td>
                                             @if (hasSavedAtt)
                                             {
                                                 <td style="text-align:center;">
@@ -497,6 +620,9 @@
                                                                 break;
                                                             case AttendanceStatus.Absent:
                                                                 <span style="color:#ef4444; font-size:12px;">✗ @L["Absent"]</span>
+                                                                break;
+                                                            case AttendanceStatus.Excused:
+                                                                <span style="color:#3b82f6; font-size:12px;">ⓘ Üzrlü</span>
                                                                 break;
                                                         }
                                                     }
@@ -546,22 +672,30 @@
                     @foreach (var e in enrollments.OrderBy(x => x.StudentName))
                     {
                         var sum = summaries.GetValueOrDefault(e.Id);
+                        var hasAttRow = sum != null && sum.AttendanceTakenSessions > 0;
                         var attPct = sum?.AttendancePercentage ?? 0;
                         var attColor = attPct >= 80 ? "#22c55e" : attPct >= 60 ? "#eab308" : "#ef4444";
                         var t = transcripts.GetValueOrDefault(e.Id);
                         var missing = t?.HomeworkAssignments?.Count(h => !h.IsSubmitted) ?? 0;
-                        // Risk: aşağı davamiyyət, aşağı rəsmi qiymət, və ya çox təhvil verilməmiş tapşırıq
-                        var isRisk = attPct < 60 || (t != null && t.OfficialGrade < 50) || missing >= 3;
+                        // Risk: aşağı davamiyyət (yalnız qeyd olunmuşsa), aşağı rəsmi qiymət, və ya çox təhvil verilməmiş tapşırıq
+                        var isRisk = (hasAttRow && attPct < 60) || (t != null && t.OfficialGrade < 50) || missing >= 3;
                         <tr>
                             <td><strong>@e.StudentName</strong></td>
                             <td style="color:var(--text-secondary);">@e.StudentNumber</td>
                             <td>
-                                <div style="display:flex; align-items:center; gap:8px;">
-                                    <div class="progress-bar" style="width:60px;">
-                                        <div class="progress-fill" style="width:@attPct%; background:@attColor;"></div>
+                                @if (hasAttRow)
+                                {
+                                    <div style="display:flex; align-items:center; gap:8px;">
+                                        <div class="progress-bar" style="width:60px;">
+                                            <div class="progress-fill" style="width:@attPct%; background:@attColor;"></div>
+                                        </div>
+                                        <span style="font-size:12px; color:@attColor; font-weight:600;">@attPct.ToString("F1")%</span>
                                     </div>
-                                    <span style="font-size:12px; color:@attColor; font-weight:600;">@attPct.ToString("F0")%</span>
-                                </div>
+                                }
+                                else
+                                {
+                                    <span style="color:var(--text-secondary); font-size:11px; font-style:italic;">qeyd olunmayıb</span>
+                                }
                             </td>
                             <td style="font-weight:600;">@(t != null ? t.OfficialGrade.ToString("F1") + "%" : "—")</td>
                             <td style="font-weight:700;">@(t != null ? t.GPA.ToString("F2") : "—")</td>
@@ -910,6 +1044,78 @@
 
 @section Scripts {
 <script>
+// ── Demo Attendance modal ──
+function toggleCustomCounts() {
+    var mode = document.getElementById('demoMode').value;
+    document.getElementById('customCountsBox').style.display = mode === 'CustomCounts' ? '' : 'none';
+    updateDemoEstimate();
+}
+
+function selectedSessionCount() {
+    var f = parseInt(document.getElementById('demoFrom').value, 10);
+    var t = parseInt(document.getElementById('demoTo').value, 10);
+    if (isNaN(f) || isNaN(t) || t < f) return 0;
+    return t - f + 1;
+}
+
+function updateDemoEstimate() {
+    var box = document.getElementById('demoEstimate');
+    if (!box) return;
+    var mode = document.getElementById('demoMode').value;
+    if (mode !== 'CustomCounts') { box.textContent = ''; return; }
+
+    var sessions = selectedSessionCount();
+    var p = parseInt(document.getElementById('cntPresent').value, 10) || 0;
+    var a = parseInt(document.getElementById('cntAbsent').value, 10) || 0;
+    var l = parseInt(document.getElementById('cntLate').value, 10) || 0;
+    var x = parseInt(document.getElementById('cntExcused').value, 10) || 0;
+    var sum = p + a + l + x;
+
+    var line = 'Selected sessions: <strong>' + sessions + '</strong> · '
+        + 'Present: ' + p + ' · Absent: ' + a + ' · Late: ' + l + ' · Excused: ' + x;
+
+    if (sum !== sessions) {
+        box.innerHTML = line + ' · <span style="color:#ef4444; font-weight:600;">Cəm: ' + sum
+            + ' — sessiya sayına bərabər deyil</span>';
+        return;
+    }
+
+    var score = p + l * 0.5 + x;
+    var pct = sessions > 0 ? (score / sessions * 100) : 0;
+    box.innerHTML = line + ' · <strong>Estimated Attendance: ' + pct.toFixed(2) + '%</strong>';
+}
+
+function openDemoConfirm() {
+    var f = document.getElementById('demoFrom').value;
+    var t = document.getElementById('demoTo').value;
+    var m = document.getElementById('demoMode').value;
+    var o = document.getElementById('demoOverwrite').checked ? 'mövcud yazılar yenilənəcək' : 'mövcud yazılar saxlanılacaq';
+
+    // CustomCounts validation client-side
+    if (m === 'CustomCounts') {
+        var sessions = selectedSessionCount();
+        var p = parseInt(document.getElementById('cntPresent').value, 10) || 0;
+        var a = parseInt(document.getElementById('cntAbsent').value, 10) || 0;
+        var l = parseInt(document.getElementById('cntLate').value, 10) || 0;
+        var x = parseInt(document.getElementById('cntExcused').value, 10) || 0;
+        if (p + a + l + x !== sessions) {
+            alert('Status saylarının cəmi seçilmiş sessiya sayına bərabər olmalıdır (' + sessions + ').');
+            return;
+        }
+    }
+
+    document.getElementById('demoConfirmRange').innerHTML =
+        '<strong>Sessiyalar:</strong> #' + f + ' — #' + t + ' &middot; ' +
+        '<strong>Mode:</strong> ' + m + ' &middot; ' + o;
+    document.getElementById('demoConfirmModal').style.display = 'flex';
+}
+function closeDemoConfirm() {
+    document.getElementById('demoConfirmModal').style.display = 'none';
+}
+document.getElementById('demoConfirmModal')?.addEventListener('click', function(e) {
+    if (e.target === this) closeDemoConfirm();
+});
+
 // ── Online dərs modalları ──
 function openCreateOL(sessionId, sessionNumber) {
     document.getElementById('createOLSession').value = sessionId;

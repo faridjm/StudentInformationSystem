@@ -142,4 +142,47 @@ namespace SIS.BLL.Services.DTOs.Quiz
         public bool IsSubmitted { get; set; }
         public DateTime? SubmittedAt { get; set; }
     }
+
+    // ── Detallı nəticə (sual-sual, doğru/səhv, seçim/correct option) ──
+    public class QuizAttemptDetailDto
+    {
+        public int AttemptId { get; set; }
+        public int QuizId { get; set; }
+        public string QuizTitle { get; set; } = "";
+        public int EnrollmentId { get; set; }
+        public string StudentName { get; set; } = "";
+        public string StudentNumber { get; set; } = "";
+        public decimal? Score { get; set; }
+        public DateTime? SubmittedAt { get; set; }
+
+        public int TotalQuestions { get; set; }
+        public int CorrectCount { get; set; }
+        public int WrongCount { get; set; }
+
+        public List<QuizQuestionResultDto> Questions { get; set; } = new();
+    }
+
+    public class QuizQuestionResultDto
+    {
+        public int QuestionId { get; set; }
+        public int Order { get; set; }
+        public string Text { get; set; } = "";
+        public decimal Points { get; set; }
+        public decimal PointsAwarded { get; set; }
+        public bool IsCorrect { get; set; }
+
+        /// <summary>Tələbənin seçdiyi variantların id-ləri.</summary>
+        public List<int> SelectedOptionIds { get; set; } = new();
+        public List<int> CorrectOptionIds { get; set; } = new();
+
+        public List<QuizOptionResultDto> Options { get; set; } = new();
+    }
+
+    public class QuizOptionResultDto
+    {
+        public int Id { get; set; }
+        public string Text { get; set; } = "";
+        public bool IsCorrect { get; set; }
+        public bool WasSelected { get; set; }
+    }
 }

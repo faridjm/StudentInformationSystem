@@ -20,10 +20,11 @@ namespace SIS.BLL.Services.Implementations
         private readonly IEmailService _emailService;
         private readonly IAuditLogService _audit;
         private readonly IInstitutionalEmailService _institutionalEmail;
+        private readonly IAcademicPerformanceService _performance;
 
         public StudentService(IUnitOfWork unitOfWork, UserManager<AppUser> userManager,
             IActivityLogger activityLogger, IEmailService emailService, IAuditLogService audit,
-            IInstitutionalEmailService institutionalEmail)
+            IInstitutionalEmailService institutionalEmail, IAcademicPerformanceService performance)
         {
             _unitOfWork = unitOfWork;
             _userManager = userManager;
@@ -31,6 +32,7 @@ namespace SIS.BLL.Services.Implementations
             _emailService = emailService;
             _audit = audit;
             _institutionalEmail = institutionalEmail;
+            _performance = performance;
         }
 
         public async Task<IEnumerable<StudentListDto>> GetAllStudentsAsync()
@@ -161,23 +163,19 @@ namespace SIS.BLL.Services.Implementations
             var student = await _unitOfWork.Students.GetStudentWithDetailsAsync(studentId);
             if (student == null) return;
 
+            // Hər aktiv enrollment-in performansını mərkəzi servicedən al,
+            // sonra GPA-nı bu enrollment-lərin orta official grade-ı üzrə hesabla.
             var enrollments = await _unitOfWork.Enrollments.GetByStudentAsync(studentId);
-            decimal totalWeight = 0, totalWeightedScore = 0;
-
+            decimal sumGrade = 0; int count = 0;
             foreach (var enrollment in enrollments.Where(e => e.Status == SIS.Entities.Enums.EnrollmentStatus.Active))
             {
-                var subs = await _unitOfWork.AssessmentSubmissions.GetByEnrollmentAsync(enrollment.Id);
-                foreach (var sub in subs.Where(s => s.IsGraded && s.Score.HasValue))
-                {
-                    var weight = sub.AssessmentItem?.WeightPercent ?? 0;
-                    var pct = sub.AssessmentItem?.MaxScore > 0 ? sub.Score!.Value / sub.AssessmentItem.MaxScore * 100 : 0;
-                    totalWeightedScore += pct * weight;
-                    totalWeight += weight;
-                }
+                var perf = await _performance.GetEnrollmentPerformanceAsync(enrollment.Id);
+                sumGrade += perf.OfficialGrade;
+                count++;
             }
 
-            var avgPct = totalWeight > 0 ? totalWeightedScore / totalWeight : 0;
-            student.CurrentGPA = GpaHelper.CalculateGPA(new[] { (1, avgPct) });
+            var avgPct = count > 0 ? sumGrade / count : 0m;
+            student.CurrentGPA = _performance.CalculateGpa(avgPct);
             student.UpdatedAt = DateTime.UtcNow;
             _unitOfWork.Students.Update(student);
             await _unitOfWork.SaveAsync();

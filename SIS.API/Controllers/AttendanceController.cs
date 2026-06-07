@@ -33,5 +33,19 @@ namespace SIS.API.Controllers
             await _service.RecordBulkAttendanceAsync(dtos);
             return Ok(new { Message = "Davamiyyət qeyd edildi" });
         }
+
+        /// <summary>
+        /// Yalnız müəllim üçün demo davamiyyət generasiyası (təqdimat/test).
+        /// Real istifadə üçün /bulk endpoint-i istifadə olunur.
+        /// </summary>
+        [HttpPost("demo")]
+        [Authorize(Roles = RoleConstants.Teacher)]
+        public async Task<IActionResult> GenerateDemo([FromBody] GenerateDemoAttendanceDto dto)
+        {
+            var teacherUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value
+                ?? throw new UnauthorizedAccessException();
+            var result = await _service.GenerateTeacherDemoAttendanceAsync(dto, teacherUserId);
+            return Ok(result);
+        }
     }
 }

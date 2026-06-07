@@ -7,44 +7,72 @@
 
 <header class="pub-detail-hero">
     <div class="pub-container">
-        <h1>Müəllimlərimiz</h1>
-        <p style="opacity:.9; margin-top:8px;">Sahə təcrübəsi olan peşəkar müəllim heyəti</p>
+        <span class="pub-eyebrow"><span class="dot"></span> Müəllim heyəti</span>
+        <h1>Sahə təcrübəsi olan peşəkarlar</h1>
+        <p class="lead">
+            Acadex-də dərslər sahənin praktiki bilikləri olan, real layihələrdə çalışan və mentorluq
+            edən müəllimlər tərəfindən aparılır. Bilik — yalnız nəzəriyyə deyil, real təcrübədir.
+        </p>
     </div>
 </header>
 
-<section class="pub-section">
+<section class="pub-section" style="padding-top:48px;">
     <div class="pub-container">
-        <div style="text-align:center; margin-bottom:34px; color:var(--pub-muted); font-size:14px;">
-            <strong style="color:var(--pub-ink); font-size:18px;">@Model.Count</strong> müəllim
+
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:34px; flex-wrap:wrap; gap:12px;">
+            <div style="color:var(--pub-muted); font-size:14px;">
+                <strong style="color:var(--pub-ink); font-size:20px; letter-spacing:-.4px;">@Model.Count</strong> aktiv müəllim
+            </div>
+            <a href="/Public/Courses" class="pub-btn pub-btn-ghost pub-btn-sm">
+                <i class="fas fa-layer-group"></i> Kurslara bax
+            </a>
         </div>
 
         @if (!Model.Any())
         {
             <div class="pub-empty">
                 <i class="fas fa-chalkboard-teacher"></i>
-                <p>Hazırda göstəriləcək müəllim yoxdur.</p>
+                <p>Hazırda göstəriləcək müəllim yoxdur. Komandamızla əlaqə saxlayın.</p>
             </div>
         }
         else
         {
-            <div class="pub-grid">
+            <div class="pub-grid-4">
                 @foreach (var t in Model)
                 {
                     var initial = string.IsNullOrEmpty(t.FullName) ? "?" : t.FullName.Substring(0, 1).ToUpper();
-                    <div class="pub-card">
-                        <div class="pub-card-body" style="text-align:center; align-items:center;">
-                            <div class="pub-teacher-avatar pub-grad-@(PublicVisuals.Grad(t.Id))">@initial</div>
-                            <h3>@t.FullName</h3>
-                            <div class="desc" style="flex:none;">
-                                @(string.IsNullOrEmpty(t.Title) ? "Müəllim" : t.Title)
-                            </div>
-                            <span class="pub-chip" style="margin-top:14px;">
-                                <i class="fas fa-layer-group"></i> @t.GroupCount qrup
-                            </span>
+                    <div class="pub-teacher-card">
+                        <div class="pub-teacher-avatar pub-grad-@(PublicVisuals.Grad(t.Id))">@initial</div>
+                        <h3>@t.FullName</h3>
+                        <div class="title">@(string.IsNullOrEmpty(t.Title) ? "Mentor müəllim" : t.Title)</div>
+                        <div class="bio">
+                            Acadex-də aktiv qrupları aparır və layihə əsaslı qiymətləndirmə modeli üzərində işləyir.
+                        </div>
+                        <div class="chips">
+                            <span class="pub-chip"><i class="fas fa-layer-group"></i> @t.GroupCount qrup</span>
+                            <span class="pub-chip accent"><i class="fas fa-circle" style="font-size:6px;"></i> Aktiv</span>
                         </div>
                     </div>
                 }
             </div>
         }
+    </div>
+</section>
+
+@* ============ CTA ============ *@
+<section class="pub-section alt">
+    <div class="pub-container">
+        <div class="pub-cta">
+            <h2>Müəllim heyətimizlə öyrən</h2>
+            <p>Sahə təcrübəsi olan peşəkarlar səninlə bilikləri və real layihə təcrübəsini bölüşür.</p>
+            <div class="pub-hero-actions">
+                <a href="/Public/Courses" class="pub-btn pub-btn-solid-light">
+                    <i class="fas fa-layer-group"></i> Proqramlara bax
+                </a>
+                <a href="/Public/Contact" class="pub-btn pub-btn-light">
+                    <i class="fas fa-paper-plane"></i> Əlaqə saxla
+                </a>
+            </div>
+        </div>
     </div>
 </section>

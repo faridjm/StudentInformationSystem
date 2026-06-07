@@ -1,0 +1,60 @@
+@model SIS.BLL.Services.DTOs.Quiz.QuizAttemptDetailDto
+@{
+    ViewData["Title"] = $"{Model.QuizTitle} — {Model.StudentName}";
+}
+
+<div style="max-width:900px; margin:0 auto;">
+    <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
+        <a href="/Teacher/Quizzes/Results/@Model.QuizId" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i></a>
+        <div>
+            <h2 style="font-size:20px; font-weight:700; margin:0;">@Model.QuizTitle</h2>
+            <div style="font-size:13px; color:var(--text-secondary);">@Model.StudentName · @Model.StudentNumber · @Model.SubmittedAt?.ToString("dd.MM.yyyy HH:mm")</div>
+        </div>
+    </div>
+
+    <!-- Stat cards -->
+    <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:18px;">
+        <div class="stat-card"><div><div class="stat-value">@(Model.Score?.ToString("F0") ?? "—")%</div><div class="stat-label">Nəticə</div></div></div>
+        <div class="stat-card"><div><div class="stat-value">@Model.TotalQuestions</div><div class="stat-label">Sual</div></div></div>
+        <div class="stat-card"><div><div class="stat-value" style="color:#22c55e;">@Model.CorrectCount</div><div class="stat-label">Doğru</div></div></div>
+        <div class="stat-card"><div><div class="stat-value" style="color:#ef4444;">@Model.WrongCount</div><div class="stat-label">Səhv</div></div></div>
+    </div>
+
+    @{ int qIdx = 0; }
+    @foreach (var q in Model.Questions)
+    {
+        qIdx++;
+        var border = q.IsCorrect ? "#22c55e" : "#ef4444";
+        <div class="card" style="margin-bottom:14px; border-left:4px solid @border;">
+            <div class="card-body">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                    <strong>Sual #@qIdx</strong>
+                    @if (q.IsCorrect)
+                    {
+                        <span class="badge badge-success"><i class="fas fa-check"></i> Doğru (@q.PointsAwarded / @q.Points)</span>
+                    }
+                    else
+                    {
+                        <span class="badge badge-danger"><i class="fas fa-times"></i> Səhv (@q.PointsAwarded / @q.Points)</span>
+                    }
+                </div>
+                <div style="font-size:14px; margin-bottom:10px;">@q.Text</div>
+                <div style="display:flex; flex-direction:column; gap:6px;">
+                    @foreach (var o in q.Options)
+                    {
+                        var bg = o.IsCorrect ? "rgba(34,197,94,0.12)" : (o.WasSelected ? "rgba(239,68,68,0.12)" : "var(--bg-hover)");
+                        var color = o.IsCorrect ? "#22c55e" : (o.WasSelected ? "#ef4444" : "var(--text-primary)");
+                        <div style="padding:8px 12px; border-radius:6px; background:@bg; color:@color; display:flex; justify-content:space-between; align-items:center;">
+                            <span>@o.Text</span>
+                            <span style="font-size:11px; font-weight:600;">
+                                @if (o.IsCorrect) { <span><i class="fas fa-check"></i> Doğru cavab</span> }
+                                @if (o.WasSelected && !o.IsCorrect) { <span><i class="fas fa-times"></i> Tələbə seçimi</span> }
+                                @if (o.WasSelected && o.IsCorrect) { <span> · Tələbə seçimi</span> }
+                            </span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>

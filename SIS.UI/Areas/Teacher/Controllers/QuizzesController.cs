@@ -163,5 +163,20 @@ namespace SIS.UI.Areas.Teacher.Controllers
             ViewBag.Quiz = quiz;
             return View(results);
         }
+
+        /// <summary>Tək cəhd üçün sual-sual detallı nəticə (Teacher görüşü).</summary>
+        public async Task<IActionResult> AttemptDetail(int attemptId)
+        {
+            try
+            {
+                var dto = await _quizApi.GetAttemptDetailAsync(attemptId);
+                return View(dto);
+            }
+            catch (Refit.ApiException)
+            {
+                TempData["Error"] = "Bu nəticəyə baxmaq icazəniz yoxdur";
+                return RedirectToAction("Index");
+            }
+        }
     }
 }

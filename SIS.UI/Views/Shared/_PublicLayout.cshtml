@@ -7,51 +7,110 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@(ViewData["Title"] ?? "Acadex") — Acadex</title>
+    <meta name="theme-color" content="#4F46E5" />
+    <title>@(ViewData["Title"] ?? "Acadex") — Acadex Akademiyası</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link rel="stylesheet" href="/css/public.css" asp-append-version="true" />
 </head>
 <body class="pub">
-    <nav class="pub-nav">
+
+    <nav class="pub-nav" id="pubNavBar">
         <div class="pub-container pub-nav-inner">
-            <a href="/Public" class="pub-logo"><i class="fas fa-graduation-cap" style="color:var(--pub-primary)"></i> Acad<span>ex</span></a>
-            <button class="pub-nav-toggle" onclick="document.getElementById('pubNav').classList.toggle('open')"><i class="fas fa-bars"></i></button>
+            <a href="/Public" class="pub-logo">
+                <span class="logo-mark"><i class="fas fa-graduation-cap"></i></span>
+                Acad<span>ex</span>
+            </a>
+            <button class="pub-nav-toggle" aria-label="Menu"
+                    onclick="document.getElementById('pubNav').classList.toggle('open')">
+                <i class="fas fa-bars"></i>
+            </button>
             <div class="pub-nav-links" id="pubNav">
-                <a href="/Public" class="@nav("Index")">Ana səhifə</a>
-                <a href="/Public/Courses" class="@nav("Courses")">Kurslar</a>
-                <a href="/Public/Teachers" class="@nav("Teachers")">Müəllimlər</a>
-                <a href="/Public/About" class="@nav("About")">Akademiya</a>
+                <a href="/Public"           class="@nav("Index")">Ana səhifə</a>
+                <a href="/Public/Courses"   class="@nav("Courses")">Kurslar</a>
+                <a href="/Public/Teachers"  class="@nav("Teachers")">Müəllimlər</a>
+                <a href="/Public/About"     class="@nav("About")">Akademiya</a>
                 <a href="/Public/Graduates" class="@nav("Graduates")">Məzunlar</a>
-                <a href="/Public/Contact" class="@nav("Contact")">Əlaqə</a>
-                <a href="/Auth/Login" class="pub-btn pub-btn-primary"><i class="fas fa-right-to-bracket"></i> Daxil ol</a>
+                <a href="/Public/Contact"   class="@nav("Contact")">Əlaqə</a>
+                <a href="/Auth/Login" class="pub-btn pub-btn-primary pub-nav-cta">
+                    <i class="fas fa-right-to-bracket"></i> Daxil ol
+                </a>
             </div>
         </div>
     </nav>
 
-    @RenderBody()
+    <main>
+        @RenderBody()
+    </main>
 
     <footer class="pub-footer">
         <div class="pub-container">
             <div class="pub-footer-grid">
                 <div>
-                    <div class="pub-logo" style="color:#fff; margin-bottom:12px;"><i class="fas fa-graduation-cap" style="color:var(--pub-accent)"></i> Acad<span style="color:var(--pub-accent)">ex</span></div>
-                    <p style="font-size:14px; max-width:340px;">Praktiki, layihə əsaslı təhsil. Acadex peşəkar kurslar və real bacarıqlar üçün öyrənmə platformasıdır.</p>
+                    <div class="pub-logo">
+                        <span class="logo-mark"><i class="fas fa-graduation-cap"></i></span>
+                        Acad<span>ex</span>
+                    </div>
+                    <p class="brand-lead">
+                        Praktiki, layihə əsaslı təhsil akademiyası. Acadex strukturlaşdırılmış kurikulum,
+                        peşəkar mentorlar və real qiymətləndirmə sistemi ilə yeni nəsil mütəxəssislər yetişdirir.
+                    </p>
+                    <div class="pub-social">
+                        <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                        <a href="#" aria-label="Telegram"><i class="fab fa-telegram"></i></a>
+                    </div>
                 </div>
+
                 <div>
                     <h4>Keçidlər</h4>
                     <a href="/Public">Ana səhifə</a>
                     <a href="/Public/Courses">Kurslar</a>
                     <a href="/Public/Teachers">Müəllimlər</a>
-                    <a href="/Public/About">Haqqımızda</a>
+                    <a href="/Public/About">Akademiya</a>
+                    <a href="/Public/Graduates">Məzunlar</a>
                 </div>
+
+                <div>
+                    <h4>Akademiya</h4>
+                    <a href="/Public/About#facilities">Otaqlar və şərait</a>
+                    <a href="/Public/About#methodology">Metodologiya</a>
+                    <a href="/Public/Graduates">Uğur hekayələri</a>
+                    <a href="/Public/Contact">Bizimlə əlaqə</a>
+                    <a href="/Auth/Login">Sistemə daxil ol</a>
+                </div>
+
                 <div>
                     <h4>Əlaqə</h4>
-                    <a href="/Public/Contact"><i class="fas fa-envelope"></i> Bizə yazın</a>
-                    <a href="/Auth/Login"><i class="fas fa-right-to-bracket"></i> Sistemə daxil ol</a>
+                    <div class="contact-line"><i class="fas fa-location-dot"></i><span>Bakı, Azərbaycan</span></div>
+                    <div class="contact-line"><i class="fas fa-phone"></i><span>+994 12 000 00 00</span></div>
+                    <div class="contact-line"><i class="fas fa-envelope"></i><span>info@acadex.az</span></div>
+                    <div class="contact-line"><i class="fas fa-clock"></i><span>B.e – Cümə · 09:00 – 19:00</span></div>
                 </div>
             </div>
-            <div class="pub-footer-bottom">© @DateTime.Now.Year Acadex. Bütün hüquqlar qorunur.</div>
+
+            <div class="pub-footer-bottom">
+                <span>© @DateTime.Now.Year Acadex Akademiyası. Bütün hüquqlar qorunur.</span>
+                <span>Praktiki təhsil · Real layihələr · Peşəkar mentorlar</span>
+            </div>
         </div>
     </footer>
+
+    <script>
+        (function () {
+            var nav = document.getElementById('pubNavBar');
+            if (!nav) return;
+            var onScroll = function () {
+                if (window.scrollY > 12) nav.classList.add('scrolled');
+                else nav.classList.remove('scrolled');
+            };
+            window.addEventListener('scroll', onScroll, { passive: true });
+            onScroll();
+        })();
+    </script>
 </body>
 </html>

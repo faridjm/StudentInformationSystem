@@ -23,6 +23,9 @@ namespace SIS.UI.ApiClients
         [Get("/api/quiz/{id}/results")]
         Task<IEnumerable<QuizResultDto>> GetResultsAsync(int id);
 
+        [Get("/api/quiz/attempts/{attemptId}/detail")]
+        Task<QuizAttemptDetailDto> GetAttemptDetailAsync(int attemptId);
+
         [Post("/api/quiz")]
         Task<QuizDto> CreateAsync([Body] CreateQuizDto dto);
 

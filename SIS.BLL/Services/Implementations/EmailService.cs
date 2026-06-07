@@ -143,5 +143,102 @@ namespace SIS.BLL.Services.Implementations
 
             await SendAsync(to, $"Elan: {title} — Acadex", htmlBody);
         }
+
+        public async Task SendQuizActivatedAsync(string to, string fullName, string quizTitle, string courseName, string groupName, string? deadline)
+        {
+            var deadlineLine = string.IsNullOrEmpty(deadline) ? "" : $"<p style='margin:8px 0 0;'><strong>Son tarix:</strong> {deadline}</p>";
+            var htmlBody = $@"
+        <!DOCTYPE html><html>
+        <body style='font-family:Arial,sans-serif;background:#f4f4f4;padding:20px;'>
+            <div style='max-width:600px;margin:0 auto;background:#fff;border-radius:10px;padding:30px;'>
+                <h2 style='color:#e94560;'>📝 Yeni Quiz Aktiv Edildi</h2>
+                <p>Hörmətli <strong>{fullName}</strong>,</p>
+                <p><strong>{courseName}</strong> kursu üzrə yeni quiz aktivləşdirildi:</p>
+                <div style='background:#f8f8f8;border-radius:8px;padding:16px;margin:20px 0;'>
+                    <p style='margin:0;font-size:16px;font-weight:bold;'>{quizTitle}</p>
+                    <p style='margin:8px 0 0;'><strong>Qrup:</strong> {groupName}</p>
+                    {deadlineLine}
+                </div>
+                <p>Quiz-ə cavab vermək üçün tələbə panelinizə daxil olun.</p>
+                <p style='color:#999;font-size:12px;'>Acadex</p>
+            </div>
+        </body></html>";
+
+            await SendAsync(to, $"Quiz Aktiv: {quizTitle} — Acadex", htmlBody);
+        }
+
+        public async Task SendAssignmentCreatedAsync(string to, string fullName, string assignmentTitle, string courseName, string groupName, DateTime dueDate, string? description)
+        {
+            var descBlock = string.IsNullOrEmpty(description)
+                ? ""
+                : $"<p style='margin:8px 0 0;color:#555;'><strong>Təsvir:</strong> {System.Net.WebUtility.HtmlEncode(description.Length > 200 ? description.Substring(0, 200) + "..." : description)}</p>";
+            var htmlBody = $@"
+        <!DOCTYPE html><html>
+        <body style='font-family:Arial,sans-serif;background:#f4f4f4;padding:20px;'>
+            <div style='max-width:600px;margin:0 auto;background:#fff;border-radius:10px;padding:30px;'>
+                <h2 style='color:#e94560;'>📋 Yeni Tapşırıq</h2>
+                <p>Hörmətli <strong>{fullName}</strong>,</p>
+                <p><strong>{courseName}</strong> kursu üzrə yeni tapşırıq əlavə edildi:</p>
+                <div style='background:#f8f8f8;border-radius:8px;padding:16px;margin:20px 0;'>
+                    <p style='margin:0;font-size:16px;font-weight:bold;'>{assignmentTitle}</p>
+                    <p style='margin:8px 0 0;'><strong>Qrup:</strong> {groupName}</p>
+                    <p style='margin:8px 0 0;'><strong>Son tarix:</strong> {dueDate:dd.MM.yyyy HH:mm}</p>
+                    {descBlock}
+                </div>
+                <p>Tapşırığa baxmaq və cavab vermək üçün tələbə panelinizə daxil olun.</p>
+                <p style='color:#999;font-size:12px;'>Acadex</p>
+            </div>
+        </body></html>";
+
+            await SendAsync(to, $"Yeni Tapşırıq: {assignmentTitle} — Acadex", htmlBody);
+        }
+
+        public async Task SendTranscriptAsync(string to, string fullName, string courseName, string groupName, byte[] pdfBytes, string fileName)
+        {
+            var htmlBody = $@"
+        <!DOCTYPE html><html>
+        <body style='font-family:Arial,sans-serif;background:#f4f4f4;padding:20px;'>
+            <div style='max-width:600px;margin:0 auto;background:#fff;border-radius:10px;padding:30px;'>
+                <h2 style='color:#e94560;'>📄 Akademik Transkript</h2>
+                <p>Hörmətli <strong>{fullName}</strong>,</p>
+                <p>Sizin <strong>{courseName}</strong> kursu üzrə akademik transkriptiniz aşağıda əlavə olunub.</p>
+                <div style='background:#f8f8f8;border-radius:8px;padding:16px;margin:20px 0;'>
+                    <p style='margin:0;'><strong>Kurs:</strong> {courseName}</p>
+                    <p style='margin:8px 0 0;'><strong>Qrup:</strong> {groupName}</p>
+                    <p style='margin:8px 0 0;'><strong>Fayl:</strong> {fileName}</p>
+                </div>
+                <p style='color:#999;font-size:12px;'>Acadex</p>
+            </div>
+        </body></html>";
+
+            await SendWithAttachmentAsync(to, $"Transkript — Acadex", htmlBody, pdfBytes, fileName, "application/pdf");
+        }
+
+        private async Task SendWithAttachmentAsync(string to, string subject, string htmlBody, byte[] attachment, string fileName, string contentType)
+        {
+            var smtpHost = _configuration["Email:SmtpHost"]!;
+            var smtpPort = int.Parse(_configuration["Email:SmtpPort"]!);
+            var from = _configuration["Email:From"]!;
+            var username = _configuration["Email:Username"]!;
+            var password = _configuration["Email:Password"]!;
+
+            var message = new MimeMessage();
+            message.From.Add(new MailboxAddress("Acadex", from));
+            message.To.Add(MailboxAddress.Parse(to));
+            message.Subject = subject;
+
+            var builder = new BodyBuilder { HtmlBody = htmlBody };
+            var ctParts = contentType.Split('/', 2);
+            var mediaType = ctParts.Length > 0 ? ctParts[0] : "application";
+            var mediaSubtype = ctParts.Length > 1 ? ctParts[1] : "octet-stream";
+            builder.Attachments.Add(fileName, attachment, new ContentType(mediaType, mediaSubtype));
+            message.Body = builder.ToMessageBody();
+
+            using var client = new SmtpClient();
+            await client.ConnectAsync(smtpHost, smtpPort, SecureSocketOptions.StartTls);
+            await client.AuthenticateAsync(username, password);
+            await client.SendAsync(message);
+            await client.DisconnectAsync(true);
+        }
     }
 }

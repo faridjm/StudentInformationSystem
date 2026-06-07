@@ -1,4 +1,4 @@
-﻿@model SIS.BLL.Services.DTOs.Auth.LoginDto
+@model SIS.BLL.Services.DTOs.Auth.LoginDto
 
 @{
     ViewData["Title"] = L["Login"].Value;
@@ -10,130 +10,456 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#4F46E5" />
     <title>Acadex — Daxil ol</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <style>
-            * { box-sizing: border-box; margin: 0; padding: 0; }
-            body {
-                background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f3460 100%);
-                min-height: 100vh;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-family: 'Inter', system-ui, sans-serif;
-            }
-            .login-card {
-                background: rgba(30,41,59,0.95);
-                backdrop-filter: blur(10px);
-                border: 1px solid rgba(255,255,255,0.08);
-                border-radius: 16px;
-                padding: 40px;
-                width: 100%;
-                max-width: 420px;
-                box-shadow: 0 25px 50px rgba(0,0,0,0.4);
-            }
-            .logo-text { font-size: 28px; font-weight: 800; color: #e94560; }
-            .logo-sub { font-size: 11px; color: rgba(255,255,255,0.35); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 32px; margin-top: 2px; }
-            h2 { color: #f1f5f9; font-weight: 700; font-size: 22px; margin-bottom: 6px; }
-            .subtitle { color: rgba(255,255,255,0.4); font-size: 14px; margin-bottom: 28px; }
-            .form-group { margin-bottom: 18px; }
-            .form-label { display: block; color: rgba(255,255,255,0.6); font-size: 13px; margin-bottom: 6px; font-weight: 500; }
-            .form-control {
-                width: 100%; background: rgba(255,255,255,0.06);
-                border: 1px solid rgba(255,255,255,0.1); color: #f1f5f9;
-                border-radius: 10px; padding: 12px 16px; font-size: 14px;
-                transition: border-color 0.2s; outline: none;
-            }
-            .form-control:focus { border-color: #e94560; box-shadow: 0 0 0 3px rgba(233,69,96,0.15); background: rgba(255,255,255,0.08); }
-            .form-control::placeholder { color: rgba(255,255,255,0.2); }
-            .pwd-wrap { position: relative; }
-            .pwd-wrap .form-control { padding-right: 42px; }
-            .pwd-toggle {
-                position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
-                background: none; border: none; color: rgba(255,255,255,0.35);
-                cursor: pointer; padding: 4px; font-size: 15px; line-height: 1;
-            }
-            .pwd-toggle:hover { color: rgba(255,255,255,0.7); }
-            .form-check { display: flex; align-items: center; gap: 8px; margin-bottom: 24px; }
-            .form-check-input { width: 16px; height: 16px; accent-color: #e94560; cursor: pointer; }
-            .form-check-label { color: rgba(255,255,255,0.5); font-size: 13px; cursor: pointer; }
-            .btn-login {
-                width: 100%; background: linear-gradient(135deg, #e94560, #c62a47);
-                border: none; border-radius: 10px; padding: 13px;
-                font-weight: 600; font-size: 15px; color: #fff; cursor: pointer;
-                transition: opacity 0.2s;
-            }
-            .btn-login:hover { opacity: 0.9; }
-            .text-danger { color: #f87171; font-size: 12px; margin-top: 4px; display: block; }
-            .validation-summary {
-                background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.3);
-                border-radius: 8px; padding: 10px 14px; margin-bottom: 16px;
-                color: #f87171; font-size: 13px;
-            }
+        :root {
+            --primary:   #4F46E5;
+            --secondary: #7C3AED;
+            --accent:    #10B981;
+            --bg:        #F8FAFC;
+            --ink:       #0F172A;
+            --ink-2:     #1E293B;
+            --muted:     #64748B;
+            --border:    #E2E8F0;
+            --soft:      #EEF2FF;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { height: 100%; }
+        body {
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+            background: var(--bg);
+            color: var(--ink);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ============== TOP BAR ============== */
+        .top-bar {
+            position: absolute; top: 0; left: 0; right: 0; z-index: 10;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 22px 32px;
+        }
+        .top-bar a {
+            color: var(--muted); text-decoration: none; font-size: 13.5px; font-weight: 500;
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 8px 14px; border-radius: 10px; transition: background .15s, color .15s;
+        }
+        .top-bar a:hover { background: rgba(15,23,42,.04); color: var(--ink); }
+        .top-bar a i { font-size: 12px; }
+
+        /* ============== LAYOUT ============== */
+        .auth-wrap {
+            display: grid; grid-template-columns: 1fr 1fr;
+            min-height: 100vh;
+        }
+
+        /* ============== BRAND PANEL ============== */
+        .brand-panel {
+            position: relative; overflow: hidden;
+            background:
+                radial-gradient(900px 500px at 90% -10%, rgba(16,185,129,.30), transparent 60%),
+                radial-gradient(700px 380px at -10% 110%, rgba(124,58,237,.45), transparent 60%),
+                linear-gradient(135deg, #312E81 0%, #4338CA 50%, #4F46E5 100%);
+            color: #fff; padding: 56px 56px 48px;
+            display: flex; flex-direction: column; justify-content: space-between;
+        }
+        /* Subtle grid overlay */
+        .brand-panel::before {
+            content: ""; position: absolute; inset: 0; pointer-events: none;
+            background-image:
+                linear-gradient(rgba(255,255,255,.06) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,.06) 1px, transparent 1px);
+            background-size: 56px 56px;
+            mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%);
+            -webkit-mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%);
+            opacity: .5;
+        }
+        /* Animated blobs */
+        .blob {
+            position: absolute; border-radius: 50%; filter: blur(70px); opacity: .55;
+            animation: floatBlob 12s ease-in-out infinite;
+        }
+        .blob.b1 { width: 320px; height: 320px; background: #A78BFA; top: -70px; left: -80px; }
+        .blob.b2 { width: 260px; height: 260px; background: #34D399; bottom: 10%; right: -60px; animation-delay: 3s; }
+        .blob.b3 { width: 220px; height: 220px; background: #60A5FA; bottom: -60px; left: 30%; animation-delay: 6s; }
+        @@keyframes floatBlob {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33%      { transform: translate(20px, -25px) scale(1.05); }
+            66%      { transform: translate(-15px, 20px) scale(.95); }
+        }
+
+        .brand-top { position: relative; z-index: 2; }
+        .brand-logo { display: inline-flex; align-items: center; gap: 12px; font-size: 22px; font-weight: 800; letter-spacing: -.4px; }
+        .brand-logo .mark {
+            width: 40px; height: 40px; border-radius: 12px;
+            background: linear-gradient(135deg, rgba(255,255,255,.95), rgba(255,255,255,.75));
+            color: var(--primary); display: inline-flex; align-items: center; justify-content: center;
+            font-size: 17px; box-shadow: 0 10px 24px rgba(0,0,0,.25);
+        }
+        .brand-logo .word span { background: linear-gradient(135deg, #fef3c7, #a7f3d0);
+            -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+        .brand-mid { position: relative; z-index: 2; max-width: 460px; margin: auto 0; }
+        .brand-eyebrow {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: rgba(255,255,255,.13); border: 1px solid rgba(255,255,255,.22);
+            padding: 7px 14px; border-radius: 999px; font-size: 12.5px; font-weight: 600;
+            margin-bottom: 22px; backdrop-filter: blur(8px);
+        }
+        .brand-eyebrow .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent);
+            box-shadow: 0 0 0 4px rgba(16,185,129,.25); animation: pulse 1.8s ease-out infinite; }
+        @@keyframes pulse { 0%,100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.4); opacity: .65; } }
+
+        .brand-mid h1 { font-size: 42px; font-weight: 800; line-height: 1.1; letter-spacing: -1.2px; }
+        .brand-mid h1 .hl {
+            background: linear-gradient(135deg, #fef3c7, #fde68a, #a7f3d0);
+            -webkit-background-clip: text; background-clip: text; color: transparent;
+        }
+        .brand-mid p { font-size: 16px; opacity: .9; margin-top: 16px; line-height: 1.65; }
+
+        /* Floating glass cards as visual decoration */
+        .glass-cards { position: relative; margin-top: 36px; height: 200px; }
+        .gcard {
+            position: absolute; background: rgba(255,255,255,.14);
+            border: 1px solid rgba(255,255,255,.28);
+            border-radius: 16px; padding: 14px 18px;
+            backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+            display: flex; align-items: center; gap: 12px;
+            box-shadow: 0 20px 40px rgba(2,6,23,.25);
+            font-size: 13.5px; font-weight: 600; color: #fff;
+            animation: floatY 5s ease-in-out infinite;
+        }
+        .gcard .ico {
+            width: 36px; height: 36px; border-radius: 10px;
+            display: inline-flex; align-items: center; justify-content: center;
+            font-size: 16px; flex: none;
+        }
+        .gc1 { top: 0; left: 0; animation-delay: 0s; }
+        .gc1 .ico { background: linear-gradient(135deg, #FCD34D, #F59E0B); color: #fff; }
+        .gc2 { top: 50px; right: 10px; animation-delay: 1s; }
+        .gc2 .ico { background: linear-gradient(135deg, #34D399, #059669); color: #fff; }
+        .gc3 { bottom: 0; left: 40px; animation-delay: 2s; }
+        .gc3 .ico { background: linear-gradient(135deg, #A78BFA, #7C3AED); color: #fff; }
+        @@keyframes floatY {
+            0%, 100% { transform: translateY(0); }
+            50%      { transform: translateY(-10px); }
+        }
+
+        .brand-bottom { position: relative; z-index: 2; font-size: 13px; opacity: .8; display: flex; gap: 22px; flex-wrap: wrap; }
+        .brand-bottom span { display: inline-flex; align-items: center; gap: 8px; }
+        .brand-bottom i { color: var(--accent); }
+
+        /* ============== FORM PANEL ============== */
+        .form-panel {
+            position: relative; padding: 80px 64px; display: flex; align-items: center;
+            background: #fff;
+        }
+        .form-panel::before {
+            content: ""; position: absolute; inset: 0; pointer-events: none;
+            background:
+                radial-gradient(420px 240px at 0% 0%, rgba(79,70,229,.06), transparent 60%),
+                radial-gradient(420px 240px at 100% 100%, rgba(16,185,129,.06), transparent 60%);
+        }
+        .form-inner { position: relative; width: 100%; max-width: 440px; margin: 0 auto; }
+
+        .form-head h2 { font-size: 30px; font-weight: 800; letter-spacing: -.7px; color: var(--ink); }
+        .form-head p  { color: var(--muted); margin-top: 8px; font-size: 14.5px; }
+        .form-head .badge {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: var(--soft); color: var(--primary); border: 1px solid #E0E7FF;
+            padding: 6px 12px; border-radius: 999px;
+            font-size: 12px; font-weight: 700; letter-spacing: .3px; margin-bottom: 18px;
+        }
+        .form-head .badge i { font-size: 10px; }
+
+        .form-body { margin-top: 32px; }
+
+        /* Floating-label inputs */
+        .field { position: relative; margin-bottom: 18px; }
+        .field input {
+            width: 100%; padding: 22px 16px 10px 46px; font-size: 15px;
+            border: 1.5px solid var(--border); border-radius: 14px;
+            background: #fff; color: var(--ink); font-family: inherit;
+            outline: none; transition: border-color .15s, box-shadow .15s, background .15s;
+        }
+        .field input:hover { border-color: #CBD5E1; }
+        .field input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(79,70,229,.12); background: #FAFBFF; }
+        .field label {
+            position: absolute; left: 46px; top: 16px; font-size: 14.5px; color: var(--muted);
+            pointer-events: none; transition: all .15s; font-weight: 500;
+        }
+        .field input:focus + label,
+        .field input:not(:placeholder-shown) + label {
+            top: 7px; left: 46px; font-size: 11.5px; color: var(--primary); font-weight: 600;
+            letter-spacing: .3px; text-transform: uppercase;
+        }
+        .field .lico {
+            position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+            color: var(--muted); font-size: 16px;
+        }
+        .field input:focus ~ .lico { color: var(--primary); }
+        .field .pwd-toggle {
+            position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+            background: none; border: none; color: var(--muted);
+            cursor: pointer; padding: 6px; font-size: 15px; line-height: 1;
+            border-radius: 8px; transition: color .15s, background .15s;
+        }
+        .field .pwd-toggle:hover { color: var(--primary); background: var(--soft); }
+
+        /* Row with remember + forgot */
+        .row-options {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-top: 6px; margin-bottom: 22px;
+        }
+        .check {
+            display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
+            color: var(--ink-2); font-size: 13.5px; user-select: none;
+        }
+        .check input { position: absolute; opacity: 0; pointer-events: none; }
+        .check .box {
+            width: 18px; height: 18px; border-radius: 6px;
+            border: 1.5px solid var(--border); background: #fff;
+            display: inline-flex; align-items: center; justify-content: center;
+            transition: background .15s, border-color .15s;
+        }
+        .check input:checked + .box {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-color: transparent;
+        }
+        .check .box i { color: #fff; font-size: 10px; opacity: 0; transition: opacity .15s; }
+        .check input:checked + .box i { opacity: 1; }
+        .forgot { font-size: 13.5px; color: var(--primary); font-weight: 600; text-decoration: none; }
+        .forgot:hover { color: #4338CA; text-decoration: underline; }
+
+        /* Submit button */
+        .btn-submit {
+            width: 100%; border: none; cursor: pointer;
+            padding: 15px; border-radius: 14px; font-family: inherit;
+            font-weight: 700; font-size: 15px; letter-spacing: .2px;
+            color: #fff; background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            box-shadow: 0 14px 30px rgba(79,70,229,.32);
+            display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+            transition: transform .15s, box-shadow .15s, filter .15s;
+        }
+        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 18px 36px rgba(79,70,229,.42); filter: brightness(1.05); }
+        .btn-submit:active { transform: translateY(0); }
+        .btn-submit i { transition: transform .2s; }
+        .btn-submit:hover i { transform: translateX(3px); }
+
+        /* Divider */
+        .divider {
+            display: flex; align-items: center; gap: 14px;
+            margin: 26px 0; color: var(--muted); font-size: 12px; font-weight: 600;
+            letter-spacing: .6px; text-transform: uppercase;
+        }
+        .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+
+        /* Role chips (decoration showing system roles) */
+        .role-row {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px;
+        }
+        .role-chip {
+            display: flex; flex-direction: column; align-items: center; gap: 6px;
+            padding: 14px 8px; border-radius: 12px;
+            background: #fff; border: 1px solid var(--border);
+            color: var(--muted); font-size: 12px; font-weight: 600;
+            transition: border-color .15s, color .15s, transform .15s, background .15s;
+        }
+        .role-chip:hover { border-color: var(--primary); color: var(--primary); transform: translateY(-2px); background: var(--soft); }
+        .role-chip i { font-size: 16px; }
+
+        .form-foot {
+            margin-top: 22px; text-align: center;
+            color: var(--muted); font-size: 13.5px;
+        }
+        .form-foot a { color: var(--primary); font-weight: 600; text-decoration: none; }
+        .form-foot a:hover { text-decoration: underline; }
+
+        /* Validation */
+        .v-summary {
+            background: #FEF2F2; border: 1px solid #FECACA; color: #B91C1C;
+            border-radius: 12px; padding: 12px 16px; margin-bottom: 18px;
+            font-size: 13.5px; display: flex; gap: 10px; align-items: flex-start;
+        }
+        .v-summary i { color: #DC2626; margin-top: 2px; }
+        .v-summary div div { margin-bottom: 2px; }
+        .field-error { color: #DC2626; font-size: 12.5px; margin-top: 6px; display: block; padding-left: 4px; }
+
+        /* ============== RESPONSIVE ============== */
+        @@media (max-width: 1024px) {
+            .auth-wrap { grid-template-columns: 1fr; }
+            .brand-panel { display: none; }
+            .form-panel { padding: 100px 28px 60px; }
+            .top-bar { background: rgba(255,255,255,.8); backdrop-filter: blur(10px); }
+        }
+        @@media (max-width: 480px) {
+            .form-panel { padding: 90px 20px 40px; }
+            .form-head h2 { font-size: 24px; }
+            .role-row { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+            .role-chip { padding: 12px 4px; font-size: 11px; }
+        }
+        @@media (min-width: 1025px) and (max-width: 1280px) {
+            .brand-panel { padding: 48px 40px 40px; }
+            .form-panel  { padding: 60px 48px; }
+            .brand-mid h1 { font-size: 36px; }
+        }
     </style>
 </head>
 <body>
-    <div class="login-card">
-        <div class="logo-text">Acadex</div>
-        <div class="logo-sub">Student Information System</div>
-        <h2>@L["WelcomeBack"]</h2>
-        <p class="subtitle">@L["LoginSubtitle"]</p>
 
-        <form asp-action="Login" asp-controller="Auth" method="post">
-            @if (!ViewData.ModelState.IsValid)
-            {
-                <div class="validation-summary">
-                    @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
-                    {
-                        <div>@error.ErrorMessage</div>
-                    }
-                </div>
-            }
-
-            <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
-
-            <div class="form-group">
-                <label class="form-label">@L["EmailOrCode"]</label>
-                <input asp-for="Email" class="form-control" placeholder="email@sis.az və ya STU001" autocomplete="email" />
-                <span asp-validation-for="Email" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">@L["Password"]</label>
-                <div class="pwd-wrap">
-                    <input asp-for="Password" type="password" id="loginPwd" class="form-control" placeholder="••••••••" autocomplete="current-password" />
-                    <button type="button" class="pwd-toggle" onclick="togglePwd('loginPwd', this)" tabindex="-1">
-                        <i class="fas fa-eye"></i>
-                    </button>
-                </div>
-                <span asp-validation-for="Password" class="text-danger"></span>
-                <div style="text-align:right; margin-top:6px;">
-                    <a href="/Auth/ForgotPassword" style="font-size:12px; color:#e94560; text-decoration:none;">@L["ForgotPassword"]</a>
-                </div>
-            </div>
-
-            <div class="form-check">
-                <input asp-for="RememberMe" class="form-check-input" id="RememberMe" />
-                <label class="form-check-label" for="RememberMe">@L["RememberMe"]</label>
-            </div>
-
-            <button type="submit" class="btn-login">
-                <i class="fas fa-sign-in-alt" style="margin-right:8px;"></i>@L["Login"]
-            </button>
-        </form>
+    <div class="top-bar">
+        <a href="/Public"><i class="fas fa-arrow-left"></i> Saytın əsas səhifəsi</a>
+        <a href="/Public/Contact"><i class="fas fa-circle-question"></i> Dəstək</a>
     </div>
+
+    <div class="auth-wrap">
+
+        @* ============= BRAND PANEL (left) ============= *@
+        <aside class="brand-panel" aria-hidden="true">
+            <div class="blob b1"></div>
+            <div class="blob b2"></div>
+            <div class="blob b3"></div>
+
+            <div class="brand-top">
+                <a href="/Public" class="brand-logo" style="color:#fff; text-decoration:none;">
+                    <span class="mark"><i class="fas fa-graduation-cap"></i></span>
+                    <span class="word">Acad<span>ex</span></span>
+                </a>
+            </div>
+
+            <div class="brand-mid">
+                <span class="brand-eyebrow">
+                    <span class="dot"></span> Acadex SIS — Tələbə idarəetmə sistemi
+                </span>
+                <h1>Öyrən. <span class="hl">Yarat.</span> Karyera qur.</h1>
+                <p>
+                    Acadex sənin tədris yolunu bir yerdə birləşdirir — kurikulum, qiymətlər,
+                    tapşırıqlar, transkript və real layihələr. Hər şey strukturlu, hər şey izlənə bilən.
+                </p>
+
+                <div class="glass-cards">
+                    <div class="gcard gc1">
+                        <div class="ico"><i class="fas fa-bolt"></i></div>
+                        <div>
+                            <div>Real-time qiymət</div>
+                            <div style="opacity:.75; font-weight:500; font-size:11.5px;">Quiz · Assignment · Final</div>
+                        </div>
+                    </div>
+                    <div class="gcard gc2">
+                        <div class="ico"><i class="fas fa-square-poll-vertical"></i></div>
+                        <div>
+                            <div>GPA və transkript</div>
+                            <div style="opacity:.75; font-weight:500; font-size:11.5px;">Şəffaf nəticə izləməsi</div>
+                        </div>
+                    </div>
+                    <div class="gcard gc3">
+                        <div class="ico"><i class="fas fa-diagram-project"></i></div>
+                        <div>
+                            <div>Layihə əsaslı tədris</div>
+                            <div style="opacity:.75; font-weight:500; font-size:11.5px;">Real portfolio quruculuğu</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="brand-bottom">
+                <span><i class="fas fa-shield-halved"></i> Təhlükəsiz giriş</span>
+                <span><i class="fas fa-lock"></i> Şifrələnmiş seans</span>
+                <span><i class="fas fa-clock"></i> 24/7 sistem</span>
+            </div>
+        </aside>
+
+        @* ============= FORM PANEL (right) ============= *@
+        <main class="form-panel">
+            <div class="form-inner">
+
+                <div class="form-head">
+                    <span class="badge"><i class="fas fa-circle"></i> Tələbə · Müəllim · İdarə</span>
+                    <h2>@L["WelcomeBack"]</h2>
+                    <p>@L["LoginSubtitle"]</p>
+                </div>
+
+                <form asp-action="Login" asp-controller="Auth" method="post" class="form-body" novalidate>
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="v-summary">
+                            <i class="fas fa-triangle-exclamation"></i>
+                            <div>
+                                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                                {
+                                    <div>@error.ErrorMessage</div>
+                                }
+                            </div>
+                        </div>
+                    }
+
+                    <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
+
+                    <div class="field">
+                        <input asp-for="Email" id="loginEmail" placeholder=" " autocomplete="email" />
+                        <label for="loginEmail">@L["EmailOrCode"]</label>
+                        <i class="fas fa-envelope lico"></i>
+                    </div>
+                    <span asp-validation-for="Email" class="field-error"></span>
+
+                    <div class="field" style="margin-top:6px;">
+                        <input asp-for="Password" type="password" id="loginPwd" placeholder=" " autocomplete="current-password" />
+                        <label for="loginPwd">@L["Password"]</label>
+                        <i class="fas fa-lock lico"></i>
+                        <button type="button" class="pwd-toggle" onclick="togglePwd('loginPwd', this)" tabindex="-1" aria-label="Şifrəni göstər">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <span asp-validation-for="Password" class="field-error"></span>
+
+                    <div class="row-options">
+                        <label class="check">
+                            <input asp-for="RememberMe" type="checkbox" id="RememberMe" />
+                            <span class="box"><i class="fas fa-check"></i></span>
+                            <span>@L["RememberMe"]</span>
+                        </label>
+                        <a href="/Auth/ForgotPassword" class="forgot">@L["ForgotPassword"]</a>
+                    </div>
+
+                    <button type="submit" class="btn-submit">
+                        @L["Login"] <i class="fas fa-arrow-right"></i>
+                    </button>
+
+                    <div class="divider">və ya</div>
+
+                    <div class="role-row">
+                        <div class="role-chip"><i class="fas fa-user-graduate"></i> Tələbə</div>
+                        <div class="role-chip"><i class="fas fa-chalkboard-teacher"></i> Müəllim</div>
+                        <div class="role-chip"><i class="fas fa-user-shield"></i> İdarə</div>
+                    </div>
+
+                    <div class="form-foot">
+                        Hesabın yoxdur? <a href="/Public/Contact">Bizimlə əlaqə saxla</a>
+                    </div>
+                </form>
+            </div>
+        </main>
+
+    </div>
+
     <script>
-    function togglePwd(id, btn) {
-        const input = document.getElementById(id);
-        const icon = btn.querySelector('i');
-        if (input.type === 'password') {
-            input.type = 'text';
-            icon.classList.replace('fa-eye', 'fa-eye-slash');
-        } else {
-            input.type = 'password';
-            icon.classList.replace('fa-eye-slash', 'fa-eye');
+        function togglePwd(id, btn) {
+            const input = document.getElementById(id);
+            const icon = btn.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
+            }
         }
-    }
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>

@@ -14,15 +14,18 @@ namespace SIS.API.Controllers
         private readonly IAnnouncementService _announcementService;
         private readonly IStudentService _studentService;
         private readonly ITeacherService _teacherService;
+        private readonly IEnrollmentService _enrollmentService;
 
         public AnnouncementController(
             IAnnouncementService announcementService,
             IStudentService studentService,
-            ITeacherService teacherService)
+            ITeacherService teacherService,
+            IEnrollmentService enrollmentService)
         {
             _announcementService = announcementService;
             _studentService = studentService;
             _teacherService = teacherService;
+            _enrollmentService = enrollmentService;
         }
 
         /// <summary>Admin görüşü — bütün elanlar (recipient/read/email statları ilə).</summary>
@@ -37,9 +40,21 @@ namespace SIS.API.Controllers
             => Ok(await _announcementService.GetAllAsync());
 
         [HttpGet("group/{groupId}")]
-        [Authorize(Roles = $"{RoleConstants.Admin},{RoleConstants.Moderator},{RoleConstants.SuperAdmin},{RoleConstants.Teacher}")]
+        [Authorize(Roles = $"{RoleConstants.Admin},{RoleConstants.Moderator},{RoleConstants.SuperAdmin},{RoleConstants.Teacher},{RoleConstants.Student}")]
         public async Task<IActionResult> GetByGroup(int groupId)
-            => Ok(await _announcementService.GetByGroupAsync(groupId));
+        {
+            // Student yalnız öz qrupunun elanlarını görə bilər
+            if (User.IsInRole(RoleConstants.Student))
+            {
+                var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                var student = await _studentService.GetStudentByUserIdAsync(userId!);
+                if (student == null) return Forbid();
+
+                var enrollments = await _enrollmentService.GetByStudentAsync(student.Id);
+                if (!enrollments.Any(e => e.GroupId == groupId)) return Forbid();
+            }
+            return Ok(await _announcementService.GetByGroupAsync(groupId));
+        }
 
         [HttpGet("{id}")]
         [Authorize(Roles = $"{RoleConstants.Admin},{RoleConstants.Moderator},{RoleConstants.SuperAdmin}")]
@@ -91,6 +106,17 @@ namespace SIS.API.Controllers
             var authorId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
             await _announcementService.CreateAnnouncementAsync(dto, authorId!);
             return Ok(new { Message = "Elan uğurla yaradıldı" });
+        }
+
+        /// <summary>Müəllim öz qrupuna elan göndərir.</summary>
+        [HttpPost("group")]
+        [Authorize(Roles = RoleConstants.Teacher)]
+        public async Task<IActionResult> CreateGroupAnnouncement([FromBody] TeacherGroupAnnouncementDto dto)
+        {
+            var teacherUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value
+                ?? throw new UnauthorizedAccessException();
+            await _announcementService.CreateTeacherGroupAnnouncementAsync(dto.GroupId, dto.Title, dto.Content, teacherUserId);
+            return Ok(new { Message = "Elan göndərildi" });
         }
 
         [HttpDelete("{id}")]

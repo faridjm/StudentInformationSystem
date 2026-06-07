@@ -60,7 +60,9 @@ namespace SIS.UI.Areas.Admin.Controllers
                         row.AcademicYear         = t.AcademicYear;
                         row.StartDate            = t.StartDate;
                         row.EndDate              = t.EndDate;
-                        row.AttendancePercentage = t.AttendancePercentage;
+                        // Yalnız davamiyyət qeyd olunmuşsa faiz göstər
+                        var hasAtt               = (t.PresentCount + t.LateCount + t.AbsentCount) > 0;
+                        row.AttendancePercentage = hasAtt ? (double?)t.AttendancePercentage : null;
                         row.OfficialGrade        = t.OfficialGrade;
                         row.GPA                  = t.GPA;
                         row.CertificateEligible  = t.CertificateEligible;

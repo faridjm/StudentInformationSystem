@@ -21,6 +21,12 @@ namespace SIS.BLL.Services.Interfaces
         Task MarkAsReadAsync(int announcementId, string userId);
 
         Task CreateAnnouncementAsync(CreateAnnouncementDto dto, string authorId);
+
+        /// <summary>
+        /// Müəllim öz qrupuna elan göndərir. Sahiblik backend-də yoxlanır.
+        /// TargetType avtomatik GroupStudents təyin olunur.
+        /// </summary>
+        Task CreateTeacherGroupAnnouncementAsync(int groupId, string title, string content, string teacherUserId);
         Task DeleteAnnouncementAsync(int id);
         Task<IEnumerable<AnnouncementDto>> GetByGroupAsync(int groupId);
 

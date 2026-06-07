@@ -167,6 +167,42 @@ namespace SIS.UI.Areas.Teacher.Controllers
             return RedirectToAction("Detail", new { id = groupId, tab = "schedule" });
         }
 
+        // Demo Attendance Simulation (Teacher panel only)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> GenerateDemoAttendance(int groupId, int fromSessionNumber,
+            int toSessionNumber, SIS.BLL.Services.DTOs.Attendance.DemoAttendanceMode mode, bool overwriteExisting,
+            int? presentCount, int? absentCount, int? lateCount, int? excusedCount)
+        {
+            try
+            {
+                var result = await _attendanceApi.GenerateDemoAsync(new SIS.BLL.Services.DTOs.Attendance.GenerateDemoAttendanceDto
+                {
+                    GroupId = groupId,
+                    FromSessionNumber = fromSessionNumber,
+                    ToSessionNumber = toSessionNumber,
+                    Mode = mode,
+                    OverwriteExisting = overwriteExisting,
+                    PresentCount = presentCount,
+                    AbsentCount = absentCount,
+                    LateCount = lateCount,
+                    ExcusedCount = excusedCount
+                });
+                TempData["DemoCreated"] = result.CreatedCount;
+                TempData["DemoUpdated"] = result.UpdatedCount;
+                TempData["DemoSkipped"] = result.SkippedCount;
+                TempData["DemoSessions"] = result.SessionsAffected;
+                TempData["DemoStudents"] = result.StudentsAffected;
+                TempData["DemoMode"] = mode.ToString();
+                if (mode == SIS.BLL.Services.DTOs.Attendance.DemoAttendanceMode.CustomCounts)
+                    TempData["DemoPattern"] = $"{presentCount ?? 0} Present · {absentCount ?? 0} Absent · {lateCount ?? 0} Late · {excusedCount ?? 0} Excused";
+                TempData["Success"] = result.Message;
+            }
+            catch (Refit.ApiException ex) { TempData["Error"] = ExtractError(ex); }
+            catch (Exception ex) { TempData["Error"] = ex.Message; }
+            return RedirectToAction("Detail", new { id = groupId, tab = "attendance" });
+        }
+
         // ── Online dərslər ──────────────────────────────────────────
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -275,16 +311,18 @@ namespace SIS.UI.Areas.Teacher.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateAnnouncement(int groupId, string title, string content)
         {
-            var dto = new CreateAnnouncementDto
+            try
             {
-                Title = title,
-                Content = content,
-                GroupId = groupId,
-                TargetType = SIS.Entities.Enums.AnnouncementTarget.Course,
-                IsGlobal = false
-            };
-            await _announcementApi.CreateAsync(dto);
-            TempData["Success"] = "Elan yayımlandı";
+                await _announcementApi.CreateGroupAsync(new SIS.BLL.Services.DTOs.Announcement.TeacherGroupAnnouncementDto
+                {
+                    GroupId = groupId,
+                    Title = title,
+                    Content = content
+                });
+                TempData["Success"] = "Elan yayımlandı";
+            }
+            catch (Refit.ApiException ex) { TempData["Error"] = ExtractError(ex); }
+            catch (Exception ex) { TempData["Error"] = ex.Message; }
             return RedirectToAction("Detail", new { id = groupId, tab = "announcements" });
         }
 

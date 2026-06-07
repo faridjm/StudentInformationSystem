@@ -1,12 +1,14 @@
 @using SIS.BLL.Services.DTOs.Enrollment
 @using SIS.BLL.Services.DTOs.Assessment
 @using SIS.BLL.Services.DTOs.Assignment
+@using SIS.BLL.Services.DTOs.Transcript
 @using SIS.Entities.Enums
 @{
     ViewData["Title"] = L["MyGrades"].Value;
     var enrollments = (List<EnrollmentListDto>)ViewBag.Enrollments;
     var submissionsMap = (Dictionary<int, IEnumerable<AssessmentSubmissionDto>>)ViewBag.SubmissionsPerEnrollment;
     var assignmentSubsMap = (Dictionary<int, IEnumerable<SubmissionDto>>)ViewBag.AssignmentSubsPerEnrollment;
+    var transcriptsMap = (Dictionary<int, TranscriptDto>)ViewBag.TranscriptsPerEnrollment;
 }
 
 <div style="margin-bottom:20px;">
@@ -23,38 +25,13 @@
 @foreach (var enrollment in enrollments)
 {
     var subs = submissionsMap.GetValueOrDefault(enrollment.Id, []).ToList();
-    var gradedSubs = subs.Where(s => s.IsGraded).ToList();
     var assignmentSubs = assignmentSubsMap.GetValueOrDefault(enrollment.Id, []).ToList();
-    var gradedAssignments = assignmentSubs.Where(s => s.IsGraded).ToList();
+    var transcript = transcriptsMap.GetValueOrDefault(enrollment.Id);
 
-    // ── OfficialGrade: çəkili ortalama (AssessmentSubmission-lardan) ──
-    // WeightPercent submission DTO-da yoxdur, sadə bal/maxBal faiz istifadə edəcəyik
-    // Əsl çəkili ortalama backend-də (UpdateGPAAsync) hesablanır
-    decimal officialSum = 0;
-    int officialCount = 0;
-    foreach (var s in gradedSubs)
-    {
-        if (s.MaxScore > 0)
-        {
-            officialSum += (s.Score ?? 0) / s.MaxScore * 100;
-            officialCount++;
-        }
-    }
-    var officialGrade = officialCount > 0 ? officialSum / officialCount : (decimal?)null;
+    // Vahid mənbə: transcript service (paneldə və PDF-də eyni)
+    var officialGrade = transcript != null ? (decimal?)transcript.OfficialGrade : null;
+    var hwAvg = transcript?.HomeworkAverage;
     var officialColor = officialGrade == null ? "var(--text-secondary)" : officialGrade >= 70 ? "#22c55e" : officialGrade >= 50 ? "#eab308" : "#ef4444";
-
-    // ── AssignmentAverage: ev tapşırıqları ortalaması ──
-    decimal hwSum = 0;
-    int hwCount = 0;
-    foreach (var s in gradedAssignments)
-    {
-        if (s.MaxScore > 0)
-        {
-            hwSum += (s.Score ?? 0) / s.MaxScore * 100;
-            hwCount++;
-        }
-    }
-    var hwAvg = hwCount > 0 ? hwSum / hwCount : (decimal?)null;
     var hwColor = hwAvg == null ? "var(--text-secondary)" : hwAvg >= 70 ? "#22c55e" : hwAvg >= 50 ? "#eab308" : "#ef4444";
 
     <div class="card" style="margin-bottom:20px;">
@@ -67,14 +44,14 @@
                 @if (officialGrade != null)
                 {
                     <div style="text-align:center;">
-                        <div style="font-size:20px; font-weight:800; color:@officialColor;">%@officialGrade.Value.ToString("F0")</div>
+                        <div style="font-size:20px; font-weight:800; color:@officialColor;">%@officialGrade.Value.ToString("F1")</div>
                         <div style="font-size:10px; color:var(--text-secondary);">@L["Score"]</div>
                     </div>
                 }
                 @if (hwAvg != null)
                 {
                     <div style="text-align:center;">
-                        <div style="font-size:16px; font-weight:600; color:@hwColor;">%@hwAvg.Value.ToString("F0")</div>
+                        <div style="font-size:16px; font-weight:600; color:@hwColor;">%@hwAvg.Value.ToString("F1")</div>
                         <div style="font-size:10px; color:var(--text-secondary);">@L["PDF_HomeworkAvg"]</div>
                     </div>
                 }
@@ -111,7 +88,7 @@
                                     else { <span style="color:var(--text-secondary);">—</span> }
                                 </td>
                                 <td>
-                                    @if (pct != null) { <span style="color:@scoreColor; font-weight:600;">%@pct.Value.ToString("F0")</span> }
+                                    @if (pct != null) { <span style="color:@scoreColor; font-weight:600;">%@pct.Value.ToString("F1")</span> }
                                 </td>
                                 <td>
                                     @if (s.IsGraded) { <span class="badge badge-success">@L["Grades"]</span> }
@@ -150,7 +127,7 @@
                                     else { <span style="color:var(--text-secondary);">—</span> }
                                 </td>
                                 <td>
-                                    @if (pct != null) { <span style="color:@scoreColor; font-weight:600;">%@pct.Value.ToString("F0")</span> }
+                                    @if (pct != null) { <span style="color:@scoreColor; font-weight:600;">%@pct.Value.ToString("F1")</span> }
                                 </td>
                                 <td>
                                     @if (s.IsGraded) { <span class="badge badge-success">@L["Grades"]</span> }

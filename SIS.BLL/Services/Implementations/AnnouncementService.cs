@@ -131,7 +131,8 @@ namespace SIS.BLL.Services.Implementations
             if (string.IsNullOrWhiteSpace(dto.Content))
                 throw new BadRequestException("Məzmun tələb olunur");
 
-            if (dto.TargetType == AnnouncementTarget.GroupStudents && !dto.GroupId.HasValue)
+            if ((dto.TargetType == AnnouncementTarget.GroupStudents || dto.TargetType == AnnouncementTarget.Course)
+                && !dto.GroupId.HasValue)
                 throw new BadRequestException("Qrup seçimi tələb olunur");
             if (dto.TargetType == AnnouncementTarget.SelectedUsers
                 && (dto.UserIds == null || dto.UserIds.Count == 0))
@@ -151,7 +152,8 @@ namespace SIS.BLL.Services.Implementations
                 AuthorId = authorId,
                 AttachmentUrl = dto.AttachmentUrl,
                 IsGlobal = dto.TargetType == AnnouncementTarget.All,
-                GroupId = dto.TargetType == AnnouncementTarget.GroupStudents ? dto.GroupId : null,
+                GroupId = (dto.TargetType == AnnouncementTarget.GroupStudents
+                          || dto.TargetType == AnnouncementTarget.Course) ? dto.GroupId : null,
                 SendEmail = dto.SendEmail,
                 CreatedAt = DateTime.UtcNow
             };
@@ -203,6 +205,38 @@ namespace SIS.BLL.Services.Implementations
             // 7. Audit
             await _audit.LogAsync("Create", "Announcement", announcement.Id.ToString(),
                 $"Admin elanı yaradıldı: '{announcement.Title}', target: {announcement.TargetType}, recipients: {recipientIds.Count}");
+        }
+
+        /// <summary>
+        /// Müəllim qrup elanı: sahiblik yoxlanılır, TargetType GroupStudents təyin olunur,
+        /// recipient resolution və notification mövcud axın üzrə baş verir.
+        /// </summary>
+        public async Task CreateTeacherGroupAnnouncementAsync(int groupId, string title, string content, string teacherUserId)
+        {
+            if (string.IsNullOrWhiteSpace(title))
+                throw new BadRequestException("Başlıq tələb olunur");
+            if (string.IsNullOrWhiteSpace(content))
+                throw new BadRequestException("Məzmun tələb olunur");
+
+            // Sahiblik: Teacher-i UserId-yə görə tap, sonra qrupun TeacherId ilə müqayisə et
+            var teacher = await _unitOfWork.Teachers.GetTeacherByUserIdAsync(teacherUserId)
+                ?? throw new UnauthorizedException("Müəllim profili tapılmadı");
+
+            var group = await _unitOfWork.Groups.GetByIdAsync(groupId)
+                ?? throw new NotFoundException("Qrup tapılmadı");
+
+            if (group.TeacherId != teacher.Id)
+                throw new UnauthorizedException("Bu qrupa elan göndərmək icazəniz yoxdur");
+
+            // Mövcud Create axınını istifadə edirik — TargetType-ı təhlükəsizcə təyin edib çağırırıq
+            await CreateAnnouncementAsync(new DTOs.Announcement.CreateAnnouncementDto
+            {
+                Title = title.Trim(),
+                Content = content,
+                TargetType = AnnouncementTarget.GroupStudents,
+                GroupId = groupId,
+                SendEmail = false
+            }, teacherUserId);
         }
 
         public async Task<IEnumerable<AnnouncementDto>> GetByGroupAsync(int groupId)

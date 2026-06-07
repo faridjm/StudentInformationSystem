@@ -18,6 +18,9 @@ namespace SIS.BLL.Services.Interfaces
         Task DeleteQuestionAsync(int quizId, int questionId);
         Task<IEnumerable<QuizResultDto>> GetResultsAsync(int quizId);
 
+        /// <summary>Tək cəhd üçün sual-sual detallı nəticə (Teacher-of-group və ya owning Student).</summary>
+        Task<QuizAttemptDetailDto?> GetAttemptDetailAsync(int attemptId, string requestingUserId);
+
         // Student — take
         Task<TakeQuizDto> StartAttemptAsync(int quizId, int enrollmentId);
         Task<QuizResultDto> SubmitAttemptAsync(SubmitQuizDto dto);

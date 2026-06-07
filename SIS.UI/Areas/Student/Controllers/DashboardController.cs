@@ -25,6 +25,15 @@ namespace SIS.UI.Areas.Student.Controllers
             _transcriptApi = transcriptApi;
         }
 
+        /// <summary>UI composition üçün enrollment + onun transcript snapshot-ı.
+        /// Yeni hesablama YOXDUR — yalnız mövcud transcript dəyərləri saxlanılır ki,
+        /// dashboard card-larında per-course attendance/grade/progress göstərə bilək.</summary>
+        public class EnrollmentCardVm
+        {
+            public SIS.BLL.Services.DTOs.Enrollment.EnrollmentListDto Enrollment { get; set; } = null!;
+            public SIS.BLL.Services.DTOs.Transcript.TranscriptDto? Transcript { get; set; }
+        }
+
         public async Task<IActionResult> Index()
         {
             try
@@ -47,20 +56,28 @@ namespace SIS.UI.Areas.Student.Controllers
                 int pendingAssignments = 0;
                 int eligibleCount = 0; int transcriptCount = 0;
 
+                // UI composition: per-enrollment transcript snapshot (eyni hesablama, sadəcə saxlanılır).
+                var cards = new List<EnrollmentCardVm>();
+
                 foreach (var e in enrollments)
                 {
+                    SIS.BLL.Services.DTOs.Transcript.TranscriptDto? t = null;
                     try
                     {
-                        var t = await _transcriptApi.GetAsync(e.Id);
-                        attSum += t.AttendancePercentage; attN++;
+                        t = await _transcriptApi.GetAsync(e.Id);
+                        var hasAtt = (t.PresentCount + t.LateCount + t.AbsentCount) > 0;
+                        if (hasAtt) { attSum += t.AttendancePercentage; attN++; }
                         gradeSum += t.OfficialGrade; gradeN++;
                         if (t.CertificateEligible) eligibleCount++;
                         transcriptCount++;
                         pendingAssignments += t.HomeworkAssignments.Count(h => !h.IsSubmitted);
                     }
                     catch { /* bu enrollment üçün transcript hazır deyil */ }
+
+                    cards.Add(new EnrollmentCardVm { Enrollment = e, Transcript = t });
                 }
 
+                ViewBag.EnrollmentCards = cards.Take(5).ToList();
                 ViewBag.AttendancePct = attN > 0 ? (double?)(attSum / attN) : null;
                 ViewBag.OfficialGrade = gradeN > 0 ? (decimal?)(gradeSum / gradeN) : null;
                 ViewBag.PendingAssignments = pendingAssignments;

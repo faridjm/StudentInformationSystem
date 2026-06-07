@@ -7,18 +7,39 @@
 <div class="pub-card">
     <div class="pub-imgph pub-grad-@grad">
         <i class="fas @icon"></i>
-        @if (!string.IsNullOrEmpty(Model.DepartmentName)) { <span class="tag">@Model.DepartmentName</span> }
+        @if (!string.IsNullOrEmpty(Model.DepartmentName))
+        {
+            <span class="tag">@Model.DepartmentName</span>
+        }
     </div>
     <div class="pub-card-body">
+        @if (Model.UpcomingGroupCount > 0)
+        {
+            <span class="pub-chip accent" style="margin-bottom:10px;">
+                <i class="fas fa-circle" style="font-size:7px;"></i> @Model.UpcomingGroupCount açıq qrup
+            </span>
+        }
+        else
+        {
+            <span class="pub-chip neutral" style="margin-bottom:10px;">
+                <i class="fas fa-clock"></i> Tezliklə
+            </span>
+        }
         <h3>@Model.Name</h3>
-        <div class="desc">@(string.IsNullOrEmpty(Model.ShortDescription) ? "Bu proqram üçün təsvir tezliklə əlavə olunacaq." : Model.ShortDescription)</div>
+        <div class="desc">
+            @(string.IsNullOrEmpty(Model.ShortDescription)
+                ? "Bu proqram strukturlaşdırılmış kurikulum, praktiki layihələr və mentor dəstəyi üzərində qurulub."
+                : Model.ShortDescription)
+        </div>
         <div class="pub-card-meta">
             @if (!string.IsNullOrEmpty(Model.Level)) { <span><i class="fas fa-signal"></i> @Model.Level</span> }
-            @if (Model.TotalSessions > 0) { <span><i class="fas fa-list-ol"></i> @Model.TotalSessions dərs</span> }
-            <span><i class="fas fa-users"></i> @Model.UpcomingGroupCount açıq qrup</span>
+            @if (Model.TotalSessions > 0)            { <span><i class="fas fa-list-ol"></i> @Model.TotalSessions dərs</span> }
+            @if (Model.TotalHours > 0)               { <span><i class="fas fa-clock"></i> @Model.TotalHours saat</span> }
         </div>
     </div>
     <div class="pub-card-foot">
-        <a href="/Public/CourseDetail/@Model.Id" class="pub-btn pub-btn-primary" style="width:100%; justify-content:center;">Ətraflı bax <i class="fas fa-arrow-right"></i></a>
+        <a href="/Public/CourseDetail/@Model.Id" class="pub-btn pub-btn-primary pub-btn-block">
+            Ətraflı bax <i class="fas fa-arrow-right"></i>
+        </a>
     </div>
 </div>

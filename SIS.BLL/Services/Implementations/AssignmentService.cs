@@ -60,12 +60,23 @@ namespace SIS.BLL.Services.Implementations
 
             // Qrupdakı tələbələrə bildiriş
             var enrolled = await _unitOfWork.Enrollments.GetByGroupAsync(dto.GroupId);
-            var studentUserIds = enrolled
-                .Where(e => !e.IsDeleted && e.Student != null && e.Student.AppUserId != null)
-                .Select(e => e.Student.AppUserId);
+            var enrolledList = enrolled.Where(e => !e.IsDeleted && e.Student != null && e.Student.AppUserId != null).ToList();
+            var studentUserIds = enrolledList.Select(e => e.Student.AppUserId);
             await _notifications.SendToManyAsync(studentUserIds,
                 "Yeni tapşırıq", $"\"{assignment.Title}\" tapşırığı əlavə olundu",
                 NotificationType.AssignmentCreated, "/Student/Assignments");
+
+            // Email — fail olsa main əməliyyatı pozma
+            var group = await _unitOfWork.Groups.GetGroupWithDetailsAsync(dto.GroupId);
+            var courseName = group?.Course?.Name ?? "";
+            var groupName = group?.Name ?? "";
+            foreach (var e in enrolledList)
+            {
+                var email = e.Student?.AppUser?.Email;
+                var name = e.Student?.AppUser?.FullName ?? "";
+                if (string.IsNullOrEmpty(email)) continue;
+                _ = _emailService.SendAssignmentCreatedAsync(email, name, assignment.Title, courseName, groupName, assignment.DueDate, assignment.Description);
+            }
 
             return MapToDto(assignment);
         }

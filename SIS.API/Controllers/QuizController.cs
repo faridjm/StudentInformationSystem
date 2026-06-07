@@ -53,6 +53,16 @@ namespace SIS.API.Controllers
         public async Task<IActionResult> GetResults(int id)
             => Ok(await _service.GetResultsAsync(id));
 
+        /// <summary>Tək cəhd üçün sual-sual detallı nəticə (Teacher və ya owning Student).</summary>
+        [HttpGet("attempts/{attemptId}/detail")]
+        public async Task<IActionResult> GetAttemptDetail(int attemptId)
+        {
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value
+                ?? throw new UnauthorizedAccessException();
+            var dto = await _service.GetAttemptDetailAsync(attemptId, userId);
+            return dto == null ? NotFound() : Ok(dto);
+        }
+
         // ── Teacher: manage ────────────────────────────────────────────
         [HttpPost]
         [Authorize(Roles = TeacherRoles)]

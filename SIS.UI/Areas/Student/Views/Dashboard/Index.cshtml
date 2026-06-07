@@ -1,135 +1,708 @@
-﻿@{
+@using SIS.Entities.Enums
+@inject SIS.UI.Time.GlobalSimulationState SimState
+@{
     ViewData["Title"] = L["Dashboard"].Value;
-    var student = ViewBag.Student as SIS.BLL.Services.DTOs.Student.StudentDetailDto;
-    var enrollments = ViewBag.Enrollments as IEnumerable<SIS.BLL.Services.DTOs.Enrollment.EnrollmentListDto>;
-    var announcements = ViewBag.Announcements as IEnumerable<SIS.BLL.Services.DTOs.Announcement.AnnouncementDto>;
 
-    var attendancePct = ViewBag.AttendancePct as double?;
-    var officialGrade = ViewBag.OfficialGrade as decimal?;
+    var student        = ViewBag.Student        as SIS.BLL.Services.DTOs.Student.StudentDetailDto;
+    var enrollments    = ViewBag.Enrollments    as IEnumerable<SIS.BLL.Services.DTOs.Enrollment.EnrollmentListDto>;
+    var announcements  = ViewBag.Announcements  as IEnumerable<SIS.BLL.Services.DTOs.Announcement.AnnouncementDto>;
+    var enrollCards    = ViewBag.EnrollmentCards as List<SIS.UI.Areas.Student.Controllers.DashboardController.EnrollmentCardVm>
+                         ?? new List<SIS.UI.Areas.Student.Controllers.DashboardController.EnrollmentCardVm>();
+
+    var attendancePct    = ViewBag.AttendancePct  as double?;
+    var officialGrade    = ViewBag.OfficialGrade  as decimal?;
     int pendingAssignments = ViewBag.PendingAssignments ?? 0;
-    int certEligible = ViewBag.CertificateEligibleCount ?? 0;
-    int certTotal = ViewBag.CertificateTotal ?? 0;
+    int unreadCount        = ViewBag.UnreadCount ?? 0;
+    int certEligible       = ViewBag.CertificateEligibleCount ?? 0;
+    int certTotal          = ViewBag.CertificateTotal ?? 0;
+    int activeCourses      = ViewBag.ActiveCourses ?? 0;
+
+    var effectiveDate = SimState.IsActive
+        ? SimState.DateDisplay
+        : DateTime.Now.ToString("dd MMMM yyyy, dddd");
+
+    string firstName = (student?.FullName ?? User.Identity?.Name ?? "Tələbə")
+        .Split(' ').FirstOrDefault() ?? "Tələbə";
+    var hour = DateTime.Now.Hour;
+    string greet = hour < 6 ? "Xoş gecələr"
+                 : hour < 12 ? "Sabahınız xeyir"
+                 : hour < 18 ? "Günortanız xeyir"
+                              : "Axşamınız xeyir";
+
+    // Certificate status
+    string certLabel; string certClass; string certHelp;
+    if (certTotal == 0)
+    {
+        certLabel = "Hələ yox";
+        certClass = "sd-cert-pending";
+        certHelp  = "Davamiyyət və final nəticə tamamlandıqdan sonra hesablanacaq.";
+    }
+    else if (certEligible == certTotal)
+    {
+        certLabel = "Uyğun";
+        certClass = "sd-cert-ok";
+        certHelp  = $"{certEligible}/{certTotal} kurs sertifikat üçün uyğundur.";
+    }
+    else if (certEligible > 0)
+    {
+        certLabel = "Qismən";
+        certClass = "sd-cert-partial";
+        certHelp  = $"{certEligible}/{certTotal} kurs uyğundur — qalanı tamamlanmalıdır.";
+    }
+    else
+    {
+        certLabel = "Gözləyir";
+        certClass = "sd-cert-pending";
+        certHelp  = "Tələblər tam yerinə yetirilməyib.";
+    }
+
+    string DeliveryLabel(DeliveryMode m) => m switch
+    {
+        DeliveryMode.Online   => "Online",
+        DeliveryMode.Hybrid   => "Hibrid",
+        _ => "Əyani"
+    };
+    string DeliveryClass(DeliveryMode m) => m switch
+    {
+        DeliveryMode.Online   => "sd-mode-online",
+        DeliveryMode.Hybrid   => "sd-mode-hybrid",
+        _ => "sd-mode-inperson"
+    };
+    string DeliveryIcon(DeliveryMode m) => m switch
+    {
+        DeliveryMode.Online   => "fa-wifi",
+        DeliveryMode.Hybrid   => "fa-layer-group",
+        _ => "fa-chalkboard"
+    };
+
+    string StatusLabel(EnrollmentStatus s) => s switch
+    {
+        EnrollmentStatus.Active    => L["Active"].Value,
+        EnrollmentStatus.Completed => "Tamamlanıb",
+        EnrollmentStatus.Dropped   => "Tərk",
+        _ => s.ToString()
+    };
+    string StatusClass(EnrollmentStatus s) => s switch
+    {
+        EnrollmentStatus.Completed => "sd-st-completed",
+        EnrollmentStatus.Dropped   => "sd-st-dropped",
+        _ => "sd-st-active"
+    };
+
+    // Smart short content for announcements (strip + truncate)
+    string SafePreview(string? s, int max)
+    {
+        if (string.IsNullOrWhiteSpace(s)) return "";
+        var text = System.Text.RegularExpressions.Regex.Replace(s, "<.*?>", " ");
+        text = System.Text.RegularExpressions.Regex.Replace(text, @"\s+", " ").Trim();
+        return text.Length <= max ? text : text.Substring(0, max).TrimEnd() + "…";
+    }
+
+    int totalActions = pendingAssignments + unreadCount;
 }
 
-<div style="margin-bottom:24px; display:flex; justify-content:space-between; align-items:flex-start; gap:12px; flex-wrap:wrap;">
-    <div>
-        <h2 style="font-size:20px; font-weight:700;">
-            @L["Welcome"], @(student?.FullName ?? User.Identity?.Name)! 🎓
-        </h2>
-        <p style="color:var(--text-muted); font-size:14px; margin-top:2px;">Keep learning, keep growing!</p>
-    </div>
-    <span class="badge badge-primary" style="font-size:12px;"><i class="fas fa-calendar-day"></i> @DateTime.Now.ToString("dd MMMM yyyy")</span>
-</div>
+@* ============================================================
+   Scoped dashboard styles (yalnız bu səhifə)
+   Student panel emerald accent saxlanılır + sakit balanslı layout
+   ============================================================ *@
+<style>
+    .sd-page { display: flex; flex-direction: column; gap: 22px; }
 
-<div class="workspace-grid" style="margin-bottom:24px;">
-    <div class="stat-card card-accent">
-        <div class="stat-icon"><i class="fas fa-book"></i></div>
-        <div>
-            <div class="stat-value">@ViewBag.ActiveCourses</div>
-            <div class="stat-label">@L["ActiveCourses"]</div>
-        </div>
-    </div>
-    <div class="stat-card card-accent">
-        <div class="stat-icon"><i class="fas fa-user-check"></i></div>
-        <div>
-            <div class="stat-value">@(attendancePct.HasValue ? attendancePct.Value.ToString("F0") + "%" : "—")</div>
-            <div class="stat-label">@L["Attendance"] %</div>
-        </div>
-    </div>
-    <div class="stat-card card-accent">
-        <div class="stat-icon"><i class="fas fa-percent"></i></div>
-        <div>
-            <div class="stat-value">@(officialGrade.HasValue ? officialGrade.Value.ToString("F1") + "%" : "—")</div>
-            <div class="stat-label">@L["OfficialGrade"] %</div>
-        </div>
-    </div>
-    <div class="stat-card card-accent">
-        <div class="stat-icon"><i class="fas fa-graduation-cap"></i></div>
-        <div>
-            <div class="stat-value">@(student?.CurrentGPA.ToString("F2") ?? "0.00")</div>
-            <div class="stat-label">GPA</div>
-        </div>
-    </div>
-    <div class="stat-card card-accent">
-        <div class="stat-icon"><i class="fas fa-file-pen"></i></div>
-        <div>
-            <div class="stat-value">@pendingAssignments</div>
-            <div class="stat-label">@L["PendingAssignments"]</div>
-        </div>
-    </div>
-    <div class="stat-card card-accent">
-        <div class="stat-icon"><i class="fas fa-certificate"></i></div>
-        <div>
-            <div class="stat-value" style="font-size:18px;">
-                @if (certTotal > 0)
+    /* ===== HEADER ===== */
+    .sd-header {
+        display: flex; justify-content: space-between; align-items: center;
+        gap: 14px; flex-wrap: wrap;
+    }
+    .sd-greet { display: flex; flex-direction: column; gap: 4px; }
+    .sd-greet .eyebrow {
+        font-size: 11.5px; font-weight: 700; letter-spacing: .9px;
+        text-transform: uppercase; color: var(--accent);
+    }
+    .sd-greet h1 { font-size: 24px; font-weight: 800; letter-spacing: -.4px; line-height: 1.15; }
+    .sd-greet .summary { color: var(--text-secondary); font-size: 13.5px; margin-top: 2px; }
+    .sd-greet .summary strong { color: var(--text-main); }
+
+    .sd-head-badges { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .sd-pill {
+        display: inline-flex; align-items: center; gap: 7px;
+        background: var(--card-bg, #fff); border: 1px solid var(--border);
+        padding: 7px 12px; border-radius: 999px;
+        font-size: 12.5px; font-weight: 600; color: var(--text-secondary);
+    }
+    .sd-pill i { color: var(--accent); font-size: 12px; }
+    .sd-pill.sim { background: rgba(245,158,11,.10); border-color: rgba(245,158,11,.30); color: #B45309; }
+    .sd-pill.sim i { color: #D97706; }
+    .sd-pill.live { background: rgba(16,185,129,.10); border-color: rgba(16,185,129,.30); color: #047857; }
+    .sd-pill.live .live-dot {
+        width: 7px; height: 7px; border-radius: 50%; background: #10B981;
+        box-shadow: 0 0 0 3px rgba(16,185,129,.25);
+    }
+
+    /* ===== PRIMARY KPI CARDS ===== */
+    .sd-kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .sd-kpi {
+        position: relative; padding: 18px; border-radius: 14px;
+        background: var(--card-bg, #fff); border: 1px solid var(--border);
+        display: flex; align-items: center; gap: 14px; min-height: 92px;
+        transition: transform .15s, border-color .15s, box-shadow .15s;
+        text-decoration: none; color: inherit;
+    }
+    .sd-kpi:hover { transform: translateY(-2px); border-color: var(--accent); box-shadow: 0 8px 20px rgba(15,23,42,.06); }
+    .sd-kpi .k-ico {
+        width: 48px; height: 48px; border-radius: 12px; flex: none;
+        display: inline-flex; align-items: center; justify-content: center; font-size: 20px;
+    }
+    .sd-kpi .k-body { display: flex; flex-direction: column; min-width: 0; }
+    .sd-kpi .k-num {
+        font-size: 26px; font-weight: 800; letter-spacing: -.6px; line-height: 1.1; color: var(--text-main);
+    }
+    .sd-kpi .k-num.muted { color: var(--text-secondary); }
+    .sd-kpi .k-lbl {
+        font-size: 12.5px; color: var(--text-secondary); margin-top: 2px;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .sd-kpi .k-help { font-size: 11px; color: var(--text-secondary); opacity: .8; margin-top: 2px; }
+    .ki-emerald { background: rgba(16,185,129,.12); color: #059669; }
+    .ki-teal    { background: rgba(20,184,166,.12); color: #0D9488; }
+    .ki-indigo  { background: rgba(79,70,229,.12);  color: #4F46E5; }
+    .ki-amber   { background: rgba(245,158,11,.14); color: #B45309; }
+    .ki-rose    { background: rgba(239,68,68,.12);  color: #DC2626; }
+    .ki-violet  { background: rgba(124,58,237,.12); color: #7C3AED; }
+
+    /* Tiny progress meter inside KPI */
+    .sd-meter { width: 100%; height: 5px; border-radius: 999px; background: var(--bg-hover); margin-top: 8px; overflow: hidden; }
+    .sd-meter > span { display: block; height: 100%; border-radius: 999px;
+        background: linear-gradient(90deg, var(--accent), #34D399); }
+
+    /* ===== SECONDARY KPI ROW ===== */
+    .sd-sec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .sd-cert {
+        background: var(--card-bg, #fff); border: 1px solid var(--border); border-radius: 14px;
+        padding: 18px; display: flex; align-items: center; gap: 16px;
+    }
+    .sd-cert .c-ico {
+        width: 52px; height: 52px; border-radius: 14px; flex: none;
+        display: inline-flex; align-items: center; justify-content: center; font-size: 22px;
+    }
+    .sd-cert .c-body { flex: 1; min-width: 0; }
+    .sd-cert .c-lbl { font-size: 12.5px; color: var(--text-secondary); margin-bottom: 3px; }
+    .sd-cert .c-status { font-size: 18px; font-weight: 800; letter-spacing: -.2px; }
+    .sd-cert .c-help { font-size: 12px; color: var(--text-secondary); margin-top: 4px; line-height: 1.4; }
+    .sd-cert-ok      .c-ico { background: rgba(16,185,129,.12); color: #047857; }
+    .sd-cert-ok      .c-status { color: #047857; }
+    .sd-cert-partial .c-ico { background: rgba(245,158,11,.14); color: #B45309; }
+    .sd-cert-partial .c-status { color: #B45309; }
+    .sd-cert-pending .c-ico { background: rgba(100,116,139,.12); color: #475569; }
+    .sd-cert-pending .c-status { color: #475569; }
+
+    /* ===== MAIN GRID ===== */
+    .sd-grid-2 { display: grid; grid-template-columns: 1.55fr 1fr; gap: 18px; align-items: start; }
+
+    /* ===== SECTION CARDS ===== */
+    .sd-sec {
+        background: var(--card-bg, #fff); border: 1px solid var(--border);
+        border-radius: 14px; overflow: hidden;
+    }
+    .sd-sec-head {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 14px 18px; border-bottom: 1px solid var(--border); gap: 10px;
+    }
+    .sd-sec-head .left { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .sd-sec-head .ico {
+        width: 32px; height: 32px; border-radius: 9px;
+        background: var(--accent-soft); color: var(--accent);
+        display: inline-flex; align-items: center; justify-content: center; font-size: 14px;
+    }
+    .sd-sec-head h3 { font-size: 14.5px; font-weight: 700; letter-spacing: -.2px; }
+    .sd-sec-head .sub { font-size: 11.5px; color: var(--text-secondary); margin-left: 4px; }
+    .sd-sec-head .right a { font-size: 12.5px; color: var(--accent); text-decoration: none; font-weight: 600; }
+    .sd-sec-body { padding: 14px 18px; }
+    .sd-sec-body.tight { padding: 0; }
+
+    /* ===== COURSE CARDS (My Courses) ===== */
+    .sd-course {
+        padding: 16px 18px; border-bottom: 1px solid var(--border);
+        display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: start;
+        transition: background .15s;
+    }
+    .sd-course:last-child { border-bottom: none; }
+    .sd-course:hover { background: var(--bg-hover); }
+    .sd-course .c-main { min-width: 0; }
+    .sd-course .c-title {
+        font-weight: 700; font-size: 14.5px; letter-spacing: -.2px;
+        display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    }
+    .sd-course .c-title .group { font-weight: 500; color: var(--text-secondary); font-size: 13px; }
+    .sd-course .c-meta { font-size: 12px; color: var(--text-secondary); margin-top: 6px;
+        display: flex; gap: 14px; flex-wrap: wrap; }
+    .sd-course .c-meta i { color: var(--accent); margin-right: 4px; }
+    .sd-course .c-stats {
+        display: flex; gap: 12px; margin-top: 12px; flex-wrap: wrap;
+    }
+    .sd-stat-chip {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 5px 10px; border-radius: 999px;
+        background: var(--bg-hover); color: var(--text-main);
+        font-size: 11.5px; font-weight: 600;
+    }
+    .sd-stat-chip.muted { color: var(--text-secondary); }
+    .sd-stat-chip i { font-size: 10px; color: var(--accent); }
+    .sd-stat-chip.warn { background: rgba(245,158,11,.12); color: #B45309; }
+    .sd-stat-chip.warn i { color: #D97706; }
+    .sd-stat-chip.danger { background: rgba(239,68,68,.10); color: #DC2626; }
+    .sd-stat-chip.danger i { color: #DC2626; }
+    .sd-stat-chip.ok { background: rgba(16,185,129,.12); color: #047857; }
+    .sd-stat-chip.ok i { color: #059669; }
+
+    .sd-mode {
+        display: inline-flex; align-items: center; gap: 5px;
+        padding: 3px 9px; border-radius: 999px; font-size: 10.5px; font-weight: 700;
+        text-transform: uppercase; letter-spacing: .4px;
+    }
+    .sd-mode-online   { background: rgba(14,165,233,.12); color: #0369A1; }
+    .sd-mode-hybrid   { background: rgba(124,58,237,.12); color: #6D28D9; }
+    .sd-mode-inperson { background: rgba(16,185,129,.12); color: #047857; }
+
+    .sd-status {
+        display: inline-flex; align-items: center; gap: 5px;
+        padding: 3px 9px; border-radius: 999px; font-size: 10.5px; font-weight: 700;
+        text-transform: uppercase; letter-spacing: .4px;
+    }
+    .sd-st-active    { background: rgba(16,185,129,.12); color: #047857; }
+    .sd-st-completed { background: rgba(79,70,229,.12);  color: #4338CA; }
+    .sd-st-dropped   { background: rgba(100,116,139,.12); color: #475569; }
+
+    .sd-course .c-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+    .sd-course .c-actions .row { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+
+    /* Progress mini bar in course card */
+    .sd-mini-progress {
+        width: 130px; height: 6px; border-radius: 999px; background: var(--bg-hover);
+        margin-top: 8px; overflow: hidden;
+    }
+    .sd-mini-progress > span {
+        display: block; height: 100%; border-radius: 999px;
+        background: linear-gradient(90deg, var(--accent), #34D399);
+    }
+    .sd-mini-progress.warn > span { background: linear-gradient(90deg, #F59E0B, #FCD34D); }
+    .sd-mini-progress.danger > span { background: linear-gradient(90deg, #EF4444, #FCA5A5); }
+
+    /* ===== NEXT ACTIONS PANEL ===== */
+    .sd-next {
+        background: linear-gradient(135deg, var(--accent-soft), var(--bg-hover));
+        border: 1px solid var(--border); border-radius: 14px; padding: 18px;
+    }
+    .sd-next h3 {
+        font-size: 14px; font-weight: 700; letter-spacing: -.2px;
+        display: flex; align-items: center; gap: 8px; margin-bottom: 12px;
+    }
+    .sd-next h3 i { color: var(--accent); }
+    .sd-action {
+        display: flex; align-items: center; gap: 12px;
+        padding: 12px 14px; background: #fff; border: 1px solid var(--border);
+        border-radius: 12px; text-decoration: none; color: inherit;
+        margin-bottom: 8px; transition: border-color .15s, transform .15s;
+    }
+    .sd-action:hover { border-color: var(--accent); transform: translateY(-1px); }
+    .sd-action:last-child { margin-bottom: 0; }
+    .sd-action .a-ico {
+        width: 38px; height: 38px; border-radius: 10px; flex: none;
+        display: inline-flex; align-items: center; justify-content: center; font-size: 15px;
+    }
+    .sd-action .a-body { flex: 1; min-width: 0; }
+    .sd-action .a-title { font-size: 13.5px; font-weight: 700; color: var(--text-main); }
+    .sd-action .a-sub { font-size: 11.5px; color: var(--text-secondary); margin-top: 1px; }
+    .sd-action .chev { color: var(--text-secondary); opacity: .55; font-size: 11px; }
+
+    /* ===== ANNOUNCEMENTS ===== */
+    .sd-ann {
+        display: block; padding: 14px 18px; text-decoration: none; color: inherit;
+        border-bottom: 1px solid var(--border); transition: background .15s;
+    }
+    .sd-ann:last-child { border-bottom: none; }
+    .sd-ann:hover { background: var(--bg-hover); }
+    .sd-ann.unread { background: var(--accent-soft); }
+    .sd-ann .a-head {
+        display: flex; justify-content: space-between; align-items: baseline; gap: 8px;
+    }
+    .sd-ann .a-title {
+        font-size: 13.5px; font-weight: 700; color: var(--text-main);
+        display: flex; align-items: center; gap: 6px; min-width: 0;
+    }
+    .sd-ann .a-title .udot {
+        width: 7px; height: 7px; border-radius: 50%; background: var(--accent); flex: none;
+    }
+    .sd-ann .a-title .ttext {
+        overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .sd-ann .a-date { font-size: 11px; color: var(--text-secondary); white-space: nowrap; flex: none; }
+    .sd-ann .a-preview {
+        font-size: 12.5px; color: var(--text-secondary); margin-top: 4px; line-height: 1.5;
+        overflow: hidden; text-overflow: ellipsis;
+        display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    }
+    .sd-ann .a-author {
+        font-size: 11px; color: var(--text-secondary); margin-top: 6px;
+        display: flex; align-items: center; gap: 6px;
+    }
+    .sd-ann .a-author i { font-size: 10px; opacity: .7; }
+    .sd-sec .seeall {
+        display: block; text-align: center; padding: 11px;
+        font-size: 12.5px; color: var(--accent); text-decoration: none; font-weight: 600;
+        border-top: 1px solid var(--border);
+    }
+    .sd-sec .seeall:hover { background: var(--bg-hover); }
+
+    /* ===== EMPTY ===== */
+    .sd-empty {
+        padding: 28px 18px; text-align: center; color: var(--text-secondary);
+        display: flex; flex-direction: column; align-items: center; gap: 6px;
+    }
+    .sd-empty i { font-size: 24px; opacity: .35; }
+    .sd-empty p { font-size: 13px; }
+
+    /* ===== RESPONSIVE ===== */
+    @@media (max-width: 1180px) {
+        .sd-kpi-grid { grid-template-columns: repeat(2, 1fr); }
+        .sd-grid-2 { grid-template-columns: 1fr; }
+    }
+    @@media (max-width: 700px) {
+        .sd-sec-grid { grid-template-columns: 1fr; }
+        .sd-course { grid-template-columns: 1fr; }
+        .sd-course .c-actions { align-items: flex-start; }
+    }
+    @@media (max-width: 480px) {
+        .sd-kpi-grid { grid-template-columns: 1fr 1fr; }
+    }
+</style>
+
+<div class="sd-page">
+
+    @* ============== HEADER ============== *@
+    <div class="sd-header">
+        <div class="sd-greet">
+            <span class="eyebrow">@L["Dashboard"]</span>
+            <h1>@greet, @firstName 🎓</h1>
+            <div class="summary">
+                @if (activeCourses > 0)
                 {
-                    <span class="badge @(certEligible > 0 ? "badge-success" : "badge-warning")">@certEligible / @certTotal @L["Eligible"]</span>
+                    <text><strong>@activeCourses</strong> aktiv kurs</text>
                 }
-                else { <span style="color:var(--text-muted);">—</span> }
+                else
+                {
+                    <text>Hələ aktiv kursunuz yoxdur</text>
+                }
+                @if (totalActions > 0)
+                {
+                    <text> · <strong>@totalActions</strong> iş diqqətinizi gözləyir</text>
+                }
+                else
+                {
+                    <text> · gözləyən iş yoxdur — gözəl iş! ✨</text>
+                }
             </div>
-            <div class="stat-label">@L["CertificateStatus"]</div>
         </div>
-    </div>
-</div>
-
-<div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
-    <div class="card">
-        <div class="card-header">
-            <span><i class="fas fa-book" style="margin-right:8px;"></i>@L["MyCourses"]</span>
-            <a href="/Student/Courses" class="btn btn-primary btn-sm">@L["ViewAll"]</a>
-        </div>
-        <div style="overflow-x:auto;">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>@L["Course"]</th>
-                        <th>@L["Teacher"]</th>
-                        <th>@L["Status"]</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (enrollments == null || !enrollments.Any())
-                    {
-                        <tr><td colspan="3"><div class="empty-state" style="padding:24px;"><i class="fas fa-book-open"></i><p>Hələ aktiv kursunuz yoxdur</p></div></td></tr>
-                    }
-                    else
-                    {
-                        @foreach (var e in enrollments)
-                        {
-                            <tr>
-                                <td>
-                                    <div style="font-weight:600;">@e.CourseName</div>
-                                </td>
-                                <td style="color:var(--text-secondary); font-size:13px;">@e.TeacherName</td>
-                                <td><span class="badge badge-success">@L["Active"]</span></td>
-                            </tr>
-                        }
-                    }
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <div class="card">
-        <div class="card-header">
-            <span><i class="fas fa-bullhorn" style="margin-right:8px;"></i>@L["Announcements"]</span>
-            <a href="/Student/Announcements" class="btn btn-primary btn-sm">@L["ViewAll"]</a>
-        </div>
-        <div class="card-body">
-            @if (announcements != null && announcements.Any())
+        <div class="sd-head-badges">
+            <span class="sd-pill"><i class="fas fa-calendar-day"></i> @effectiveDate</span>
+            @if (SimState.IsActive)
             {
-                @foreach (var a in announcements)
-                {
-                    <div style="padding:10px 0; border-bottom:1px solid var(--border);">
-                        <div style="font-weight:500; font-size:14px;">@a.Title</div>
-                        <div style="font-size:12px; color:var(--text-secondary);">@a.CreatedAt.ToString("dd.MM.yyyy")</div>
-                    </div>
-                }
+                <span class="sd-pill sim"><i class="fas fa-clock-rotate-left"></i> Simulyasiya</span>
             }
             else
             {
-                <p style="color:var(--text-secondary); text-align:center;">@L["NoAnnouncements"]</p>
+                <span class="sd-pill live"><span class="live-dot"></span> Canlı</span>
             }
         </div>
+    </div>
+
+    @* ============== PRIMARY KPI (4) ============== *@
+    <div class="sd-kpi-grid">
+        <a class="sd-kpi" href="/Student/Courses">
+            <div class="k-ico ki-emerald"><i class="fas fa-book-open"></i></div>
+            <div class="k-body">
+                <div class="k-num">@activeCourses</div>
+                <div class="k-lbl">@L["ActiveCourses"]</div>
+            </div>
+        </a>
+        <a class="sd-kpi" href="/Student/Schedule" title="@L["Attendance"] %">
+            <div class="k-ico ki-teal"><i class="fas fa-user-check"></i></div>
+            <div class="k-body" style="flex:1;">
+                @if (attendancePct.HasValue)
+                {
+                    <div class="k-num">@attendancePct.Value.ToString("0.#")<span style="font-size:16px; font-weight:700;">%</span></div>
+                    <div class="k-lbl">@L["Attendance"] %</div>
+                    <div class="sd-meter"><span style="width:@(Math.Min(100, Math.Max(0, attendancePct.Value)).ToString("0.#", System.Globalization.CultureInfo.InvariantCulture))%;"></span></div>
+                }
+                else
+                {
+                    <div class="k-num muted">—</div>
+                    <div class="k-lbl">@L["Attendance"] %</div>
+                    <div class="k-help">Davamiyyət hələ qeyd olunmayıb</div>
+                }
+            </div>
+        </a>
+        <a class="sd-kpi" href="/Student/Grades">
+            <div class="k-ico ki-indigo"><i class="fas fa-percent"></i></div>
+            <div class="k-body" style="flex:1;">
+                @if (officialGrade.HasValue)
+                {
+                    <div class="k-num">@officialGrade.Value.ToString("0.#")<span style="font-size:16px; font-weight:700;">%</span></div>
+                    <div class="k-lbl">@L["OfficialGrade"] %</div>
+                    <div class="sd-meter"><span style="width:@(Math.Min(100, Math.Max(0, (double)officialGrade.Value)).ToString("0.#", System.Globalization.CultureInfo.InvariantCulture))%;"></span></div>
+                }
+                else
+                {
+                    <div class="k-num muted">—</div>
+                    <div class="k-lbl">@L["OfficialGrade"] %</div>
+                    <div class="k-help">Qiymətləndirmə hələ yoxdur</div>
+                }
+            </div>
+        </a>
+        <a class="sd-kpi" href="/Student/Grades">
+            <div class="k-ico ki-violet"><i class="fas fa-graduation-cap"></i></div>
+            <div class="k-body">
+                <div class="k-num">@(student?.CurrentGPA.ToString("F2") ?? "0.00")</div>
+                <div class="k-lbl">GPA</div>
+            </div>
+        </a>
+    </div>
+
+    @* ============== SECONDARY KPI (2) ============== *@
+    <div class="sd-sec-grid">
+        <a class="sd-kpi" href="/Student/Assignments" style="min-height:88px;">
+            <div class="k-ico ki-amber"><i class="fas fa-file-pen"></i></div>
+            <div class="k-body" style="flex:1;">
+                <div class="k-num">@pendingAssignments</div>
+                <div class="k-lbl">@L["PendingAssignments"]</div>
+                @if (pendingAssignments == 0)
+                {
+                    <div class="k-help">Hazırda gözləyən tapşırıq yoxdur</div>
+                }
+            </div>
+        </a>
+        <div class="sd-cert @certClass">
+            <div class="c-ico"><i class="fas fa-certificate"></i></div>
+            <div class="c-body">
+                <div class="c-lbl">@L["CertificateStatus"]</div>
+                <div class="c-status">@certLabel</div>
+                <div class="c-help">@certHelp</div>
+            </div>
+        </div>
+    </div>
+
+    @* ============== MAIN GRID (Courses | Next Actions) ============== *@
+    <div class="sd-grid-2">
+
+        @* === MY COURSES === *@
+        <section class="sd-sec">
+            <div class="sd-sec-head">
+                <div class="left">
+                    <span class="ico"><i class="fas fa-book"></i></span>
+                    <h3>@L["MyCourses"]</h3>
+                    @if (enrollCards.Any())
+                    {
+                        <span class="sub">· @enrollCards.Count kurs</span>
+                    }
+                </div>
+                <div class="right">
+                    <a href="/Student/Courses">@L["ViewAll"] <i class="fas fa-arrow-right" style="font-size:10px;"></i></a>
+                </div>
+            </div>
+            @if (!enrollCards.Any())
+            {
+                <div class="sd-empty">
+                    <i class="fas fa-book-open"></i>
+                    <p>Hələ aktiv kursunuz yoxdur</p>
+                </div>
+            }
+            else
+            {
+                <div class="sd-sec-body tight">
+                    @foreach (var card in enrollCards)
+                    {
+                        var e = card.Enrollment;
+                        var t = card.Transcript;
+                        var done = t?.PresentCount + t?.LateCount + t?.AbsentCount ?? 0;
+                        var total = t?.TotalSessions ?? 0;
+                        var prog = total > 0 ? Math.Round((double)done * 100 / total, 1) : 0;
+                        var hasAtt = (t?.PresentCount + t?.LateCount + t?.AbsentCount) > 0;
+                        string attChipClass = hasAtt
+                            ? (t!.AttendancePercentage >= 75 ? "ok" : (t.AttendancePercentage >= 50 ? "warn" : "danger"))
+                            : "muted";
+                        string gradeChipClass = (t != null && t.OfficialGrade > 0)
+                            ? (t.OfficialGrade >= 70 ? "ok" : (t.OfficialGrade >= 50 ? "warn" : "danger"))
+                            : "muted";
+                        <div class="sd-course">
+                            <div class="c-main">
+                                <div class="c-title">
+                                    @e.CourseName
+                                    <span class="group">· @e.GroupName</span>
+                                    <span class="sd-mode @DeliveryClass(e.DeliveryMode)">
+                                        <i class="fas @DeliveryIcon(e.DeliveryMode)"></i> @DeliveryLabel(e.DeliveryMode)
+                                    </span>
+                                    <span class="sd-status @StatusClass(e.Status)">@StatusLabel(e.Status)</span>
+                                </div>
+                                <div class="c-meta">
+                                    <span><i class="fas fa-chalkboard-teacher"></i>@e.TeacherName</span>
+                                    @if (t != null && !string.IsNullOrEmpty(t.AcademicYear))
+                                    {
+                                        <span><i class="fas fa-calendar"></i>@t.AcademicYear</span>
+                                    }
+                                </div>
+                                <div class="c-stats">
+                                    @if (total > 0)
+                                    {
+                                        <span class="sd-stat-chip"><i class="fas fa-list-ol"></i>@done / @total dərs</span>
+                                    }
+                                    @if (hasAtt)
+                                    {
+                                        <span class="sd-stat-chip @attChipClass">
+                                            <i class="fas fa-user-check"></i>@t!.AttendancePercentage.ToString("0.#")% davamiyyət
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="sd-stat-chip muted"><i class="fas fa-user-check"></i>davamiyyət hələ yox</span>
+                                    }
+                                    @if (t != null && t.OfficialGrade > 0)
+                                    {
+                                        <span class="sd-stat-chip @gradeChipClass">
+                                            <i class="fas fa-percent"></i>@t.OfficialGrade.ToString("0.#")% qiymət
+                                        </span>
+                                    }
+                                </div>
+                                @if (total > 0)
+                                {
+                                    var progStr = prog.ToString("0.#", System.Globalization.CultureInfo.InvariantCulture);
+                                    <div class="sd-mini-progress"><span style="width:@(progStr)%;"></span></div>
+                                }
+                            </div>
+                            <div class="c-actions">
+                                <a href="/Student/Courses/Detail/@e.Id" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-eye"></i> Kursa bax
+                                </a>
+                                <div class="row">
+                                    <a href="/Student/Schedule" class="btn btn-sm btn-secondary" title="Cədvələ bax">
+                                        <i class="fas fa-calendar-alt"></i>
+                                    </a>
+                                    <a href="/Student/Grades" class="btn btn-sm btn-secondary" title="Qiymət/transkript">
+                                        <i class="fas fa-file-lines"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </section>
+
+        @* === MY NEXT ACTIONS === *@
+        <section style="display:flex; flex-direction:column; gap:18px;">
+            <div class="sd-next">
+                <h3><i class="fas fa-bolt"></i> Növbəti addım</h3>
+
+                @{
+                    bool hasAny = false;
+                }
+                @if (pendingAssignments > 0)
+                {
+                    hasAny = true;
+                    <a class="sd-action" href="/Student/Assignments">
+                        <div class="a-ico ki-amber"><i class="fas fa-file-pen"></i></div>
+                        <div class="a-body">
+                            <div class="a-title">@pendingAssignments tapşırığı təhvil ver</div>
+                            <div class="a-sub">Gözləyən tapşırıqları yoxla və yüklə</div>
+                        </div>
+                        <i class="fas fa-chevron-right chev"></i>
+                    </a>
+                }
+                <a class="sd-action" href="/Student/Quizzes">
+                    <div class="a-ico ki-violet"><i class="fas fa-clipboard-question"></i></div>
+                    <div class="a-body">
+                        <div class="a-title">Aktiv quizləri yoxla</div>
+                        <div class="a-sub">Açıq quiz varsa, indi cavablandır</div>
+                    </div>
+                    <i class="fas fa-chevron-right chev"></i>
+                </a>
+                <a class="sd-action" href="/Student/Schedule">
+                    <div class="a-ico ki-teal"><i class="fas fa-calendar-day"></i></div>
+                    <div class="a-body">
+                        <div class="a-title">Dərs cədvəlinə bax</div>
+                        <div class="a-sub">Bugünkü və növbəti dərslər</div>
+                    </div>
+                    <i class="fas fa-chevron-right chev"></i>
+                </a>
+                @if (unreadCount > 0)
+                {
+                    hasAny = true;
+                    <a class="sd-action" href="/Notifications">
+                        <div class="a-ico ki-rose"><i class="fas fa-bell"></i></div>
+                        <div class="a-body">
+                            <div class="a-title">@unreadCount yeni bildiriş</div>
+                            <div class="a-sub">Oxunmamış bildirişləri aç</div>
+                        </div>
+                        <i class="fas fa-chevron-right chev"></i>
+                    </a>
+                }
+                <a class="sd-action" href="/Student/Grades">
+                    <div class="a-ico ki-emerald"><i class="fas fa-square-poll-vertical"></i></div>
+                    <div class="a-body">
+                        <div class="a-title">Qiymət və transkript</div>
+                        <div class="a-sub">Son nəticələrini izlə</div>
+                    </div>
+                    <i class="fas fa-chevron-right chev"></i>
+                </a>
+            </div>
+
+            @* === ANNOUNCEMENTS === *@
+            <div class="sd-sec">
+                <div class="sd-sec-head">
+                    <div class="left">
+                        <span class="ico"><i class="fas fa-bullhorn"></i></span>
+                        <h3>@L["Announcements"]</h3>
+                    </div>
+                    <div class="right">
+                        <a href="/Student/Announcements">@L["ViewAll"] <i class="fas fa-arrow-right" style="font-size:10px;"></i></a>
+                    </div>
+                </div>
+
+                @if (announcements == null || !announcements.Any())
+                {
+                    <div class="sd-empty">
+                        <i class="fas fa-bullhorn"></i>
+                        <p>@L["NoAnnouncements"]</p>
+                    </div>
+                }
+                else
+                {
+                    @foreach (var a in announcements.Take(3))
+                    {
+                        var title = SafePreview(a.Title, 70);
+                        var preview = SafePreview(a.Content, 110);
+                        <a href="/Student/Announcements" class="sd-ann @(a.IsRead ? "" : "unread")">
+                            <div class="a-head">
+                                <div class="a-title">
+                                    @if (!a.IsRead) { <span class="udot"></span> }
+                                    <span class="ttext">@(string.IsNullOrEmpty(title) ? "(Başlıqsız)" : title)</span>
+                                </div>
+                                <span class="a-date">@a.CreatedAt.ToString("dd.MM.yyyy")</span>
+                            </div>
+                            @if (!string.IsNullOrEmpty(preview))
+                            {
+                                <div class="a-preview">@preview</div>
+                            }
+                            <div class="a-author">
+                                <i class="fas fa-user"></i> @a.AuthorName
+                                @if (!string.IsNullOrEmpty(a.CourseName))
+                                {
+                                    <span>· @a.CourseName</span>
+                                }
+                            </div>
+                        </a>
+                    }
+                    <a href="/Student/Announcements" class="seeall">Bütün elanlar</a>
+                }
+            </div>
+        </section>
     </div>
 </div>

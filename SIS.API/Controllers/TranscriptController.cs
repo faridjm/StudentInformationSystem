@@ -19,12 +19,13 @@ namespace SIS.API.Controllers
         private readonly IEnrollmentService _enrollmentService;
         private readonly IGroupService _groupService;
         private readonly IAuditLogService _audit;
+        private readonly IEmailService _emailService;
 
         public TranscriptController(ITranscriptService transcriptService,
             ITranscriptPdfService pdfService, IStudentService studentService,
             ITeacherService teacherService, ICurrentUser currentUser,
             IEnrollmentService enrollmentService, IGroupService groupService,
-            IAuditLogService audit)
+            IAuditLogService audit, IEmailService emailService)
         {
             _transcriptService = transcriptService;
             _pdfService = pdfService;
@@ -34,6 +35,7 @@ namespace SIS.API.Controllers
             _enrollmentService = enrollmentService;
             _groupService = groupService;
             _audit = audit;
+            _emailService = emailService;
         }
 
         [HttpGet("{enrollmentId}")]
@@ -67,6 +69,45 @@ namespace SIS.API.Controllers
                 await _audit.LogAsync("Download", "Transcript", enrollmentId.ToString(),
                     $"Transkript PDF yükləndi: {data.StudentNumber} — {data.GroupName}");
                 return File(pdf, "application/pdf", fileName);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Forbid();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+        }
+
+        [HttpPost("{enrollmentId}/email")]
+        public async Task<IActionResult> SendTranscriptByEmail(int enrollmentId)
+        {
+            try
+            {
+                await AuthorizeAccessAsync(enrollmentId);
+                var data = await _transcriptService.GenerateTranscriptAsync(enrollmentId);
+                if (string.IsNullOrEmpty(data.Email))
+                    return BadRequest(new { error = "Bu hesabda email yoxdur" });
+
+                var pdf = _pdfService.GeneratePdf(data);
+                var fileName = $"Transcript_{data.StudentNumber}_{data.GroupName}_{DateTime.Now:yyyyMMdd}.pdf";
+
+                try
+                {
+                    await _emailService.SendTranscriptAsync(data.Email, data.StudentName,
+                        data.CourseName, data.GroupName, pdf, fileName);
+                }
+                catch (Exception ex)
+                {
+                    await _audit.LogAsync("EmailSendFailed", "Transcript", enrollmentId.ToString(),
+                        $"Transkript email göndərilmədi: {data.StudentNumber} — {ex.Message}");
+                    return StatusCode(500, new { error = "Email göndərilə bilmədi" });
+                }
+
+                await _audit.LogAsync("SendTranscriptEmail", "Transcript", enrollmentId.ToString(),
+                    $"Transkript email göndərildi: {data.StudentNumber} → {data.Email}");
+                return Ok(new { message = "Transkript email-ə göndərildi" });
             }
             catch (UnauthorizedAccessException)
             {

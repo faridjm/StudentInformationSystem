@@ -32,6 +32,9 @@ namespace SIS.UI.ApiClients
         [Post("/api/announcement")]
         Task CreateAsync([Body] CreateAnnouncementDto dto);
 
+        [Post("/api/announcement/group")]
+        Task CreateGroupAsync([Body] TeacherGroupAnnouncementDto dto);
+
         [Delete("/api/announcement/{id}")]
         Task DeleteAsync(int id);
 

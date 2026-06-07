@@ -27,6 +27,7 @@ namespace SIS.API.Extensions
             services.AddScoped<IAssessmentService, AssessmentService>();
             services.AddScoped<IGradeService, GradeService>();
             services.AddScoped<IAttendanceService, AttendanceService>();
+            services.AddScoped<IAcademicPerformanceService, AcademicPerformanceService>();
             services.AddScoped<IAnnouncementService, AnnouncementService>();
             services.AddScoped<INotificationService, NotificationService>();
             services.AddScoped<IAcademicYearService, AcademicYearService>();

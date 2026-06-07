@@ -88,7 +88,7 @@ namespace SIS.API.Services
                             AttBox(row.RelativeItem(), "Gecikmə", data.LateCount.ToString(), Colors.Orange.Darken1);
                             AttBox(row.RelativeItem(), "Qayıb", data.AbsentCount.ToString(), Colors.Red.Darken1);
                             var attClr = data.AttendancePercentage >= 80 ? Colors.Green.Darken1 : data.AttendancePercentage >= 60 ? Colors.Orange.Darken1 : Colors.Red.Darken1;
-                            AttBox(row.RelativeItem(), "Davamiyyət", $"%{data.AttendancePercentage:F0}", attClr);
+                            AttBox(row.RelativeItem(), "Davamiyyət", $"%{data.AttendancePercentage:F1}", attClr);
                         });
 
                         col.Item().PaddingVertical(10);

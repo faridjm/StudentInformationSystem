@@ -2,20 +2,35 @@
 @model PublicCoursesViewModel
 @{
     ViewData["Title"] = "Kurslar";
+    var hasFilter = !string.IsNullOrEmpty(Model.Q)
+                 || !string.IsNullOrEmpty(Model.SelectedDepartment)
+                 || !string.IsNullOrEmpty(Model.SelectedLevel);
 }
 
 <header class="pub-detail-hero">
     <div class="pub-container">
-        <h1>Kurslar / Proqramlar</h1>
-        <p style="opacity:.9; margin-top:8px;">Acadex-in bütün aktiv təhsil proqramları</p>
+        <span class="pub-eyebrow"><span class="dot"></span> Proqram kataloqu</span>
+        <h1>Kurslar və proqramlar</h1>
+        <p class="lead">
+            Acadex-in bütün aktiv təhsil proqramları — proqramlaşdırma, data, dizayn və daha çoxu.
+            Sənə uyğun istiqaməti tap, kurikulumla tanış ol və açıq qrupa müraciət et.
+        </p>
     </div>
 </header>
 
-<section class="pub-section">
+<section class="pub-section" style="padding-top:48px;">
     <div class="pub-container">
+
+        @* ===== FILTER BAR ===== *@
         <form method="get" action="/Public/Courses"
-              style="display:grid; grid-template-columns:2fr 1fr 1fr auto; gap:12px; margin-bottom:34px;">
-            <input type="text" name="q" value="@Model.Q" placeholder="Kurs axtar..." class="pub-input" />
+              style="background:#fff; border:1px solid var(--pub-border); border-radius:var(--pub-radius); padding:18px; box-shadow:var(--pub-shadow-sm); display:grid; grid-template-columns:2fr 1fr 1fr auto; gap:12px; margin-bottom:28px;">
+            <div style="position:relative;">
+                <i class="fas fa-magnifying-glass" style="position:absolute; left:14px; top:50%; transform:translateY(-50%); color:var(--pub-muted);"></i>
+                <input type="text" name="q" value="@Model.Q"
+                       placeholder="Kurs axtar..."
+                       class="pub-input"
+                       style="padding-left:40px;" />
+            </div>
             <select name="department" class="pub-input">
                 <option value="">Bütün şöbələr</option>
                 @foreach (var d in Model.Departments)
@@ -31,18 +46,21 @@
                 }
             </select>
             <button type="submit" class="pub-btn pub-btn-primary">
-                <i class="fas fa-magnifying-glass"></i> Axtar
+                <i class="fas fa-filter"></i> Axtar
             </button>
         </form>
 
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+        @* ===== RESULT META ===== *@
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:22px; flex-wrap:wrap; gap:12px;">
             <div style="color:var(--pub-muted); font-size:14px;">
-                <strong style="color:var(--pub-ink); font-size:18px;">@Model.Courses.Count</strong> proqram tapıldı
+                <strong style="color:var(--pub-ink); font-size:20px; letter-spacing:-.4px;">@Model.Courses.Count</strong>
+                proqram tapıldı
+                @if (hasFilter) { <span style="color:var(--pub-muted);"> · filtrlənmiş nəticə</span> }
             </div>
-            @if (!string.IsNullOrEmpty(Model.Q) || !string.IsNullOrEmpty(Model.SelectedDepartment) || !string.IsNullOrEmpty(Model.SelectedLevel))
+            @if (hasFilter)
             {
-                <a href="/Public/Courses" class="pub-btn pub-btn-ghost" style="padding:8px 16px; font-size:13px;">
-                    <i class="fas fa-times"></i> Filtri sıfırla
+                <a href="/Public/Courses" class="pub-btn pub-btn-ghost pub-btn-sm">
+                    <i class="fas fa-xmark"></i> Filtri sıfırla
                 </a>
             }
         </div>
@@ -51,7 +69,10 @@
         {
             <div class="pub-empty">
                 <i class="fas fa-folder-open"></i>
-                <p>Axtarışınıza uyğun kurs tapılmadı.</p>
+                <p>Axtarışınıza uyğun aktiv kurs tapılmadı. Filtrləri sıfırlayın və ya bizimlə əlaqə saxlayın.</p>
+                <div style="margin-top:20px;">
+                    <a href="/Public/Contact" class="pub-btn pub-btn-primary"><i class="fas fa-paper-plane"></i> Bizimlə əlaqə saxla</a>
+                </div>
             </div>
         }
         else
@@ -63,5 +84,20 @@
                 }
             </div>
         }
+    </div>
+</section>
+
+@* ============ CTA ============ *@
+<section class="pub-section alt">
+    <div class="pub-container">
+        <div class="pub-cta">
+            <h2>Sizə uyğun kursu tapa bilmədiniz?</h2>
+            <p>Bizimlə əlaqə saxlayın — sizə ən uyğun proqramı seçməyə kömək edək.</p>
+            <div class="pub-hero-actions">
+                <a href="/Public/Contact" class="pub-btn pub-btn-solid-light">
+                    <i class="fas fa-paper-plane"></i> Bizimlə əlaqə saxla
+                </a>
+            </div>
+        </div>
     </div>
 </section>

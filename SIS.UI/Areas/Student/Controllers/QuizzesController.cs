@@ -86,12 +86,29 @@ namespace SIS.UI.Areas.Student.Controllers
                     Answers = answers
                 });
                 TempData["Success"] = $"Quiz təhvil verildi — nəticə: {res.Score}%";
+                // Tələbə dərhal sual-sual nəticəni görsün
+                return RedirectToAction("Result", new { attemptId = res.AttemptId });
             }
             catch
             {
                 TempData["Error"] = "Quiz təhvil verilə bilmədi (artıq cavablandırmısınız və ya aktiv deyil)";
             }
             return RedirectToAction("Index");
+        }
+
+        /// <summary>Sual-sual detallı nəticə (yalnız öz cəhdi).</summary>
+        public async Task<IActionResult> Result(int attemptId)
+        {
+            try
+            {
+                var dto = await _quizApi.GetAttemptDetailAsync(attemptId);
+                return View(dto);
+            }
+            catch (Refit.ApiException)
+            {
+                TempData["Error"] = "Bu nəticəyə baxmaq icazəniz yoxdur";
+                return RedirectToAction("Index");
+            }
         }
     }
 }

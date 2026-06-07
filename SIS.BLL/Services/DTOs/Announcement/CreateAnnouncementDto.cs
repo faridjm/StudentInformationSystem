@@ -21,3 +21,14 @@ namespace SIS.BLL.Services.DTOs.Announcement
         public string? AttachmentUrl { get; set; }
     }
 }
+
+namespace SIS.BLL.Services.DTOs.Announcement
+{
+    /// <summary>Müəllim öz qrupuna sadə elan göndərmək üçün model.</summary>
+    public class TeacherGroupAnnouncementDto
+    {
+        public int GroupId { get; set; }
+        public string Title { get; set; } = "";
+        public string Content { get; set; } = "";
+    }
+}
