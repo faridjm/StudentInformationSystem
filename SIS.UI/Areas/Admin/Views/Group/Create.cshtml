@@ -126,12 +126,115 @@
             </div>
         </div>
 
+        @{
+            var roomsList = ViewBag.Rooms as IEnumerable<SIS.BLL.Services.DTOs.Room.RoomDto>
+                            ?? Enumerable.Empty<SIS.BLL.Services.DTOs.Room.RoomDto>();
+        }
+        <div class="card" style="margin-bottom:16px;" id="roomCard">
+            <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+                <span><i class="fas fa-door-open"></i> Otaq (yalnız əyani/hibrid)</span>
+                <button type="button" onclick="loadAvailableRooms()" class="btn btn-sm btn-secondary">
+                    <i class="fas fa-sync"></i> Uyğun otaqları göstər
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="form-group" style="margin-bottom:6px;">
+                    <select name="RoomId" id="roomSelect" class="form-control">
+                        <option value="">— Otaq seçin —</option>
+                        @foreach (var room in roomsList)
+                        {
+                            <option value="@room.Id" data-cap="@room.Capacity">@room.Name (@room.Type, tutum @room.Capacity)</option>
+                        }
+                    </select>
+                </div>
+                <div id="roomHint" style="font-size:12px; color:var(--text-secondary);">
+                    Cədvəl günlərini seçdikdən sonra “Uyğun otaqları göstər” düyməsi dolu otaqları işarələyəcək.
+                </div>
+            </div>
+        </div>
+
         <div style="display:flex; gap:12px;">
             <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> @L["Create"]</button>
             <a href="/Admin/Group" class="btn btn-secondary">@L["Cancel"]</a>
         </div>
     </form>
 </div>
+
+<script>
+    // Cədvəl slotlarını formdan topla
+    function collectSlots() {
+        const rows = document.querySelectorAll('#scheduleDays .schedule-day');
+        const slots = [];
+        rows.forEach(function (sel) {
+            const row = sel.closest('div[id^="day_"]') || sel.parentElement;
+            const start = row.querySelector('input[name$=".StartTime"]');
+            const end = row.querySelector('input[name$=".EndTime"]');
+            if (sel.value && start && end && start.value && end.value) {
+                var day = isNaN(sel.value) ? sel.value : parseInt(sel.value);
+                slots.push({ dayOfWeek: day, startTime: start.value, endTime: end.value });
+            }
+        });
+        return slots;
+    }
+
+    async function loadAvailableRooms() {
+        const slots = collectSlots();
+        const startDate = document.getElementById('startDate')?.value;
+        const endDate = document.getElementById('endDate')?.value;
+        const capEl = document.querySelector('input[name="Capacity"]');
+        const hint = document.getElementById('roomHint');
+
+        if (!startDate || slots.length === 0) {
+            hint.textContent = 'Əvvəlcə başlama tarixi və ən azı 1 dərs günü/saatı seçin.';
+            return;
+        }
+
+        const payload = {
+            groupStart: startDate,
+            groupEnd: endDate || startDate,
+            capacityRequired: capEl ? parseInt(capEl.value || '0') : null,
+            slots: slots
+        };
+
+        hint.textContent = 'Yoxlanılır...';
+        try {
+            const res = await fetch('/Admin/Group/AvailableRooms', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            if (!Array.isArray(data)) { hint.textContent = 'Otaqlar yüklənə bilmədi.'; return; }
+
+            const select = document.getElementById('roomSelect');
+            const current = select.value;
+            select.innerHTML = '<option value="">— Otaq seçin —</option>';
+            data.forEach(function (r) {
+                const opt = document.createElement('option');
+                opt.value = r.roomId;
+                let label = r.name + ' (tutum ' + r.capacity + ')';
+                if (!r.isAvailable) { opt.disabled = true; label += ' — ' + (r.reason || 'Dolu'); }
+                else if (r.capacityWarning) { label += ' — ⚠ tutum azdır'; }
+                opt.textContent = label;
+                if (String(r.roomId) === String(current)) opt.selected = true;
+                select.appendChild(opt);
+            });
+            const freeCount = data.filter(x => x.isAvailable).length;
+            hint.textContent = freeCount + ' uyğun otaq tapıldı (' + (data.length - freeCount) + ' dolu).';
+        } catch (e) {
+            hint.textContent = 'Xəta: otaqlar yüklənə bilmədi.';
+        }
+    }
+
+    // Online seçiləndə otaq kartını gizlət
+    (function () {
+        const dm = document.getElementById('deliveryMode');
+        const card = document.getElementById('roomCard');
+        function sync() { if (dm && card) card.style.display = (dm.value === 'Online') ? 'none' : ''; }
+        if (dm) dm.addEventListener('change', sync);
+        sync();
+    })();
+</script>
 
 @section Scripts {
 <script>

@@ -89,12 +89,15 @@ namespace SIS.BLL.Services.Implementations
                     throw new ConflictException("Bu email artıq istifadədədir");
             }
 
+            var normalizedPhone = await Services.Helpers.PhoneUniqueValidator.ValidateAndNormalizeAsync(_userManager, dto.PhoneNumber);
+
             var user = new AppUser
             {
                 FullName = dto.FullName.ToTitleCase(), FinCode = dto.FinCode,
                 BirthDate = dto.BirthDate,
                 Email = resolvedEmail, UserName = resolvedEmail,
-                PhoneNumber = dto.PhoneNumber, IsActive = true
+                PhoneNumber = normalizedPhone,
+                IsActive = true
             };
 
             var result = await _userManager.CreateAsync(user, dto.Password);
@@ -132,7 +135,8 @@ namespace SIS.BLL.Services.Implementations
 
             teacher.AppUser.FullName = dto.FullName.ToTitleCase();
             teacher.AppUser.FinCode = dto.FinCode;
-            teacher.AppUser.PhoneNumber = dto.PhoneNumber;
+            teacher.AppUser.PhoneNumber = await Services.Helpers.PhoneUniqueValidator.ValidateAndNormalizeAsync(
+                _userManager, dto.PhoneNumber, teacher.AppUser.Id);
             teacher.AppUser.BirthDate = dto.BirthDate;
             await _userManager.UpdateAsync(teacher.AppUser);
             teacher.UpdatedAt = DateTime.UtcNow;

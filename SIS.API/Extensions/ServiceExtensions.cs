@@ -23,6 +23,7 @@ namespace SIS.API.Extensions
             services.AddScoped<IDepartmentService, DepartmentService>();
             services.AddScoped<ICourseService, CourseService>();
             services.AddScoped<IGroupService, GroupService>();
+            services.AddScoped<IRoomService, RoomService>();
             services.AddScoped<IEnrollmentService, EnrollmentService>();
             services.AddScoped<IAssessmentService, AssessmentService>();
             services.AddScoped<IGradeService, GradeService>();
@@ -35,6 +36,8 @@ namespace SIS.API.Extensions
             services.AddScoped<IAssignmentService, AssignmentService>();
             services.AddScoped<ITranscriptService, TranscriptService>();
             services.AddScoped<ITranscriptPdfService, TranscriptPdfService>();
+            services.AddScoped<ITranscriptVerificationService, TranscriptVerificationService>();
+            services.AddScoped<IQrCodeGenerator, QrCodeGenerator>();
             services.AddScoped<IChatService, ChatService>();
             services.AddScoped<IQuizService, QuizService>();
             services.AddScoped<IAuditLogService, AuditLogService>();

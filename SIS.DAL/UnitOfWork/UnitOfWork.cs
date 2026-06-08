@@ -38,6 +38,8 @@ namespace SIS.DAL.UnitOfWork
         private IArchiveRepository? _archive;
         private IOnlineLessonRepository? _onlineLessons;
         private ICourseApplicationRepository? _courseApplications;
+        private ITranscriptVerificationRepository? _transcriptVerifications;
+        private IRoomRepository? _rooms;
 
         public UnitOfWork(AppDbContext context) { _context = context; }
 
@@ -71,6 +73,8 @@ namespace SIS.DAL.UnitOfWork
         public IArchiveRepository Archive => _archive ??= new ArchiveRepository(_context);
         public IOnlineLessonRepository OnlineLessons => _onlineLessons ??= new OnlineLessonRepository(_context);
         public ICourseApplicationRepository CourseApplications => _courseApplications ??= new CourseApplicationRepository(_context);
+        public ITranscriptVerificationRepository TranscriptVerifications => _transcriptVerifications ??= new TranscriptVerificationRepository(_context);
+        public IRoomRepository Rooms => _rooms ??= new RoomRepository(_context);
 
         public async Task<int> SaveAsync() => await _context.SaveChangesAsync();
         public void Dispose() => _context.Dispose();

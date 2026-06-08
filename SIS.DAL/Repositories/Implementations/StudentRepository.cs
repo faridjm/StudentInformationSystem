@@ -21,6 +21,12 @@ namespace SIS.DAL.Repositories.Implementations
                 .FirstOrDefaultAsync(s => s.AppUserId == userId);
 
         public async Task<IEnumerable<Student>> GetAllWithUsersAsync()
-            => await _dbSet.Include(s => s.AppUser).ToListAsync();
+            => await _dbSet.Include(s => s.AppUser).Where(s => !s.IsDeleted).ToListAsync();
+
+        public async Task<IEnumerable<string?>> GetAllStudentNumbersAsync()
+            => await _context.Set<Student>()
+                .IgnoreQueryFilters() // silinmişlər daxil — nömrə reuse olmasın
+                .Select(s => s.StudentNumber)
+                .ToListAsync();
     }
 }

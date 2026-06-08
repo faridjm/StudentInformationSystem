@@ -27,6 +27,14 @@ namespace SIS.DAL.Configurations
                 .HasForeignKey(g => g.AcademicYearId)
                 .OnDelete(DeleteBehavior.SetNull);
 
+            // Real akademik otaq (scheduling). Otaq silinsə qrup RoomId = null olur.
+            builder.HasOne(g => g.Room)
+                .WithMany(r => r.Groups)
+                .HasForeignKey(g => g.RoomId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            builder.HasIndex(g => g.RoomId);
+
             builder.HasQueryFilter(g => !g.IsDeleted);
         }
     }

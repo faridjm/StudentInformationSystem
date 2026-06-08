@@ -1,13 +1,18 @@
 @model SIS.BLL.Services.DTOs.Groups.GroupDetailDto
 @using SIS.BLL.Services.DTOs.ClassSession
 @using SIS.BLL.Services.DTOs.Assessment
+@using SIS.BLL.Services.DTOs.Performance
 @using SIS.Entities.Enums
 @using SIS.UI.Helpers
 @{
     ViewData["Title"] = Model.Name;
     var sessions = (List<ClassSessionDto>)ViewBag.Sessions;
     var assessments = (List<AssessmentItemDto>)ViewBag.Assessments;
+    var performance = (List<GroupStudentPerformanceDto>)(ViewBag.Performance ?? new List<GroupStudentPerformanceDto>());
     var totalWeight = assessments.Sum(a => a.WeightPercent);
+
+    string AttClr(double p) => p >= 80 ? "#22c55e" : p >= 60 ? "#eab308" : "#ef4444";
+    string GradeClr(decimal g) => g >= 70 ? "#22c55e" : g >= 50 ? "#eab308" : "#ef4444";
 }
 
 <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
@@ -57,6 +62,14 @@
     <button onclick="showTab('curriculum')" id="tab-curriculum"
             style="padding:10px 18px; border:none; background:none; color:var(--accent); font-weight:600; cursor:pointer; border-bottom:2px solid var(--accent); font-size:14px;">
         <i class="fas fa-book-open"></i> @L["Schedule"]
+    </button>
+    <button onclick="showTab('students')" id="tab-students"
+            style="padding:10px 18px; border:none; background:none; color:var(--text-secondary); cursor:pointer; border-bottom:2px solid transparent; font-size:14px;">
+        <i class="fas fa-users"></i> Tələbələr
+        @if (performance.Any())
+        {
+            <span style="background:var(--accent); color:#fff; border-radius:10px; padding:1px 7px; font-size:11px; margin-left:4px;">@performance.Count</span>
+        }
     </button>
     <button onclick="showTab('assessment')" id="tab-assessment"
             style="padding:10px 18px; border:none; background:none; color:var(--text-secondary); cursor:pointer; border-bottom:2px solid transparent; font-size:14px;">
@@ -126,6 +139,119 @@
             </table>
         </div>
     </div>
+</div>
+
+<!-- TAB: Tələbələr (Davamiyyət + Qiymət) -->
+<div id="panel-students" style="display:none;">
+    <div class="card">
+        <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+            <span>Tələbələr · Davamiyyət · Qiymət</span>
+            <a href="/Admin/Enrollment/Group?groupId=@Model.Id" class="btn btn-sm btn-secondary">
+                <i class="fas fa-list"></i> Qeydiyyat siyahısı
+            </a>
+        </div>
+        <div style="overflow-x:auto;">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Tələbə</th>
+                        <th>№</th>
+                        <th>Email</th>
+                        <th style="text-align:center;">İştirak</th>
+                        <th style="text-align:center;">Gec.</th>
+                        <th style="text-align:center;">Qayıb</th>
+                        <th style="text-align:center;">Üzr.</th>
+                        <th style="text-align:right;">Davamiyyət</th>
+                        <th style="text-align:right;">Qiymət</th>
+                        <th style="text-align:center;">Hərf</th>
+                        <th style="text-align:right;">GPA</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!performance.Any())
+                    {
+                        <tr><td colspan="12" style="text-align:center; color:var(--text-secondary); padding:30px;">Bu qrupda hələ tələbə yoxdur</td></tr>
+                    }
+                    else
+                    {
+                        foreach (var p in performance)
+                        {
+                            <tr>
+                                <td><strong>@p.StudentName</strong></td>
+                                <td><code style="background:var(--bg-hover); padding:2px 8px; border-radius:4px; font-size:12px;">@p.StudentNumber</code></td>
+                                <td style="font-size:12px; color:var(--text-secondary);">
+                                    @if (!string.IsNullOrWhiteSpace(p.StudentEmail))
+                                    {
+                                        <a href="mailto:@p.StudentEmail" style="color:var(--accent); text-decoration:none;">@p.StudentEmail</a>
+                                    }
+                                    else
+                                    {
+                                        <span>—</span>
+                                    }
+                                </td>
+                                <td style="text-align:center; color:#22c55e; font-weight:600;">@p.PresentCount</td>
+                                <td style="text-align:center; color:#eab308; font-weight:600;">@p.LateCount</td>
+                                <td style="text-align:center; color:#ef4444; font-weight:600;">@p.AbsentCount</td>
+                                <td style="text-align:center; color:#3b82f6; font-weight:600;">@p.ExcusedCount</td>
+                                <td style="text-align:right;">
+                                    @if (p.AttendanceTakenSessions > 0)
+                                    {
+                                        <span style="color:@AttClr(p.AttendancePercentage); font-weight:700;">@p.AttendancePercentage.ToString("F1")%</span>
+                                    }
+                                    else
+                                    {
+                                        <span style="color:var(--text-secondary); font-style:italic; font-size:12px;">qeyd olunmayıb</span>
+                                    }
+                                </td>
+                                <td style="text-align:right;">
+                                    @if (p.CompletedWeight > 0)
+                                    {
+                                        <span style="color:@GradeClr(p.OfficialGrade); font-weight:700;">@p.OfficialGrade.ToString("F1")%</span>
+                                    }
+                                    else
+                                    {
+                                        <span style="color:var(--text-secondary); font-style:italic; font-size:12px;">—</span>
+                                    }
+                                </td>
+                                <td style="text-align:center;">
+                                    <span style="background:var(--bg-hover); padding:2px 8px; border-radius:6px; font-weight:700; font-size:12px;">@p.LetterGrade</span>
+                                </td>
+                                <td style="text-align:right; font-weight:700;">@p.GPA.ToString("F2")</td>
+                                <td style="white-space:nowrap;">
+                                    <a href="/Admin/Student/Detail/@p.StudentId" class="btn btn-sm btn-secondary" title="Detal">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    @if (performance.Any())
+    {
+        // Group ortalaması
+        var avgAtt = performance.Where(x => x.AttendanceTakenSessions > 0).Select(x => x.AttendancePercentage).DefaultIfEmpty(0).Average();
+        var avgGrade = performance.Where(x => x.CompletedWeight > 0).Select(x => x.OfficialGrade).DefaultIfEmpty(0).Average();
+        var avgGpa = performance.Select(x => x.GPA).DefaultIfEmpty(0).Average();
+        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:14px;">
+            <div class="stat-card">
+                <div class="stat-icon" style="background:rgba(34,197,94,0.15); color:#22c55e;"><i class="fas fa-user-check"></i></div>
+                <div><div class="stat-value" style="color:@AttClr(avgAtt);">@avgAtt.ToString("F1")%</div><div class="stat-label">Ortalama davamiyyət</div></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background:rgba(59,130,246,0.15); color:#3b82f6;"><i class="fas fa-graduation-cap"></i></div>
+                <div><div class="stat-value" style="color:@GradeClr(avgGrade);">@avgGrade.ToString("F1")%</div><div class="stat-label">Ortalama qiymət</div></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background:rgba(168,85,247,0.15); color:#a855f7;"><i class="fas fa-star"></i></div>
+                <div><div class="stat-value">@avgGpa.ToString("F2")</div><div class="stat-label">Ortalama GPA</div></div>
+            </div>
+        </div>
+    }
 </div>
 
 <!-- TAB: Qiymətləndirmə -->
@@ -261,11 +387,17 @@
 <script>
 function showTab(name) {
     document.getElementById('panel-curriculum').style.display = name === 'curriculum' ? '' : 'none';
+    document.getElementById('panel-students').style.display = name === 'students' ? '' : 'none';
     document.getElementById('panel-assessment').style.display = name === 'assessment' ? '' : 'none';
-    document.getElementById('tab-curriculum').style.color = name === 'curriculum' ? 'var(--accent)' : 'var(--text-secondary)';
-    document.getElementById('tab-curriculum').style.borderBottom = name === 'curriculum' ? '2px solid var(--accent)' : '2px solid transparent';
-    document.getElementById('tab-assessment').style.color = name === 'assessment' ? 'var(--accent)' : 'var(--text-secondary)';
-    document.getElementById('tab-assessment').style.borderBottom = name === 'assessment' ? '2px solid var(--accent)' : '2px solid transparent';
+    var tabs = ['curriculum', 'students', 'assessment'];
+    tabs.forEach(function (t) {
+        var el = document.getElementById('tab-' + t);
+        if (!el) return;
+        var active = (t === name);
+        el.style.color = active ? 'var(--accent)' : 'var(--text-secondary)';
+        el.style.borderBottom = active ? '2px solid var(--accent)' : '2px solid transparent';
+        el.style.fontWeight = active ? '600' : '500';
+    });
 }
 
 function openTopicEdit(sessionId, groupId, currentTopic) {
@@ -292,5 +424,6 @@ updateTitle(document.querySelector('select[name="Type"]'));
 
 // Tab-ı URL hash-a görə seç
 if (window.location.hash === '#assessment') showTab('assessment');
+else if (window.location.hash === '#students') showTab('students');
 </script>
 }

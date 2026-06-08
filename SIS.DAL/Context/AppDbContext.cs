@@ -57,6 +57,8 @@ namespace SIS.DAL.Context
         public DbSet<PublicGraduateStory> PublicGraduateStories { get; set; }
         public DbSet<PublicFaq> PublicFaqs { get; set; }
         public DbSet<PublicContactMessage> PublicContactMessages { get; set; }
+        public DbSet<TranscriptVerification> TranscriptVerifications { get; set; }
+        public DbSet<Room> Rooms { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

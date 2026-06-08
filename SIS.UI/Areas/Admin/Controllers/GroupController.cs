@@ -16,10 +16,11 @@ namespace SIS.UI.Areas.Admin.Controllers
         private readonly IClassSessionApi _sessionApi;
         private readonly IAssessmentApi _assessmentApi;
         private readonly ICurriculumTemplateApi _templateApi;
+        private readonly IRoomApi _roomApi;
 
         public GroupController(IGroupApi groupApi, ICourseApi courseApi, ITeacherApi teacherApi,
             IAcademicYearApi yearApi, IClassSessionApi sessionApi, IAssessmentApi assessmentApi,
-            ICurriculumTemplateApi templateApi)
+            ICurriculumTemplateApi templateApi, IRoomApi roomApi)
         {
             _groupApi = groupApi;
             _courseApi = courseApi;
@@ -28,6 +29,22 @@ namespace SIS.UI.Areas.Admin.Controllers
             _sessionApi = sessionApi;
             _assessmentApi = assessmentApi;
             _templateApi = templateApi;
+            _roomApi = roomApi;
+        }
+
+        private async Task<IEnumerable<SIS.BLL.Services.DTOs.Room.RoomDto>> GetActiveRoomsSafeAsync()
+        {
+            try { return await _roomApi.GetActiveAsync(); }
+            catch { return new List<SIS.BLL.Services.DTOs.Room.RoomDto>(); }
+        }
+
+        /// <summary>AJAX: seçilmiş cədvəl üçün uyğun (boş) otaqları qaytarır.</summary>
+        [HttpPost]
+        [IgnoreAntiforgeryToken]
+        public async Task<IActionResult> AvailableRooms([FromBody] SIS.BLL.Services.DTOs.Room.RoomQueryRequest req)
+        {
+            try { return Json(await _roomApi.AvailableAsync(req)); }
+            catch (Exception ex) { return Json(new { error = ex.Message }); }
         }
 
         public async Task<IActionResult> Index()
@@ -41,6 +58,7 @@ namespace SIS.UI.Areas.Admin.Controllers
             ViewBag.Courses = await _courseApi.GetAllAsync();
             ViewBag.Teachers = await _teacherApi.GetAllAsync();
             ViewBag.Seasons = await _yearApi.GetAllAsync();
+            ViewBag.Rooms = await GetActiveRoomsSafeAsync();
             try { ViewBag.Templates = (await _templateApi.GetAllAsync()).ToList(); }
             catch { ViewBag.Templates = new List<SIS.BLL.Services.DTOs.Curriculum.CurriculumTemplateDto>(); }
             return View();
@@ -61,6 +79,7 @@ namespace SIS.UI.Areas.Admin.Controllers
                 ViewBag.Courses = await _courseApi.GetAllAsync();
                 ViewBag.Teachers = await _teacherApi.GetAllAsync();
                 ViewBag.Seasons = await _yearApi.GetAllAsync();
+                ViewBag.Rooms = await GetActiveRoomsSafeAsync();
                 try { ViewBag.Templates = (await _templateApi.GetAllAsync()).ToList(); }
                 catch { ViewBag.Templates = new List<SIS.BLL.Services.DTOs.Curriculum.CurriculumTemplateDto>(); }
                 return View(dto);
@@ -93,9 +112,13 @@ namespace SIS.UI.Areas.Admin.Controllers
 
             var sessions = await _sessionApi.GetByGroupAsync(id);
             var assessments = await _assessmentApi.GetByGroupAsync(id);
+            IEnumerable<SIS.BLL.Services.DTOs.Performance.GroupStudentPerformanceDto> performance;
+            try { performance = await _groupApi.GetGroupPerformanceAsync(id); }
+            catch { performance = new List<SIS.BLL.Services.DTOs.Performance.GroupStudentPerformanceDto>(); }
 
             ViewBag.Sessions = sessions.OrderBy(s => s.Date).ToList();
             ViewBag.Assessments = assessments.OrderBy(a => a.Date).ToList();
+            ViewBag.Performance = performance.ToList();
             return View(group);
         }
 
@@ -106,6 +129,7 @@ namespace SIS.UI.Areas.Admin.Controllers
 
             ViewBag.Teachers = await _teacherApi.GetAllAsync();
             ViewBag.Seasons = await _yearApi.GetAllAsync();
+            ViewBag.Rooms = await GetActiveRoomsSafeAsync();
             return View(group);
         }
 

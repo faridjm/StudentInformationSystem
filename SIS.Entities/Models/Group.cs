@@ -19,6 +19,10 @@ namespace SIS.Entities.Models
         public OnlinePlatform? DefaultOnlinePlatform { get; set; }
         public string? DefaultMeetingUrl { get; set; }
 
+        // Real akademik otaq (scheduling). Online qruplar üçün null ola bilər.
+        public int? RoomId { get; set; }
+        public Room? Room { get; set; }
+
         public Course Course { get; set; } = null!;
         public Teacher Teacher { get; set; } = null!;
         public AcademicYear? AcademicYear { get; set; }

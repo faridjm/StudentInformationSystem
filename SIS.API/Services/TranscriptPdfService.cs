@@ -2,19 +2,24 @@ using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using SIS.BLL.Services.DTOs.Transcript;
+using SIS.Entities.Enums;
 
 namespace SIS.API.Services
 {
     public interface ITranscriptPdfService
     {
-        /// <summary>Transcript PDF generasiya edir. lang: az (default) | en | ru.</summary>
-        byte[] GeneratePdf(TranscriptDto data, string? lang = "az");
+        /// <summary>
+        /// Transcript PDF generasiya edir. lang: az (default) | en | ru.
+        /// qrPng: QR doğrulama şəkli (PNG). Verilməsə QR bölməsi göstərilmir.
+        /// </summary>
+        byte[] GeneratePdf(TranscriptDto data, string? lang = "az", byte[]? qrPng = null);
     }
 
     /// <summary>
     /// Acadex 360 — professional, 3 dilli (AZ/EN/RU) akademik transcript PDF.
-    /// Calculation logic-ə toxunmur — bütün dəyərlər TranscriptDto-dan (AcademicPerformanceService)
-    /// gəlir. Yalnız layout və statik label-lər lokalizasiya olunur.
+    /// Calculation logic-ə toxunmur — bütün dəyərlər TranscriptDto-dan (AcademicPerformanceService
+    /// + TranscriptResultCalculator) gəlir. Yalnız layout və statik label-lər lokalizasiya olunur.
+    /// QR doğrulama və Acadex 360 Digital Verification Seal əlavə olunub.
     /// </summary>
     public class TranscriptPdfService : ITranscriptPdfService
     {
@@ -30,7 +35,7 @@ namespace SIS.API.Services
         private const string Border = "#E2E8F0";
         private const string SoftBg = "#F8FAFC";
 
-        public byte[] GeneratePdf(TranscriptDto data, string? lang = "az")
+        public byte[] GeneratePdf(TranscriptDto data, string? lang = "az", byte[]? qrPng = null)
         {
             var L = PdfLocalization.Normalize(lang);
             string T(string key) => PdfLocalization.T(key, L);
@@ -45,13 +50,15 @@ namespace SIS.API.Services
                     page.DefaultTextStyle(x => x.FontSize(9).FontFamily("Lato").FontColor(Navy));
 
                     ComposeHeader(page, data, T, L);
-                    ComposeContent(page, data, T, L);
+                    ComposeContent(page, data, T, L, qrPng);
                     ComposeFooter(page, data, T);
                 });
             });
 
             return document.GeneratePdf();
         }
+
+        private bool IsFinal(TranscriptDto data) => data.TranscriptType == TranscriptType.Final;
 
         // ── HEADER ──
         private void ComposeHeader(PageDescriptor page, TranscriptDto data, Func<string, string> T, string lang)
@@ -69,10 +76,17 @@ namespace SIS.API.Services
                         });
                         c.Item().Text(T("Platform")).FontSize(8).FontColor("#A5B4FC");
                     });
-                    row.ConstantItem(210).AlignRight().Column(c =>
+                    row.ConstantItem(220).AlignRight().Column(c =>
                     {
                         c.Item().AlignRight().Text(T("Transcript").ToUpperInvariant()).Bold().FontSize(13).FontColor("#FFFFFF");
-                        c.Item().AlignRight().Text($"{T("GeneratedAt")}: {data.GeneratedAt:dd.MM.yyyy HH:mm}").FontSize(7.5f).FontColor("#CBD5E1");
+                        // Transcript type rozeti
+                        var typeText = IsFinal(data) ? T("FinalTranscript") : T("ProgressTranscript");
+                        var typeBg = IsFinal(data) ? "#34D399" : "#FBBF24";
+                        c.Item().PaddingTop(3).AlignRight().Background(typeBg).PaddingHorizontal(8).PaddingVertical(2)
+                            .Text(typeText.ToUpperInvariant()).Bold().FontSize(7.5f).FontColor(Navy);
+                        c.Item().PaddingTop(3).AlignRight().Text($"{T("GeneratedAt")}: {data.GeneratedAt:dd.MM.yyyy HH:mm}").FontSize(7.5f).FontColor("#CBD5E1");
+                        if (!string.IsNullOrEmpty(data.VerificationCode))
+                            c.Item().AlignRight().Text($"{T("VerificationCode")}: {data.VerificationCode}").FontSize(7).FontColor("#94A3B8");
                         c.Item().AlignRight().Text($"LANG: {lang.ToUpperInvariant()}").FontSize(7).FontColor("#64748B");
                     });
                 });
@@ -81,11 +95,14 @@ namespace SIS.API.Services
         }
 
         // ── CONTENT ──
-        private void ComposeContent(PageDescriptor page, TranscriptDto data, Func<string, string> T, string lang)
+        private void ComposeContent(PageDescriptor page, TranscriptDto data, Func<string, string> T, string lang, byte[]? qrPng)
         {
             page.Content().PaddingTop(12).Column(col =>
             {
                 col.Spacing(12);
+
+                // ── Transcript type note (Progress / Final) ──
+                col.Item().Element(c => TranscriptTypeNote(c, data, T));
 
                 // ── Student + Course info (2 column) ──
                 col.Item().Row(row =>
@@ -108,20 +125,18 @@ namespace SIS.API.Services
                     }));
                 });
 
-                // ── Academic summary cards (4 box) ──
+                // ── Academic summary cards (5 box) ──
                 col.Item().Row(row =>
                 {
-                    row.Spacing(10);
+                    row.Spacing(8);
                     var attClr = data.AttendancePercentage >= 80 ? Success : data.AttendancePercentage >= 60 ? Warning : Danger;
                     var gradeClr = data.OfficialGrade >= 70 ? Success : data.OfficialGrade >= 50 ? Warning : Danger;
 
                     SummaryCard(row.RelativeItem(), T("Attendance"), $"{data.AttendancePercentage:F1}%", attClr);
                     SummaryCard(row.RelativeItem(), T("OfficialGrade"), $"{data.OfficialGrade:F1}%", gradeClr);
                     SummaryCard(row.RelativeItem(), T("GPA"), data.GPA.ToString("F2"), Primary);
-
-                    var certText = data.CertificateEligible ? T("Eligible") : T("NotEligible");
-                    var certClr = data.CertificateEligible ? Success : Danger;
-                    SummaryCard(row.RelativeItem(), T("CertificateStatus"), certText, certClr);
+                    SummaryCard(row.RelativeItem(), T("CertificateStatus"), T(data.CertificateStatus), CertColor(data.CertificateStatus));
+                    SummaryCard(row.RelativeItem(), T("CompletionLevel"), T(data.CompletionLevel), LevelColor(data.CompletionLevel));
                 });
 
                 // ── Attendance breakdown ──
@@ -132,7 +147,8 @@ namespace SIS.API.Services
                     StatBox(row.RelativeItem(), T("Present"), data.PresentCount.ToString(), Success);
                     StatBox(row.RelativeItem(), T("Late"), data.LateCount.ToString(), Warning);
                     StatBox(row.RelativeItem(), T("Absent"), data.AbsentCount.ToString(), Danger);
-                    StatBox(row.RelativeItem(), T("TotalSessions"), data.TotalSessions.ToString(), Muted);
+                    StatBox(row.RelativeItem(), T("Excused"), data.ExcusedCount.ToString(), Muted);
+                    StatBox(row.RelativeItem(), T("TakenSessions"), data.AttendanceTakenSessions.ToString(), Muted);
                     var attClr = data.AttendancePercentage >= 80 ? Success : data.AttendancePercentage >= 60 ? Warning : Danger;
                     StatBox(row.RelativeItem(), T("AttendancePercentage"), $"{data.AttendancePercentage:F1}%", attClr);
                 });
@@ -157,6 +173,9 @@ namespace SIS.API.Services
 
                 // ── Final result ──
                 col.Item().Element(c => FinalResultCard(c, data, T));
+
+                // ── QR verification + Digital seal ──
+                col.Item().Element(c => VerificationAndSeal(c, data, T, qrPng));
             });
         }
 
@@ -177,6 +196,25 @@ namespace SIS.API.Services
                         text.Span(" / ").FontSize(7).FontColor(Muted);
                         text.TotalPages().FontSize(7).FontColor(Muted);
                     });
+                });
+            });
+        }
+
+        // ── Transcript type note banner ──
+        private void TranscriptTypeNote(IContainer c, TranscriptDto data, Func<string, string> T)
+        {
+            var final = IsFinal(data);
+            var accent = final ? Primary : Warning;
+            var bg = final ? PrimaryLight : "#FEF3C7";
+            var noteKey = final ? "FinalNote" : "ProgressNote";
+            c.Border(0.75f).BorderColor(accent).Background(bg).Padding(8).Row(row =>
+            {
+                row.ConstantItem(4).Background(accent);
+                row.RelativeItem().PaddingLeft(8).Column(cc =>
+                {
+                    cc.Item().Text($"{T("TranscriptType")}: {(final ? T("FinalTranscript") : T("ProgressTranscript"))}")
+                        .Bold().FontSize(9).FontColor(Navy);
+                    cc.Item().PaddingTop(1).Text(T(noteKey)).FontSize(7.5f).Italic().FontColor(Muted);
                 });
             });
         }
@@ -206,10 +244,10 @@ namespace SIS.API.Services
             c.Border(0.75f).BorderColor(Border).Background(SoftBg).Column(col =>
             {
                 col.Item().Height(3).Background(color);
-                col.Item().Padding(10).Column(cc =>
+                col.Item().Padding(8).Column(cc =>
                 {
-                    cc.Item().AlignCenter().Text(value).Bold().FontSize(15).FontColor(color);
-                    cc.Item().AlignCenter().PaddingTop(2).Text(label).FontSize(7).FontColor(Muted);
+                    cc.Item().AlignCenter().Text(value).Bold().FontSize(12).FontColor(color);
+                    cc.Item().AlignCenter().PaddingTop(2).Text(label).FontSize(6.5f).FontColor(Muted);
                 });
             });
         }
@@ -238,13 +276,14 @@ namespace SIS.API.Services
             {
                 table.ColumnsDefinition(cols =>
                 {
-                    cols.RelativeColumn(3);   // Assessment
-                    cols.RelativeColumn(1.6f); // Type
-                    cols.RelativeColumn(1.2f); // Date
-                    cols.RelativeColumn(1);   // Max
-                    cols.RelativeColumn(1);   // Score
-                    cols.RelativeColumn(1);   // Weight
-                    cols.RelativeColumn(1.3f); // Contribution
+                    cols.RelativeColumn(2.6f);  // Assessment
+                    cols.RelativeColumn(1.5f);  // Type
+                    cols.RelativeColumn(1.1f);  // Date
+                    cols.RelativeColumn(0.9f);  // Max
+                    cols.RelativeColumn(0.9f);  // Score
+                    cols.RelativeColumn(0.9f);  // Weight
+                    cols.RelativeColumn(1.2f);  // Contribution
+                    cols.RelativeColumn(1.2f);  // Status
                 });
 
                 // Header
@@ -255,6 +294,7 @@ namespace SIS.API.Services
                 table.Cell().Background(Primary).PaddingVertical(5).PaddingHorizontal(5).AlignRight().Text(T("Score")).FontSize(7.5f).Bold().FontColor("#FFFFFF");
                 table.Cell().Background(Primary).PaddingVertical(5).PaddingHorizontal(5).AlignRight().Text(T("Weight")).FontSize(7.5f).Bold().FontColor("#FFFFFF");
                 table.Cell().Background(Primary).PaddingVertical(5).PaddingHorizontal(5).AlignRight().Text(T("Contribution")).FontSize(7.5f).Bold().FontColor("#FFFFFF");
+                table.Cell().Background(Primary).PaddingVertical(5).PaddingHorizontal(5).Text(T("Status")).FontSize(7.5f).Bold().FontColor("#FFFFFF");
 
                 bool alt = false;
                 foreach (var a in data.OfficialAssessments)
@@ -262,6 +302,8 @@ namespace SIS.API.Services
                     var bg = alt ? SoftBg : "#FFFFFF";
                     alt = !alt;
                     var scoreClr = !a.IsGraded ? Muted : a.Percentage >= 70 ? Success : a.Percentage >= 50 ? Warning : Danger;
+                    var statusText = a.IsGraded ? T("Graded") : T("NotGraded");
+                    var statusClr = a.IsGraded ? Success : Muted;
 
                     table.Cell().Background(bg).BorderBottom(0.5f).BorderColor(Border).Padding(5).Text(a.Title).FontSize(8);
                     table.Cell().Background(bg).BorderBottom(0.5f).BorderColor(Border).Padding(5).Text(a.Type).FontSize(8);
@@ -270,6 +312,7 @@ namespace SIS.API.Services
                     table.Cell().Background(bg).BorderBottom(0.5f).BorderColor(Border).Padding(5).AlignRight().Text(a.IsGraded ? a.Score?.ToString("F1") ?? "—" : "—").FontSize(8).FontColor(scoreClr);
                     table.Cell().Background(bg).BorderBottom(0.5f).BorderColor(Border).Padding(5).AlignRight().Text($"{a.WeightPercent:F0}%").FontSize(8);
                     table.Cell().Background(bg).BorderBottom(0.5f).BorderColor(Border).Padding(5).AlignRight().Text(a.IsGraded ? a.WeightedScore?.ToString("F2") ?? "—" : "—").FontSize(8);
+                    table.Cell().Background(bg).BorderBottom(0.5f).BorderColor(Border).Padding(5).Text(statusText).FontSize(7.5f).FontColor(statusClr);
                 }
             });
         }
@@ -334,39 +377,126 @@ namespace SIS.API.Services
         private void FinalResultCard(IContainer c, TranscriptDto data, Func<string, string> T)
         {
             var gradeClr = data.OfficialGrade >= 70 ? Success : data.OfficialGrade >= 50 ? Warning : Danger;
-            // Nəticə: keçdi/keçmədi — sertifikat eligibility ilə uyğun (calculation toxunulmur)
-            var resultText = data.CertificateEligible ? T("Passed") : (data.OfficialGrade >= 50 ? T("Pending") : T("Failed"));
-            var resultClr = data.CertificateEligible ? Success : (data.OfficialGrade >= 50 ? Warning : Danger);
 
             c.PaddingTop(6).Border(1).BorderColor(Border).Background(SoftBg).Padding(14).Column(col =>
             {
                 col.Item().Text(T("FinalResult").ToUpperInvariant()).Bold().FontSize(10).FontColor(Navy);
+
+                // Sətir 1: Transcript type · Official grade · GPA · Attendance
                 col.Item().PaddingTop(8).Row(row =>
                 {
-                    row.RelativeItem().Column(cc =>
-                    {
-                        cc.Item().Text(T("OfficialGrade")).FontSize(8).FontColor(Muted);
-                        cc.Item().Text($"{data.OfficialGrade:F1}%").Bold().FontSize(13).FontColor(gradeClr);
-                    });
-                    row.RelativeItem().Column(cc =>
-                    {
-                        cc.Item().Text(T("GPA")).FontSize(8).FontColor(Muted);
-                        cc.Item().Text(data.GPA.ToString("F2")).Bold().FontSize(13).FontColor(Primary);
-                    });
-                    row.RelativeItem().Column(cc =>
-                    {
-                        cc.Item().Text(T("Result")).FontSize(8).FontColor(Muted);
-                        cc.Item().Text(resultText).Bold().FontSize(13).FontColor(resultClr);
-                    });
-                    row.RelativeItem().Column(cc =>
-                    {
-                        cc.Item().Text(T("CertificateStatus")).FontSize(8).FontColor(Muted);
-                        cc.Item().Text(data.CertificateEligible ? T("Eligible") : T("NotEligible"))
-                            .Bold().FontSize(12).FontColor(data.CertificateEligible ? Success : Danger);
-                    });
+                    ResultField(row.RelativeItem(), T("TranscriptType"),
+                        IsFinal(data) ? T("FinalTranscript") : T("ProgressTranscript"),
+                        IsFinal(data) ? Primary : Warning, 11);
+                    ResultField(row.RelativeItem(), T("OfficialGrade"), $"{data.OfficialGrade:F1}%", gradeClr, 13);
+                    ResultField(row.RelativeItem(), T("GPA"), data.GPA.ToString("F2"), Primary, 13);
+                    ResultField(row.RelativeItem(), T("Attendance"), $"{data.AttendancePercentage:F1}%",
+                        data.AttendancePercentage >= 70 ? Success : Danger, 13);
                 });
-                col.Item().PaddingTop(8).Text(T("CertificateCondition")).FontSize(7).Italic().FontColor(Muted);
+
+                // Sətir 2: Completion status · Academic distinction · Certificate eligibility
+                col.Item().PaddingTop(10).Row(row =>
+                {
+                    ResultField(row.RelativeItem(), T("CompletionStatus"), T(data.CompletionStatus),
+                        data.CompletionStatus == "Completed" ? Success : Warning, 11);
+                    ResultField(row.RelativeItem(), T("AcademicDistinction"), T(data.CompletionLevel),
+                        LevelColor(data.CompletionLevel), 11);
+                    ResultField(row.RelativeItem(), T("CertificateEligibility"), T(data.CertificateStatus),
+                        CertColor(data.CertificateStatus), 11);
+                });
+
+                col.Item().PaddingTop(8).Text(IsFinal(data) ? T("FinalNote") : T("ProgressNote"))
+                    .FontSize(7).Italic().FontColor(Muted);
             });
         }
+
+        private void ResultField(IContainer c, string label, string value, string color, float size)
+        {
+            c.Column(cc =>
+            {
+                cc.Item().Text(label).FontSize(7.5f).FontColor(Muted);
+                cc.Item().Text(value).Bold().FontSize(size).FontColor(color);
+            });
+        }
+
+        // ── QR verification + Acadex 360 Digital Verification Seal ──
+        private void VerificationAndSeal(IContainer c, TranscriptDto data, Func<string, string> T, byte[]? qrPng)
+        {
+            c.PaddingTop(8).Border(0.75f).BorderColor(Border).Background("#FFFFFF").Padding(12).Row(row =>
+            {
+                row.Spacing(14);
+
+                // Sol: QR doğrulama
+                row.RelativeItem().Row(qr =>
+                {
+                    qr.Spacing(10);
+                    if (qrPng != null)
+                        qr.ConstantItem(92).Height(92).Image(qrPng).FitArea();
+                    qr.RelativeItem().AlignMiddle().Column(cc =>
+                    {
+                        cc.Item().Text(T("VerifyDocument").ToUpperInvariant()).Bold().FontSize(9).FontColor(Primary);
+                        cc.Item().PaddingTop(2).Text(T("ScanToVerify")).FontSize(7.5f).FontColor(Navy);
+                        if (!string.IsNullOrEmpty(data.VerificationCode))
+                            cc.Item().PaddingTop(4).Text($"{T("VerificationCode")}: ").FontSize(7.5f).FontColor(Muted);
+                        if (!string.IsNullOrEmpty(data.VerificationCode))
+                            cc.Item().Text(data.VerificationCode!).Bold().FontSize(11).FontColor(Navy);
+                        if (!string.IsNullOrEmpty(data.VerificationUrl))
+                            cc.Item().PaddingTop(2).Text(data.VerificationUrl!).FontSize(6.5f).FontColor(Primary);
+                    });
+                });
+
+                // Sağ: rəqəmsal möhür + qeyd
+                row.ConstantItem(190).Row(s =>
+                {
+                    s.ConstantItem(96).Height(96).Element(seal => DigitalSeal(seal, data, T));
+                    s.RelativeItem().PaddingLeft(8).AlignMiddle().Column(cc =>
+                    {
+                        cc.Item().Text(IsFinal(data) ? T("SealVerified") : T("SealGenerated")).Bold().FontSize(8).FontColor(Navy);
+                        cc.Item().Text(IsFinal(data) ? T("SealFinalRecord") : T("SealProgressRecord")).FontSize(7).FontColor(Muted);
+                        cc.Item().PaddingTop(4).Text(T("SealNote")).FontSize(6.5f).Italic().FontColor(Muted);
+                        cc.Item().PaddingTop(2).Text(T("NotDiplomaNote")).FontSize(6.5f).Italic().FontColor(Muted);
+                    });
+                });
+            });
+        }
+
+        // Rəqəmsal möhür — yalnız QuestPDF primitivləri (ikiqat çərçivəli emblem).
+        // Mətn Lato fontu ilə yazılır (AZ/EN/RU + Kiril dəstəkli); xarici asılılıq yoxdur.
+        private void DigitalSeal(IContainer c, TranscriptDto data, Func<string, string> T)
+        {
+            var final = IsFinal(data);
+            var ring = final ? Primary : Warning;
+            var innerC = final ? Accent : "#B45309";
+            var bgTint = final ? PrimaryLight : "#FEF3C7";
+            var shortWord = (final ? T("SealVerifiedShort") : T("SealGeneratedShort")).ToUpperInvariant();
+
+            c.Border(2).BorderColor(ring).Background(bgTint).Padding(2)
+             .Border(0.8f).BorderColor(innerC).Padding(5).AlignMiddle().Column(col =>
+             {
+                 col.Item().PaddingBottom(3).AlignCenter().Width(22).Height(3).Background(ring);
+                 col.Item().AlignCenter().Text("ACADEX 360").Bold().FontSize(9).FontColor(ring);
+                 col.Item().AlignCenter().Text(shortWord).Bold().FontSize(7).FontColor(innerC);
+                 col.Item().PaddingVertical(3).LineHorizontal(0.6f).LineColor(ring);
+                 col.Item().AlignCenter().Text(T("SealDigital")).FontSize(5).FontColor(Muted);
+             });
+        }
+
+        // ── Rəng köməkçiləri ──
+        private static string CertColor(string cert) => cert switch
+        {
+            "Eligible" => Success,
+            "NotEligible" => Danger,
+            _ => Warning // Pending
+        };
+
+        private static string LevelColor(string level) => level switch
+        {
+            "HighHonorCompletion" => Accent,
+            "HonorCompletion" => Primary,
+            "NormalCompletion" => Success,
+            "NotCompleted" => Danger,
+            "NotEligible" => Danger,
+            _ => Muted // Pending
+        };
     }
 }

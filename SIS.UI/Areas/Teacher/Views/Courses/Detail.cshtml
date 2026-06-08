@@ -323,8 +323,8 @@
                             <td>@a.MaxScore</td>
                             <td>%@a.WeightPercent</td>
                             <td>
-                                <span style="color:@(a.GradedCount == a.SubmissionCount && a.SubmissionCount > 0 ? "#22c55e" : "#eab308");">
-                                    @a.GradedCount / @a.SubmissionCount
+                                <span style="color:@(a.GradedCount == a.TotalStudentCount && a.TotalStudentCount > 0 ? "#22c55e" : "#eab308");">
+                                    @a.GradedCount / @a.TotalStudentCount
                                 </span>
                             </td>
                             <td>

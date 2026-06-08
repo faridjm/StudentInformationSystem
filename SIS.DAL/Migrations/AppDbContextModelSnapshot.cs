@@ -1427,6 +1427,9 @@ namespace SIS.DAL.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<int?>("RoomId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
@@ -1441,6 +1444,8 @@ namespace SIS.DAL.Migrations
                     b.HasIndex("AcademicYearId");
 
                     b.HasIndex("CourseId");
+
+                    b.HasIndex("RoomId");
 
                     b.HasIndex("TeacherId");
 
@@ -1695,21 +1700,53 @@ namespace SIS.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("AdminNote").HasMaxLength(2000).HasColumnType("nvarchar(2000)");
-                    b.Property<DateTime>("CreatedAt").HasColumnType("datetime2");
-                    b.Property<string>("Email").IsRequired().HasMaxLength(200).HasColumnType("nvarchar(200)");
-                    b.Property<string>("FullName").IsRequired().HasMaxLength(150).HasColumnType("nvarchar(150)");
-                    b.Property<bool>("IsDeleted").HasColumnType("bit");
-                    b.Property<string>("Message").IsRequired().HasMaxLength(2000).HasColumnType("nvarchar(2000)");
-                    b.Property<string>("Phone").HasMaxLength(40).HasColumnType("nvarchar(40)");
-                    b.Property<int>("Status").HasColumnType("int");
-                    b.Property<string>("Subject").HasMaxLength(200).HasColumnType("nvarchar(200)");
-                    b.Property<DateTime?>("UpdatedAt").HasColumnType("datetime2");
+                    b.Property<string>("AdminNote")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<string>("Phone")
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Subject")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
                     b.HasIndex("CreatedAt");
+
                     b.HasIndex("Email");
+
                     b.HasIndex("Status");
+
                     b.ToTable("PublicContactMessages");
                 });
 
@@ -1721,24 +1758,60 @@ namespace SIS.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("CareerOutcomes").HasMaxLength(4000).HasColumnType("nvarchar(4000)");
-                    b.Property<int>("CourseId").HasColumnType("int");
-                    b.Property<string>("CoverImageUrl").HasMaxLength(500).HasColumnType("nvarchar(500)");
-                    b.Property<DateTime>("CreatedAt").HasColumnType("datetime2");
-                    b.Property<bool>("IsDeleted").HasColumnType("bit");
-                    b.Property<bool>("IsFeatured").HasColumnType("bit");
-                    b.Property<bool>("IsVisible").HasColumnType("bit");
-                    b.Property<string>("PublicDescription").HasMaxLength(4000).HasColumnType("nvarchar(4000)");
-                    b.Property<string>("PublicShortDescription").HasMaxLength(500).HasColumnType("nvarchar(500)");
-                    b.Property<string>("PublicTitle").HasMaxLength(200).HasColumnType("nvarchar(200)");
-                    b.Property<int>("SortOrder").HasColumnType("int");
-                    b.Property<DateTime?>("UpdatedAt").HasColumnType("datetime2");
-                    b.Property<string>("WhatYouWillLearn").HasMaxLength(4000).HasColumnType("nvarchar(4000)");
+                    b.Property<string>("CareerOutcomes")
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
+
+                    b.Property<int>("CourseId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CoverImageUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsFeatured")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsVisible")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("PublicDescription")
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
+
+                    b.Property<string>("PublicShortDescription")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("PublicTitle")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("WhatYouWillLearn")
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
 
                     b.HasKey("Id");
-                    b.HasIndex("CourseId").IsUnique();
+
+                    b.HasIndex("CourseId")
+                        .IsUnique();
+
                     b.HasIndex("IsVisible");
+
                     b.HasIndex("SortOrder");
+
                     b.ToTable("PublicCourseProfiles");
                 });
 
@@ -1750,20 +1823,47 @@ namespace SIS.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("Capacity").HasColumnType("int");
-                    b.Property<DateTime>("CreatedAt").HasColumnType("datetime2");
-                    b.Property<string>("Description").HasMaxLength(1000).HasColumnType("nvarchar(1000)");
-                    b.Property<string>("ImageUrl").HasMaxLength(500).HasColumnType("nvarchar(500)");
-                    b.Property<bool>("IsDeleted").HasColumnType("bit");
-                    b.Property<bool>("IsVisible").HasColumnType("bit");
-                    b.Property<int>("SortOrder").HasColumnType("int");
-                    b.Property<string>("Title").IsRequired().HasMaxLength(200).HasColumnType("nvarchar(200)");
-                    b.Property<string>("Type").HasMaxLength(80).HasColumnType("nvarchar(80)");
-                    b.Property<DateTime?>("UpdatedAt").HasColumnType("datetime2");
+                    b.Property<int?>("Capacity")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("ImageUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsVisible")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Type")
+                        .HasMaxLength(80)
+                        .HasColumnType("nvarchar(80)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
                     b.HasIndex("IsVisible");
+
                     b.HasIndex("SortOrder");
+
                     b.ToTable("PublicFacilities");
                 });
 
@@ -1775,18 +1875,41 @@ namespace SIS.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Answer").IsRequired().HasMaxLength(3000).HasColumnType("nvarchar(3000)");
-                    b.Property<string>("Category").HasMaxLength(80).HasColumnType("nvarchar(80)");
-                    b.Property<DateTime>("CreatedAt").HasColumnType("datetime2");
-                    b.Property<bool>("IsDeleted").HasColumnType("bit");
-                    b.Property<bool>("IsVisible").HasColumnType("bit");
-                    b.Property<string>("Question").IsRequired().HasMaxLength(300).HasColumnType("nvarchar(300)");
-                    b.Property<int>("SortOrder").HasColumnType("int");
-                    b.Property<DateTime?>("UpdatedAt").HasColumnType("datetime2");
+                    b.Property<string>("Answer")
+                        .IsRequired()
+                        .HasMaxLength(3000)
+                        .HasColumnType("nvarchar(3000)");
+
+                    b.Property<string>("Category")
+                        .HasMaxLength(80)
+                        .HasColumnType("nvarchar(80)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsVisible")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Question")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
                     b.HasIndex("IsVisible");
+
                     b.HasIndex("SortOrder");
+
                     b.ToTable("PublicFaqs");
                 });
 
@@ -1798,23 +1921,56 @@ namespace SIS.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("CreatedAt").HasColumnType("datetime2");
-                    b.Property<string>("CurrentPosition").HasMaxLength(200).HasColumnType("nvarchar(200)");
-                    b.Property<string>("FullName").IsRequired().HasMaxLength(150).HasColumnType("nvarchar(150)");
-                    b.Property<string>("GraduatedCourse").HasMaxLength(200).HasColumnType("nvarchar(200)");
-                    b.Property<int?>("GraduationYear").HasColumnType("int");
-                    b.Property<bool>("IsDeleted").HasColumnType("bit");
-                    b.Property<bool>("IsFeatured").HasColumnType("bit");
-                    b.Property<bool>("IsVisible").HasColumnType("bit");
-                    b.Property<string>("PhotoUrl").HasMaxLength(500).HasColumnType("nvarchar(500)");
-                    b.Property<int>("SortOrder").HasColumnType("int");
-                    b.Property<string>("Story").HasMaxLength(2000).HasColumnType("nvarchar(2000)");
-                    b.Property<DateTime?>("UpdatedAt").HasColumnType("datetime2");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CurrentPosition")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("GraduatedCourse")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int?>("GraduationYear")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsFeatured")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsVisible")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("PhotoUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Story")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
                     b.HasIndex("IsFeatured");
+
                     b.HasIndex("IsVisible");
+
                     b.HasIndex("SortOrder");
+
                     b.ToTable("PublicGraduateStories");
                 });
 
@@ -1826,24 +1982,60 @@ namespace SIS.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Bio").HasMaxLength(2000).HasColumnType("nvarchar(2000)");
-                    b.Property<DateTime>("CreatedAt").HasColumnType("datetime2");
-                    b.Property<string>("DisplayName").HasMaxLength(150).HasColumnType("nvarchar(150)");
-                    b.Property<bool>("IsDeleted").HasColumnType("bit");
-                    b.Property<bool>("IsFeatured").HasColumnType("bit");
-                    b.Property<bool>("IsVisible").HasColumnType("bit");
-                    b.Property<string>("LinkedInUrl").HasMaxLength(500).HasColumnType("nvarchar(500)");
-                    b.Property<string>("PhotoUrl").HasMaxLength(500).HasColumnType("nvarchar(500)");
-                    b.Property<string>("PublicTitle").HasMaxLength(200).HasColumnType("nvarchar(200)");
-                    b.Property<int>("SortOrder").HasColumnType("int");
-                    b.Property<string>("Specialization").HasMaxLength(300).HasColumnType("nvarchar(300)");
-                    b.Property<int>("TeacherId").HasColumnType("int");
-                    b.Property<DateTime?>("UpdatedAt").HasColumnType("datetime2");
+                    b.Property<string>("Bio")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DisplayName")
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsFeatured")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsVisible")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LinkedInUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("PhotoUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("PublicTitle")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Specialization")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<int>("TeacherId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
                     b.HasIndex("IsVisible");
+
                     b.HasIndex("SortOrder");
-                    b.HasIndex("TeacherId").IsUnique();
+
+                    b.HasIndex("TeacherId")
+                        .IsUnique();
+
                     b.ToTable("PublicTeacherProfiles");
                 });
 
@@ -2114,6 +2306,63 @@ namespace SIS.DAL.Migrations
                     b.ToTable("RefreshTokens");
                 });
 
+            modelBuilder.Entity("SIS.Entities.Models.Room", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Capacity")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Code")
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("Floor")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Location")
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsActive");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Rooms");
+                });
+
             modelBuilder.Entity("SIS.Entities.Models.Student", b =>
                 {
                     b.Property<int>("Id")
@@ -2194,6 +2443,90 @@ namespace SIS.DAL.Migrations
                         .IsUnique();
 
                     b.ToTable("Teachers");
+                });
+
+            modelBuilder.Entity("SIS.Entities.Models.TranscriptVerification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<double>("AttendancePercentage")
+                        .HasColumnType("float");
+
+                    b.Property<string>("CertificateStatus")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
+                    b.Property<string>("CompletionLevel")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("EnrollmentId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("GPA")
+                        .HasColumnType("decimal(4,2)");
+
+                    b.Property<int>("GroupId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsRevoked")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("IssuedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Language")
+                        .IsRequired()
+                        .HasMaxLength(8)
+                        .HasColumnType("nvarchar(8)");
+
+                    b.Property<decimal>("OfficialGrade")
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<DateTime?>("RevokedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("StudentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TranscriptType")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("VerificationCode")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EnrollmentId");
+
+                    b.HasIndex("GroupId");
+
+                    b.HasIndex("StudentId");
+
+                    b.HasIndex("VerificationCode")
+                        .IsUnique();
+
+                    b.ToTable("TranscriptVerifications");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -2456,6 +2789,11 @@ namespace SIS.DAL.Migrations
 
             modelBuilder.Entity("SIS.Entities.Models.CourseApplication", b =>
                 {
+                    b.HasOne("SIS.Entities.Models.Student", "ConvertedStudent")
+                        .WithMany()
+                        .HasForeignKey("ConvertedStudentId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("SIS.Entities.Models.Course", "Course")
                         .WithMany()
                         .HasForeignKey("CourseId")
@@ -2464,11 +2802,6 @@ namespace SIS.DAL.Migrations
                     b.HasOne("SIS.Entities.Models.Group", "Group")
                         .WithMany()
                         .HasForeignKey("GroupId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.HasOne("SIS.Entities.Models.Student", "ConvertedStudent")
-                        .WithMany()
-                        .HasForeignKey("ConvertedStudentId")
                         .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("ConvertedStudent");
@@ -2554,6 +2887,11 @@ namespace SIS.DAL.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("SIS.Entities.Models.Room", "Room")
+                        .WithMany("Groups")
+                        .HasForeignKey("RoomId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("SIS.Entities.Models.Teacher", "Teacher")
                         .WithMany("Groups")
                         .HasForeignKey("TeacherId")
@@ -2563,6 +2901,8 @@ namespace SIS.DAL.Migrations
                     b.Navigation("AcademicYear");
 
                     b.Navigation("Course");
+
+                    b.Navigation("Room");
 
                     b.Navigation("Teacher");
                 });
@@ -2886,6 +3226,11 @@ namespace SIS.DAL.Migrations
             modelBuilder.Entity("SIS.Entities.Models.QuizQuestion", b =>
                 {
                     b.Navigation("Options");
+                });
+
+            modelBuilder.Entity("SIS.Entities.Models.Room", b =>
+                {
+                    b.Navigation("Groups");
                 });
 
             modelBuilder.Entity("SIS.Entities.Models.Student", b =>

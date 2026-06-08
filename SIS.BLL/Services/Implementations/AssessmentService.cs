@@ -15,13 +15,36 @@ namespace SIS.BLL.Services.Implementations
         public async Task<IEnumerable<AssessmentItemDto>> GetByGroupAsync(int groupId)
         {
             var items = await _unitOfWork.AssessmentItems.GetByGroupAsync(groupId);
-            return items.Select(MapToDto);
+
+            // Qrupdakı real-time aktiv enrolled tələbə sayını bir dəfə hesabla
+            var enrollments = await _unitOfWork.Enrollments.GetByGroupAsync(groupId);
+            var totalStudents = enrollments
+                .Count(e => !e.IsDeleted &&
+                            e.Status == SIS.Entities.Enums.EnrollmentStatus.Active &&
+                            e.Student != null && !e.Student.IsDeleted);
+
+            return items.Select(a =>
+            {
+                var dto = MapToDto(a);
+                dto.TotalStudentCount = totalStudents;
+                return dto;
+            });
         }
 
         public async Task<AssessmentItemDto?> GetByIdAsync(int id)
         {
-            var item = await _unitOfWork.AssessmentItems.GetByIdAsync(id);
-            return item == null ? null : MapToDto(item);
+            // Submissions include olmadan GradedCount yanlış olur — WithSubmissions istifadə edirik
+            var item = await _unitOfWork.AssessmentItems.GetWithSubmissionsAsync(id);
+            if (item == null) return null;
+
+            var dto = MapToDto(item);
+            // Total student count
+            var enrollments = await _unitOfWork.Enrollments.GetByGroupAsync(item.GroupId);
+            dto.TotalStudentCount = enrollments
+                .Count(e => !e.IsDeleted &&
+                            e.Status == SIS.Entities.Enums.EnrollmentStatus.Active &&
+                            e.Student != null && !e.Student.IsDeleted);
+            return dto;
         }
 
         public async Task<AssessmentItemDto> CreateAsync(CreateAssessmentItemDto dto)

@@ -1,0 +1,72 @@
+@model IEnumerable<SIS.BLL.Services.DTOs.Room.RoomDto>
+@{
+    ViewData["Title"] = "Otaqlar";
+}
+
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+    <h2 style="font-size:20px; font-weight:700;"><i class="fas fa-door-open"></i> Otaqlar</h2>
+    <a href="/Admin/Room/Create" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Yeni otaq
+    </a>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<div class="card">
+    <div style="overflow-x:auto;">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Ad</th>
+                    <th>Kod</th>
+                    <th>Növ</th>
+                    <th>Tutum</th>
+                    <th>Qruplar</th>
+                    <th>Status</th>
+                    <th>Əməliyyatlar</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var r in Model)
+                {
+                    <tr>
+                        <td style="font-weight:600;">@r.Name</td>
+                        <td>@(r.Code ?? "—")</td>
+                        <td>@r.Type</td>
+                        <td>@r.Capacity</td>
+                        <td>@r.AssignedGroupsCount</td>
+                        <td>
+                            @if (r.IsActive)
+                            {
+                                <span class="badge badge-success">Aktiv</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-danger">Deaktiv</span>
+                            }
+                        </td>
+                        <td style="white-space:nowrap;">
+                            <a href="/Admin/Room/Details/@r.Id" class="btn btn-sm btn-secondary"><i class="fas fa-calendar-week"></i></a>
+                            <a href="/Admin/Room/Edit/@r.Id" class="btn btn-sm btn-secondary"><i class="fas fa-edit"></i></a>
+                            <form method="post" action="/Admin/Room/ToggleActive" style="display:inline;">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@r.Id" />
+                                <input type="hidden" name="active" value="@((!r.IsActive).ToString().ToLower())" />
+                                <button type="submit" class="btn btn-sm @(r.IsActive ? "btn-warning" : "btn-success")">
+                                    @(r.IsActive ? "Deaktiv et" : "Aktiv et")
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

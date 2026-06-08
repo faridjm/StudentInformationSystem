@@ -74,6 +74,18 @@ namespace SIS.BLL.Services.Implementations
                 IsLinkedToAssessment = s.Assignment?.AssessmentItemId != null
             }).OrderBy(a => a.DueDate).ToList();
 
+            // ── Progress / Final + Completion Level (mövcud dəyərlərdən törədilir) ──
+            // Kurs bitib sayılır: EnrollmentStatus = Completed VƏ YA Group.EndDate keçib.
+            bool courseCompleted = enrollment.Status == EnrollmentStatus.Completed
+                                   || group.EndDate.Date < DateTime.UtcNow.Date;
+
+            var result = SIS.BLL.Helpers.TranscriptResultCalculator.Compute(
+                perf.OfficialGrade,
+                perf.AttendancePercentage,
+                perf.CompletedWeight,
+                perf.TotalWeight,
+                courseCompleted);
+
             return new TranscriptDto
             {
                 StudentName = student.AppUser?.FullName ?? "",
@@ -90,9 +102,11 @@ namespace SIS.BLL.Services.Implementations
                 EndDate = group.EndDate,
 
                 TotalSessions = perf.TotalCompletedSessions,
+                AttendanceTakenSessions = perf.AttendanceTakenSessions,
                 PresentCount = perf.PresentCount,
                 LateCount = perf.LateCount,
                 AbsentCount = perf.AbsentCount,
+                ExcusedCount = perf.ExcusedCount,
                 AttendancePercentage = perf.AttendancePercentage,
 
                 OfficialAssessments = officialAssessments,
@@ -105,7 +119,17 @@ namespace SIS.BLL.Services.Implementations
 
                 PerformanceStatus = perf.PerformanceStatus,
                 CertificateEligible = perf.CertificateEligible,
-                GeneratedAt = DateTime.UtcNow
+                GeneratedAt = DateTime.UtcNow,
+
+                EnrollmentId = enrollment.Id,
+                StudentId = enrollment.StudentId,
+                GroupId = enrollment.GroupId,
+
+                IsCourseCompleted = courseCompleted,
+                TranscriptType = result.TranscriptType,
+                CompletionStatus = result.CompletionStatus,
+                CompletionLevel = result.CompletionLevel,
+                CertificateStatus = result.CertificateStatus
             };
         }
     }

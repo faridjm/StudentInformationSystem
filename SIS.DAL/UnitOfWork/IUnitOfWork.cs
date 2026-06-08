@@ -34,6 +34,8 @@ namespace SIS.DAL.UnitOfWork
         IArchiveRepository Archive { get; }
         IOnlineLessonRepository OnlineLessons { get; }
         ICourseApplicationRepository CourseApplications { get; }
+        ITranscriptVerificationRepository TranscriptVerifications { get; }
+        IRoomRepository Rooms { get; }
 
         Task<int> SaveAsync();
     }

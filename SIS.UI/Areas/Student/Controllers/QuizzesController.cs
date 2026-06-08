@@ -87,7 +87,7 @@ namespace SIS.UI.Areas.Student.Controllers
                 });
                 TempData["Success"] = $"Quiz təhvil verildi — nəticə: {res.Score}%";
                 // Tələbə dərhal sual-sual nəticəni görsün
-                return RedirectToAction("Result", new { attemptId = res.AttemptId });
+                return RedirectToAction("Result", new { id = res.AttemptId });
             }
             catch
             {
@@ -97,16 +97,32 @@ namespace SIS.UI.Areas.Student.Controllers
         }
 
         /// <summary>Sual-sual detallı nəticə (yalnız öz cəhdi).</summary>
-        public async Task<IActionResult> Result(int attemptId)
+        public async Task<IActionResult> Result(int id)
         {
             try
             {
-                var dto = await _quizApi.GetAttemptDetailAsync(attemptId);
+                var dto = await _quizApi.GetAttemptDetailAsync(id);
+                if (dto == null)
+                {
+                    TempData["Error"] = "Bu cəhd hələ təhvil verilməyib və ya tapılmadı.";
+                    return RedirectToAction("Index");
+                }
                 return View(dto);
             }
-            catch (Refit.ApiException)
+            catch (Refit.ApiException ex)
             {
-                TempData["Error"] = "Bu nəticəyə baxmaq icazəniz yoxdur";
+                string message = "Bu nəticəyə baxmaq icazəniz yoxdur";
+                try
+                {
+                    if (!string.IsNullOrEmpty(ex.Content))
+                    {
+                        var doc = System.Text.Json.JsonDocument.Parse(ex.Content);
+                        if (doc.RootElement.TryGetProperty("message", out var m)) message = m.GetString() ?? message;
+                        else if (doc.RootElement.TryGetProperty("Message", out var m2)) message = m2.GetString() ?? message;
+                    }
+                }
+                catch { }
+                TempData["Error"] = $"{message} (HTTP {(int)ex.StatusCode})";
                 return RedirectToAction("Index");
             }
         }

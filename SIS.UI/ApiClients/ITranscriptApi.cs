@@ -13,5 +13,8 @@ namespace SIS.UI.ApiClients
 
         [Post("/api/transcript/{enrollmentId}/email")]
         Task<HttpResponseMessage> SendByEmailAsync(int enrollmentId, string? lang = "az");
+
+        [Get("/api/transcript/verify/{code}")]
+        Task<TranscriptVerificationPublicDto> VerifyAsync(string code);
     }
 }

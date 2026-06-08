@@ -110,6 +110,8 @@ namespace SIS.BLL.Services.Implementations
             StudentId = e.StudentId,
             StudentName = e.Student?.AppUser?.FullName ?? "",
             StudentNumber = e.Student?.StudentNumber ?? "",
+            StudentEmail = e.Student?.AppUser?.Email,
+            StudentPhone = e.Student?.AppUser?.PhoneNumber,
             GroupId = e.GroupId,
             GroupName = e.Group?.Name ?? "",
             CourseName = e.Group?.Course?.Name ?? "",

@@ -19,6 +19,10 @@ namespace SIS.BLL.Services.DTOs.Groups
         public DeliveryMode DeliveryMode { get; set; } = DeliveryMode.InPerson;
         public OnlinePlatform? DefaultOnlinePlatform { get; set; }
         public string? DefaultMeetingUrl { get; set; }
+
+        // Real akademik otaq
+        public int? RoomId { get; set; }
+        public string? RoomName { get; set; }
     }
 
     public class GroupDetailDto : GroupListDto
@@ -45,6 +49,7 @@ namespace SIS.BLL.Services.DTOs.Groups
         public DateTime EndDate { get; set; }
         public int Capacity { get; set; }
         public int? CurriculumTemplateId { get; set; }
+        public int? RoomId { get; set; }
         public List<CreateScheduleDayDto> ScheduleDays { get; set; } = new();
 
         // Tədris formatı
@@ -70,11 +75,25 @@ namespace SIS.BLL.Services.DTOs.Groups
         public DateTime EndDate { get; set; }
         public int Capacity { get; set; }
         public bool IsActive { get; set; }
+        public int? RoomId { get; set; }
         public List<CreateScheduleDayDto> ScheduleDays { get; set; } = new();
 
         // Tədris formatı
         public DeliveryMode DeliveryMode { get; set; } = DeliveryMode.InPerson;
         public OnlinePlatform? DefaultOnlinePlatform { get; set; }
         public string? DefaultMeetingUrl { get; set; }
+
+        /// <summary>
+        /// Cədvəl dəyişəndə dərs sessiyalarını yenidən yaratmaq.
+        /// true: bütün class session-ları silinir və yeni cədvələ görə yenidən yaradılır.
+        /// false: sessions toxunulmur (yalnız metadata yenilənir).
+        /// </summary>
+        public bool RegenerateSessions { get; set; } = false;
+
+        /// <summary>
+        /// Optional: regenerate zamanı dərs sayını birbaşa təyin etmək üçün.
+        /// Null olarsa, mövcud StartDate→EndDate aralığı istifadə olunur.
+        /// </summary>
+        public int? TotalSessions { get; set; }
     }
 }

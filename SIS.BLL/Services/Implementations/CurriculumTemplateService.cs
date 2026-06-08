@@ -157,6 +157,67 @@ namespace SIS.BLL.Services.Implementations
             return MapItem(item);
         }
 
+        public async Task<List<CurriculumTemplateItemDto>> AddItemsBulkAsync(int templateId, BulkTemplateItemsDto dto)
+        {
+            var template = await _unitOfWork.CurriculumTemplates.GetWithItemsAsync(templateId)
+                ?? throw new NotFoundException("Şablon tapılmadı");
+
+            if (dto?.Sessions == null || dto.Sessions.Count == 0)
+                throw new BadRequestException("Ən azı bir sıra (session) göndərilməlidir");
+
+            var mode = (dto.Mode ?? "append").Trim().ToLowerInvariant();
+            if (mode != "replace" && mode != "append")
+                throw new BadRequestException("mode yalnız \"replace\" və ya \"append\" ola bilər");
+
+            // Batç daxili dublikat SessionNumber yoxlaması
+            var dupInBatch = dto.Sessions.GroupBy(s => s.SessionNumber).FirstOrDefault(g => g.Count() > 1);
+            if (dupInBatch != null)
+                throw new ConflictException($"Göndərilən siyahıda №{dupInBatch.Key} təkrarlanır");
+
+            // Replace: mövcud sıraları soft-delete et
+            if (mode == "replace")
+            {
+                foreach (var existing in template.Items.Where(i => !i.IsDeleted).ToList())
+                    _unitOfWork.CurriculumTemplateItems.SoftDelete(existing);
+            }
+
+            // Append: mövcudlarla dublikat yoxla
+            var existingNumbers = mode == "append"
+                ? template.Items.Where(i => !i.IsDeleted).Select(i => i.SessionNumber).ToHashSet()
+                : new HashSet<int>();
+
+            var created = new List<CurriculumTemplateItem>();
+            foreach (var s in dto.Sessions)
+            {
+                ValidateSession(s.SessionNumber, s.Topic, s.HasAssessment, s.AssessmentType, s.AssessmentTitle);
+
+                if (existingNumbers.Contains(s.SessionNumber))
+                    throw new ConflictException($"№{s.SessionNumber} dərs nömrəsi artıq mövcuddur");
+
+                var item = new CurriculumTemplateItem
+                {
+                    CurriculumTemplateId = templateId,
+                    SessionNumber = s.SessionNumber,
+                    Topic = s.Topic.Trim(),
+                    HasAssessment = s.HasAssessment,
+                    AssessmentTitle = s.HasAssessment ? s.AssessmentTitle?.Trim() : null,
+                    AssessmentType = s.HasAssessment ? s.AssessmentType : null,
+                    WeightPercent = s.HasAssessment ? s.WeightPercent : null,
+                    MaxScore = s.HasAssessment ? s.MaxScore : null,
+                    CreatedAt = DateTime.UtcNow
+                };
+                await _unitOfWork.CurriculumTemplateItems.AddAsync(item);
+                created.Add(item);
+            }
+
+            await _unitOfWork.SaveAsync();
+
+            await _audit.LogAsync("BulkCreate", "CurriculumTemplateSession", templateId.ToString(),
+                $"Şablona bulk sıra əlavə edildi ({mode}): {created.Count} sıra");
+
+            return created.OrderBy(i => i.SessionNumber).Select(MapItem).ToList();
+        }
+
         public async Task<CurriculumTemplateItemDto> UpdateItemAsync(UpdateTemplateItemDto dto)
         {
             var item = await _unitOfWork.CurriculumTemplateItems.GetByIdAsync(dto.Id)

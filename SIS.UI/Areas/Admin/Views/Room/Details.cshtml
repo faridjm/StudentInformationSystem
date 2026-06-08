@@ -1,0 +1,68 @@
+@model SIS.BLL.Services.DTOs.Room.RoomScheduleDto
+@{
+    ViewData["Title"] = "Otaq cədvəli";
+    var room = Model.Room;
+    var days = new[]
+    {
+        DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday,
+        DayOfWeek.Thursday, DayOfWeek.Friday, DayOfWeek.Saturday, DayOfWeek.Sunday
+    };
+    var dayNames = new Dictionary<DayOfWeek, string>
+    {
+        [DayOfWeek.Monday] = "Bazar ertəsi",
+        [DayOfWeek.Tuesday] = "Çərşənbə axşamı",
+        [DayOfWeek.Wednesday] = "Çərşənbə",
+        [DayOfWeek.Thursday] = "Cümə axşamı",
+        [DayOfWeek.Friday] = "Cümə",
+        [DayOfWeek.Saturday] = "Şənbə",
+        [DayOfWeek.Sunday] = "Bazar"
+    };
+}
+
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+    <h2 style="font-size:20px; font-weight:700;"><i class="fas fa-door-open"></i> @room.Name</h2>
+    <a href="/Admin/Room" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Geri</a>
+</div>
+
+<div class="card" style="margin-bottom:18px;">
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:14px;">
+        <div><div style="color:#64748b; font-size:12px;">Növ</div><div style="font-weight:600;">@room.Type</div></div>
+        <div><div style="color:#64748b; font-size:12px;">Tutum</div><div style="font-weight:600;">@room.Capacity</div></div>
+        <div><div style="color:#64748b; font-size:12px;">Kod</div><div style="font-weight:600;">@(room.Code ?? "—")</div></div>
+        <div><div style="color:#64748b; font-size:12px;">Status</div>
+            <div>@if (room.IsActive) { <span class="badge badge-success">Aktiv</span> } else { <span class="badge badge-danger">Deaktiv</span> }</div>
+        </div>
+        <div><div style="color:#64748b; font-size:12px;">Təyin olunmuş qruplar</div><div style="font-weight:600;">@room.AssignedGroupsCount</div></div>
+    </div>
+</div>
+
+<div class="card">
+    <h3 style="font-size:15px; font-weight:700; margin-bottom:14px;"><i class="fas fa-calendar-week"></i> Həftəlik cədvəl</h3>
+    <div style="display:flex; flex-direction:column; gap:10px;">
+        @foreach (var day in days)
+        {
+            var slots = Model.Slots.Where(s => s.DayOfWeek == day).OrderBy(s => s.StartTime).ToList();
+            <div style="display:flex; gap:14px; align-items:flex-start; border-bottom:1px solid #e2e8f0; padding-bottom:10px;">
+                <div style="width:130px; font-weight:600; color:#0f172a;">@dayNames[day]</div>
+                <div style="flex:1; display:flex; flex-wrap:wrap; gap:8px;">
+                    @if (!slots.Any())
+                    {
+                        <span style="color:#94a3b8; font-size:13px;">Boş</span>
+                    }
+                    else
+                    {
+                        @foreach (var s in slots)
+                        {
+                            <div style="background:#eef2ff; border:1px solid #c7d2fe; border-radius:8px; padding:8px 12px; min-width:200px;">
+                                <div style="font-weight:700; color:#4f46e5;">@s.StartTime–@s.EndTime</div>
+                                <div style="font-weight:600;">@s.GroupName</div>
+                                <div style="font-size:12px; color:#475569;">@s.CourseName</div>
+                                <div style="font-size:12px; color:#64748b;"><i class="fas fa-user"></i> @s.TeacherName</div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>

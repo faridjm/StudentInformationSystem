@@ -14,6 +14,10 @@ namespace SIS.BLL.Services.Interfaces
         Task DeleteAsync(int id);
 
         Task<CurriculumTemplateItemDto> AddItemAsync(CreateTemplateItemDto dto);
+
+        /// <summary>Bir şablona çoxlu sıra (session) əlavə edir. mode: "replace" | "append" (default).</summary>
+        Task<List<CurriculumTemplateItemDto>> AddItemsBulkAsync(int templateId, BulkTemplateItemsDto dto);
+
         Task<CurriculumTemplateItemDto> UpdateItemAsync(UpdateTemplateItemDto dto);
         Task DeleteItemAsync(int itemId);
 

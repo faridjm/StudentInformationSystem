@@ -75,4 +75,24 @@ namespace SIS.BLL.Services.DTOs.Curriculum
         public decimal? WeightPercent { get; set; }
         public decimal? MaxScore { get; set; }
     }
+
+    // ── Bulk session/item əlavəsi (Scalar/Swagger üçün) ──
+
+    public class BulkTemplateItemDto
+    {
+        public int SessionNumber { get; set; }
+        public string Topic { get; set; } = null!;
+        public bool HasAssessment { get; set; }
+        public string? AssessmentTitle { get; set; }
+        public AssessmentType? AssessmentType { get; set; }
+        public decimal? WeightPercent { get; set; }
+        public decimal? MaxScore { get; set; }
+    }
+
+    public class BulkTemplateItemsDto
+    {
+        /// <summary>"replace" — mövcud sıraları sil və yenidən yaz; "append" (default) — üstünə əlavə et.</summary>
+        public string? Mode { get; set; }
+        public List<BulkTemplateItemDto> Sessions { get; set; } = new();
+    }
 }

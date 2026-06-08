@@ -63,11 +63,12 @@ namespace SIS.BLL.Services.Implementations
 
         public async Task CreateStudentAsync(CreateStudentDto dto)
         {
+            // ── Validation ──
             if (!string.IsNullOrEmpty(dto.FinCode))
                 if (await _userManager.Users.AnyAsync(u => u.FinCode == dto.FinCode && u.IsActive))
                     throw new ConflictException("Bu FIN kod artıq istifadədədir");
 
-            // Email boşdursa backend institutional email generate edir
+            // Email
             string resolvedEmail;
             if (string.IsNullOrWhiteSpace(dto.Email))
             {
@@ -79,45 +80,64 @@ namespace SIS.BLL.Services.Implementations
             else
             {
                 resolvedEmail = dto.Email.Trim().ToLowerInvariant();
-                // Manual email — bütün AppUser table-da unique check
                 if (await _userManager.Users.AnyAsync(u => u.Email == resolvedEmail))
                     throw new ConflictException("Bu email artıq istifadədədir");
             }
 
+            // Phone
+            var normalizedPhone = await Services.Helpers.PhoneUniqueValidator.ValidateAndNormalizeAsync(_userManager, dto.PhoneNumber);
+
+            // ── Unique StudentNumber generation (silinmişlər daxil) ──
+            var existingNumbers = await _unitOfWork.Students.GetAllStudentNumbersAsync();
+            var studentNumber = StudentNumberHelper.GenerateNext(existingNumbers);
+
+            // ── Transaction: AppUser + Role + Student ──
+            // UserManager öz transaction-unu idarə edir, amma əgər Student save uğursuz olarsa
+            // yaradılmış user-i silməliyik (rollback).
             var user = new AppUser
             {
                 FullName = dto.FullName.ToTitleCase(), FinCode = dto.FinCode,
                 BirthDate = dto.BirthDate,
                 Email = resolvedEmail, UserName = resolvedEmail,
-                PhoneNumber = dto.PhoneNumber, IsActive = true
+                PhoneNumber = normalizedPhone,
+                IsActive = true
             };
 
             var result = await _userManager.CreateAsync(user, dto.Password);
             if (!result.Succeeded)
                 throw new BadRequestException(string.Join(", ", result.Errors.Select(e => e.Description)));
 
-            await _userManager.AddToRoleAsync(user, RoleConstants.Student);
-
-            var count = await _unitOfWork.Students.CountAsync(s => !s.IsDeleted);
-            var student = new Student
+            try
             {
-                AppUserId = user.Id,
-                StudentNumber = StudentNumberHelper.Generate(dto.EnrollmentYear, count + 1),
-                EnrollmentYear = dto.EnrollmentYear,
-                CreatedAt = DateTime.UtcNow
-            };
+                await _userManager.AddToRoleAsync(user, RoleConstants.Student);
 
-            await _unitOfWork.Students.AddAsync(student);
-            await _unitOfWork.SaveAsync();
+                var student = new Student
+                {
+                    AppUserId = user.Id,
+                    StudentNumber = studentNumber,
+                    EnrollmentYear = dto.EnrollmentYear,
+                    CreatedAt = DateTime.UtcNow
+                };
 
-            user.UserName = student.StudentNumber;
-            user.NormalizedUserName = student.StudentNumber.ToUpper();
-            await _userManager.UpdateAsync(user);
+                await _unitOfWork.Students.AddAsync(student);
+                await _unitOfWork.SaveAsync();
 
-            _ = _emailService.SendWelcomeAsync(resolvedEmail, dto.FullName, student.StudentNumber, dto.Password, "Student");
-            await _activityLogger.LogAsync("Create", "Student", student.Id.ToString(), null, new { dto.FullName, Email = resolvedEmail });
-            await _audit.LogAsync("Create", "Student", student.Id.ToString(),
-                $"Tələbə yaradıldı: {student.AppUser.FullName} (№ {student.StudentNumber})");
+                // UserName-i StudentNumber ilə yenilə
+                user.UserName = student.StudentNumber;
+                user.NormalizedUserName = student.StudentNumber.ToUpper();
+                await _userManager.UpdateAsync(user);
+
+                _ = _emailService.SendWelcomeAsync(resolvedEmail, dto.FullName, student.StudentNumber, dto.Password, "Student");
+                await _activityLogger.LogAsync("Create", "Student", student.Id.ToString(), null, new { dto.FullName, Email = resolvedEmail });
+                await _audit.LogAsync("Create", "Student", student.Id.ToString(),
+                    $"Tələbə yaradıldı: {student.AppUser?.FullName ?? dto.FullName} (№ {student.StudentNumber})");
+            }
+            catch
+            {
+                // Student save və ya role assignment uğursuz → yaradılmış AppUser-i sil ki, partial data qalmasın
+                await _userManager.DeleteAsync(user);
+                throw;
+            }
         }
 
         public async Task UpdateStudentAsync(UpdateStudentDto dto)
@@ -127,7 +147,8 @@ namespace SIS.BLL.Services.Implementations
 
             student.AppUser.FullName = dto.FullName.ToTitleCase();
             student.AppUser.FinCode = dto.FinCode;
-            student.AppUser.PhoneNumber = dto.PhoneNumber;
+            student.AppUser.PhoneNumber = await Services.Helpers.PhoneUniqueValidator.ValidateAndNormalizeAsync(
+                _userManager, dto.PhoneNumber, student.AppUser.Id);
             await _userManager.UpdateAsync(student.AppUser);
 
             student.UpdatedAt = DateTime.UtcNow;

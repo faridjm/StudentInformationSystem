@@ -14,6 +14,7 @@ namespace SIS.DAL.Repositories.Implementations
                 .Include(g => g.Course)
                 .Include(g => g.Teacher).ThenInclude(t => t.AppUser)
                 .Include(g => g.AcademicYear)
+                .Include(g => g.Room)
                 .Include(g => g.ScheduleDays)
                 .Include(g => g.Enrollments).ThenInclude(e => e.Student).ThenInclude(s => s.AppUser)
                 .FirstOrDefaultAsync(g => g.Id == groupId);
@@ -40,6 +41,7 @@ namespace SIS.DAL.Repositories.Implementations
                 .Include(g => g.Course)
                 .Include(g => g.Teacher).ThenInclude(t => t.AppUser)
                 .Include(g => g.AcademicYear)
+                .Include(g => g.Room)
                 .Include(g => g.Enrollments).ThenInclude(e => e.Student)
                 .Where(g => g.IsActive)
                 .ToListAsync();

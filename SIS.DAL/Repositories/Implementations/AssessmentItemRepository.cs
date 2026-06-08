@@ -11,6 +11,7 @@ namespace SIS.DAL.Repositories.Implementations
 
         public async Task<IEnumerable<AssessmentItem>> GetByGroupAsync(int groupId)
             => await _dbSet
+                .Include(a => a.Submissions)
                 .Where(a => a.GroupId == groupId)
                 .OrderBy(a => a.Date)
                 .ToListAsync();

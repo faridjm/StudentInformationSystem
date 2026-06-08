@@ -1,5 +1,6 @@
 using Refit;
 using SIS.BLL.Services.DTOs.Groups;
+using SIS.BLL.Services.DTOs.Performance;
 
 namespace SIS.UI.ApiClients
 {
@@ -28,5 +29,8 @@ namespace SIS.UI.ApiClients
 
         [Post("/api/group/{id}/generate-sessions")]
         Task GenerateSessionsAsync(int id);
+
+        [Get("/api/group/{id}/performance")]
+        Task<IEnumerable<GroupStudentPerformanceDto>> GetGroupPerformanceAsync(int id);
     }
 }

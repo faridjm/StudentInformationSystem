@@ -55,9 +55,16 @@ namespace SIS.BLL.Services.Implementations
 
         public async Task<DepartmentDto> CreateAsync(CreateDepartmentDto dto)
         {
+            var trimmedName = (dto.Name ?? "").Trim();
+            if (string.IsNullOrWhiteSpace(trimmedName))
+                throw new BadRequestException("Şöbə adı boş ola bilməz");
+
+            // Duplicate name yoxlaması (case-insensitive + trim)
+            await EnsureNameUniqueAsync(trimmedName, excludeId: null);
+
             var department = new Department
             {
-                Name = dto.Name,
+                Name = trimmedName,
                 Description = dto.Description,
                 IsActive = true,
                 CreatedAt = DateTime.UtcNow
@@ -79,12 +86,43 @@ namespace SIS.BLL.Services.Implementations
         {
             var department = await _unitOfWork.Departments.GetByIdAsync(dto.Id)
                 ?? throw new NotFoundException("Şöbə tapılmadı");
-            department.Name = dto.Name;
+
+            var trimmedName = (dto.Name ?? "").Trim();
+            if (string.IsNullOrWhiteSpace(trimmedName))
+                throw new BadRequestException("Şöbə adı boş ola bilməz");
+
+            // Duplicate name yoxlaması (öz Id-si istisna)
+            await EnsureNameUniqueAsync(trimmedName, excludeId: dto.Id);
+
+            department.Name = trimmedName;
             department.Description = dto.Description;
             department.IsActive = dto.IsActive;
             department.UpdatedAt = DateTime.UtcNow;
             _unitOfWork.Departments.Update(department);
             await _unitOfWork.SaveAsync();
+        }
+
+        /// <summary>
+        /// Eyni ad ilə başqa aktiv (silinməmiş) department varsa BadRequestException atır.
+        /// SQL Server-in default CI collation-u case-insensitive comparison edir.
+        /// Trim C# tərəfdə tətbiq olunur, DB-dən tam siyahı çəkilmir — EF.Functions.Like istifadə olunur.
+        /// </summary>
+        private async Task EnsureNameUniqueAsync(string name, int? excludeId)
+        {
+            // SQL Server default collation CI-dir, ona görə "=" yetərlidir.
+            // Lakin başda/sonda boşluq ola bilər — bunu da yoxlayaq.
+            var trimmed = name.Trim();
+
+            // Soft-deleted olanları da istisna et
+            var allDepts = await _unitOfWork.Departments.GetAllAsync(d => !d.IsDeleted);
+
+            var duplicate = allDepts.FirstOrDefault(d =>
+                d.Name != null &&
+                string.Equals(d.Name.Trim(), trimmed, StringComparison.OrdinalIgnoreCase) &&
+                d.Id != (excludeId ?? 0));
+
+            if (duplicate != null)
+                throw new BadRequestException("Bu adda şöbə artıq mövcuddur.");
         }
 
         public async Task SetActiveAsync(int id, bool isActive)

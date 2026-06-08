@@ -15,6 +15,8 @@ namespace SIS.BLL.Services.DTOs.Assessment
         public bool IsVisible { get; set; }
         public int SubmissionCount { get; set; }
         public int GradedCount { get; set; }
+        /// <summary>Qrupdakı aktiv enrolled tələbə sayı — "qiymətlər" count-un məxrəci.</summary>
+        public int TotalStudentCount { get; set; }
     }
 
     public class CreateAssessmentItemDto

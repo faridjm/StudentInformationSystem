@@ -1,0 +1,127 @@
+@using SIS.Entities.Enums
+@model SIS.BLL.Services.DTOs.Transcript.TranscriptVerificationPublicDto
+@{
+    Layout = null;
+    var status = Model?.Status ?? "Invalid";
+    bool valid = status == "Valid";
+
+    (string badgeText, string badgeColor, string message) = status switch
+    {
+        "Valid" => ("VALID", "#059669", "This transcript is authentic and was issued by Acadex 360."),
+        "Revoked" => ("REVOKED", "#DC2626", "This transcript has been revoked and is no longer valid."),
+        "Expired" => ("EXPIRED", "#D97706", "This transcript verification has expired."),
+        _ => ("INVALID", "#DC2626", "Transcript verification code was not found.")
+    };
+
+    string Level(string? c) => c switch
+    {
+        "NormalCompletion" => "Normal Completion",
+        "HonorCompletion" => "Honor Completion",
+        "HighHonorCompletion" => "High Honor Completion",
+        "NotCompleted" => "Not Completed",
+        "NotEligible" => "Not Eligible",
+        "Pending" => "Pending",
+        _ => c ?? "—"
+    };
+    string Cert(string? c) => c switch
+    {
+        "Eligible" => "Eligible",
+        "NotEligible" => "Not Eligible",
+        "Pending" => "Pending",
+        _ => c ?? "—"
+    };
+    string TypeText(TranscriptType? t) => t == TranscriptType.Final ? "Final Transcript"
+        : t == TranscriptType.Progress ? "Progress Transcript" : "—";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Transcript Verification · Acadex 360</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #0F172A; color: #0F172A;
+               min-height: 100vh; display: flex; align-items: flex-start; justify-content: center; padding: 32px 16px; }
+        .card { width: 100%; max-width: 560px; background: #fff; border-radius: 16px; overflow: hidden;
+                box-shadow: 0 20px 60px rgba(0,0,0,.35); }
+        .head { background: #0F172A; padding: 22px 26px; color: #fff; display: flex; align-items: center; justify-content: space-between; }
+        .brand { font-size: 22px; font-weight: 800; }
+        .brand span { color: #34D399; font-size: 14px; }
+        .head small { color: #A5B4FC; display: block; font-size: 11px; font-weight: 500; margin-top: 2px; }
+        .accent { height: 4px; background: linear-gradient(90deg,#4F46E5,#7C3AED); }
+        .status { padding: 26px; text-align: center; }
+        .badge { display: inline-block; padding: 8px 22px; border-radius: 999px; color: #fff; font-weight: 800;
+                 letter-spacing: 1px; font-size: 14px; }
+        .status p { margin-top: 14px; color: #475569; font-size: 14px; line-height: 1.5; }
+        .body { padding: 4px 26px 26px; }
+        .row { display: flex; justify-content: space-between; gap: 16px; padding: 11px 0; border-bottom: 1px solid #E2E8F0; }
+        .row:last-child { border-bottom: none; }
+        .label { color: #64748B; font-size: 13px; }
+        .value { color: #0F172A; font-weight: 700; font-size: 14px; text-align: right; }
+        .pill { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+        .foot { background: #F8FAFC; padding: 16px 26px; border-top: 1px solid #E2E8F0; color: #94A3B8; font-size: 11px; text-align: center; }
+        .seal { display:inline-flex; align-items:center; gap:8px; color:#4F46E5; font-weight:700; font-size:12px; margin-bottom:6px; }
+        .dot { width:9px; height:9px; border-radius:50%; background:#10B981; display:inline-block; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="head">
+            <div>
+                <div class="brand">Acadex <span>360</span></div>
+                <small>Digital Academy Management Platform</small>
+            </div>
+            <div style="text-align:right;">
+                <div style="font-size:12px;font-weight:700;letter-spacing:.5px;">TRANSCRIPT</div>
+                <div style="font-size:12px;font-weight:700;letter-spacing:.5px;">VERIFICATION</div>
+            </div>
+        </div>
+        <div class="accent"></div>
+
+        <div class="status">
+            <span class="badge" style="background:@badgeColor;">@badgeText</span>
+            <p>@message</p>
+        </div>
+
+        @if (valid)
+        {
+            <div class="body">
+                <div class="seal"><span class="dot"></span> Acadex 360 Verified · Digital Verification Seal</div>
+
+                <div class="row"><span class="label">Student</span><span class="value">@Model!.StudentFullName</span></div>
+                <div class="row"><span class="label">Course / Programme</span><span class="value">@Model.CourseName</span></div>
+                <div class="row"><span class="label">Group</span><span class="value">@Model.GroupName</span></div>
+                <div class="row"><span class="label">Transcript Type</span><span class="value">@TypeText(Model.TranscriptType)</span></div>
+                <div class="row"><span class="label">Official Grade</span><span class="value">@(Model.OfficialGrade?.ToString("F1"))%</span></div>
+                <div class="row"><span class="label">GPA</span><span class="value">@(Model.GPA?.ToString("F2"))</span></div>
+                <div class="row"><span class="label">Attendance</span><span class="value">@(Model.AttendancePercentage?.ToString("F1"))%</span></div>
+                <div class="row"><span class="label">Completion Level</span><span class="value">@Level(Model.CompletionLevel)</span></div>
+                <div class="row">
+                    <span class="label">Certificate Status</span>
+                    <span class="value">
+                        <span class="pill" style="background:@(Model.CertificateStatus == "Eligible" ? "#DCFCE7" : Model.CertificateStatus == "NotEligible" ? "#FEE2E2" : "#FEF3C7");
+                                                   color:@(Model.CertificateStatus == "Eligible" ? "#059669" : Model.CertificateStatus == "NotEligible" ? "#DC2626" : "#D97706");">
+                            @Cert(Model.CertificateStatus)
+                        </span>
+                    </span>
+                </div>
+                <div class="row"><span class="label">Issued Date</span><span class="value">@(Model.IssuedAt?.ToString("dd.MM.yyyy"))</span></div>
+                <div class="row"><span class="label">Verification Code</span><span class="value">@Model.VerificationCode</span></div>
+            </div>
+        }
+        else if (!string.IsNullOrEmpty(Model?.VerificationCode))
+        {
+            <div class="body">
+                <div class="row"><span class="label">Verification Code</span><span class="value">@Model!.VerificationCode</span></div>
+            </div>
+        }
+
+        <div class="foot">
+            This document is not a diploma; it is an academic transcript.<br />
+            © Acadex 360 · Digital Academy Management Platform
+        </div>
+    </div>
+</body>
+</html>

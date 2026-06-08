@@ -467,8 +467,9 @@ namespace SIS.BLL.Services.Implementations
                 Score = attempt.Score,
                 SubmittedAt = attempt.SubmittedAt,
                 TotalQuestions = quiz.Questions.Count,
-                CorrectCount = attempt.Answers.Count(a => a.IsCorrect),
-                WrongCount = attempt.Answers.Count(a => !a.IsCorrect)
+                CorrectCount = 0,
+                WrongCount = 0,
+                EmptyCount = 0
             };
 
             // Sualları order üzrə map et — hər sualın option-ları + tələbənin seçimi
@@ -477,6 +478,12 @@ namespace SIS.BLL.Services.Implementations
                 var ans = attempt.Answers.FirstOrDefault(a => a.QuizQuestionId == q.Id);
                 var selectedIds = ParseSelectedOptionIds(ans?.SelectedOptionIds);
                 var correctIds = q.Options.Where(o => o.IsCorrect).Select(o => o.Id).ToList();
+                bool isEmpty = selectedIds.Count == 0;
+                bool isCorrect = ans?.IsCorrect ?? false;
+
+                if (isEmpty) dto.EmptyCount++;
+                else if (isCorrect) dto.CorrectCount++;
+                else dto.WrongCount++;
 
                 dto.Questions.Add(new QuizQuestionResultDto
                 {
@@ -485,7 +492,7 @@ namespace SIS.BLL.Services.Implementations
                     Text = q.Text,
                     Points = q.Points,
                     PointsAwarded = ans?.PointsAwarded ?? 0,
-                    IsCorrect = ans?.IsCorrect ?? false,
+                    IsCorrect = isCorrect,
                     SelectedOptionIds = selectedIds,
                     CorrectOptionIds = correctIds,
                     Options = q.Options.OrderBy(o => o.Order).Select(o => new QuizOptionResultDto
@@ -497,6 +504,13 @@ namespace SIS.BLL.Services.Implementations
                     }).ToList()
                 });
             }
+
+            // Audit log: kim quiz cəhdinin detalını gördü
+            string actionType = (attempt.Enrollment?.Student?.AppUserId == requestingUserId)
+                ? "ViewOwnQuizResult"
+                : "ViewStudentQuizSubmission";
+            await _audit.LogAsync(actionType, "QuizAttempt", attempt.Id.ToString(),
+                $"Quiz cəhdi nəticəsi açıldı: {quiz.Title} — {dto.StudentName}");
 
             return dto;
         }

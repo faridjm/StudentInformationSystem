@@ -20,12 +20,17 @@ namespace SIS.API.Controllers
         private readonly IGroupService _groupService;
         private readonly IAuditLogService _audit;
         private readonly IEmailService _emailService;
+        private readonly ITranscriptVerificationService _verification;
+        private readonly IQrCodeGenerator _qr;
+        private readonly IConfiguration _config;
 
         public TranscriptController(ITranscriptService transcriptService,
             ITranscriptPdfService pdfService, IStudentService studentService,
             ITeacherService teacherService, ICurrentUser currentUser,
             IEnrollmentService enrollmentService, IGroupService groupService,
-            IAuditLogService audit, IEmailService emailService)
+            IAuditLogService audit, IEmailService emailService,
+            ITranscriptVerificationService verification, IQrCodeGenerator qr,
+            IConfiguration config)
         {
             _transcriptService = transcriptService;
             _pdfService = pdfService;
@@ -36,6 +41,34 @@ namespace SIS.API.Controllers
             _groupService = groupService;
             _audit = audit;
             _emailService = emailService;
+            _verification = verification;
+            _qr = qr;
+            _config = config;
+        }
+
+        /// <summary>
+        /// Doğrulama qeydini yaradır/tapır, QR şəklini hazırlayır və DTO-nu doldurur.
+        /// Download və Send-to-Email eyni axını istifadə edir → hər ikisində QR olur.
+        /// </summary>
+        private async Task<byte[]> BuildVerificationAsync(SIS.BLL.Services.DTOs.Transcript.TranscriptDto data, string langCode)
+        {
+            var record = await _verification.GetOrCreateAsync(data, langCode);
+
+            var baseUrl = (_config["App:PublicBaseUrl"]
+                           ?? _config["App:FrontendUrl"]
+                           ?? "https://localhost:7002").TrimEnd('/');
+            var url = $"{baseUrl}/VerifyTranscript/{record.VerificationCode}";
+
+            data.VerificationCode = record.VerificationCode;
+            data.VerificationUrl = url;
+            data.VerificationIssuedAt = record.IssuedAt;
+            data.VerificationExpiresAt = record.ExpiresAt;
+
+            await _audit.LogAsync("GenerateTranscriptVerification", "TranscriptVerification",
+                record.VerificationCode,
+                $"Transcript verification generated for student {data.StudentName}, group {data.GroupName}.");
+
+            return _qr.GeneratePng(url, 10);
         }
 
         [HttpGet("{enrollmentId}")]
@@ -64,10 +97,11 @@ namespace SIS.API.Controllers
             {
                 await AuthorizeAccessAsync(enrollmentId);
                 var data = await _transcriptService.GenerateTranscriptAsync(enrollmentId);
-                var pdf = _pdfService.GeneratePdf(data, lang);
                 var langCode = PdfLocalization.Normalize(lang);
+                var qr = await BuildVerificationAsync(data, langCode);
+                var pdf = _pdfService.GeneratePdf(data, langCode, qr);
                 var fileName = $"Transcript_{data.StudentNumber}_{data.GroupName}_{langCode}_{DateTime.Now:yyyyMMdd}.pdf";
-                await _audit.LogAsync("Download", "Transcript", enrollmentId.ToString(),
+                await _audit.LogAsync("DownloadTranscriptPdf", "Transcript", enrollmentId.ToString(),
                     $"Transkript PDF yükləndi ({langCode}): {data.StudentNumber} — {data.GroupName}");
                 return File(pdf, "application/pdf", fileName);
             }
@@ -91,8 +125,9 @@ namespace SIS.API.Controllers
                 if (string.IsNullOrEmpty(data.Email))
                     return BadRequest(new { error = "Bu hesabda email yoxdur" });
 
-                var pdf = _pdfService.GeneratePdf(data, lang);
                 var langCode = PdfLocalization.Normalize(lang);
+                var qr = await BuildVerificationAsync(data, langCode);
+                var pdf = _pdfService.GeneratePdf(data, langCode, qr);
                 var safeName = SanitizeFileName(data.StudentName);
                 var fileName = langCode == "az"
                     ? $"Akademik_Cixaris_{safeName}.pdf"
@@ -117,6 +152,47 @@ namespace SIS.API.Controllers
             catch (UnauthorizedAccessException)
             {
                 return Forbid();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Public transcript doğrulama — login tələb etmir.
+        /// QR kod bu endpoint-ə yönəlir (UI public səhifəsi vasitəsilə).
+        /// Status: Valid / Invalid / Revoked / Expired.
+        /// </summary>
+        [HttpGet("verify/{code}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> Verify(string code)
+        {
+            try
+            {
+                var result = await _verification.GetByCodeAsync(code);
+                await _audit.LogAsync("VerifyTranscriptViewed", "TranscriptVerification", code,
+                    $"Transcript verification viewed for code {code}.");
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+        }
+
+        /// <summary>Doğrulama qeydini ləğv edir (yalnız Admin/SuperAdmin).</summary>
+        [HttpPost("verify/{code}/revoke")]
+        [Authorize(Roles = RoleConstants.Admin + "," + RoleConstants.SuperAdmin)]
+        public async Task<IActionResult> Revoke(string code)
+        {
+            try
+            {
+                var ok = await _verification.RevokeAsync(code);
+                if (!ok) return NotFound(new { error = "Doğrulama kodu tapılmadı və ya artıq ləğv olunub" });
+                await _audit.LogAsync("RevokeTranscriptVerification", "TranscriptVerification", code,
+                    $"Transcript verification revoked for code {code}.");
+                return Ok(new { message = "Doğrulama ləğv olundu" });
             }
             catch (Exception ex)
             {

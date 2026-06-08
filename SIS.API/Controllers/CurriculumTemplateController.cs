@@ -63,6 +63,14 @@ namespace SIS.API.Controllers
         public async Task<IActionResult> AddItem([FromBody] CreateTemplateItemDto dto)
             => Ok(await _service.AddItemAsync(dto));
 
+        /// <summary>
+        /// Bir şablona çoxlu sıra (session) əlavə edir.
+        /// Body: { "mode": "replace|append", "sessions": [ { sessionNumber, topic, hasAssessment, ... } ] }
+        /// </summary>
+        [HttpPost("{templateId}/items/bulk")]
+        public async Task<IActionResult> AddItemsBulk(int templateId, [FromBody] BulkTemplateItemsDto dto)
+            => Ok(await _service.AddItemsBulkAsync(templateId, dto));
+
         [HttpPut("items")]
         public async Task<IActionResult> UpdateItem([FromBody] UpdateTemplateItemDto dto)
             => Ok(await _service.UpdateItemAsync(dto));

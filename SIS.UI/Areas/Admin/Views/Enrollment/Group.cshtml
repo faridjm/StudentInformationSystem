@@ -48,7 +48,16 @@
                     <tr>
                         <td><strong>@e.StudentName</strong></td>
                         <td><code style="background:var(--bg-hover); padding:2px 8px; border-radius:4px; font-size:12px;">@e.StudentNumber</code></td>
-                        <td style="color:var(--text-secondary); font-size:13px;">—</td>
+                        <td style="color:var(--text-secondary); font-size:13px;">
+                            @if (!string.IsNullOrWhiteSpace(e.StudentEmail))
+                            {
+                                <a href="mailto:@e.StudentEmail" style="color:var(--accent); text-decoration:none;">@e.StudentEmail</a>
+                            }
+                            else
+                            {
+                                <span>—</span>
+                            }
+                        </td>
                         <td style="color:var(--text-secondary); font-size:13px;">@e.EnrolledAt.ToString("dd.MM.yyyy")</td>
                         <td><span class="badge @StatusBadge(e.Status)">@e.Status</span></td>
                         <td>

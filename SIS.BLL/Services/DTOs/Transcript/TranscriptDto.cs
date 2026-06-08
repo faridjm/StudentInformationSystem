@@ -19,9 +19,11 @@ namespace SIS.BLL.Services.DTOs.Transcript
 
         // Attendance
         public int TotalSessions { get; set; }
+        public int AttendanceTakenSessions { get; set; }
         public int PresentCount { get; set; }
         public int LateCount { get; set; }
         public int AbsentCount { get; set; }
+        public int ExcusedCount { get; set; }
         public double AttendancePercentage { get; set; }
 
         // Official Assessments (GPA-ya təsir edir)
@@ -38,6 +40,25 @@ namespace SIS.BLL.Services.DTOs.Transcript
         public string PerformanceStatus { get; set; } = null!; // Excellent / Good / Satisfactory / Failing
         public bool CertificateEligible { get; set; }
         public DateTime GeneratedAt { get; set; }
+
+        // ── Transcript result (Progress / Final) — yeni status təbəqəsi ──
+        // Calculation dəyişmir; bu sahələr TranscriptResultCalculator-dan gəlir.
+        public SIS.Entities.Enums.TranscriptType TranscriptType { get; set; }
+        public bool IsCourseCompleted { get; set; }
+        public string CompletionStatus { get; set; } = "InProgress"; // Completed / InProgress
+        public string CompletionLevel { get; set; } = "Pending";     // Pending/NotCompleted/NormalCompletion/HonorCompletion/HighHonorCompletion/NotEligible
+        public string CertificateStatus { get; set; } = "Pending";   // Pending/Eligible/NotEligible
+
+        // Identifikasiya üçün (controller-də doldurulur)
+        public int EnrollmentId { get; set; }
+        public int StudentId { get; set; }
+        public int GroupId { get; set; }
+
+        // ── QR doğrulama (PDF generasiya anında controller/service tərəfindən doldurulur) ──
+        public string? VerificationCode { get; set; }
+        public string? VerificationUrl { get; set; }
+        public DateTime? VerificationIssuedAt { get; set; }
+        public DateTime? VerificationExpiresAt { get; set; }
     }
 
     public class TranscriptAssessmentDto

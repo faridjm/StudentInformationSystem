@@ -1,0 +1,57 @@
+@model SIS.BLL.Services.DTOs.Room.UpdateRoomDto
+@{
+    ViewData["Title"] = "Otağı redaktə et";
+}
+
+<div style="margin-bottom:20px;">
+    <h2 style="font-size:20px; font-weight:700;"><i class="fas fa-edit"></i> Otağı redaktə et</h2>
+</div>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<div class="card" style="max-width:640px;">
+    <form method="post" action="/Admin/Room/Edit">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" />
+
+        <div class="form-group">
+            <label>Ad <span style="color:#dc2626;">*</span></label>
+            <input asp-for="Name" class="form-control" required />
+        </div>
+
+        <div style="display:flex; gap:14px;">
+            <div class="form-group" style="flex:1;">
+                <label>Kod</label>
+                <input asp-for="Code" class="form-control" />
+            </div>
+            <div class="form-group" style="flex:1;">
+                <label>Növ</label>
+                <select asp-for="Type" class="form-control" asp-items="Html.GetEnumSelectList<SIS.Entities.Enums.RoomType>()"></select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Tutum <span style="color:#dc2626;">*</span></label>
+            <input asp-for="Capacity" type="number" min="1" class="form-control" required />
+        </div>
+
+        <div class="form-group">
+            <label>Təsvir</label>
+            <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                <input asp-for="IsActive" type="checkbox" /> Aktiv (scheduling-də seçilə bilər)
+            </label>
+        </div>
+
+        <div style="display:flex; gap:10px; margin-top:10px;">
+            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Yadda saxla</button>
+            <a href="/Admin/Room" class="btn btn-secondary">Ləğv et</a>
+        </div>
+    </form>
+</div>

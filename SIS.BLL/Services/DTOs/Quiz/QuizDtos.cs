@@ -158,6 +158,8 @@ namespace SIS.BLL.Services.DTOs.Quiz
         public int TotalQuestions { get; set; }
         public int CorrectCount { get; set; }
         public int WrongCount { get; set; }
+        /// <summary>Boş buraxılmış suallar (heç bir variant seçilməyib).</summary>
+        public int EmptyCount { get; set; }
 
         public List<QuizQuestionResultDto> Questions { get; set; } = new();
     }

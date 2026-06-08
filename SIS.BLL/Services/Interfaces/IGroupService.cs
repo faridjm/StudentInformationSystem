@@ -1,4 +1,5 @@
 using SIS.BLL.Services.DTOs.Groups;
+using SIS.BLL.Services.DTOs.Performance;
 
 namespace SIS.BLL.Services.Interfaces
 {
@@ -11,5 +12,7 @@ namespace SIS.BLL.Services.Interfaces
         Task UpdateAsync(UpdateGroupDto dto);
         Task DeleteAsync(int id);
         Task GenerateSessionsAsync(int groupId);
+        /// <summary>Qrupdakı bütün aktiv tələbələrin performans (davamiyyət+qiymət+GPA) cədvəli.</summary>
+        Task<IEnumerable<GroupStudentPerformanceDto>> GetGroupPerformanceAsync(int groupId);
     }
 }

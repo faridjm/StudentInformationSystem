@@ -165,16 +165,38 @@ namespace SIS.UI.Areas.Teacher.Controllers
         }
 
         /// <summary>Tək cəhd üçün sual-sual detallı nəticə (Teacher görüşü).</summary>
-        public async Task<IActionResult> AttemptDetail(int attemptId)
+        public async Task<IActionResult> AttemptDetail(int id)
         {
             try
             {
-                var dto = await _quizApi.GetAttemptDetailAsync(attemptId);
+                var dto = await _quizApi.GetAttemptDetailAsync(id);
+                if (dto == null)
+                {
+                    TempData["Error"] = "Bu cəhd hələ təhvil verilməyib və ya tapılmadı.";
+                    return RedirectToAction("Index");
+                }
                 return View(dto);
             }
-            catch (Refit.ApiException)
+            catch (Refit.ApiException ex)
             {
-                TempData["Error"] = "Bu nəticəyə baxmaq icazəniz yoxdur";
+                // Daha informativ mesaj — server-dən qayıdan error body-ni oxu
+                string message = "Bu nəticəyə baxmaq icazəniz yoxdur";
+                try
+                {
+                    if (!string.IsNullOrEmpty(ex.Content))
+                    {
+                        var doc = System.Text.Json.JsonDocument.Parse(ex.Content);
+                        if (doc.RootElement.TryGetProperty("message", out var m)) message = m.GetString() ?? message;
+                        else if (doc.RootElement.TryGetProperty("Message", out var m2)) message = m2.GetString() ?? message;
+                    }
+                }
+                catch { }
+                TempData["Error"] = $"{message} (HTTP {(int)ex.StatusCode})";
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"Naməlum xəta: {ex.Message}";
                 return RedirectToAction("Index");
             }
         }

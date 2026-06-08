@@ -8,6 +8,8 @@ namespace SIS.BLL.Services.DTOs.Enrollment
         public int StudentId { get; set; }
         public string StudentName { get; set; } = null!;
         public string StudentNumber { get; set; } = null!;
+        public string? StudentEmail { get; set; }
+        public string? StudentPhone { get; set; }
         public int GroupId { get; set; }
         public string GroupName { get; set; } = null!;
         public string CourseName { get; set; } = null!;

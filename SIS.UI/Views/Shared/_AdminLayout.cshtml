@@ -41,6 +41,9 @@
         <a href="/Admin/Enrollment" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Enrollment" ? "active" : "")">
             <i class="fas fa-clipboard-list"></i> @L["Enrollments"]
         </a>
+        <a href="/Admin/Room" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Room" ? "active" : "")">
+            <i class="fas fa-door-open"></i> @L["Rooms"]
+        </a>
 
         <div class="sidebar-section">@L["Users"]</div>
         <a href="/Admin/Student" class="sidebar-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Student" ? "active" : "")">

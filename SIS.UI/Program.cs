@@ -11,7 +11,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 builder.Services.AddControllersWithViews()
     .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
-    .AddDataAnnotationsLocalization();
+    .AddDataAnnotationsLocalization()
+    .AddJsonOptions(o =>
+        o.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter()));
 builder.Services.AddAuth();
 builder.Services.AddApiClients(builder.Configuration);
 builder.Services.AddHttpContextAccessor();

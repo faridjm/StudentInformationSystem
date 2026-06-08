@@ -80,5 +80,9 @@ namespace SIS.API.Controllers
             await _service.GenerateSessionsAsync(id);
             return Ok(new { Message = "Dərs sessiyaları yaradıldı" });
         }
+
+        [HttpGet("{id}/performance")]
+        public async Task<IActionResult> GetGroupPerformance(int id)
+            => Ok(await _service.GetGroupPerformanceAsync(id));
     }
 }

@@ -9,7 +9,7 @@
         <h2 style="font-size:20px; font-weight:700;">@Model.Name — Düzəlt</h2>
     </div>
 
-    <form method="post" action="/Admin/Group/Edit">
+    <form method="post" action="/Admin/Group/Edit" id="groupEditForm">
         @Html.AntiForgeryToken()
         <input type="hidden" name="Id" value="@Model.Id" />
         <input type="hidden" name="CourseId" value="@Model.CourseId" />
@@ -154,6 +154,68 @@
                     }
                 </div>
                 <div id="dayCounterHolder" data-count="@di"></div>
+
+                <!-- Regenerate sessions panel -->
+                <div style="margin-top:14px; padding:14px; border:1px dashed #f59e0b; border-radius:10px; background:rgba(245,158,11,0.06);">
+                    <div style="display:flex; align-items:flex-start; gap:10px;">
+                        <i class="fas fa-rotate" style="color:#f59e0b; margin-top:3px;"></i>
+                        <div style="flex:1;">
+                            <div style="font-weight:700; font-size:14px;">Dərs sessiyalarını yenidən yarat</div>
+                            <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">
+                                Cədvəl, başlama/bitmə tarixləri və ya dərs günləri dəyişibsə, mövcud sessiyalar
+                                yeni cədvələ uyğun yenidən yaradılacaq. Köhnə sessiyalar soft-delete olunur.
+                            </div>
+                            <label style="display:flex; align-items:center; gap:8px; margin-top:10px; cursor:pointer;">
+                                <input type="checkbox" name="RegenerateSessions" id="regenChk" value="true" />
+                                <span style="font-size:13px;">Yadda saxlayanda dərs sessiyalarını yenidən yarat</span>
+                            </label>
+                            <div style="display:flex; gap:10px; margin-top:10px; align-items:center; flex-wrap:wrap;">
+                                <label style="font-size:12px; color:var(--text-secondary);">
+                                    Dərs sayı (optional, EndDate-i avtomatik hesablamaq üçün):
+                                </label>
+                                <input type="number" name="TotalSessions" min="1" max="500" placeholder="məs: 30"
+                                       class="form-control" style="width:120px; height:32px; font-size:13px;" />
+                                <span style="font-size:11px; color:var(--text-secondary);">
+                                    Dərs sayı verilərsə, son dərs günü avtomatik EndDate kimi təyin olunur.
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @{
+            var roomsListE = ViewBag.Rooms as IEnumerable<SIS.BLL.Services.DTOs.Room.RoomDto>
+                             ?? Enumerable.Empty<SIS.BLL.Services.DTOs.Room.RoomDto>();
+        }
+        <div class="card" style="margin-bottom:16px;" id="roomCard">
+            <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+                <span><i class="fas fa-door-open"></i> Otaq (yalnız əyani/hibrid)</span>
+                <button type="button" onclick="loadAvailableRooms()" class="btn btn-sm btn-secondary">
+                    <i class="fas fa-sync"></i> Uyğun otaqları göstər
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="form-group" style="margin-bottom:6px;">
+                    <select name="RoomId" id="roomSelect" class="form-control">
+                        <option value="">— Otaq seçin —</option>
+                        @foreach (var room in roomsListE)
+                        {
+                            if (Model.RoomId == room.Id)
+                            {
+                                <option value="@room.Id" selected>@room.Name (@room.Type, tutum @room.Capacity)</option>
+                            }
+                            else
+                            {
+                                <option value="@room.Id">@room.Name (@room.Type, tutum @room.Capacity)</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div id="roomHint" style="font-size:12px; color:var(--text-secondary);">
+                    Cari otaq: <strong>@(Model.RoomName ?? "—")</strong>. Cədvəl dəyişsə “Uyğun otaqları göstər” düyməsini istifadə edin.
+                </div>
             </div>
         </div>
 
@@ -164,8 +226,110 @@
     </form>
 </div>
 
+<script>
+    var __excludeGroupId = @Model.Id;
+    function collectSlotsEdit() {
+        const selects = document.querySelectorAll('select[name$=".DayOfWeek"]');
+        const slots = [];
+        selects.forEach(function (sel) {
+            const prefix = sel.name.substring(0, sel.name.lastIndexOf('.'));
+            const start = document.querySelector('input[name="' + prefix + '.StartTime"]');
+            const end = document.querySelector('input[name="' + prefix + '.EndTime"]');
+            if (sel.value && start && end && start.value && end.value) {
+                const day = isNaN(sel.value) ? sel.value : parseInt(sel.value);
+                slots.push({ dayOfWeek: day, startTime: start.value, endTime: end.value });
+            }
+        });
+        return slots;
+    }
+
+    async function loadAvailableRooms() {
+        const slots = collectSlotsEdit();
+        const startDate = document.querySelector('input[name="StartDate"]')?.value;
+        const endDate = document.querySelector('input[name="EndDate"]')?.value;
+        const capEl = document.querySelector('input[name="Capacity"]');
+        const hint = document.getElementById('roomHint');
+
+        if (!startDate || slots.length === 0) {
+            hint.textContent = 'Əvvəlcə başlama tarixi və ən azı 1 dərs günü/saatı seçin.';
+            return;
+        }
+
+        const payload = {
+            groupStart: startDate,
+            groupEnd: endDate || startDate,
+            capacityRequired: capEl ? parseInt(capEl.value || '0') : null,
+            excludeGroupId: __excludeGroupId,
+            slots: slots
+        };
+
+        hint.textContent = 'Yoxlanılır...';
+        try {
+            const res = await fetch('/Admin/Group/AvailableRooms', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            if (!Array.isArray(data)) { hint.textContent = 'Otaqlar yüklənə bilmədi.'; return; }
+
+            const select = document.getElementById('roomSelect');
+            const current = select.value;
+            select.innerHTML = '<option value="">— Otaq seçin —</option>';
+            data.forEach(function (r) {
+                const opt = document.createElement('option');
+                opt.value = r.roomId;
+                let label = r.name + ' (tutum ' + r.capacity + ')';
+                if (!r.isAvailable) { opt.disabled = true; label += ' — ' + (r.reason || 'Dolu'); }
+                else if (r.capacityWarning) { label += ' — ⚠ tutum azdır'; }
+                opt.textContent = label;
+                if (String(r.roomId) === String(current)) opt.selected = true;
+                select.appendChild(opt);
+            });
+            const freeCount = data.filter(x => x.isAvailable).length;
+            hint.textContent = freeCount + ' uyğun otaq tapıldı (' + (data.length - freeCount) + ' dolu).';
+        } catch (e) {
+            hint.textContent = 'Xəta: otaqlar yüklənə bilmədi.';
+        }
+    }
+
+    (function () {
+        const dm = document.getElementById('deliveryMode');
+        const card = document.getElementById('roomCard');
+        function sync() { if (dm && card) card.style.display = (dm.value === 'Online') ? 'none' : ''; }
+        if (dm) dm.addEventListener('change', sync);
+        sync();
+    })();
+</script>
+
 @section Scripts {
 <script>
+    // Save zamanı regenerate seçilibsə confirmation soruş
+    document.getElementById('groupEditForm')?.addEventListener('submit', function (e) {
+        var chk = document.getElementById('regenChk');
+        if (!chk || !chk.checked) return; // adi save
+        if (this.dataset.acxRegenConfirmed === '1') { this.dataset.acxRegenConfirmed = ''; return; }
+        e.preventDefault();
+        var form = this;
+        if (window.acadexConfirm) {
+            window.acadexConfirm({
+                title: 'Dərs cədvəlini yenidən yaratmaq istəyirsiniz?',
+                message: 'Həftəlik dərs günləri və saatları dəyişib. Mövcud dərs sessiyaları yeni cədvələ görə yenidən hesablanacaq və köhnə sessiyalar soft-delete olunacaq.',
+                confirmText: 'Yenidən yarat',
+                cancelText: 'Ləğv et',
+                type: 'warning'
+            }).then(function (ok) {
+                if (ok) {
+                    form.dataset.acxRegenConfirmed = '1';
+                    form.requestSubmit ? form.requestSubmit() : form.submit();
+                }
+            });
+        } else if (confirm('Dərs sessiyalarını yenidən yaratmaq istəyirsiniz?')) {
+            form.dataset.acxRegenConfirmed = '1';
+            form.requestSubmit ? form.requestSubmit() : form.submit();
+        }
+    });
+
     // Tədris formatına görə online sahələri göstər/gizlət
     function toggleOnlineFields() {
         var mode = document.getElementById('deliveryMode').value;

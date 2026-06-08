@@ -157,12 +157,14 @@ namespace SIS.BLL.Services.Implementations
             if (!await _roleManager.RoleExistsAsync(dto.Role))
                 throw new BadRequestException("Seçilmiş rol sistemdə tapılmadı");
 
+            var normalizedPhone = await Helpers.PhoneUniqueValidator.ValidateAndNormalizeAsync(_userManager, dto.PhoneNumber);
+
             var user = new AppUser
             {
                 FullName = dto.FullName.Trim(),
                 Email = dto.Email.Trim(),
                 UserName = dto.Email.Trim(),
-                PhoneNumber = string.IsNullOrWhiteSpace(dto.PhoneNumber) ? null : dto.PhoneNumber.Trim(),
+                PhoneNumber = normalizedPhone,
                 IsActive = dto.IsActive,
                 EmailConfirmed = true,
                 CreatedAt = DateTime.UtcNow
@@ -231,7 +233,8 @@ namespace SIS.BLL.Services.Implementations
             user.UserName = dto.Email.Trim();
             user.NormalizedEmail = _userManager.NormalizeEmail(dto.Email);
             user.NormalizedUserName = _userManager.NormalizeName(dto.Email);
-            user.PhoneNumber = string.IsNullOrWhiteSpace(dto.PhoneNumber) ? null : dto.PhoneNumber.Trim();
+            user.PhoneNumber = await Helpers.PhoneUniqueValidator.ValidateAndNormalizeAsync(
+                _userManager, dto.PhoneNumber, user.Id);
             user.IsActive = dto.IsActive;
             user.EmailConfirmed = dto.EmailConfirmed;
             user.UpdatedAt = DateTime.UtcNow;
