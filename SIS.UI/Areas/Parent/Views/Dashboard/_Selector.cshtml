@@ -1,0 +1,45 @@
+@model ParentPageVm
+@{
+    var action = ViewContext.RouteData.Values["action"]?.ToString() ?? "Index";
+}
+<div class="selector">
+    <span style="font-size:13px; color:#64748b;"><i class="fas fa-children"></i> Övlad:</span>
+    <select onchange="parentNav(this.value, null)">
+        @foreach (var c in Model.Children)
+        {
+            if (c.StudentId == Model.SelectedStudentId)
+            {
+                <option value="@c.StudentId" selected>@c.FullName — @c.StudentNumber</option>
+            }
+            else
+            {
+                <option value="@c.StudentId">@c.FullName — @c.StudentNumber</option>
+            }
+        }
+    </select>
+
+    @if (Model.Enrollments.Count > 0)
+    {
+        <span style="font-size:13px; color:#64748b;"><i class="fas fa-book"></i> Kurs:</span>
+        <select onchange="parentNav(@Model.SelectedStudentId, this.value)">
+            @foreach (var e in Model.Enrollments)
+            {
+                if (e.Id == Model.SelectedEnrollmentId)
+                {
+                    <option value="@e.Id" selected>@e.CourseName — @e.GroupName</option>
+                }
+                else
+                {
+                    <option value="@e.Id">@e.CourseName — @e.GroupName</option>
+                }
+            }
+        </select>
+    }
+</div>
+<script>
+    function parentNav(studentId, enrollmentId) {
+        var url = '/Parent/Dashboard/@action?studentId=' + studentId;
+        if (enrollmentId) url += '&enrollmentId=' + enrollmentId;
+        window.location.href = url;
+    }
+</script>

@@ -24,19 +24,22 @@ namespace SIS.BLL.Services.Implementations
         private readonly IUnitOfWork _unitOfWork;
         private readonly IEmailService _emailService;
         private readonly IConfiguration _configuration;
+        private readonly IAuditLogService _audit;
 
         public AuthService(
             UserManager<AppUser> userManager,
             IOptions<JwtSettings> jwtSettings,
             IUnitOfWork unitOfWork,
             IEmailService emailService,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            IAuditLogService audit)
         {
             _userManager = userManager;
             _jwtSettings = jwtSettings.Value;
             _unitOfWork = unitOfWork;
             _emailService = emailService;
             _configuration = configuration;
+            _audit = audit;
         }
 
         public async Task<TokenDto> LoginAsync(LoginDto dto)
@@ -72,15 +75,32 @@ namespace SIS.BLL.Services.Implementations
 
             var isCorrect = await _userManager.CheckPasswordAsync(user, dto.Password);
             if (!isCorrect)
+            {
+                _ = SafeAuditAsync("LoginFailed", "Auth", null, $"Yanlış şifrə cəhdi: {dto.Email}");
                 throw new BadRequestException("Email/kod və ya şifrə yanlışdır");
+            }
 
-            return await GenerateTokenAsync(user);
+            var token = await GenerateTokenAsync(user);
+
+            // Uğurlu login auditə düşür (HTTP context hələ anonymous, ona görə UserId description-a yazılır)
+            var roles = await _userManager.GetRolesAsync(user);
+            _ = SafeAuditAsync("LoginSuccess", "Auth", user.Id,
+                $"İstifadəçi sistemə daxil oldu: {user.FullName} ({user.Email}) — {string.Join(",", roles)}");
+
+            return token;
+        }
+
+        private async Task SafeAuditAsync(string action, string entity, string? entityId, string description)
+        {
+            try { await _audit.LogAsync(action, entity, entityId, description); }
+            catch { /* heç vaxt login axınını sındırma */ }
         }
 
         public async Task LogoutAsync(string userId)
         {
             await _unitOfWork.RefreshTokens.RevokeAllForUserAsync(userId);
             await _unitOfWork.SaveAsync();
+            _ = SafeAuditAsync("Logout", "Auth", userId, "İstifadəçi sistemdən çıxdı");
         }
 
         public async Task<TokenDto> RefreshTokenAsync(string refreshToken)

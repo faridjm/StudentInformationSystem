@@ -871,4 +871,67 @@
   <data name="ArchivePrivacyNote" xml:space="preserve">
     <value>Söhbət arxivi yalnız təhlükəsizlik və inzibati nəzarət məqsədi ilə SuperAdmin üçün əlçatandır.</value>
   </data>
+  <data name="LoginPlatformTagline" xml:space="preserve">
+    <value>Acadex 360 — Rəqəmsal Akademiya İdarəetmə Platforması</value>
+  </data>
+  <data name="LoginHeroTitle" xml:space="preserve">
+    <value>Öyrən. &lt;span class="hl"&gt;Yarat.&lt;/span&gt; Karyera qur.</value>
+  </data>
+  <data name="LoginHeroSubtitle" xml:space="preserve">
+    <value>Acadex 360 sənin tədris yolunu bir yerdə birləşdirir — kurikulum, qiymətlər, tapşırıqlar, transkript və real layihələr. Hər şey strukturlu, hər şey izlənə bilən.</value>
+  </data>
+  <data name="LoginCard1Title" xml:space="preserve">
+    <value>Real-time qiymət</value>
+  </data>
+  <data name="LoginCard1Sub" xml:space="preserve">
+    <value>Quiz · Tapşırıq · Final</value>
+  </data>
+  <data name="LoginCard2Title" xml:space="preserve">
+    <value>GPA və transkript</value>
+  </data>
+  <data name="LoginCard2Sub" xml:space="preserve">
+    <value>Şəffaf nəticə izləməsi</value>
+  </data>
+  <data name="LoginCard3Title" xml:space="preserve">
+    <value>Layihə əsaslı tədris</value>
+  </data>
+  <data name="LoginCard3Sub" xml:space="preserve">
+    <value>Real portfolio quruculuğu</value>
+  </data>
+  <data name="LoginSecure" xml:space="preserve">
+    <value>Təhlükəsiz giriş</value>
+  </data>
+  <data name="LoginEncrypted" xml:space="preserve">
+    <value>Şifrələnmiş seans</value>
+  </data>
+  <data name="LoginAlwaysOn" xml:space="preserve">
+    <value>24/7 sistem</value>
+  </data>
+  <data name="LoginRolesBadge" xml:space="preserve">
+    <value>Tələbə · Müəllim · İdarə</value>
+  </data>
+  <data name="LoginNoAccount" xml:space="preserve">
+    <value>Hesabın yoxdur?</value>
+  </data>
+  <data name="LoginContactUs" xml:space="preserve">
+    <value>Bizimlə əlaqə saxla</value>
+  </data>
+  <data name="LoginBackToSite" xml:space="preserve">
+    <value>Saytın əsas səhifəsi</value>
+  </data>
+  <data name="Support" xml:space="preserve">
+    <value>Dəstək</value>
+  </data>
+  <data name="LoginOr" xml:space="preserve">
+    <value>və ya</value>
+  </data>
+  <data name="RoleStudent" xml:space="preserve">
+    <value>Tələbə</value>
+  </data>
+  <data name="RoleTeacher" xml:space="preserve">
+    <value>Müəllim</value>
+  </data>
+  <data name="RoleAdmin" xml:space="preserve">
+    <value>İdarə</value>
+  </data>
 </root>

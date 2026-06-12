@@ -1,0 +1,37 @@
+@model ParentPageVm
+@{
+    ViewData["Title"] = "Transcript";
+    var t = Model.Transcript;
+}
+<h2 style="font-size:20px; font-weight:800; margin-bottom:14px;"><i class="fas fa-file-lines"></i> Transcript</h2>
+
+@if (!Model.HasChildren)
+{
+    <div class="card"><div class="empty">Bağlı tələbə yoxdur.</div></div>
+    return;
+}
+@await Html.PartialAsync("_Selector", Model)
+
+<div class="card">
+    <div class="card-header">@Model.SelectedStudentName <span class="badge b-gray">@Model.SelectedStudentNumber</span></div>
+    @if (t == null || !Model.SelectedEnrollmentId.HasValue)
+    {
+        <div class="empty">Bu kurs üçün transcript hələ hazır deyil.</div>
+    }
+    else
+    {
+        <div style="font-size:13px; color:#64748b; margin-bottom:14px;">@t.CourseName · @t.GroupName</div>
+        <div class="cards" style="margin-bottom:16px;">
+            <div class="stat"><div class="v" style="color:#4f46e5">@t.OfficialGrade.ToString("F1")%</div><div class="l">Rəsmi qiymət</div></div>
+            <div class="stat"><div class="v" style="color:#4f46e5">@t.GPA.ToString("F2")</div><div class="l">GPA</div></div>
+            <div class="stat"><div class="v" style="color:@(t.AttendancePercentage >= 70 ? "#059669" : "#dc2626")">@t.AttendancePercentage.ToString("F1")%</div><div class="l">Davamiyyət</div></div>
+        </div>
+
+        <div style="font-weight:600; font-size:13px; margin-bottom:8px;">PDF yüklə (dil seçin):</div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <a class="btn btn-primary" target="_blank" href="/Parent/Dashboard/TranscriptPdf?studentId=@Model.SelectedStudentId&enrollmentId=@Model.SelectedEnrollmentId&lang=az"><i class="fas fa-file-pdf"></i> AZ</a>
+            <a class="btn btn-light" target="_blank" href="/Parent/Dashboard/TranscriptPdf?studentId=@Model.SelectedStudentId&enrollmentId=@Model.SelectedEnrollmentId&lang=en"><i class="fas fa-file-pdf"></i> EN</a>
+            <a class="btn btn-light" target="_blank" href="/Parent/Dashboard/TranscriptPdf?studentId=@Model.SelectedStudentId&enrollmentId=@Model.SelectedEnrollmentId&lang=ru"><i class="fas fa-file-pdf"></i> RU</a>
+        </div>
+    }
+</div>

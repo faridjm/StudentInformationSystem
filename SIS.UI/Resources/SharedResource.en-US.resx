@@ -871,4 +871,67 @@ You can now log in with your new password.</value>
   <data name="ArchivePrivacyNote" xml:space="preserve">
     <value>Chat archive is available only to SuperAdmin for security and administrative oversight purposes.</value>
   </data>
+  <data name="LoginPlatformTagline" xml:space="preserve">
+    <value>Acadex 360 — Digital Academy Management Platform</value>
+  </data>
+  <data name="LoginHeroTitle" xml:space="preserve">
+    <value>Learn. &lt;span class="hl"&gt;Create.&lt;/span&gt; Build your career.</value>
+  </data>
+  <data name="LoginHeroSubtitle" xml:space="preserve">
+    <value>Acadex 360 brings your entire learning journey together — curriculum, grades, assignments, transcripts and real projects. Everything structured, everything trackable.</value>
+  </data>
+  <data name="LoginCard1Title" xml:space="preserve">
+    <value>Real-time grades</value>
+  </data>
+  <data name="LoginCard1Sub" xml:space="preserve">
+    <value>Quiz · Assignment · Final</value>
+  </data>
+  <data name="LoginCard2Title" xml:space="preserve">
+    <value>GPA and transcript</value>
+  </data>
+  <data name="LoginCard2Sub" xml:space="preserve">
+    <value>Transparent result tracking</value>
+  </data>
+  <data name="LoginCard3Title" xml:space="preserve">
+    <value>Project-based learning</value>
+  </data>
+  <data name="LoginCard3Sub" xml:space="preserve">
+    <value>Real portfolio building</value>
+  </data>
+  <data name="LoginSecure" xml:space="preserve">
+    <value>Secure login</value>
+  </data>
+  <data name="LoginEncrypted" xml:space="preserve">
+    <value>Encrypted session</value>
+  </data>
+  <data name="LoginAlwaysOn" xml:space="preserve">
+    <value>24/7 system</value>
+  </data>
+  <data name="LoginRolesBadge" xml:space="preserve">
+    <value>Student · Teacher · Admin</value>
+  </data>
+  <data name="LoginNoAccount" xml:space="preserve">
+    <value>Don't have an account?</value>
+  </data>
+  <data name="LoginContactUs" xml:space="preserve">
+    <value>Contact us</value>
+  </data>
+  <data name="LoginBackToSite" xml:space="preserve">
+    <value>Back to main site</value>
+  </data>
+  <data name="Support" xml:space="preserve">
+    <value>Support</value>
+  </data>
+  <data name="LoginOr" xml:space="preserve">
+    <value>or</value>
+  </data>
+  <data name="RoleStudent" xml:space="preserve">
+    <value>Student</value>
+  </data>
+  <data name="RoleTeacher" xml:space="preserve">
+    <value>Teacher</value>
+  </data>
+  <data name="RoleAdmin" xml:space="preserve">
+    <value>Admin</value>
+  </data>
 </root>

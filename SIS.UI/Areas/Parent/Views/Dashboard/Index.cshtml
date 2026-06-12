@@ -1,0 +1,68 @@
+@model ParentPageVm
+@{
+    ViewData["Title"] = "İdarə paneli";
+    var t = Model.Transcript;
+    string Lvl(string? c) => c switch {
+        "NormalCompletion" => "Normal", "HonorCompletion" => "Fərqlənmə",
+        "HighHonorCompletion" => "Yüksək fərqlənmə", "NotCompleted" => "Tamamlamayıb",
+        "NotEligible" => "Uyğun deyil", _ => "Gözləmədə" };
+    string Cert(string? c) => c switch { "Eligible" => "Uyğundur", "NotEligible" => "Uyğun deyil", _ => "Gözləmədə" };
+}
+
+<h2 style="font-size:20px; font-weight:800; margin-bottom:6px;">Salam 👋</h2>
+<p style="color:#64748b; margin-bottom:18px;">Övladınızın akademik göstəricilərini buradan izləyə bilərsiniz.</p>
+
+@if (!Model.HasChildren)
+{
+    <div class="card"><div class="empty">Hesabınıza hələ heç bir tələbə bağlanmayıb. Akademiya administrasiyası ilə əlaqə saxlayın.</div></div>
+    return;
+}
+
+@await Html.PartialAsync("_Selector", Model)
+
+<div class="card">
+    <div class="card-header"><i class="fas fa-user-graduate"></i> @Model.SelectedStudentName <span class="badge b-gray">@Model.SelectedStudentNumber</span></div>
+    @if (t == null)
+    {
+        <div class="empty">Bu kurs üçün akademik məlumat hələ hazır deyil.</div>
+    }
+    else
+    {
+        <div style="font-size:13px; color:#64748b; margin-bottom:12px;">
+            @t.CourseName · @t.GroupName · Müəllim: @t.TeacherName
+            <span class="badge @(t.TranscriptType == SIS.Entities.Enums.TranscriptType.Final ? "b-indigo" : "b-yellow")" style="margin-left:6px;">
+                @(t.TranscriptType == SIS.Entities.Enums.TranscriptType.Final ? "Yekun" : "Cari")
+            </span>
+        </div>
+        <div class="cards">
+            <div class="stat"><div class="v" style="color:@(t.AttendancePercentage >= 70 ? "#059669" : "#dc2626")">@t.AttendancePercentage.ToString("F1")%</div><div class="l">Davamiyyət</div></div>
+            <div class="stat"><div class="v" style="color:#4f46e5">@t.OfficialGrade.ToString("F1")%</div><div class="l">Rəsmi qiymət</div></div>
+            <div class="stat"><div class="v" style="color:#4f46e5">@t.GPA.ToString("F2")</div><div class="l">GPA</div></div>
+            <div class="stat"><div class="v" style="font-size:15px;">@Lvl(t.CompletionLevel)</div><div class="l">Tamamlama</div></div>
+            <div class="stat"><div class="v" style="font-size:15px;">@Cert(t.CertificateStatus)</div><div class="l">Sertifikat</div></div>
+        </div>
+
+        <div style="margin-top:14px; font-size:13px; color:#475569;">
+            <i class="fas fa-file-pen"></i> Gözləyən tapşırıqlar: <strong>@(t.HomeworkAssignments?.Count(h => !h.IsGraded) ?? 0)</strong>
+        </div>
+    }
+</div>
+
+<div class="card">
+    <div class="card-header"><i class="fas fa-bullhorn"></i> Son elanlar</div>
+    @if (Model.Announcements.Count == 0)
+    {
+        <div class="empty">Elan yoxdur.</div>
+    }
+    else
+    {
+        foreach (var a in Model.Announcements)
+        {
+            <div style="padding:10px 0; border-bottom:1px solid #eef2f7;">
+                <div style="font-weight:600;">@a.Title</div>
+                <div style="font-size:13px; color:#64748b;">@a.Content</div>
+                <div style="font-size:11px; color:#94a3b8; margin-top:3px;">@a.AuthorName · @a.CreatedAt.ToString("dd.MM.yyyy")</div>
+            </div>
+        }
+    }
+</div>

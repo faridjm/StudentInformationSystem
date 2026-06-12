@@ -34,6 +34,9 @@ namespace SIS.UI.Controllers
             if (User.IsInRole("Student"))
                 return RedirectToAction("Index", "Dashboard", new { area = "Student" });
 
+            if (User.IsInRole("Parent"))
+                return RedirectToAction("Index", "Dashboard", new { area = "Parent" });
+
             // Tanınmayan rol — public sayta düş.
             return RedirectToAction("Index", "Public");
         }

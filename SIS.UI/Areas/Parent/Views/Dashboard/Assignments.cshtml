@@ -1,0 +1,43 @@
+@model ParentPageVm
+@{
+    ViewData["Title"] = "Tapşırıqlar";
+    var t = Model.Transcript;
+}
+<h2 style="font-size:20px; font-weight:800; margin-bottom:14px;"><i class="fas fa-file-pen"></i> Tapşırıqlar</h2>
+
+@if (!Model.HasChildren)
+{
+    <div class="card"><div class="empty">Bağlı tələbə yoxdur.</div></div>
+    return;
+}
+@await Html.PartialAsync("_Selector", Model)
+
+<div class="card">
+    <div class="card-header">@Model.SelectedStudentName</div>
+    @if (t == null || t.HomeworkAssignments == null || t.HomeworkAssignments.Count == 0)
+    {
+        <div class="empty">Tapşırıq yoxdur.</div>
+    }
+    else
+    {
+        <table>
+            <thead><tr><th>Ad</th><th>Son tarix</th><th>Bal</th><th>%</th><th>Status</th></tr></thead>
+            <tbody>
+                @foreach (var a in t.HomeworkAssignments)
+                {
+                    <tr>
+                        <td style="font-weight:600;">@a.Title</td>
+                        <td>@a.DueDate.ToString("dd.MM.yyyy")</td>
+                        <td>@(a.IsGraded ? a.Score?.ToString("F1") ?? "—" : "—") / @a.MaxScore.ToString("F0")</td>
+                        <td>@(a.Percentage.HasValue ? $"{a.Percentage:F0}%" : "—")</td>
+                        <td>
+                            @if (a.IsGraded) { <span class="badge b-green">Qiymətləndirilib</span> }
+                            else if (a.IsSubmitted) { <span class="badge b-indigo">Təqdim edilib</span> }
+                            else { <span class="badge b-yellow">Gözləyir</span> }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

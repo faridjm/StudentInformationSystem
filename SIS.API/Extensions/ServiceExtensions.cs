@@ -19,6 +19,7 @@ namespace SIS.API.Extensions
 
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IStudentService, StudentService>();
+            services.AddScoped<IParentService, ParentService>();
             services.AddScoped<ITeacherService, TeacherService>();
             services.AddScoped<IDepartmentService, DepartmentService>();
             services.AddScoped<ICourseService, CourseService>();

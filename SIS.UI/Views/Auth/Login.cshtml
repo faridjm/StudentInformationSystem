@@ -314,8 +314,8 @@
 <body>
 
     <div class="top-bar">
-        <a href="/Public"><i class="fas fa-arrow-left"></i> Saytın əsas səhifəsi</a>
-        <a href="/Public/Contact"><i class="fas fa-circle-question"></i> Dəstək</a>
+        <a href="/Public"><i class="fas fa-arrow-left"></i> @L["LoginBackToSite"]</a>
+        <a href="/Public/Contact"><i class="fas fa-circle-question"></i> @L["Support"]</a>
     </div>
 
     <div class="auth-wrap">
@@ -336,43 +336,40 @@
 
             <div class="brand-mid">
                 <span class="brand-eyebrow">
-                    <span class="dot"></span> Acadex 360 — Digital Academy Management Platform
+                    <span class="dot"></span> @L["LoginPlatformTagline"]
                 </span>
-                <h1>Öyrən. <span class="hl">Yarat.</span> Karyera qur.</h1>
-                <p>
-                    Acadex 360 sənin tədris yolunu bir yerdə birləşdirir — kurikulum, qiymətlər,
-                    tapşırıqlar, transkript və real layihələr. Hər şey strukturlu, hər şey izlənə bilən.
-                </p>
+                <h1>@Html.Raw(L["LoginHeroTitle"].Value)</h1>
+                <p>@L["LoginHeroSubtitle"]</p>
 
                 <div class="glass-cards">
                     <div class="gcard gc1">
                         <div class="ico"><i class="fas fa-bolt"></i></div>
                         <div>
-                            <div>Real-time qiymət</div>
-                            <div style="opacity:.75; font-weight:500; font-size:11.5px;">Quiz · Assignment · Final</div>
+                            <div>@L["LoginCard1Title"]</div>
+                            <div style="opacity:.75; font-weight:500; font-size:11.5px;">@L["LoginCard1Sub"]</div>
                         </div>
                     </div>
                     <div class="gcard gc2">
                         <div class="ico"><i class="fas fa-square-poll-vertical"></i></div>
                         <div>
-                            <div>GPA və transkript</div>
-                            <div style="opacity:.75; font-weight:500; font-size:11.5px;">Şəffaf nəticə izləməsi</div>
+                            <div>@L["LoginCard2Title"]</div>
+                            <div style="opacity:.75; font-weight:500; font-size:11.5px;">@L["LoginCard2Sub"]</div>
                         </div>
                     </div>
                     <div class="gcard gc3">
                         <div class="ico"><i class="fas fa-diagram-project"></i></div>
                         <div>
-                            <div>Layihə əsaslı tədris</div>
-                            <div style="opacity:.75; font-weight:500; font-size:11.5px;">Real portfolio quruculuğu</div>
+                            <div>@L["LoginCard3Title"]</div>
+                            <div style="opacity:.75; font-weight:500; font-size:11.5px;">@L["LoginCard3Sub"]</div>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div class="brand-bottom">
-                <span><i class="fas fa-shield-halved"></i> Təhlükəsiz giriş</span>
-                <span><i class="fas fa-lock"></i> Şifrələnmiş seans</span>
-                <span><i class="fas fa-clock"></i> 24/7 sistem</span>
+                <span><i class="fas fa-shield-halved"></i> @L["LoginSecure"]</span>
+                <span><i class="fas fa-lock"></i> @L["LoginEncrypted"]</span>
+                <span><i class="fas fa-clock"></i> @L["LoginAlwaysOn"]</span>
             </div>
         </aside>
 
@@ -381,7 +378,7 @@
             <div class="form-inner">
 
                 <div class="form-head">
-                    <span class="badge"><i class="fas fa-circle"></i> Tələbə · Müəllim · İdarə</span>
+                    <span class="badge"><i class="fas fa-circle"></i> @L["LoginRolesBadge"]</span>
                     <h2>@L["WelcomeBack"]</h2>
                     <p>@L["LoginSubtitle"]</p>
                 </div>
@@ -432,16 +429,16 @@
                         @L["Login"] <i class="fas fa-arrow-right"></i>
                     </button>
 
-                    <div class="divider">və ya</div>
+                    <div class="divider">@L["LoginOr"]</div>
 
                     <div class="role-row">
-                        <div class="role-chip"><i class="fas fa-user-graduate"></i> Tələbə</div>
-                        <div class="role-chip"><i class="fas fa-chalkboard-teacher"></i> Müəllim</div>
-                        <div class="role-chip"><i class="fas fa-user-shield"></i> İdarə</div>
+                        <div class="role-chip"><i class="fas fa-user-graduate"></i> @L["RoleStudent"]</div>
+                        <div class="role-chip"><i class="fas fa-chalkboard-teacher"></i> @L["RoleTeacher"]</div>
+                        <div class="role-chip"><i class="fas fa-user-shield"></i> @L["RoleAdmin"]</div>
                     </div>
 
                     <div class="form-foot">
-                        Hesabın yoxdur? <a href="/Public/Contact">Bizimlə əlaqə saxla</a>
+                        @L["LoginNoAccount"] <a href="/Public/Contact">@L["LoginContactUs"]</a>
                     </div>
                 </form>
             </div>

@@ -1692,6 +1692,51 @@ namespace SIS.DAL.Migrations
                     b.ToTable("OnlineLessonParticipants");
                 });
 
+            modelBuilder.Entity("SIS.Entities.Models.ParentStudent", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ParentUserId")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("RelationshipType")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StudentId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsActive");
+
+                    b.HasIndex("ParentUserId");
+
+                    b.HasIndex("StudentId");
+
+                    b.HasIndex("ParentUserId", "StudentId")
+                        .IsUnique();
+
+                    b.ToTable("ParentStudents");
+                });
+
             modelBuilder.Entity("SIS.Entities.Models.PublicContactMessage", b =>
                 {
                     b.Property<int>("Id")
@@ -2990,6 +3035,25 @@ namespace SIS.DAL.Migrations
                         .IsRequired();
 
                     b.Navigation("OnlineLesson");
+
+                    b.Navigation("Student");
+                });
+
+            modelBuilder.Entity("SIS.Entities.Models.ParentStudent", b =>
+                {
+                    b.HasOne("SIS.Entities.Identity.AppUser", "ParentUser")
+                        .WithMany()
+                        .HasForeignKey("ParentUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SIS.Entities.Models.Student", "Student")
+                        .WithMany()
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ParentUser");
 
                     b.Navigation("Student");
                 });

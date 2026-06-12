@@ -42,7 +42,8 @@ namespace SIS.API.Extensions
             RoleConstants.Admin,
             RoleConstants.Moderator,
             RoleConstants.Teacher,
-            RoleConstants.Student
+            RoleConstants.Student,
+            RoleConstants.Parent
         };
 
             foreach (var role in roles)

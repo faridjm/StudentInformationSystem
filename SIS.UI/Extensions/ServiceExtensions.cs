@@ -47,6 +47,8 @@ namespace SIS.UI.Extensions
             Add<ISimulationApi>();
             Add<ITranscriptApi>();
             Add<IRoomApi>();
+            Add<IStudentParentApi>();
+            Add<IParentApi>();
             Add<IChatApi>();
             Add<IQuizApi>();
             Add<IAuditLogApi>();

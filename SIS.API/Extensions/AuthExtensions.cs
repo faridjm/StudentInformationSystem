@@ -35,6 +35,12 @@ namespace SIS.API.Extensions
             })
             .AddJwtBearer(options =>
             {
+                // .NET 8+ JsonWebTokenHandler default-da MapInboundClaims=false-dır.
+                // Amma AuthService JwtSecurityTokenHandler ilə token yaradır və ClaimTypes.* istifadə edir.
+                // İki tərəf arasında uyğunluq üçün:
+                //  - MapInboundClaims = true → qısa adları (`role`, `nameid`) ClaimTypes.* uzun adlarına çevirir
+                //  - NameClaimType / RoleClaimType istifadə olunan claim-i açıq göstərir
+                options.MapInboundClaims = true;
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
@@ -44,7 +50,9 @@ namespace SIS.API.Extensions
                     ValidIssuer = jwtSettings.Issuer,
                     ValidAudience = jwtSettings.Audience,
                     IssuerSigningKey = new SymmetricSecurityKey(
-                        Encoding.UTF8.GetBytes(jwtSettings.SecretKey))
+                        Encoding.UTF8.GetBytes(jwtSettings.SecretKey)),
+                    NameClaimType = System.Security.Claims.ClaimTypes.Name,
+                    RoleClaimType = System.Security.Claims.ClaimTypes.Role
                 };
 
                 options.Events = new JwtBearerEvents

@@ -208,7 +208,99 @@
     </div>
 </div>
 
+@{
+    var parents = ViewBag.Parents as List<SIS.BLL.Services.DTOs.Parent.ParentInfoDto>
+                  ?? new List<SIS.BLL.Services.DTOs.Parent.ParentInfoDto>();
+}
+<div class="card" style="margin-top:16px;">
+    <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+        <span><i class="fas fa-user-shield" style="margin-right:8px;"></i> Valideynlər</span>
+        <div style="display:flex; gap:8px;">
+            <button type="button" class="btn btn-sm btn-primary" onclick="toggleBox('addParentBox')"><i class="fas fa-plus"></i> Valideyn əlavə et</button>
+            <button type="button" class="btn btn-sm btn-secondary" onclick="toggleBox('linkParentBox')"><i class="fas fa-link"></i> Mövcud valideyni bağla</button>
+        </div>
+    </div>
+    <div class="card-body">
+        @if (!parents.Any())
+        {
+            <div style="color:var(--text-secondary); font-size:13px;">Bu tələbəyə hələ valideyn bağlanmayıb.</div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-compact" style="width:100%; font-size:14px;">
+                    <thead>
+                        <tr><th>Ad-soyad</th><th>Email</th><th>Telefon</th><th>Əlaqə</th><th>Status</th><th>Tarix</th><th></th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var p in parents)
+                        {
+                            <tr>
+                                <td style="font-weight:600;">@p.FullName</td>
+                                <td>@(p.Email ?? "—")</td>
+                                <td>@(p.Phone ?? "—")</td>
+                                <td>@p.RelationshipType</td>
+                                <td>
+                                    @if (p.IsActive) { <span class="badge badge-success">Aktiv</span> }
+                                    else { <span class="badge badge-danger">Deaktiv</span> }
+                                </td>
+                                <td>@p.CreatedAt.ToString("dd.MM.yyyy")</td>
+                                <td style="white-space:nowrap;">
+                                    <form method="post" action="/Admin/Student/ToggleParent" style="display:inline;">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="studentId" value="@Model.Id" />
+                                        <input type="hidden" name="parentUserId" value="@p.ParentUserId" />
+                                        <input type="hidden" name="enable" value="@((!p.IsActive).ToString().ToLower())" />
+                                        <button type="submit" class="btn btn-sm @(p.IsActive ? "btn-warning" : "btn-success")">
+                                            @(p.IsActive ? "Deaktiv et" : "Aktiv et")
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+
+        <!-- Add parent -->
+        <div id="addParentBox" style="display:none; margin-top:16px; border-top:1px solid var(--border,#e2e8f0); padding-top:14px;">
+            <h4 style="font-size:14px; font-weight:700; margin-bottom:10px;">Yeni valideyn hesabı</h4>
+            <form method="post" action="/Admin/Student/AddParent">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="studentId" value="@Model.Id" />
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+                    <div class="form-group"><label class="form-label">Ad-soyad *</label><input name="FullName" class="form-control" required /></div>
+                    <div class="form-group"><label class="form-label">Əlaqə növü</label><select name="RelationshipType" class="form-control" asp-items="Html.GetEnumSelectList<SIS.Entities.Enums.RelationshipType>()"></select></div>
+                    <div class="form-group"><label class="form-label">Email (boş → auto)</label><input name="Email" type="email" class="form-control" placeholder="parent009@@sis.az" /></div>
+                    <div class="form-group"><label class="form-label">Telefon</label><input name="Phone" class="form-control" /></div>
+                    <div class="form-group"><label class="form-label">Müvəqqəti parol (boş → auto)</label><input name="Password" class="form-control" placeholder="Parent009!" /></div>
+                </div>
+                <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-save"></i> Yarat</button>
+            </form>
+        </div>
+
+        <!-- Link existing parent -->
+        <div id="linkParentBox" style="display:none; margin-top:16px; border-top:1px solid var(--border,#e2e8f0); padding-top:14px;">
+            <h4 style="font-size:14px; font-weight:700; margin-bottom:10px;">Mövcud valideyni bağla</h4>
+            <form method="post" action="/Admin/Student/LinkParent">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="studentId" value="@Model.Id" />
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+                    <div class="form-group"><label class="form-label">Valideynin email-i *</label><input name="Email" type="email" class="form-control" required /></div>
+                    <div class="form-group"><label class="form-label">Əlaqə növü</label><select name="RelationshipType" class="form-control" asp-items="Html.GetEnumSelectList<SIS.Entities.Enums.RelationshipType>()"></select></div>
+                </div>
+                <button type="submit" class="btn btn-secondary btn-sm"><i class="fas fa-link"></i> Bağla</button>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script>
+function toggleBox(id) {
+    var el = document.getElementById(id);
+    if (el) el.style.display = (el.style.display === 'none' || !el.style.display) ? 'block' : 'none';
+}
 function togglePwd(id, btn) {
     const input = document.getElementById(id);
     const icon = btn.querySelector('i');

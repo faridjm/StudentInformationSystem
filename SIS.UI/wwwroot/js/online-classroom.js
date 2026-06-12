@@ -405,6 +405,8 @@
             camBtn.classList.toggle('off', !camOn);
             camBtn.innerHTML = camOn ? '<i class="fas fa-video"></i>' : '<i class="fas fa-video-slash"></i>';
         }
+        var localTile = document.getElementById('localTile');
+        if (localTile) localTile.classList.toggle('cam-off', !camOn);
     }
 
     // Remote screen share status UI
@@ -522,6 +524,9 @@
             $('btnCam').classList.toggle('off', enabled);
             $('btnCam').innerHTML = enabled
                 ? '<i class="fas fa-video-slash"></i>' : '<i class="fas fa-video"></i>';
+            // Local tile-da cam-off görünüşü
+            var localTile = document.getElementById('localTile');
+            if (localTile) localTile.classList.toggle('cam-off', enabled);
         });
 
         const screenBtn = $('btnScreen');

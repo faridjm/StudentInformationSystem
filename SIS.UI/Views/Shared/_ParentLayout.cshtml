@@ -1,0 +1,97 @@
+@{
+    var ctrl = ViewContext.RouteData.Values["action"]?.ToString() ?? "Index";
+    var sid = Context.Request.Query["studentId"].ToString();
+    string Q() => string.IsNullOrEmpty(sid) ? "" : $"?studentId={sid}";
+    string Active(string a) => ctrl == a ? "active" : "";
+    var parentName = User.Identity?.Name ?? "Valideyn";
+}
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"] · Acadex 360 Parent</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f1f5f9; color: #0f172a; }
+        .shell { display: flex; min-height: 100vh; }
+        .sidebar { width: 248px; background: #0f172a; color: #cbd5e1; display: flex; flex-direction: column; position: fixed; height: 100vh; }
+        .brand { padding: 20px 22px; font-size: 20px; font-weight: 800; color: #fff; border-bottom: 1px solid #1e293b; }
+        .brand span { color: #34d399; font-size: 13px; }
+        .brand small { display: block; font-size: 10px; color: #64748b; font-weight: 500; margin-top: 2px; letter-spacing: .5px; }
+        .nav { flex: 1; padding: 12px 0; overflow-y: auto; }
+        .nav a { display: flex; align-items: center; gap: 11px; padding: 11px 22px; color: #cbd5e1; text-decoration: none; font-size: 14px; }
+        .nav a:hover { background: #1e293b; color: #fff; }
+        .nav a.active { background: #4f46e5; color: #fff; font-weight: 600; }
+        .nav a i { width: 18px; text-align: center; }
+        .nav .sec { padding: 14px 22px 6px; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #64748b; }
+        .main { margin-left: 248px; flex: 1; display: flex; flex-direction: column; }
+        .topbar { background: #fff; border-bottom: 1px solid #e2e8f0; padding: 14px 26px; display: flex; justify-content: space-between; align-items: center; }
+        .topbar .who { font-size: 13px; color: #64748b; }
+        .readonly-badge { background: #eef2ff; color: #4f46e5; font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 999px; }
+        .content { padding: 24px 26px; }
+        .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px; margin-bottom: 16px; }
+        .card-header { font-weight: 700; font-size: 15px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+        th, td { text-align: left; padding: 9px 8px; border-bottom: 1px solid #eef2f7; }
+        th { color: #64748b; font-weight: 600; font-size: 12px; }
+        .badge { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+        .b-green { background: #dcfce7; color: #059669; }
+        .b-red { background: #fee2e2; color: #dc2626; }
+        .b-yellow { background: #fef3c7; color: #d97706; }
+        .b-gray { background: #f1f5f9; color: #64748b; }
+        .b-indigo { background: #eef2ff; color: #4f46e5; }
+        .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; }
+        .stat { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px; text-align: center; }
+        .stat .v { font-size: 20px; font-weight: 800; }
+        .stat .l { font-size: 11px; color: #64748b; margin-top: 3px; }
+        .selector { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 18px; }
+        .selector select { padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; background: #fff; }
+        .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; font-weight: 600; text-decoration: none; }
+        .btn-primary { background: linear-gradient(135deg, #4f46e5, #7c3aed); color: #fff; }
+        .btn-light { background: #fff; border: 1px solid #cbd5e1; color: #334155; }
+        .alert { padding: 11px 14px; border-radius: 8px; margin-bottom: 14px; font-size: 13px; }
+        .alert-error { background: #fee2e2; color: #b91c1c; }
+        .empty { color: #94a3b8; font-size: 14px; padding: 20px; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="shell">
+        <aside class="sidebar">
+            <div class="brand">Acadex <span>360</span><small>VALİDEYN PORTALI</small></div>
+            <nav class="nav">
+                <a href="/Parent/Dashboard/Index@(Q())" class="@Active("Index")"><i class="fas fa-gauge"></i> İdarə paneli</a>
+                <a href="/Parent/Dashboard/Children@(Q())" class="@Active("Children")"><i class="fas fa-children"></i> Övladlarım</a>
+                <div class="sec">Akademik</div>
+                <a href="/Parent/Dashboard/Attendance@(Q())" class="@Active("Attendance")"><i class="fas fa-calendar-check"></i> Davamiyyət</a>
+                <a href="/Parent/Dashboard/Grades@(Q())" class="@Active("Grades")"><i class="fas fa-star"></i> Qiymətlər</a>
+                <a href="/Parent/Dashboard/Quizzes@(Q())" class="@Active("Quizzes")"><i class="fas fa-list-check"></i> Quizlər</a>
+                <a href="/Parent/Dashboard/Assignments@(Q())" class="@Active("Assignments")"><i class="fas fa-file-pen"></i> Tapşırıqlar</a>
+                <a href="/Parent/Dashboard/Announcements@(Q())" class="@Active("Announcements")"><i class="fas fa-bullhorn"></i> Elanlar</a>
+                <a href="/Parent/Dashboard/Transcript@(Q())" class="@Active("Transcript")"><i class="fas fa-file-lines"></i> Transcript</a>
+                <div class="sec">Hesab</div>
+                <form method="post" action="/Auth/Logout" style="padding:6px 12px;">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="nav" style="background:none;border:none;color:#cbd5e1;cursor:pointer;display:flex;align-items:center;gap:11px;padding:11px 10px;font-size:14px;width:100%;">
+                        <i class="fas fa-right-from-bracket"></i> Çıxış
+                    </button>
+                </form>
+            </nav>
+        </aside>
+        <div class="main">
+            <div class="topbar">
+                <div class="who"><i class="fas fa-user-shield"></i> @parentName</div>
+                <span class="readonly-badge"><i class="fas fa-eye"></i> Yalnız izləmə (read-only)</span>
+            </div>
+            <div class="content">
+                @if (TempData["Error"] != null)
+                {
+                    <div class="alert alert-error">@TempData["Error"]</div>
+                }
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+</body>
+</html>

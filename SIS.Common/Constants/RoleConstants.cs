@@ -11,6 +11,7 @@ namespace SIS.Common.Constants
         public const string Moderator = "Moderator";
         public const string Teacher = "Teacher";
         public const string Student = "Student";
+        public const string Parent = "Parent";
     }
 
 }

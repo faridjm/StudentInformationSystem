@@ -78,6 +78,48 @@
                 <input type="hidden" name="EnrollmentYear" value="@DateTime.Now.Year" />
             </div>
         </div>
+
+        <!-- ── Optional: Valideyn paneli hesabı ── -->
+        <div class="card" style="margin-top:16px;">
+            <div class="card-header"><i class="fas fa-user-shield" style="margin-right:8px;"></i> Valideyn paneli (istəyə bağlı)</div>
+            <div class="card-body">
+                <div id="ageHelper" style="font-size:13px; padding:8px 12px; border-radius:8px; display:none; margin-bottom:12px;"></div>
+
+                <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-weight:600;">
+                    <input type="checkbox" name="CreateParentAccount" value="true" id="createParentChk" onchange="toggleParentFields()" />
+                    Bu tələbə üçün valideyn hesabı yarat
+                </label>
+
+                <div id="parentFields" style="display:none; margin-top:14px;">
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                        <div class="form-group">
+                            <label class="form-label">Valideynin ad-soyadı</label>
+                            <input name="ParentFullName" class="form-control" placeholder="Məs: Aysel Məmmədova" />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Əlaqə növü</label>
+                            <select name="ParentRelationshipType" class="form-control" asp-items="Html.GetEnumSelectList<SIS.Entities.Enums.RelationshipType>()"></select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email / Login</label>
+                            <input name="ParentEmail" type="email" class="form-control" placeholder="boş buraxsanız parent009@@sis.az auto yaranır" />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Telefon (optional)</label>
+                            <input name="ParentPhone" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Müvəqqəti parol</label>
+                            <input name="ParentPassword" class="form-control" placeholder="boş buraxsanız Parent009! auto yaranır" />
+                        </div>
+                    </div>
+                    <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">
+                        Tələbənin birdən çox valideyni olacaqsa, sonradan tələbə detalından əlavə edə bilərsiniz.
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div style="display:flex; gap:12px; margin-top:16px;">
             <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> @L["Save"]</button>
             <a href="/Admin/Student" class="btn btn-secondary">@L["Cancel"]</a>
@@ -146,6 +188,35 @@
         if (input.type === 'password') { input.type = 'text';     icon.className = 'fas fa-eye-slash'; }
         else                           { input.type = 'password'; icon.className = 'fas fa-eye';       }
     };
+})();
+
+// Valideyn fields toggle
+function toggleParentFields() {
+    var chk = document.getElementById('createParentChk');
+    var fields = document.getElementById('parentFields');
+    if (fields) fields.style.display = chk.checked ? 'block' : 'none';
+}
+
+// Yaşa görə helper (18 yoxlaması — yalnız tövsiyə, bloklamır)
+(function () {
+    var bd = document.querySelector('input[name="BirthDate"]');
+    var helper = document.getElementById('ageHelper');
+    if (!bd || !helper) return;
+    function calc() {
+        if (!bd.value) { helper.style.display = 'none'; return; }
+        var d = new Date(bd.value);
+        var age = Math.floor((Date.now() - d.getTime()) / (365.25 * 24 * 3600 * 1000));
+        helper.style.display = 'block';
+        if (age < 18) {
+            helper.style.background = '#FEF3C7'; helper.style.color = '#92400e';
+            helper.textContent = 'Bu tələbə 18 yaşdan kiçikdir (' + age + '). Valideyn hesabı yaratmaq tövsiyə olunur.';
+        } else {
+            helper.style.background = '#DBEAFE'; helper.style.color = '#1e40af';
+            helper.textContent = 'Bu tələbə yetkindir (' + age + '). Valideyn hesabı yaratmaq optionaldır.';
+        }
+    }
+    bd.addEventListener('change', calc);
+    calc();
 })();
 </script>
 }

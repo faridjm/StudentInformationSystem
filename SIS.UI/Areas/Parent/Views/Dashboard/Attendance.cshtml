@@ -1,0 +1,35 @@
+@model ParentPageVm
+@{
+    ViewData["Title"] = "Davamiyyət";
+    var t = Model.Transcript;
+}
+<h2 style="font-size:20px; font-weight:800; margin-bottom:14px;"><i class="fas fa-calendar-check"></i> Davamiyyət</h2>
+
+@if (!Model.HasChildren)
+{
+    <div class="card"><div class="empty">Bağlı tələbə yoxdur.</div></div>
+    return;
+}
+@await Html.PartialAsync("_Selector", Model)
+
+<div class="card">
+    <div class="card-header">@Model.SelectedStudentName <span class="badge b-gray">@Model.SelectedStudentNumber</span></div>
+    @if (t == null)
+    {
+        <div class="empty">Davamiyyət məlumatı hələ yoxdur.</div>
+    }
+    else
+    {
+        <div class="cards">
+            <div class="stat"><div class="v" style="color:#059669">@t.PresentCount</div><div class="l">İştirak</div></div>
+            <div class="stat"><div class="v" style="color:#d97706">@t.LateCount</div><div class="l">Gecikmə</div></div>
+            <div class="stat"><div class="v" style="color:#dc2626">@t.AbsentCount</div><div class="l">Qayıb</div></div>
+            <div class="stat"><div class="v" style="color:#64748b">@t.ExcusedCount</div><div class="l">Üzrlü</div></div>
+            <div class="stat"><div class="v">@t.AttendanceTakenSessions</div><div class="l">Keçirilmiş</div></div>
+            <div class="stat"><div class="v" style="color:@(t.AttendancePercentage >= 70 ? "#059669" : "#dc2626")">@t.AttendancePercentage.ToString("F1")%</div><div class="l">Davamiyyət faizi</div></div>
+        </div>
+        <div style="font-size:12px; color:#94a3b8; margin-top:12px; font-style:italic;">
+            Davamiyyət faizi: (İştirak + Gecikmə × 0.5 + Üzrlü) / Keçirilmiş sessiyalar × 100
+        </div>
+    }
+</div>

@@ -21,10 +21,12 @@ namespace SIS.BLL.Services.Implementations
         private readonly IAuditLogService _audit;
         private readonly IInstitutionalEmailService _institutionalEmail;
         private readonly IAcademicPerformanceService _performance;
+        private readonly IParentService _parentService;
 
         public StudentService(IUnitOfWork unitOfWork, UserManager<AppUser> userManager,
             IActivityLogger activityLogger, IEmailService emailService, IAuditLogService audit,
-            IInstitutionalEmailService institutionalEmail, IAcademicPerformanceService performance)
+            IInstitutionalEmailService institutionalEmail, IAcademicPerformanceService performance,
+            IParentService parentService)
         {
             _unitOfWork = unitOfWork;
             _userManager = userManager;
@@ -33,6 +35,7 @@ namespace SIS.BLL.Services.Implementations
             _audit = audit;
             _institutionalEmail = institutionalEmail;
             _performance = performance;
+            _parentService = parentService;
         }
 
         public async Task<IEnumerable<StudentListDto>> GetAllStudentsAsync()
@@ -107,11 +110,12 @@ namespace SIS.BLL.Services.Implementations
             if (!result.Succeeded)
                 throw new BadRequestException(string.Join(", ", result.Errors.Select(e => e.Description)));
 
+            Student student;
             try
             {
                 await _userManager.AddToRoleAsync(user, RoleConstants.Student);
 
-                var student = new Student
+                student = new Student
                 {
                     AppUserId = user.Id,
                     StudentNumber = studentNumber,
@@ -137,6 +141,30 @@ namespace SIS.BLL.Services.Implementations
                 // Student save və ya role assignment uğursuz → yaradılmış AppUser-i sil ki, partial data qalmasın
                 await _userManager.DeleteAsync(user);
                 throw;
+            }
+
+            // ── Optional valideyn hesabı (tələbə artıq yaradılıb; uğursuzluq tələbəni rollback etmir) ──
+            if (dto.CreateParentAccount)
+            {
+                try
+                {
+                    await _parentService.CreateParentForStudentAsync(student.Id, new DTOs.Parent.CreateParentForStudentDto
+                    {
+                        FullName = string.IsNullOrWhiteSpace(dto.ParentFullName)
+                            ? $"{dto.FullName} (valideyn)" : dto.ParentFullName!,
+                        Email = dto.ParentEmail,
+                        Phone = dto.ParentPhone,
+                        RelationshipType = dto.ParentRelationshipType,
+                        Password = dto.ParentPassword
+                    });
+                }
+                catch (Exception ex)
+                {
+                    // Tələbə qalır; admin sonradan Parents tab-dan əlavə edə bilər
+                    throw new BadRequestException(
+                        $"Tələbə yaradıldı, lakin valideyn hesabı yaradıla bilmədi: {ex.Message}. " +
+                        "Valideyni sonradan tələbə detalından əlavə edə bilərsiniz.");
+                }
             }
         }
 

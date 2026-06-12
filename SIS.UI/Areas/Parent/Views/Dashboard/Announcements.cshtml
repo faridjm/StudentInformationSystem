@@ -1,0 +1,37 @@
+@model ParentPageVm
+@{
+    ViewData["Title"] = "Elanlar";
+}
+<h2 style="font-size:20px; font-weight:800; margin-bottom:14px;"><i class="fas fa-bullhorn"></i> Elanlar</h2>
+
+@if (!Model.HasChildren)
+{
+    <div class="card"><div class="empty">Bağlı tələbə yoxdur.</div></div>
+    return;
+}
+@await Html.PartialAsync("_Selector", Model)
+
+<div class="card">
+    <div class="card-header">@Model.SelectedStudentName üçün elanlar</div>
+    @if (Model.Announcements.Count == 0)
+    {
+        <div class="empty">Elan yoxdur.</div>
+    }
+    else
+    {
+        foreach (var a in Model.Announcements)
+        {
+            <div style="padding:12px 0; border-bottom:1px solid #eef2f7;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div style="font-weight:700;">@a.Title</div>
+                    <span class="badge b-gray">@a.CreatedAt.ToString("dd.MM.yyyy")</span>
+                </div>
+                <div style="font-size:13.5px; color:#475569; margin-top:4px;">@a.Content</div>
+                <div style="font-size:11px; color:#94a3b8; margin-top:4px;">
+                    <i class="fas fa-user"></i> @a.AuthorName
+                    @if (!string.IsNullOrEmpty(a.CourseName)) { <span> · @a.CourseName</span> }
+                </div>
+            </div>
+        }
+    }
+</div>

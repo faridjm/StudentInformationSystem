@@ -871,4 +871,67 @@
   <data name="ArchivePrivacyNote" xml:space="preserve">
     <value>Архив чатов доступен только SuperAdmin для целей безопасности и административного контроля.</value>
   </data>
+  <data name="LoginPlatformTagline" xml:space="preserve">
+    <value>Acadex 360 — Платформа управления цифровой академией</value>
+  </data>
+  <data name="LoginHeroTitle" xml:space="preserve">
+    <value>Учись. &lt;span class="hl"&gt;Создавай.&lt;/span&gt; Строй карьеру.</value>
+  </data>
+  <data name="LoginHeroSubtitle" xml:space="preserve">
+    <value>Acadex 360 объединяет весь ваш учебный путь — учебная программа, оценки, задания, транскрипты и реальные проекты. Всё структурировано и под контролем.</value>
+  </data>
+  <data name="LoginCard1Title" xml:space="preserve">
+    <value>Оценки в реальном времени</value>
+  </data>
+  <data name="LoginCard1Sub" xml:space="preserve">
+    <value>Тест · Задание · Финал</value>
+  </data>
+  <data name="LoginCard2Title" xml:space="preserve">
+    <value>GPA и транскрипт</value>
+  </data>
+  <data name="LoginCard2Sub" xml:space="preserve">
+    <value>Прозрачное отслеживание результатов</value>
+  </data>
+  <data name="LoginCard3Title" xml:space="preserve">
+    <value>Проектное обучение</value>
+  </data>
+  <data name="LoginCard3Sub" xml:space="preserve">
+    <value>Создание реального портфолио</value>
+  </data>
+  <data name="LoginSecure" xml:space="preserve">
+    <value>Безопасный вход</value>
+  </data>
+  <data name="LoginEncrypted" xml:space="preserve">
+    <value>Зашифрованная сессия</value>
+  </data>
+  <data name="LoginAlwaysOn" xml:space="preserve">
+    <value>Система 24/7</value>
+  </data>
+  <data name="LoginRolesBadge" xml:space="preserve">
+    <value>Студент · Преподаватель · Администрация</value>
+  </data>
+  <data name="LoginNoAccount" xml:space="preserve">
+    <value>Нет аккаунта?</value>
+  </data>
+  <data name="LoginContactUs" xml:space="preserve">
+    <value>Свяжитесь с нами</value>
+  </data>
+  <data name="LoginBackToSite" xml:space="preserve">
+    <value>На главную сайта</value>
+  </data>
+  <data name="Support" xml:space="preserve">
+    <value>Поддержка</value>
+  </data>
+  <data name="LoginOr" xml:space="preserve">
+    <value>или</value>
+  </data>
+  <data name="RoleStudent" xml:space="preserve">
+    <value>Студент</value>
+  </data>
+  <data name="RoleTeacher" xml:space="preserve">
+    <value>Преподаватель</value>
+  </data>
+  <data name="RoleAdmin" xml:space="preserve">
+    <value>Администрация</value>
+  </data>
 </root>

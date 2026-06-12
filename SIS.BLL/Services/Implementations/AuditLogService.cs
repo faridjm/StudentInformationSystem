@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using SIS.BLL.Services.DTOs.AuditLog;
 using SIS.BLL.Services.DTOs.Common;
 using SIS.BLL.Services.Interfaces;
@@ -13,11 +14,14 @@ namespace SIS.BLL.Services.Implementations
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ILogger<AuditLogService>? _logger;
 
-        public AuditLogService(IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor)
+        public AuditLogService(IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor,
+            ILogger<AuditLogService>? logger = null)
         {
             _unitOfWork = unitOfWork;
             _httpContextAccessor = httpContextAccessor;
+            _logger = logger;
         }
 
         public async Task LogAsync(string action, string entityName, string? entityId,
@@ -28,15 +32,26 @@ namespace SIS.BLL.Services.Implementations
                 var ctx = _httpContextAccessor.HttpContext;
                 var user = ctx?.User;
 
+                // ClaimTypes.* (long form) ilkin axtarış; əgər boşdursa fallback olaraq
+                // qısa formaları (raw "nameid", "role", "unique_name") da yoxla.
+                string? userId = user?.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                                 ?? user?.FindFirst("nameid")?.Value
+                                 ?? user?.FindFirst("sub")?.Value;
+                string? userName = user?.FindFirst(ClaimTypes.Name)?.Value
+                                   ?? user?.FindFirst("unique_name")?.Value
+                                   ?? user?.FindFirst("name")?.Value;
+                string? userRole = user?.FindFirst(ClaimTypes.Role)?.Value
+                                   ?? user?.FindFirst("role")?.Value;
+
                 var log = new AuditLog
                 {
                     Action = action,
                     EntityName = entityName,
                     EntityId = entityId,
                     Description = Truncate(description, 1000),
-                    UserId = user?.FindFirst(ClaimTypes.NameIdentifier)?.Value,
-                    UserFullName = user?.FindFirst(ClaimTypes.Name)?.Value,
-                    UserRole = user?.FindFirst(ClaimTypes.Role)?.Value,
+                    UserId = userId,
+                    UserFullName = userName,
+                    UserRole = userRole,
                     IpAddress = GetIpAddress(ctx),
                     UserAgent = Truncate(ctx?.Request?.Headers["User-Agent"].ToString(), 512),
                     OldValue = Serialize(oldValue),
@@ -46,10 +61,21 @@ namespace SIS.BLL.Services.Implementations
 
                 await _unitOfWork.AuditLogs.AddAsync(log);
                 await _unitOfWork.SaveAsync();
+
+                // Diaqnostik məqsədilə: uğurlu yazılmadan sonra konsola informasiya
+                _logger?.LogInformation("AuditLog yazıldı: {Action} {Entity} #{EntityId} (user: {UserName})",
+                    action, entityName, entityId ?? "-", userName ?? "anon");
             }
-            catch
+            catch (Exception ex)
             {
-                // Audit loglaması heç vaxt əsas əməliyyatı pozmamalıdır.
+                // Audit loglaması heç vaxt əsas əməliyyatı pozmamalıdır,
+                // amma development-də sakitcə uduzmasın — ILogger ilə qeyd et.
+                _logger?.LogError(ex, "AuditLog YAZILA BİLMƏDİ: {Action} {Entity} {EntityId} — {Msg}",
+                    action, entityName, entityId, ex.Message);
+                // Console-a da yaz ki, logger configure olmasa belə görünsün
+                Console.Error.WriteLine($"[AUDIT FAIL] {action} {entityName} {entityId}: {ex.GetType().Name}: {ex.Message}");
+                if (ex.InnerException != null)
+                    Console.Error.WriteLine($"[AUDIT FAIL] Inner: {ex.InnerException.GetType().Name}: {ex.InnerException.Message}");
             }
         }
 

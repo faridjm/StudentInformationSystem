@@ -36,6 +36,7 @@ namespace SIS.DAL.UnitOfWork
         ICourseApplicationRepository CourseApplications { get; }
         ITranscriptVerificationRepository TranscriptVerifications { get; }
         IRoomRepository Rooms { get; }
+        IParentStudentRepository ParentStudents { get; }
 
         Task<int> SaveAsync();
     }

@@ -16,16 +16,18 @@ namespace SIS.UI.Areas.Admin.Controllers
         private readonly IInstitutionalEmailApi _emailApi;
         private readonly IEnrollmentApi _enrollmentApi;
         private readonly ITranscriptApi _transcriptApi;
+        private readonly IStudentParentApi _parentApi;
 
         public StudentController(IStudentApi studentApi, IAuthApi authApi,
             IInstitutionalEmailApi emailApi, IEnrollmentApi enrollmentApi,
-            ITranscriptApi transcriptApi)
+            ITranscriptApi transcriptApi, IStudentParentApi parentApi)
         {
             _studentApi = studentApi;
             _authApi    = authApi;
             _emailApi   = emailApi;
             _enrollmentApi = enrollmentApi;
             _transcriptApi = transcriptApi;
+            _parentApi  = parentApi;
         }
 
         public async Task<IActionResult> Index()
@@ -76,7 +78,57 @@ namespace SIS.UI.Areas.Admin.Controllers
             catch { /* enrollment servisi əlçatan deyil — boş akademik blok */ }
 
             ViewBag.AcademicRows = rows;
+
+            // Valideynlər tab
+            try { ViewBag.Parents = (await _parentApi.GetParentsAsync(id)).ToList(); }
+            catch { ViewBag.Parents = new List<SIS.BLL.Services.DTOs.Parent.ParentInfoDto>(); }
+
             return View(s);
+        }
+
+        // ── Valideynlər tab əməliyyatları ──
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddParent(int studentId, SIS.BLL.Services.DTOs.Parent.CreateParentForStudentDto dto)
+        {
+            try
+            {
+                var result = await _parentApi.CreateAsync(studentId, dto);
+                TempData["Success"] = $"Valideyn hesabı yaradıldı — Login: {result.Email} · Müvəqqəti parol: {result.TemporaryPassword}";
+            }
+            catch (Refit.ApiException apiEx) { TempData["Error"] = await ExtractApiError(apiEx); }
+            catch (Exception ex) { TempData["Error"] = ex.Message; }
+            return RedirectToAction("Detail", new { id = studentId });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> LinkParent(int studentId, SIS.BLL.Services.DTOs.Parent.LinkExistingParentDto dto)
+        {
+            try
+            {
+                await _parentApi.LinkAsync(studentId, dto);
+                TempData["Success"] = "Mövcud valideyn tələbəyə bağlandı";
+            }
+            catch (Refit.ApiException apiEx) { TempData["Error"] = await ExtractApiError(apiEx); }
+            catch (Exception ex) { TempData["Error"] = ex.Message; }
+            return RedirectToAction("Detail", new { id = studentId });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ToggleParent(int studentId, string parentUserId, bool enable)
+        {
+            try
+            {
+                if (enable) await _parentApi.EnableAsync(studentId, parentUserId);
+                else await _parentApi.DisableAsync(studentId, parentUserId);
+                TempData["Success"] = enable ? "Əlaqə aktiv edildi" : "Əlaqə deaktiv edildi";
+            }
+            catch (Refit.ApiException apiEx) { TempData["Error"] = await ExtractApiError(apiEx); }
+            catch (Exception ex) { TempData["Error"] = ex.Message; }
+            return RedirectToAction("Detail", new { id = studentId });
         }
 
         // F1/F4 — Tələbənin transkript PDF-ni yüklə (API-ni proxy edir, Admin icazəlidir).

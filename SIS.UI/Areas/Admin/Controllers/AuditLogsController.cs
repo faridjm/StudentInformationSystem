@@ -19,7 +19,21 @@ namespace SIS.UI.Areas.Admin.Controllers
             // toDate-i həmin günün sonuna qədər əhatə et
             DateTime? toInclusive = toDate?.Date.AddDays(1).AddTicks(-1);
 
-            var result = await _api.GetPagedAsync(action, entityName, search, fromDate, toInclusive, page, pageSize);
+            SIS.BLL.Services.DTOs.Common.PagedResult<SIS.BLL.Services.DTOs.AuditLog.AuditLogDto> result;
+            try
+            {
+                result = await _api.GetPagedAsync(action, entityName, search, fromDate, toInclusive, page, pageSize);
+            }
+            catch (Refit.ApiException ex)
+            {
+                TempData["Error"] = $"Audit log yüklənə bilmədi: HTTP {(int)ex.StatusCode}. " +
+                    "Əgər bu davam edirsə API-i yenidən başladın.";
+                result = new SIS.BLL.Services.DTOs.Common.PagedResult<SIS.BLL.Services.DTOs.AuditLog.AuditLogDto>
+                {
+                    Items = new List<SIS.BLL.Services.DTOs.AuditLog.AuditLogDto>(),
+                    Page = page, PageSize = pageSize, TotalCount = 0
+                };
+            }
 
             try { ViewBag.Actions = (await _api.GetActionsAsync()).ToList(); }
             catch { ViewBag.Actions = new List<string>(); }

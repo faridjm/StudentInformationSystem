@@ -1,0 +1,59 @@
+@model ParentPageVm
+@{
+    ViewData["Title"] = "Qiymətlər";
+    var t = Model.Transcript;
+}
+<h2 style="font-size:20px; font-weight:800; margin-bottom:14px;"><i class="fas fa-star"></i> Qiymətlər</h2>
+
+@if (!Model.HasChildren)
+{
+    <div class="card"><div class="empty">Bağlı tələbə yoxdur.</div></div>
+    return;
+}
+@await Html.PartialAsync("_Selector", Model)
+
+@if (t == null)
+{
+    <div class="card"><div class="empty">Qiymət məlumatı hələ yoxdur.</div></div>
+}
+else
+{
+    <div class="card">
+        <div class="cards" style="margin-bottom:6px;">
+            <div class="stat"><div class="v" style="color:#4f46e5">@t.OfficialGrade.ToString("F1")%</div><div class="l">Rəsmi qiymət</div></div>
+            <div class="stat"><div class="v" style="color:#4f46e5">@t.GPA.ToString("F2")</div><div class="l">GPA</div></div>
+            <div class="stat"><div class="v">@t.LetterGrade</div><div class="l">Hərf qiyməti</div></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header"><i class="fas fa-list"></i> Qiymətləndirmələr</div>
+        @if (t.OfficialAssessments == null || t.OfficialAssessments.Count == 0)
+        {
+            <div class="empty">Qiymətləndirmə yoxdur.</div>
+        }
+        else
+        {
+            <table>
+                <thead><tr><th>Ad</th><th>Növ</th><th>Bal</th><th>Maks</th><th>Çəki</th><th>Töhfə</th><th>Status</th></tr></thead>
+                <tbody>
+                    @foreach (var a in t.OfficialAssessments)
+                    {
+                        <tr>
+                            <td style="font-weight:600;">@a.Title</td>
+                            <td>@a.Type</td>
+                            <td>@(a.IsGraded ? a.Score?.ToString("F1") ?? "—" : "—")</td>
+                            <td>@a.MaxScore.ToString("F0")</td>
+                            <td>@a.WeightPercent.ToString("F0")%</td>
+                            <td>@(a.IsGraded ? a.WeightedScore?.ToString("F2") ?? "—" : "—")</td>
+                            <td>
+                                @if (a.IsGraded) { <span class="badge b-green">Qiymətləndirilib</span> }
+                                else { <span class="badge b-gray">Gözləyir</span> }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+}

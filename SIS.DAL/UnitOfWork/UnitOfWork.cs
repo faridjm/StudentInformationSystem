@@ -40,6 +40,7 @@ namespace SIS.DAL.UnitOfWork
         private ICourseApplicationRepository? _courseApplications;
         private ITranscriptVerificationRepository? _transcriptVerifications;
         private IRoomRepository? _rooms;
+        private IParentStudentRepository? _parentStudents;
 
         public UnitOfWork(AppDbContext context) { _context = context; }
 
@@ -75,6 +76,7 @@ namespace SIS.DAL.UnitOfWork
         public ICourseApplicationRepository CourseApplications => _courseApplications ??= new CourseApplicationRepository(_context);
         public ITranscriptVerificationRepository TranscriptVerifications => _transcriptVerifications ??= new TranscriptVerificationRepository(_context);
         public IRoomRepository Rooms => _rooms ??= new RoomRepository(_context);
+        public IParentStudentRepository ParentStudents => _parentStudents ??= new ParentStudentRepository(_context);
 
         public async Task<int> SaveAsync() => await _context.SaveChangesAsync();
         public void Dispose() => _context.Dispose();

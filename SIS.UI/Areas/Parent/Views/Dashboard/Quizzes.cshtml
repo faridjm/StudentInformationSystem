@@ -1,0 +1,46 @@
+@model ParentPageVm
+@{
+    ViewData["Title"] = "Quizlər";
+}
+<h2 style="font-size:20px; font-weight:800; margin-bottom:14px;"><i class="fas fa-list-check"></i> Quiz nəticələri</h2>
+
+@if (!Model.HasChildren)
+{
+    <div class="card"><div class="empty">Bağlı tələbə yoxdur.</div></div>
+    return;
+}
+@await Html.PartialAsync("_Selector", Model)
+
+<div class="card">
+    <div class="card-header">@Model.SelectedStudentName</div>
+    @if (Model.QuizResults.Count == 0)
+    {
+        <div class="empty">Quiz nəticəsi yoxdur.</div>
+    }
+    else
+    {
+        <table>
+            <thead><tr><th>Quiz</th><th>Kurs</th><th>Bal</th><th>Maks</th><th>%</th><th>Tarix</th><th>Status</th></tr></thead>
+            <tbody>
+                @foreach (var q in Model.QuizResults)
+                {
+                    <tr>
+                        <td style="font-weight:600;">@q.QuizTitle</td>
+                        <td>@q.CourseName</td>
+                        <td>@(q.Score?.ToString("F1") ?? "—")</td>
+                        <td>@q.MaxScore.ToString("F0")</td>
+                        <td>@(q.Percentage.HasValue ? $"{q.Percentage:F0}%" : "—")</td>
+                        <td>@(q.SubmittedAt?.ToString("dd.MM.yyyy") ?? "—")</td>
+                        <td>
+                            @if (q.IsSubmitted) { <span class="badge b-green">Təqdim edilib</span> }
+                            else { <span class="badge b-gray">Gözləyir</span> }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <div style="font-size:12px; color:#94a3b8; margin-top:10px; font-style:italic;">
+            Valideyn paneli yalnız nəticə xülasəsini göstərir; sual-sual cavab detalı müəllim və tələbə panelindədir.
+        </div>
+    }
+</div>
